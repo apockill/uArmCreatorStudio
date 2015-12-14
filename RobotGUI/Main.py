@@ -17,65 +17,95 @@ import sys
 import cv2
 import Robot
 import Video
+import Commands
 from PyQt4 import QtGui, QtCore
 
 
+class CameraWidget(QtGui.QWidget):
+    def __init__(self, getFrameFunction):
+        """
+        :param cameraID:
+        :param getFrameFunction: A function that when called will return a frame
+                that can be put in a QLabel. In this case the frame will come from
+                a VideoStream object's getFrame function.
+        :return:
+        """
+        super(CameraWidget, self).__init__()
+
+        #Set up globals
+        self.getFrame = getFrameFunction
+        self.fps      = 24
+        self.paused   = True   #Keeps track of the video's state
+        self.timer    = None
+
+        #Initialize the UI
+        self.video_frame = QtGui.QLabel("ERROR: Could not open camera.")  #Temp label for the frame
+        self.vbox = QtGui.QVBoxLayout(self)
+        self.vbox.addWidget(self.video_frame)
+        self.setLayout(self.vbox)
+
+        #Get one frame and display it, and wait for play to be pressed
+        self.nextFrameSlot()
 
 
-class MainWindow(QtGui.QWidget):
+    def play(self):
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.nextFrameSlot)
+        self.timer.start(1000./self.fps)
 
+        self.paused = False
+
+    def pause(self):
+        self.timer.stop()
+        self.paused = True
+
+    def nextFrameSlot(self):
+
+        pixFrame = self.getFrame()
+
+        #If a frame was returned correctly
+        if pixFrame is None:
+            return
+
+        self.video_frame.setPixmap(pixFrame)
+
+
+
+
+########## VIEWS ##########
+class ScanView(QtGui.QWidget):
 
     def __init__(self):
-        super(MainWindow, self).__init__()
-        self.cameraID = 0
+        super(ScanView, self).__init__()
+        #When Apply is clicked, these settings are sent to the main app TODO: Have these settings filled out by a settings file
+        self.settings  = {"robotID": None, "cameraID": None}
+
+        #Init UI Globals
+        self.cameraButtonGroup = None
+        self.robotButtonGroup  = None
+        self.robVBox   = QtGui.QVBoxLayout()
+        self.camVBox   = QtGui.QVBoxLayout()
+        self.applyBtn  = QtGui.QPushButton("Apply")  #Gets connected from the MainWindow method
+        self.cancelBtn = QtGui.QPushButton("Cancel")
+
         self.initUI()
 
-    def initUI(self):
-        self.dashboard = DashboardView(self.cameraID)
-
-        hbox = QtGui.QHBoxLayout()
-        hbox.addWidget(self.dashboard)
-        vbox = QtGui.QVBoxLayout()
-        vbox.addLayout(hbox)
-
-        self.setLayout(vbox)
-        self.setGeometry(600, 600, 640, 480)
-        self.setWindowTitle('uArm Creator Dashboard')
-        self.show()
-
-class Example(QtGui.QWidget):
-
-    def __init__(self):
-        super(Example, self).__init__()
-        self.initUI()
 
     def initUI(self):
         #Create Text
-        selectRobotTxt = QtGui.QLabel('Please select the robot you will be using:')
+        selectRobotTxt  = QtGui.QLabel('Please select the robot you will be using:')
         selectCameraTxt = QtGui.QLabel('Please select the camera you will be using:')
 
         #CREATE BUTTONS
-        nextBtn = QtGui.QPushButton("Next")
-        backBtn = QtGui.QPushButton("Back")
-        robotScanBtn = QtGui.QPushButton("Scan for Robots")
+        robotScanBtn  = QtGui.QPushButton("Scan for Robots")
         cameraScanBtn = QtGui.QPushButton("Scan for Cameras")
             #Set max widths of buttons
         maxWidth = 100
         robotScanBtn.setMaximumWidth(maxWidth)
         cameraScanBtn.setMaximumWidth(maxWidth)
-        nextBtn.setMaximumWidth(maxWidth)
-        backBtn.setMaximumWidth(maxWidth)
-            #Connect Buttons
-        robotScanBtn.clicked.connect(self.scanForRobotsClicked)
-        cameraScanBtn.clicked.connect(self.scanForCamerasClicked)
-        nextBtn.clicked.connect(self.nextClicked)
+        self.applyBtn.setMaximumWidth(maxWidth)
+        self.cancelBtn.setMaximumWidth(maxWidth)
 
-        #CREATE VBOXES FOR ROBOTS AND CAMERAS TO FILL INTO
-        self.robVBox = QtGui.QVBoxLayout()
-        #self.robVBox.addStretch(1)
-        self.camVBox = QtGui.QVBoxLayout()
-        self.robVBox.setSpacing(1)
-        self.camVBox.setSpacing(1)
 
         #CREATE GRID
         grid = QtGui.QGridLayout()
@@ -85,28 +115,32 @@ class Example(QtGui.QWidget):
         grid.addWidget(robotScanBtn,    0, 1, QtCore.Qt.AlignRight)
         grid.addLayout(self.robVBox,    1, 0, QtCore.Qt.AlignTop)
 
+
         grid.addWidget(selectCameraTxt, 2, 0, QtCore.Qt.AlignLeft)
         grid.addWidget(cameraScanBtn,   2, 1, QtCore.Qt.AlignRight)
         grid.addLayout(self.camVBox,    3, 0, QtCore.Qt.AlignTop)
 
-        grid.addWidget(backBtn,         4, 0, QtCore.Qt.AlignBottom)
-        grid.addWidget(nextBtn,         4, 1, QtCore.Qt.AlignBottom)
+        grid.addWidget(self.cancelBtn,  4, 0, QtCore.Qt.AlignBottom)
+        grid.addWidget(self.applyBtn,   4, 1, QtCore.Qt.AlignBottom)
 
         self.setLayout(grid)
 
-        #self.setGeometry(300, 300, 350, 300)
-        self.setWindowTitle('Initial Setup')
-
-
+        #Connect Buttons
+        robotScanBtn.clicked.connect(self.scanForRobotsClicked)
+        cameraScanBtn.clicked.connect(self.scanForCamerasClicked)
 
     def scanForRobotsClicked(self):
-        self.clearLayout(self.robVBox)  #  Clear robot list
-
-        #  Get all devices connected to COM ports and list them out
         connectedDevices = Robot.getConnectedRobots()
-        for index, port in enumerate(connectedDevices):
-            robotButton = QtGui.QRadioButton(port[2])
-            self.robVBox.addWidget(robotButton)
+
+        self.robotButtonGroup = QtGui.QButtonGroup()
+
+        #Update the list of found devices
+        self.clearLayout(self.robVBox)  #  Clear robot list
+        for i, port in enumerate(connectedDevices):
+            newButton = QtGui.QRadioButton(port[2])
+            self.robVBox.addWidget(newButton)                        # Add the button to the button layout
+            self.robotButtonGroup.addButton(newButton, i)            # Add the button to a group, with an ID of i
+            newButton.clicked.connect(self.robButtonClicked) # Connect each radio button to a method
 
 
         if len(connectedDevices) == 0:
@@ -114,201 +148,196 @@ class Example(QtGui.QWidget):
             self.robVBox.addWidget(notFoundTxt)
 
     def scanForCamerasClicked(self):
-        self.clearLayout(self.camVBox)  #  Clear camera list
 
         #  Get all of the cameras connected to the computer and list them
         connectedCameras = Video.getConnectedCameras()
-        cameraButtons = []
-        for i in connectedCameras:
-            cameraButtons.append(QtGui.QRadioButton("Camera " + str(i)))
 
         self.cameraButtonGroup = QtGui.QButtonGroup()
 
-        for i in xrange(len(cameraButtons)):
-            # Add each radio button to the button layout
-            self.camVBox.addWidget(cameraButtons[i])
-            # Add each radio button to the button group & give it an ID of i
-            self.cameraButtonGroup.addButton(cameraButtons[i], i)
-            # Connect each radio button to a method to run when it's clicked
-            cameraButtons[i].clicked.connect(lambda: self.radioButtonClicked(i))
+        #Update the list of found cameras
+        self.clearLayout(self.camVBox)  #  Clear camera list
+        for i in xrange(len(connectedCameras)):
+            newButton = QtGui.QRadioButton("Camera " + str(i))
+            self.camVBox.addWidget(newButton)                  # Add the button to the button layout
+            self.cameraButtonGroup.addButton(newButton, i)     # Add the button to a group, with an ID of i
+            newButton.clicked.connect(self.camButtonClicked)   # Connect each radio button to a method
+
+
 
         if len(connectedCameras) == 0:
             notFoundTxt = QtGui.QLabel('No cameras were found.')
             self.camVBox.addWidget(notFoundTxt)
 
+    def camButtonClicked(self):
+        self.settings["cameraID"] = self.cameraButtonGroup.checkedId()
 
-    def nextClicked(self):
-        buttonName = "Camera 0"
-        if buttonName.isChecked():
-            print buttonName, "is checked!"
-
-    def camButtonClicked(self, text):
-        print text
-
-    def radioButtonClicked(self, text):
-        print text
+    def robButtonClicked(self):
+        self.settings["robotID"] = self.robotButtonGroup.checkedButton().text()
 
     def clearLayout(self, layout):
         while layout.count():
             child = layout.takeAt(0)
             child.widget().deleteLater()
 
-"""
-class MainWindow(QtGui.QMainWindow):
-    count = 0
-
-    def __init__(self, parent=None):
-
-        super(MainWindow, self).__init__(parent)
-        self.mdi = QtGui.QMdiArea()
-        self.setCentralWidget(self.mdi)
-        bar = self.menuBar()
-
-        fileMnu = bar.addMenu("Windows")
-        fileMnu.addAction("New")
-        fileMnu.addAction("cascade")
-        fileMnu.addAction("Tiled")
-        fileMnu.triggered[QtGui.QAction].connect(self.windowaction)
-
-        self.setWindowTitle("uArm Creator Dashboard")
-
-    def windowaction(self, q):
-        print "triggered"
-
-        if q.text() == "New":
-            MainWindow.count = MainWindow.count+1  #Only for naming the window
-            sub = Example()
-            # sub = QMdiSubWindow()
-            # sub.setWidget(QTextEdit())
-            # sub.setWindowTitle("subwindow" + str(MainWindow.count))
-
-            self.mdi.addSubWindow(sub)
-            sub.show()
-
-        if q.text() == "cascade":
-            self.mdi.cascadeSubWindows()
-
-        if q.text() == "Tiled":
-            self.mdi.tileSubWindows()
-
-class MainWindow(QtGui.QWidget):
-    def __init__(self):
-        super(MainWindow, self).__init__()
-        self.initUI()
-
-    def initUI(self):
-        tabs	= QtGui.QTabWidget()
-        pushButton1 = QtGui.QPushButton("QPushButton 1")
-        pushButton2 = QtGui.QPushButton("QPushButton 2")
-
-        tab1	= Example()
-
-
-        #Resize width and height
-        tabs.resize(250, 150)
-
-        #Move QTabWidget to x:300,y:300
-        tabs.move(300, 300)
-
-        tabs.addTab(tab1, "Tab 1")
-
-        hbox = QtGui.QHBoxLayout()
-        hbox.addWidget(tabs)
-        vbox = QtGui.QVBoxLayout()
-        vbox.addLayout(hbox)
-
-        self.setLayout(vbox)
-        self.setGeometry(600, 600, 640, 480)
-        self.setWindowTitle("Tabs and classes test!")
-        self.show()
-"""
+    def getSettings(self):
+        return self.settings
 
 class DashboardView(QtGui.QWidget):
-    def __init__(self, cameraID):
+    def __init__(self, getFrameFunction):
         super(DashboardView, self).__init__()
-        self.cameraID = cameraID
+
+
+
+        #UI Globals setup
+        self.commandList    = Commands.CommandList()
+        self.addCommandBtn  = QtGui.QPushButton("Add Command")
+        self.cameraWidget   = CameraWidget(getFrameFunction)
+
         self.initUI()
+
+        # for index, name, icon in [
+        #     ('No.1', 'Meyoko',  'icon.png'),
+        #     ('No.2', 'Nyaruko', 'icon.png'),
+        #     ('No.3', 'Louise',  'icon.png')]:
+        #
+        #     self.commandList.addCommand(index, name)
 
     def initUI(self):
 
-        camera = CameraWidget(self.cameraID)
-
-        hbox = QtGui.QHBoxLayout()
-        vbox = QtGui.QVBoxLayout()
-
-        hbox.addStretch()
-
-        hbox.addWidget(camera)
-        vbox.addLayout(hbox)
-
-        self.setLayout(vbox)
+        #Create main layout
+        mainHLayout = QtGui.QHBoxLayout()
+        mainVLayout = QtGui.QVBoxLayout()
+        mainVLayout.addLayout(mainHLayout)
 
 
-class CameraWidget(QtGui.QWidget):
-    def __init__(self, cameraID):
-        super(CameraWidget, self).__init__()
+        #Create command list (LEFT)
+        listVLayout = QtGui.QVBoxLayout()
+        listVLayout.addWidget(self.addCommandBtn)
+        listVLayout.addWidget(self.commandList)
+        mainHLayout.addLayout(listVLayout)
 
-        #Set up globals
-        self.cameraID = cameraID
-        self.capture = None
-        self.fps = 24
-        #self.video_frame
-        #self.cap
-        #self.vbox
 
-        #Start video without using initializeVideo. Any other times though, do use initialize video.
-        self.cap = cv2.VideoCapture(self.cameraID)
+        #Put a space between control list and camera view
+        mainHLayout.addStretch(1)
 
-        #Initialize the UI
-        self.video_frame = QtGui.QLabel("ERROR: Could not open camera.")
-        self.vbox = QtGui.QVBoxLayout(self)
-        self.vbox.addWidget(self.video_frame)
-        self.setLayout(self.vbox)
 
-        self.play()
+        #Create Camera view (RIGHT)
+        mainHLayout.addWidget(self.cameraWidget)
+
+        self.setLayout(mainVLayout)
+        self.addCommandBtn.clicked.connect(self.addCommand)
+
+    def addCommand(self):
+        #For controlling the commandList
+        #Eventually, this will open a Menu window that will offer various types of commands that can be created
+        self.commandList.addCommand("moveXYZ")
 
 
 
-    #Integral functions
-    def initializeVideo(self):
-        #Initialize the camera
-        self.cap = cv2.VideoCapture(self.cameraID)
-        if self.cap.isOpened():
-            print "CameraWidget.init(): Camera", self.cameraID, " successfully opened."
+
+
+
+########## MAIN WINDOW ##########
+class MainWindow(QtGui.QMainWindow):
+    def __init__(self):
+        super(MainWindow, self).__init__()
+
+        #Set Global variables
+        self.settings = {"robotID": None, "cameraID": 0}
+        self.vStream  = Video.VideoStream(self.settings["cameraID"])
+        #self.cameraID = 0
+
+        #Set Global UI Variables
+        self.centralWidget   = QtGui.QStackedWidget()
+        self.dashboardView   = DashboardView(self.vStream.getPixFrame)
+        self.settingsView    = ScanView()
+        self.scriptToggleBtn = QtGui.QAction(QtGui.QIcon('Images/run_script.png'), 'Run/Pause the command script (Ctrl+R)',   self)
+        self.videoToggleBtn  = QtGui.QAction(QtGui.QIcon('Images/play_video.png'), 'Play/Pause the video stream (Ctrl+P)',    self)
+        self.settingsBtn     = QtGui.QAction(QtGui.QIcon('Images/settings.png'),   'Open Camera and Robot settings (Ctrl+T)', self)
+
+
+        #self.scanView = ScanView()
+        #Set up other views
+        self.settingsView.applyBtn.clicked.connect(lambda: self.closeSettingsView("Apply"))
+        self.settingsView.cancelBtn.clicked.connect(lambda: self.closeSettingsView("Cancel"))
+
+        self.initUI()
+
+        self.videoToggle()  #Play video
+
+    def initUI(self):
+        #Create toolbar
+        toolbar = self.addToolBar("MainToolbar")
+            #Run/Pause script button
+        self.scriptToggleBtn.setShortcut('Ctrl+R')
+        self.scriptToggleBtn.triggered.connect(self.scriptToggle)
+        toolbar.addAction(self.scriptToggleBtn)
+            #Play/Pause video button
+        self.videoToggleBtn.setShortcut('Ctrl+P')
+        self.videoToggleBtn.triggered.connect(self.videoToggle)
+        toolbar.addAction(self.videoToggleBtn)
+            #Settings button
+        self.settingsBtn.setShortcut('Ctrl+S')
+        self.settingsBtn.triggered.connect(self.openSettingsView)
+        toolbar.addAction(self.settingsBtn)
+
+        #Create the main layout
+        self.setCentralWidget(self.centralWidget)
+        self.centralWidget.addWidget(self.dashboardView)
+        self.centralWidget.addWidget(self.settingsView)
+
+
+        self.setWindowTitle('uArm Creator Dashboard')
+        self.show()
+
+    def videoToggle(self):
+        #Play pause video stream on dashBoardView
+        print "MainWindow.videoToggle(): Toggling video!"
+        if self.settings["cameraID"] is None: return  #Don't change anything if no camera ID has been added yet
+
+        if self.vStream.paused:
+            self.dashboardView.cameraWidget.play()
+            self.vStream.setPaused(False)
+            self.videoToggleBtn.setIcon(QtGui.QIcon("Images/pause_video.png"))
         else:
-            print "CameraWidget.init(): ERROR while opening Camera", self.cameraID
+            self.dashboardView.cameraWidget.pause()
+            self.vStream.setPaused(True)
+            self.videoToggleBtn.setIcon(QtGui.QIcon("Images/play_video.png"))
+    def scriptToggle(self):
+        #Run/pause the main script
+        print "MainWindow.scriptToggle(): Toggling script!"
 
-    def play(self):
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.nextFrameSlot)
-        self.timer.start(1000./self.fps)
+    def openSettingsView(self):
+        if self.centralWidget.currentWidget() == self.dashboardView:
+            print "MainWindow.openSettingsView(): Opening Settings!"
+            self.centralWidget.setCurrentWidget(self.settingsView)
+    def closeSettingsView(self, buttonClicked):
+        print "MainWindow.closeSettingsView(): Closing settings from button: ", buttonClicked
+        if buttonClicked == "Apply":
+            #Apply settings
+            newSettings = self.settingsView.getSettings()
+            print newSettings
 
-    def pause(self):
-        self.timer.stop()
+            if newSettings["cameraID"] is not None and  not newSettings["cameraID"] == self.settings["cameraID"]:
+                print "Main.closeSettingsView()\t Changing cameraID from ", self.settings["cameraID"], "to", newSettings["cameraID"]
 
-    def nextFrameSlot(self):
+                self.settings["cameraID"] = newSettings["cameraID"]
+                self.vStream.setNewCamera(self.settings["cameraID"])
 
-        ret, frame = self.cap.read()
-        if ret:
-            #If a frame was returned correctly
-            frame = cv2.cvtColor(frame, cv2.cv.CV_BGR2RGB)
-            img = QtGui.QImage(frame, frame.shape[1], frame.shape[0], QtGui.QImage.Format_RGB888)
-            pix = QtGui.QPixmap.fromImage(img)
-            self.video_frame.setPixmap(pix)
-        else:
-            print "nextFrameSlot(): ERROR reading camera. Attempting to reconnect..."
-            self.initializeVideo()
+        if buttonClicked == "Cancel":
+            #Don't apply settings
+            pass
+        self.centralWidget.setCurrentWidget(self.dashboardView)
+
+    def closeEvent(self, event):
+        self.vStream.endThread()
 
 
-
-
-
-    #Other functions
-    def setFPS(self, fps):
-        self.fps = fps
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     mainWindow = MainWindow()
     mainWindow.show()
+
     sys.exit(app.exec_())
+

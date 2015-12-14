@@ -23,5 +23,8 @@
     </entry>
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.4.1 (C:\Python34\python.exe)" project-jdk-type="Python SDK" />
+  <component name="SvnBranchConfigurationManager">
+    <option name="mySupportsUserInfoFilter" value="true" />
+  </component>
 </project>
 

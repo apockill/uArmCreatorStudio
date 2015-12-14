@@ -32,7 +32,7 @@ class Example(QtGui.QMainWindow):
         textEdit = QtGui.QTextEdit()
         self.setCentralWidget(textEdit)
 
-        exitAction = QtGui.QAction(QtGui.QIcon('exit24.png'), 'Exit', self)
+        exitAction = QtGui.QAction(QtGui.QIcon('Images/exit_1.png'), 'Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(self.close)
