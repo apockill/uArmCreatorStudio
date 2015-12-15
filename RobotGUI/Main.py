@@ -20,7 +20,7 @@ import Video
 import Commands
 from PyQt4 import QtGui, QtCore
 
-
+########## WIDGETS ##########
 class CameraWidget(QtGui.QWidget):
     def __init__(self, getFrameFunction):
         """
@@ -68,8 +68,6 @@ class CameraWidget(QtGui.QWidget):
             return
 
         self.video_frame.setPixmap(pixFrame)
-
-
 
 
 ########## VIEWS ##########
@@ -131,13 +129,13 @@ class ScanView(QtGui.QWidget):
 
     def scanForRobotsClicked(self):
         connectedDevices = Robot.getConnectedRobots()
-
+        print connectedDevices
         self.robotButtonGroup = QtGui.QButtonGroup()
 
         #Update the list of found devices
         self.clearLayout(self.robVBox)  #  Clear robot list
         for i, port in enumerate(connectedDevices):
-            newButton = QtGui.QRadioButton(port[2])
+            newButton = QtGui.QRadioButton(port[0])
             self.robVBox.addWidget(newButton)                        # Add the button to the button layout
             self.robotButtonGroup.addButton(newButton, i)            # Add the button to a group, with an ID of i
             newButton.clicked.connect(self.robButtonClicked) # Connect each radio button to a method
@@ -172,7 +170,7 @@ class ScanView(QtGui.QWidget):
         self.settings["cameraID"] = self.cameraButtonGroup.checkedId()
 
     def robButtonClicked(self):
-        self.settings["robotID"] = self.robotButtonGroup.checkedButton().text()
+        self.settings["robotID"] = str(self.robotButtonGroup.checkedButton().text())
 
     def clearLayout(self, layout):
         while layout.count():
@@ -230,10 +228,7 @@ class DashboardView(QtGui.QWidget):
     def addCommand(self):
         #For controlling the commandList
         #Eventually, this will open a Menu window that will offer various types of commands that can be created
-        self.commandList.addCommand("moveXYZ")
-
-
-
+        self.commandList.addCommand(Commands.MoveRSHCommand)
 
 
 
@@ -245,7 +240,7 @@ class MainWindow(QtGui.QMainWindow):
         #Set Global variables
         self.settings = {"robotID": None, "cameraID": 0}
         self.vStream  = Video.VideoStream(self.settings["cameraID"])
-        #self.cameraID = 0
+        self.robot    = Robot.Robot()
 
         #Set Global UI Variables
         self.centralWidget   = QtGui.QStackedWidget()
@@ -278,7 +273,7 @@ class MainWindow(QtGui.QMainWindow):
         toolbar.addAction(self.videoToggleBtn)
             #Settings button
         self.settingsBtn.setShortcut('Ctrl+S')
-        self.settingsBtn.triggered.connect(self.openSettingsView)
+        self.settingsBtn.triggered.connect(lambda: self.centralWidget.setCurrentWidget(self.settingsView))
         toolbar.addAction(self.settingsBtn)
 
         #Create the main layout
@@ -306,23 +301,24 @@ class MainWindow(QtGui.QMainWindow):
     def scriptToggle(self):
         #Run/pause the main script
         print "MainWindow.scriptToggle(): Toggling script!"
+        self.robot.moveTo(height=150)
 
-    def openSettingsView(self):
-        if self.centralWidget.currentWidget() == self.dashboardView:
-            print "MainWindow.openSettingsView(): Opening Settings!"
-            self.centralWidget.setCurrentWidget(self.settingsView)
     def closeSettingsView(self, buttonClicked):
         print "MainWindow.closeSettingsView(): Closing settings from button: ", buttonClicked
         if buttonClicked == "Apply":
             #Apply settings
             newSettings = self.settingsView.getSettings()
-            print newSettings
 
-            if newSettings["cameraID"] is not None and  not newSettings["cameraID"] == self.settings["cameraID"]:
-                print "Main.closeSettingsView()\t Changing cameraID from ", self.settings["cameraID"], "to", newSettings["cameraID"]
-
+            if newSettings["cameraID"] is not None and not newSettings["cameraID"] == self.settings["cameraID"]:
+                print "Main.closeSettingsView()\t Changing cameraID from ", \
+                      self.settings["cameraID"], "to", newSettings["cameraID"]
                 self.settings["cameraID"] = newSettings["cameraID"]
                 self.vStream.setNewCamera(self.settings["cameraID"])
+
+
+            if newSettings["robotID"] is not None:
+                self.settings["robotID"] = newSettings["robotID"]
+                self.robot.setSerial(self.settings["robotID"])
 
         if buttonClicked == "Cancel":
             #Don't apply settings

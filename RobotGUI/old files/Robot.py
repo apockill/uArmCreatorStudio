@@ -134,12 +134,6 @@ def moveTo(**kwargs):
 
 
 
-def setPosition(toRotation, toStretch, toHeight, toWrist):
-    pos['rotation'] = toRotation
-    pos['stretch'] = toStretch
-    pos['height'] = toHeight
-    pos['wrist'] = toWrist
-    moveTo()
 
 def setGrabber(value):
     sleep(.1)
