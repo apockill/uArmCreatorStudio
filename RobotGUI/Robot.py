@@ -1,5 +1,6 @@
 import serial
 import serial.tools.list_ports
+from time import sleep
 
 def getConnectedRobots():
     #FIND THE ROBOTS ARDUINO PORT AND CREATE ser1 TO CONNECT TO IT
@@ -9,7 +10,6 @@ def getConnectedRobots():
     #         print "Found arduino on port: ", port[0]
     #         ser1 = serial.Serial(port[0], 9600, timeout=0)  #Create connection
     return ports
-
 
 class Robot():
     def __init__(self):
@@ -23,16 +23,20 @@ class Robot():
 
     def moveTo(self, **kwargs):
         relative = kwargs.get('relative', False)
+        waitFor  = kwargs.get('waitForRobot', False)  #If true, waitForRobot() will be run at the end of the function
 
         #HANDLE ANY OTHER COMMANDS, INCLUDING POLAR COMMANDS
         for name, value in kwargs.items():  #Cycles through any variable that might have been in the kwargs. This is any position command!
 
             if name in self.pos:  #If it is a position statement.
+                if self.pos[name] is "": continue
                 if relative:
                     self.pos[name] += value
                 else:
                     self.pos[name] = value
         self.sendPos()
+
+        if waitFor: self.waitForRobot()
 
     def sendPos(self):
         #Sends all positional data in self.pos to the robot
@@ -41,16 +45,20 @@ class Robot():
             print "Robot.sendPos() ERROR: Tried sending command while Serial is None"
             return
 
-        try:
-            self.serial.write('%s:%s' % ('r', round(self.pos['rotation'], 2)))
-            self.serial.write('%s:%s' % ('s', round(self.pos[ 'stretch'], 2)))
-            self.serial.write('%s:%s' % ('h', round(self.pos[  'height'], 2)))
-            self.serial.write('%s:%s' % ('w', round(self.pos[   'wrist'], 2)))
+
+        self.serial.write('%s:%s' % ('r', round(self.pos['rotation'], 2)))
+        self.serial.write('%s:%s' % ('s', round(self.pos[ 'stretch'], 2)))
+        self.serial.write('%s:%s' % ('h', round(self.pos[  'height'], 2)))
+        self.serial.write('%s:%s' % ('w', round(self.pos[   'wrist'], 2)))
 
 
-        except:
-            print "Robot.sendPos(): ERROR: Failed to send moveTo command to Robot!"
+        # except:
+        #     print "Robot.sendPos(): ERROR: Failed to send moveTo command to Robot!"
 
     def setSerial(self, com):
         #TODO: Impliment a handshake with the robot here
         self.serial = serial.Serial(com, 9600, timeout=0)  #Create connection
+
+    def waitForRobot(self):
+        #Todo: add communication with robot
+        sleep(.75)

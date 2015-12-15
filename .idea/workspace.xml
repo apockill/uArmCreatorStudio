@@ -26,36 +26,36 @@
       <file leaf-file-name="Main.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/RobotGUI/Main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.42834646" vertical-offset="0" max-vertical-offset="635">
-              <caret line="232" column="0" selection-start-line="232" selection-start-column="0" selection-end-line="232" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.38740158" vertical-offset="281" max-vertical-offset="1003">
+              <caret line="310" column="0" selection-start-line="310" selection-start-column="0" selection-end-line="310" selection-end-column="0" />
               <folding>
                 <element signature="e#43#233#1" expanded="false" />
-                <element signature="e#401#1777#0" expanded="false" />
-                <element signature="e#447#1311#0" expanded="false" />
-                <element signature="e#447#726#1" expanded="false" />
-                <element signature="e#1342#1495#0" expanded="false" />
-                <element signature="e#1526#1570#0" expanded="false" />
-                <element signature="e#1610#1774#0" expanded="false" />
-                <element signature="e#1841#6098#0" expanded="false" />
-                <element signature="e#1869#2454#0" expanded="false" />
-                <element signature="e#2487#3912#0" expanded="false" />
-                <element signature="e#3958#4770#0" expanded="false" />
-                <element signature="e#4818#5675#0" expanded="false" />
-                <element signature="e#5717#5779#0" expanded="false" />
-                <element signature="e#5821#5897#0" expanded="false" />
-                <element signature="e#5942#6041#0" expanded="false" />
-                <element signature="e#6078#6098#0" expanded="false" />
-                <element signature="e#6140#7620#0" expanded="false" />
-                <element signature="e#6186#6697#0" expanded="false" />
-                <element signature="e#6730#7375#0" expanded="false" />
-                <element signature="e#7411#7616#0" expanded="false" />
-                <element signature="e#7695#11736#0" expanded="false" />
-                <element signature="e#7723#8865#0" expanded="false" />
-                <element signature="e#8897#9860#0" expanded="false" />
-                <element signature="e#9897#10498#0" expanded="false" />
-                <element signature="e#10535#10659#0" expanded="false" />
-                <element signature="e#10717#11669#0" expanded="false" />
-                <element signature="e#11712#11736#0" expanded="false" />
+                <element signature="e#235#245#0" expanded="true" />
+                <element signature="e#415#1791#0" expanded="false" />
+                <element signature="e#461#1325#0" expanded="false" />
+                <element signature="e#461#740#1" expanded="false" />
+                <element signature="e#1356#1509#0" expanded="false" />
+                <element signature="e#1540#1584#0" expanded="false" />
+                <element signature="e#1624#1788#0" expanded="false" />
+                <element signature="e#1855#6112#0" expanded="false" />
+                <element signature="e#1883#2468#0" expanded="false" />
+                <element signature="e#2501#3926#0" expanded="false" />
+                <element signature="e#3972#4784#0" expanded="false" />
+                <element signature="e#4832#5689#0" expanded="false" />
+                <element signature="e#5731#5793#0" expanded="false" />
+                <element signature="e#5835#5911#0" expanded="false" />
+                <element signature="e#5956#6055#0" expanded="false" />
+                <element signature="e#6092#6112#0" expanded="false" />
+                <element signature="e#6154#7634#0" expanded="false" />
+                <element signature="e#6200#6711#0" expanded="false" />
+                <element signature="e#6744#7389#0" expanded="false" />
+                <element signature="e#7425#7630#0" expanded="false" />
+                <element signature="e#7737#9074#0" expanded="false" />
+                <element signature="e#9106#9899#0" expanded="false" />
+                <element signature="e#9940#10734#0" expanded="false" />
+                <element signature="e#11078#11230#0" expanded="false" />
+                <element signature="e#11287#12239#0" expanded="false" />
+                <element signature="e#12282#12306#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -64,50 +64,32 @@
       <file leaf-file-name="Commands.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/RobotGUI/Commands.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="374">
-              <caret line="104" column="35" selection-start-line="104" selection-start-column="35" selection-end-line="104" selection-end-column="35" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="206" max-vertical-offset="1224">
+              <caret line="75" column="45" selection-start-line="75" selection-start-column="45" selection-end-line="75" selection-end-column="45" />
               <folding>
-                <element signature="e#110#2551#0" expanded="false" />
-                <element signature="e#138#557#0" expanded="false" />
-                <element signature="e#590#649#0" expanded="false" />
-                <element signature="e#686#868#0" expanded="false" />
-                <element signature="e#910#1090#0" expanded="false" />
-                <element signature="e#1135#1766#0" expanded="false" />
-                <element signature="e#1988#2157#0" expanded="false" />
-                <element signature="e#2199#2551#0" expanded="false" />
-                <element signature="e#2591#3473#0" expanded="false" />
-                <element signature="e#2634#3313#0" expanded="false" />
-                <element signature="e#3356#3386#0" expanded="false" />
-                <element signature="e#3436#3473#0" expanded="false" />
-                <element signature="e#3515#5241#0" expanded="false" />
-                <element signature="e#3543#3777#0" expanded="false" />
-                <element signature="e#3813#4443#0" expanded="false" />
-                <element signature="e#4481#4522#0" expanded="false" />
-                <element signature="e#4561#4603#0" expanded="false" />
-                <element signature="e#4652#5241#0" expanded="false" />
-                <element signature="e#5314#7453#0" expanded="false" />
-                <element signature="e#5342#5578#0" expanded="false" />
-                <element signature="e#5610#6443#0" expanded="false" />
-                <element signature="e#6476#6754#0" expanded="false" />
-                <element signature="e#6796#7413#0" expanded="false" />
-                <element signature="e#7449#7453#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Robot.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/RobotGUI/Robot.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="204">
-              <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
-              <folding>
-                <element signature="e#76#422#0" expanded="false" />
-                <element signature="e#444#2043#0" expanded="false" />
-                <element signature="e#472#712#0" expanded="false" />
-                <element signature="e#754#1223#0" expanded="false" />
-                <element signature="e#1256#1877#0" expanded="false" />
-                <element signature="e#1917#2043#0" expanded="false" />
+                <element signature="e#164#583#0" expanded="false" />
+                <element signature="e#616#675#0" expanded="false" />
+                <element signature="e#712#894#0" expanded="false" />
+                <element signature="e#936#1116#0" expanded="false" />
+                <element signature="e#1161#1792#0" expanded="false" />
+                <element signature="e#1834#2003#0" expanded="false" />
+                <element signature="e#2045#2397#0" expanded="false" />
+                <element signature="e#3026#3962#0" expanded="false" />
+                <element signature="e#4002#4026#0" expanded="false" />
+                <element signature="e#4072#4102#0" expanded="false" />
+                <element signature="e#4223#5949#0" expanded="false" />
+                <element signature="e#4251#4485#0" expanded="false" />
+                <element signature="e#4521#5151#0" expanded="false" />
+                <element signature="e#5189#5230#0" expanded="false" />
+                <element signature="e#5269#5311#0" expanded="false" />
+                <element signature="e#5360#5949#0" expanded="false" />
+                <element signature="e#6022#9345#0" expanded="false" />
+                <element signature="e#6050#6413#0" expanded="false" />
+                <element signature="e#6445#7624#0" expanded="false" />
+                <element signature="e#7658#8031#0" expanded="false" />
+                <element signature="e#8075#8237#0" expanded="false" />
+                <element signature="e#8279#9065#0" expanded="false" />
+                <element signature="e#9101#9345#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -153,12 +135,13 @@
         <option value="$PROJECT_DIR$/RobotGUI/PyQT Tutorials/Window handling/Dialog.py" />
         <option value="$PROJECT_DIR$/RobotGUI/PyQT Tutorials/Window handling/SubWindow.py" />
         <option value="$PROJECT_DIR$/RobotGUI/PyQT Tutorials/ToolBar.py" />
-        <option value="$PROJECT_DIR$/RobotGUI/scrap.py" />
         <option value="$PROJECT_DIR$/RobotGUI/Tests/VideoStream Test.py" />
-        <option value="$PROJECT_DIR$/RobotGUI/Video.py" />
         <option value="$PROJECT_DIR$/RobotGUI/old files/Robot.py" />
-        <option value="$PROJECT_DIR$/RobotGUI/Commands.py" />
+        <option value="$PROJECT_DIR$/RobotGUI/Video.py" />
         <option value="$PROJECT_DIR$/RobotGUI/Robot.py" />
+        <option value="$PROJECT_DIR$/RobotGUI/scrap.py" />
+        <option value="$PROJECT_DIR$/RobotGUI/save.pkl" />
+        <option value="$PROJECT_DIR$/RobotGUI/Commands.py" />
         <option value="$PROJECT_DIR$/RobotGUI/Main.py" />
       </list>
     </option>
@@ -223,43 +206,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="RobotGUI" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="RobotGUIProgramming" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="RobotGUIProgramming" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="RobotGUI" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="old files" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="RobotGUIProgramming" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="RobotGUIProgramming" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="RobotGUI" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Tests" />
+              <option name="myItemId" value="PyQT Tutorials" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -513,8 +460,8 @@
     <recent_temporary>
       <list size="5">
         <item index="0" class="java.lang.String" itemvalue="Python.Main" />
-        <item index="1" class="java.lang.String" itemvalue="Python.VideoStream Test" />
-        <item index="2" class="java.lang.String" itemvalue="Python.scrap" />
+        <item index="1" class="java.lang.String" itemvalue="Python.scrap" />
+        <item index="2" class="java.lang.String" itemvalue="Python.VideoStream Test" />
         <item index="3" class="java.lang.String" itemvalue="Python.ToolBar" />
         <item index="4" class="java.lang.String" itemvalue="Python.SubWindow" />
       </list>
@@ -535,25 +482,25 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.11698537" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32823366" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.29365963" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32628062" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.12802951" sideWeight="0.49822065" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.12802951" sideWeight="0.49822065" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.36525613" sideWeight="0.5349233" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.20169252" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.96123147" sideWeight="0.24872231" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.26169264" sideWeight="0.7512777" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26169264" sideWeight="0.7512777" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32814237" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -577,42 +524,14 @@
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="23" />
+      <option name="time" value="27" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/Window handling/SubWindow.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="100">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/Main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="221" max-vertical-offset="1785">
-          <caret line="23" column="8" selection-start-line="23" selection-start-column="8" selection-end-line="23" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/Main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="97" max-vertical-offset="2567">
-          <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/RobotGUI/Robot.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="51" max-vertical-offset="306">
           <caret line="3" column="16" selection-start-line="3" selection-start-column="16" selection-end-line="3" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/GridLayout.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="510" max-vertical-offset="1190">
-          <caret line="30" column="8" selection-start-line="30" selection-start-column="8" selection-end-line="30" selection-end-column="37" />
         </state>
       </provider>
     </entry>
@@ -637,13 +556,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/GridLayout.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="510" max-vertical-offset="1190">
-          <caret line="30" column="8" selection-start-line="30" selection-start-column="8" selection-end-line="30" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/RobotGUI/Video.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="100">
@@ -662,13 +574,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1071" max-vertical-offset="1173">
           <caret line="63" column="10" selection-start-line="63" selection-start-column="10" selection-end-line="63" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/hBox and vBox.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1020">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -700,178 +605,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/Textbox.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="56" max-vertical-offset="629">
-          <caret line="31" column="11" selection-start-line="31" selection-start-column="11" selection-end-line="31" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/Progressbar.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.39405942" vertical-offset="209" max-vertical-offset="782">
-          <caret line="27" column="56" selection-start-line="27" selection-start-column="56" selection-end-line="27" selection-end-column="56" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/Tables.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.1629393" vertical-offset="0" max-vertical-offset="626">
-          <caret line="8" column="4" selection-start-line="8" selection-start-column="4" selection-end-line="8" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/Widgets.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6789137" vertical-offset="0" max-vertical-offset="626">
-          <caret line="26" column="19" selection-start-line="26" selection-start-column="19" selection-end-line="26" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/Window handling/Window.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="257" max-vertical-offset="986">
-          <caret line="18" column="27" selection-start-line="18" selection-start-column="27" selection-end-line="18" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/Tabs.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="901">
-          <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="66" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/Menu.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.94577354" vertical-offset="291" max-vertical-offset="986">
-          <caret line="53" column="14" selection-start-line="53" selection-start-column="14" selection-end-line="53" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/OpenCV.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.679677" vertical-offset="345" max-vertical-offset="1122">
-          <caret line="52" column="4" selection-start-line="52" selection-start-column="4" selection-end-line="53" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/Custom Dynamic Lists.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="340">
-          <caret line="112" column="21" selection-start-line="112" selection-start-column="21" selection-end-line="112" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/ClickAndDrag Complex.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.030110935" vertical-offset="559" max-vertical-offset="1445">
-          <caret line="35" column="45" selection-start-line="35" selection-start-column="45" selection-end-line="35" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/Window handling/Messagebox.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.0" vertical-offset="279" max-vertical-offset="1003">
-          <caret line="54" column="10" selection-start-line="54" selection-start-column="10" selection-end-line="54" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/Window handling/Dialog.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="142" max-vertical-offset="1020">
-          <caret line="23" column="21" selection-start-line="23" selection-start-column="21" selection-end-line="23" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/GridLayout.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="303" max-vertical-offset="1173">
-          <caret line="30" column="8" selection-start-line="30" selection-start-column="8" selection-end-line="48" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/Buttons.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="234" max-vertical-offset="867">
-          <caret line="27" column="8" selection-start-line="27" selection-start-column="8" selection-end-line="28" selection-end-column="69" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/Window handling/SubWindow.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="646">
-          <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/Window handling/Child Windows.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="561">
-          <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/hBox and vBox.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.57030016" vertical-offset="64" max-vertical-offset="697">
-          <caret line="26" column="21" selection-start-line="26" selection-start-column="21" selection-end-line="26" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/Window handling/MDI Windows.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.29541865" vertical-offset="0" max-vertical-offset="633">
-          <caret line="72" column="25" selection-start-line="72" selection-start-column="25" selection-end-line="72" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/ToolBar.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5642398" vertical-offset="0" max-vertical-offset="934">
-          <caret line="47" column="8" selection-start-line="47" selection-start-column="8" selection-end-line="47" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/scrap.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.41463414" vertical-offset="0" max-vertical-offset="943">
-          <caret line="23" column="30" selection-start-line="23" selection-start-column="30" selection-end-line="23" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/PyQT Tutorials/Window handling/StackedWindows.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.1342812" vertical-offset="0" max-vertical-offset="633">
-          <caret line="6" column="38" selection-start-line="6" selection-start-column="38" selection-end-line="6" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/old files/Video/Vision.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="221" max-vertical-offset="833">
-          <caret line="51" column="138" selection-start-line="51" selection-start-column="138" selection-end-line="51" selection-end-column="138" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/old files/Main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2703" max-vertical-offset="3315">
-          <caret line="1650" column="8" selection-start-line="1650" selection-start-column="8" selection-end-line="1655" selection-end-column="55" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/Python27/Lib/threading.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.3327674" vertical-offset="12316" max-vertical-offset="22695">
           <caret line="736" column="0" selection-start-line="736" selection-start-column="0" selection-end-line="736" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/old files/Tests/testOpenCV.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="425">
-          <caret line="9" column="4" selection-start-line="9" selection-start-column="4" selection-end-line="9" selection-end-column="20" />
         </state>
       </provider>
     </entry>
@@ -886,7 +623,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.5511811" vertical-offset="843" max-vertical-offset="3774">
           <caret line="29" column="11" selection-start-line="29" selection-start-column="11" selection-end-line="29" selection-end-column="11" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -894,7 +630,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33228347" vertical-offset="1370" max-vertical-offset="19312">
           <caret line="96" column="8" selection-start-line="96" selection-start-column="8" selection-end-line="96" selection-end-column="8" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -902,144 +637,135 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="1.1511811" vertical-offset="0" max-vertical-offset="6477">
           <caret line="46" column="8" selection-start-line="46" selection-start-column="8" selection-end-line="46" selection-end-column="8" />
-          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RobotGUI/ToDo.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="635">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/RobotGUI/Video.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="306">
-          <caret line="19" column="18" selection-start-line="19" selection-start-column="18" selection-end-line="19" selection-end-column="18" />
-          <folding>
-            <element signature="e#109#326#0" expanded="false" />
-            <element signature="e#351#4229#0" expanded="false" />
-            <element signature="e#389#805#0" expanded="false" />
-            <element signature="e#835#2372#0" expanded="false" />
-            <element signature="e#2415#2701#0" expanded="false" />
-            <element signature="e#2739#2987#0" expanded="false" />
-            <element signature="e#3022#3221#0" expanded="false" />
-            <element signature="e#3270#3852#0" expanded="false" />
-            <element signature="e#3889#3972#0" expanded="false" />
-            <element signature="e#4007#4082#0" expanded="false" />
-            <element signature="e#4119#4229#0" expanded="false" />
-            <element signature="e#4284#9282#0" expanded="false" />
-            <element signature="e#4322#4922#0" expanded="false" />
-            <element signature="e#4979#5943#0" expanded="false" />
-            <element signature="e#4979#5348#1" expanded="false" />
-            <element signature="e#5986#6012#0" expanded="false" />
-            <element signature="e#6056#7691#0" expanded="false" />
-            <element signature="e#7749#8493#0" expanded="false" />
-            <element signature="e#8557#8856#0" expanded="false" />
-            <element signature="e#8907#9202#0" expanded="false" />
-            <element signature="e#8907#9148#1" expanded="false" />
-            <element signature="e#9241#9282#0" expanded="false" />
-          </folding>
+        <state vertical-scroll-proportion="0.37480316" vertical-offset="0" max-vertical-offset="635">
+          <caret line="17" column="32" selection-start-line="17" selection-start-column="32" selection-end-line="17" selection-end-column="32" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/old files/Robot.py">
+    <entry file="file://C:/Python27/Lib/site-packages/serial/serialwin32.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.31378937" vertical-offset="0" max-vertical-offset="1241">
-          <caret line="23" column="8" selection-start-line="23" selection-start-column="8" selection-end-line="23" selection-end-column="74" />
-          <folding>
-            <element signature="e#151#432#1" expanded="false" />
-            <element signature="e#1321#2580#1" expanded="false" />
-            <element signature="e#2958#7055#0" expanded="false" />
-            <element signature="e#2958#4066#1" expanded="false" />
-            <element signature="e#7087#7284#0" expanded="false" />
-            <element signature="e#7338#7651#0" expanded="false" />
-            <element signature="e#7697#7901#0" expanded="false" />
-            <element signature="e#7940#8056#0" expanded="false" />
-            <element signature="e#8082#9787#0" expanded="false" />
-            <element signature="e#8082#8307#1" expanded="false" />
-            <element signature="e#9908#11441#0" expanded="false" />
-            <element signature="e#11476#12625#0" expanded="false" />
-            <element signature="e#11476#11740#1" expanded="false" />
-            <element signature="e#12661#13186#0" expanded="false" />
-          </folding>
+        <state vertical-scroll-proportion="0.32068965" vertical-offset="843" max-vertical-offset="7888">
+          <caret line="69" column="65" selection-start-line="69" selection-start-column="64" selection-end-line="69" selection-end-column="65" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/RobotGUI/Robot.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="204">
-          <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
-          <folding>
-            <element signature="e#76#422#0" expanded="false" />
-            <element signature="e#444#2043#0" expanded="false" />
-            <element signature="e#472#712#0" expanded="false" />
-            <element signature="e#754#1223#0" expanded="false" />
-            <element signature="e#1256#1877#0" expanded="false" />
-            <element signature="e#1917#2043#0" expanded="false" />
-          </folding>
+        <state vertical-scroll-proportion="0.1680261" vertical-offset="492" max-vertical-offset="1139">
+          <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Python27/Lib/copy_reg.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="979" max-vertical-offset="3519">
+          <caret line="70" column="0" selection-start-line="70" selection-start-column="0" selection-end-line="70" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Python27/Lib/pickle.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="4872" max-vertical-offset="23647">
+          <caret line="305" column="0" selection-start-line="305" selection-start-column="0" selection-end-line="305" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RobotGUI/scrap.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.058925476" vertical-offset="0" max-vertical-offset="577">
+          <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RobotGUI/savefile.pkl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="626">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/RobotGUI/Commands.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="374">
-          <caret line="104" column="35" selection-start-line="104" selection-start-column="35" selection-end-line="104" selection-end-column="35" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="206" max-vertical-offset="1224">
+          <caret line="75" column="45" selection-start-line="75" selection-start-column="45" selection-end-line="75" selection-end-column="45" />
           <folding>
-            <element signature="e#110#2551#0" expanded="false" />
-            <element signature="e#138#557#0" expanded="false" />
-            <element signature="e#590#649#0" expanded="false" />
-            <element signature="e#686#868#0" expanded="false" />
-            <element signature="e#910#1090#0" expanded="false" />
-            <element signature="e#1135#1766#0" expanded="false" />
-            <element signature="e#1988#2157#0" expanded="false" />
-            <element signature="e#2199#2551#0" expanded="false" />
-            <element signature="e#2591#3473#0" expanded="false" />
-            <element signature="e#2634#3313#0" expanded="false" />
-            <element signature="e#3356#3386#0" expanded="false" />
-            <element signature="e#3436#3473#0" expanded="false" />
-            <element signature="e#3515#5241#0" expanded="false" />
-            <element signature="e#3543#3777#0" expanded="false" />
-            <element signature="e#3813#4443#0" expanded="false" />
-            <element signature="e#4481#4522#0" expanded="false" />
-            <element signature="e#4561#4603#0" expanded="false" />
-            <element signature="e#4652#5241#0" expanded="false" />
-            <element signature="e#5314#7453#0" expanded="false" />
-            <element signature="e#5342#5578#0" expanded="false" />
-            <element signature="e#5610#6443#0" expanded="false" />
-            <element signature="e#6476#6754#0" expanded="false" />
-            <element signature="e#6796#7413#0" expanded="false" />
-            <element signature="e#7449#7453#0" expanded="false" />
+            <element signature="e#164#583#0" expanded="false" />
+            <element signature="e#616#675#0" expanded="false" />
+            <element signature="e#712#894#0" expanded="false" />
+            <element signature="e#936#1116#0" expanded="false" />
+            <element signature="e#1161#1792#0" expanded="false" />
+            <element signature="e#1834#2003#0" expanded="false" />
+            <element signature="e#2045#2397#0" expanded="false" />
+            <element signature="e#3026#3962#0" expanded="false" />
+            <element signature="e#4002#4026#0" expanded="false" />
+            <element signature="e#4072#4102#0" expanded="false" />
+            <element signature="e#4223#5949#0" expanded="false" />
+            <element signature="e#4251#4485#0" expanded="false" />
+            <element signature="e#4521#5151#0" expanded="false" />
+            <element signature="e#5189#5230#0" expanded="false" />
+            <element signature="e#5269#5311#0" expanded="false" />
+            <element signature="e#5360#5949#0" expanded="false" />
+            <element signature="e#6022#9345#0" expanded="false" />
+            <element signature="e#6050#6413#0" expanded="false" />
+            <element signature="e#6445#7624#0" expanded="false" />
+            <element signature="e#7658#8031#0" expanded="false" />
+            <element signature="e#8075#8237#0" expanded="false" />
+            <element signature="e#8279#9065#0" expanded="false" />
+            <element signature="e#9101#9345#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/RobotGUI/Main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.42834646" vertical-offset="0" max-vertical-offset="635">
-          <caret line="232" column="0" selection-start-line="232" selection-start-column="0" selection-end-line="232" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.38740158" vertical-offset="281" max-vertical-offset="1003">
+          <caret line="310" column="0" selection-start-line="310" selection-start-column="0" selection-end-line="310" selection-end-column="0" />
           <folding>
             <element signature="e#43#233#1" expanded="false" />
-            <element signature="e#401#1777#0" expanded="false" />
-            <element signature="e#447#1311#0" expanded="false" />
-            <element signature="e#447#726#1" expanded="false" />
-            <element signature="e#1342#1495#0" expanded="false" />
-            <element signature="e#1526#1570#0" expanded="false" />
-            <element signature="e#1610#1774#0" expanded="false" />
-            <element signature="e#1841#6098#0" expanded="false" />
-            <element signature="e#1869#2454#0" expanded="false" />
-            <element signature="e#2487#3912#0" expanded="false" />
-            <element signature="e#3958#4770#0" expanded="false" />
-            <element signature="e#4818#5675#0" expanded="false" />
-            <element signature="e#5717#5779#0" expanded="false" />
-            <element signature="e#5821#5897#0" expanded="false" />
-            <element signature="e#5942#6041#0" expanded="false" />
-            <element signature="e#6078#6098#0" expanded="false" />
-            <element signature="e#6140#7620#0" expanded="false" />
-            <element signature="e#6186#6697#0" expanded="false" />
-            <element signature="e#6730#7375#0" expanded="false" />
-            <element signature="e#7411#7616#0" expanded="false" />
-            <element signature="e#7695#11736#0" expanded="false" />
-            <element signature="e#7723#8865#0" expanded="false" />
-            <element signature="e#8897#9860#0" expanded="false" />
-            <element signature="e#9897#10498#0" expanded="false" />
-            <element signature="e#10535#10659#0" expanded="false" />
-            <element signature="e#10717#11669#0" expanded="false" />
-            <element signature="e#11712#11736#0" expanded="false" />
+            <element signature="e#235#245#0" expanded="true" />
+            <element signature="e#415#1791#0" expanded="false" />
+            <element signature="e#461#1325#0" expanded="false" />
+            <element signature="e#461#740#1" expanded="false" />
+            <element signature="e#1356#1509#0" expanded="false" />
+            <element signature="e#1540#1584#0" expanded="false" />
+            <element signature="e#1624#1788#0" expanded="false" />
+            <element signature="e#1855#6112#0" expanded="false" />
+            <element signature="e#1883#2468#0" expanded="false" />
+            <element signature="e#2501#3926#0" expanded="false" />
+            <element signature="e#3972#4784#0" expanded="false" />
+            <element signature="e#4832#5689#0" expanded="false" />
+            <element signature="e#5731#5793#0" expanded="false" />
+            <element signature="e#5835#5911#0" expanded="false" />
+            <element signature="e#5956#6055#0" expanded="false" />
+            <element signature="e#6092#6112#0" expanded="false" />
+            <element signature="e#6154#7634#0" expanded="false" />
+            <element signature="e#6200#6711#0" expanded="false" />
+            <element signature="e#6744#7389#0" expanded="false" />
+            <element signature="e#7425#7630#0" expanded="false" />
+            <element signature="e#7737#9074#0" expanded="false" />
+            <element signature="e#9106#9899#0" expanded="false" />
+            <element signature="e#9940#10734#0" expanded="false" />
+            <element signature="e#11078#11230#0" expanded="false" />
+            <element signature="e#11287#12239#0" expanded="false" />
+            <element signature="e#12282#12306#0" expanded="false" />
           </folding>
         </state>
       </provider>

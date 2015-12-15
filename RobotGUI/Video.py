@@ -9,9 +9,13 @@ def getConnectedCameras():
     cameraList = []
 
     for i in range(0, tries):
+        print "getting ",i
         testCap = cv2.VideoCapture(i)
+        print "got ",i
+
 
         if testCap.isOpened():
+            print "releasing ", i
             cameraList.append(i)
             testCap.release()
 

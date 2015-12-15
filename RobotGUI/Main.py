@@ -15,6 +15,7 @@ last edited: October 2011
 
 import sys
 import cv2
+import pickle
 import Robot
 import Video
 import Commands
@@ -246,34 +247,33 @@ class MainWindow(QtGui.QMainWindow):
         self.centralWidget   = QtGui.QStackedWidget()
         self.dashboardView   = DashboardView(self.vStream.getPixFrame)
         self.settingsView    = ScanView()
-        self.scriptToggleBtn = QtGui.QAction(QtGui.QIcon('Images/run_script.png'), 'Run/Pause the command script (Ctrl+R)',   self)
-        self.videoToggleBtn  = QtGui.QAction(QtGui.QIcon('Images/play_video.png'), 'Play/Pause the video stream (Ctrl+P)',    self)
-        self.settingsBtn     = QtGui.QAction(QtGui.QIcon('Images/settings.png'),   'Open Camera and Robot settings (Ctrl+T)', self)
+        self.scriptToggleBtn = QtGui.QAction(QtGui.QIcon('Images/run_script.png'),   'Run/Pause the command script (Ctrl+R)', self)
+        self.videoToggleBtn  = QtGui.QAction(QtGui.QIcon('Images/play_video.png'),    'Play/Pause the video stream (Ctrl+P)', self)
+        self.settingsBtn     = QtGui.QAction(QtGui.QIcon(  'Images/settings.png'), 'Open Camera and Robot settings (Ctrl+T)', self)
 
 
-        #self.scanView = ScanView()
-        #Set up other views
-        self.settingsView.applyBtn.clicked.connect(lambda: self.closeSettingsView("Apply"))
+        #Set up buttons
+        self.settingsView.applyBtn.clicked.connect( lambda: self.closeSettingsView("Apply"))
         self.settingsView.cancelBtn.clicked.connect(lambda: self.closeSettingsView("Cancel"))
+        self.scriptToggleBtn.triggered.connect(     self.scriptToggle)
+        self.videoToggleBtn.triggered.connect(      lambda: self.setVideo("toggle"))
+        self.settingsBtn.triggered.connect(         self.openSettingsView)
 
         self.initUI()
 
-        self.videoToggle()  #Play video
+        self.setVideo("play")  #Play video
 
     def initUI(self):
         #Create toolbar
         toolbar = self.addToolBar("MainToolbar")
             #Run/Pause script button
         self.scriptToggleBtn.setShortcut('Ctrl+R')
-        self.scriptToggleBtn.triggered.connect(self.scriptToggle)
         toolbar.addAction(self.scriptToggleBtn)
             #Play/Pause video button
         self.videoToggleBtn.setShortcut('Ctrl+P')
-        self.videoToggleBtn.triggered.connect(self.videoToggle)
         toolbar.addAction(self.videoToggleBtn)
             #Settings button
         self.settingsBtn.setShortcut('Ctrl+S')
-        self.settingsBtn.triggered.connect(lambda: self.centralWidget.setCurrentWidget(self.settingsView))
         toolbar.addAction(self.settingsBtn)
 
         #Create the main layout
@@ -283,26 +283,43 @@ class MainWindow(QtGui.QMainWindow):
 
 
         self.setWindowTitle('uArm Creator Dashboard')
+        self.setWindowIcon(QtGui.QIcon('Images/taskbar_icon.png'))
         self.show()
 
-    def videoToggle(self):
-        #Play pause video stream on dashBoardView
-        print "MainWindow.videoToggle(): Toggling video!"
+    def setVideo(self, state):
+        #State can be play, pause, or simply "toggle"
+        print "MainWindow.setVideo(): Setting video to state: ", state
+
         if self.settings["cameraID"] is None: return  #Don't change anything if no camera ID has been added yet
 
-        if self.vStream.paused:
+
+        if state == "play":
             self.dashboardView.cameraWidget.play()
             self.vStream.setPaused(False)
             self.videoToggleBtn.setIcon(QtGui.QIcon("Images/pause_video.png"))
-        else:
+
+        if state == "pause":
             self.dashboardView.cameraWidget.pause()
             self.vStream.setPaused(True)
             self.videoToggleBtn.setIcon(QtGui.QIcon("Images/play_video.png"))
+
+        if state == "toggle":
+            if self.vStream.paused:
+                self.setVideo("play")
+            else:
+                self.setVideo("pause")
+
     def scriptToggle(self):
         #Run/pause the main script
         print "MainWindow.scriptToggle(): Toggling script!"
-        self.robot.moveTo(height=150)
+        self.dashboardView.commandList.saveList("save.p")
+        self.dashboardView.commandList.loadList("save.p")
+        #self.dashboardView.commandList.runScript(self.robot)
 
+    def openSettingsView(self):
+        #Pause video so that camera scanning doesn't cause a crash
+        self.setVideo("pause")
+        self.centralWidget.setCurrentWidget(self.settingsView)
     def closeSettingsView(self, buttonClicked):
         print "MainWindow.closeSettingsView(): Closing settings from button: ", buttonClicked
         if buttonClicked == "Apply":

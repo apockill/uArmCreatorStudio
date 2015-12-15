@@ -1,4 +1,6 @@
 from PyQt4 import QtGui, QtCore
+import cPickle as pickle
+
 
 ########## COMMAND LIST ##########
 class CommandList(QtGui.QListWidget):
@@ -49,18 +51,10 @@ class CommandList(QtGui.QListWidget):
         #Update the width of the commandList to the widest element within it
         self.updateWidth()
 
-# def dragEnterEvent(self, event):
-#
-#     super(CommandList, self).dragEnterEvent(event)
-
-# def dragMoveEvent(self, event):
-#
-#     super(CommandList, self).dragMoveEvent(event)
-
     def dropEvent(self, event):
         event.setDropAction(QtCore.Qt.MoveAction)
         super(CommandList, self).dropEvent(event)
-        lst = [i.text() for i in self.findItems("", QtCore.Qt.MatchContains)]
+        lst = [i.text() for i in self.findItems('', QtCore.Qt.MatchContains)]
 
     def doubleClickEvent(self):
         #Open the command window for the command that was just double clicked
@@ -73,34 +67,63 @@ class CommandList(QtGui.QListWidget):
         self.setItemWidget(selectedItem, updatedWidget)
         self.updateWidth()
 
+    def saveList(self, file):
+        list = []
+        for index in xrange(self.count()):
+            item = self.item(index)
+            command = self.commands[item]
+            list.append(command.parameters)
+        pickle.dump( list, open( file, "wb" ))
+
+    def loadList(self, file):
+        list = pickle.load( open( file, "rb" ) )
+        print list
+
+    def runScript(self, robot):
+        for index in xrange(self.count()):
+            item = self.item(index)
+            command = self.commands[item]
+            command.run(robot)
+
+
 class CommandItem(QtGui.QWidget):
     def __init__(self, parent = None):
         super(CommandItem, self).__init__(parent)
-        self.commandType        = QtGui.QLabel()
-        self.commandDescription = QtGui.QLabel()
+        self.title       = QtGui.QLabel()
+        self.description = QtGui.QLabel()
+        self.icon        = QtGui.QLabel("No icon found.")
 
         font = QtGui.QFont()
         font.setBold(True)
-        self.commandType.setFont(font)
+        self.title.setFont(font)
 
-        grid = QtGui.QGridLayout()
-        grid.setSpacing(10)
+        leftLayout  = QtGui.QVBoxLayout()
+        rightLayout = QtGui.QVBoxLayout()
 
-        grid.addWidget(self.commandType, 1, 0)
-        grid.addWidget(self.commandDescription, 1, 1)
+        leftLayout.addWidget(self.icon)
 
+        rightLayout.setSpacing(1)
+        rightLayout.addWidget(self.title)
+        rightLayout.addWidget(self.description)
+
+        mainHLayout = QtGui.QHBoxLayout()
+        mainHLayout.addLayout(leftLayout)
+        mainHLayout.addLayout(rightLayout)
         # self.textQVBoxLayout.addWidget(self.textUpQLabel)
         # self.textQVBoxLayout.addWidget(self.textDownQLabel)
         # self.allQHBoxLayout.addWidget(self.iconQLabel, 0)
         # self.allQHBoxLayout.addLayout(self.textQVBoxLayout, 1)
 
-        self.setLayout(grid)
+        self.setLayout(mainHLayout)
 
-    def setTextType(self, text):
-        self.commandType.setText(text)
+    def setTitle(self, text):
+        self.title.setText(text)
 
-    def setTextDescription(self, text):
-        self.commandDescription.setText(text)
+    def setDescription(self, text):
+        self.description.setText(text)
+
+    def setIcon(self, icon):
+        self.icon.setPixmap(QtGui.QPixmap(icon))
 
 class CommandWindow(QtGui.QDialog):
     def __init__(self):
@@ -154,10 +177,10 @@ class CommandWindow(QtGui.QDialog):
 
 
 
-            print "CommandWindow.openView(): New parameters: ", self.parameters
+            print 'CommandWindow.openView(): New parameters: ', self.parameters
 
         else:
-            print "CommandWindow.openView(): User Canceled."
+            print 'CommandWindow.openView(): User Canceled.'
 
 
 
@@ -170,20 +193,21 @@ class MoveRSHCommand(CommandWindow):
         #super(MoveRSHCommand, self).__init__()
         CommandWindow.__init__(self)
 
-
-        self.rotEdit     = QtGui.QLineEdit()
-        self.strEdit     = QtGui.QLineEdit()
-        self.hgtEdit     = QtGui.QLineEdit()
-
+        self.rotEdit     = QtGui.QLineEdit()  #  Rotation textbox
+        self.strEdit     = QtGui.QLineEdit()  #  Stretch textbox
+        self.hgtEdit     = QtGui.QLineEdit()  #  Height textbox
+        self.relCheck    = QtGui.QCheckBox()  #  "relative" CheckBox
         self.initUI()
 
     def initUI(self):
+        #Set up all the labels for the inputs
         rot = QtGui.QLabel('Rotation:')
         str = QtGui.QLabel('Stretch:')
         hgt = QtGui.QLabel('Height:')
-        self.rotEdit.setText("0")
-        self.strEdit.setText("0")
-        self.hgtEdit.setText("0")
+        rel = QtGui.QLabel('Relative')
+        self.rotEdit.setText('0')
+        self.strEdit.setText('0')
+        self.hgtEdit.setText('0')
         # self.rotEdit.setMaximumWidth(50)
         # self.strEdit.setMaximumWidth(50)
         # self.hgtEdit.setMaximumWidth(50)
@@ -191,26 +215,41 @@ class MoveRSHCommand(CommandWindow):
         row1 = QtGui.QHBoxLayout()
         row2 = QtGui.QHBoxLayout()
         row3 = QtGui.QHBoxLayout()
+        row4 = QtGui.QHBoxLayout()
 
         row1.addWidget(rot, QtCore.Qt.AlignRight)
-        row1.addWidget(self.rotEdit)
+        row1.addWidget(self.rotEdit, QtCore.Qt.AlignJustify)
 
         row2.addWidget(str, QtCore.Qt.AlignRight)
-        row2.addWidget(self.strEdit)
+        row2.addWidget(self.strEdit, QtCore.Qt.AlignJustify)
 
         row3.addWidget(hgt, QtCore.Qt.AlignRight)
-        row3.addWidget(self.hgtEdit)
+        row3.addWidget(self.hgtEdit, QtCore.Qt.AlignJustify)
+
+        row4.addWidget(rel, QtCore.Qt.AlignRight)
+        row4.addWidget(self.relCheck, QtCore.Qt.AlignJustify)
 
         self.mainVLayout.addLayout(row1)
         self.mainVLayout.addLayout(row2)
         self.mainVLayout.addLayout(row3)
+        self.mainVLayout.addLayout(row4)
 
     def getInfo(self):
+
         #Build the info inputed into the window into a Json and return it. Used in parent class
-        parameters = {"rot": str(self.rotEdit.text()),
-                      "str": str(self.strEdit.text()),
-                      "hgt": str(self.hgtEdit.text())}
+        parameters = {'rot': self.sanitizeInt(self.rotEdit.text()),
+                      'str': self.sanitizeInt(self.strEdit.text()),
+                      'hgt': self.sanitizeInt(self.hgtEdit.text()),
+                      'rel': self.relCheck.isChecked()}
         return parameters
+
+    def sanitizeInt(self, input):
+        #Sanitize input from the user
+            try:
+                intInput = int(input)
+            except:
+                intInput = ""
+            return intInput
 
     def getCommandWidget(self):
         #Verify that there are no None statements in the parameters
@@ -218,11 +257,25 @@ class MoveRSHCommand(CommandWindow):
             return None
         else:
             self.listWidget = CommandItem()
-            self.listWidget.setTextType("Move RSH")
-            self.listWidget.setTextDescription("Rotation: " + self.parameters["rot"] +
-                                               " Stretch: " + self.parameters["str"] +
-                                               " Height: "  + self.parameters["hgt"])
+            self.listWidget.setIcon('Images/rsh_command.png')
+            self.listWidget.setTitle('Move RSH')
+            self.listWidget.setDescription('Rotation: ' + str(self.parameters['rot']) +
+                                               '   Stretch: ' + str(self.parameters['str']) +
+                                               '   Height: '  + str(self.parameters['hgt']) +
+                                               '   Relative: ' + str(self.parameters['rel']))
             return self.listWidget
 
-    def runCommand(self):
-        pass
+    def run(self, robot):
+        robot.moveTo(rotation=self.parameters['rot'],
+                     stretch=self.parameters['str'],
+                     height=self.parameters['hgt'],
+                     relative=self.parameters['rel'],
+                     waitForRobot=True)
+
+
+
+
+
+
+
+
