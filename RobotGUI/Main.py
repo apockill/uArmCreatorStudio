@@ -188,19 +188,12 @@ class DashboardView(QtGui.QWidget):
     def __init__(self, getFrameFunction):
         super(DashboardView, self).__init__()
 
-
-
         #UI Globals setup
-        self.commandList    = Commands.CommandList()
-        self.eventList      = Commands.EventList()
-        self.addCommandBtn  = QtGui.QPushButton("Add Command")
-        self.addEventBtn    = QtGui.QPushButton("Add Event")
+        self.controlPanel   = Commands.ControlPanel()
         self.cameraWidget   = CameraWidget(getFrameFunction)
 
         self.initUI()
 
-        self.addCommandBtn.clicked.connect(self.addCommand)
-        self.addEventBtn.clicked.connect(self.addEvent)
 
 
     def initUI(self):
@@ -212,32 +205,13 @@ class DashboardView(QtGui.QWidget):
         mainVLayout = QtGui.QVBoxLayout()
         mainVLayout.addLayout(mainHLayout)
 
-        #Create event list
-        eventVLayout = QtGui.QVBoxLayout()
-        eventVLayout.addWidget(self.addEventBtn)
-        eventVLayout.addWidget(self.eventList)
-
-        #Create command list (LEFT)
-        commandVLayout = QtGui.QVBoxLayout()
-        commandVLayout.addWidget(self.addCommandBtn)
-        commandVLayout.addWidget(self.commandList)
-
-        mainHLayout.addLayout(eventVLayout)
-        mainHLayout.addLayout(commandVLayout)          #Add  commandList with "Create command" button on top (LEFT)
-       # mainHLayout.addStretch(1)                   #Put a space between control list and camera view
+        mainHLayout.addWidget(self.controlPanel)
+        mainHLayout.addStretch(1)                   #Put a space between control list and camera view
         mainHLayout.addWidget(self.cameraWidget)    #Create Camera view (RIGHT)
 
         #mainHLayout.addLayout(listVLayout)
         self.setLayout(mainVLayout)
 
-
-    def addCommand(self):
-        #For controlling the commandList
-        #Eventually, this will open a Menu window that will offer various types of commands that can be created
-        self.commandList.addCommand(Commands.MoveXYZCommand)
-
-    def addEvent(self):
-        self.eventList.promptUser()
 
 ########## MAIN WINDOW ##########
 class MainWindow(QtGui.QMainWindow):
@@ -253,7 +227,7 @@ class MainWindow(QtGui.QMainWindow):
         #Set Global UI Variables
         self.centralWidget   = QtGui.QStackedWidget()
         self.dashboardView   = DashboardView(self.vStream.getPixFrame)
-        self.eventList       = self.dashboardView.eventList
+        self.controlPanel    = self.dashboardView.controlPanel
         self.settingsView    = ScanView()
         self.scriptToggleBtn = QtGui.QAction(QtGui.QIcon(Icons.run_script),   'Run/Pause the command script (Ctrl+R)', self)
         self.videoToggleBtn  = QtGui.QAction(QtGui.QIcon(Icons.play_video),    'Play/Pause the video stream (Ctrl+P)', self)
@@ -317,8 +291,6 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowIcon(QtGui.QIcon(Icons.taskbar))
         self.show()
 
-    # def keyPressEvent(self, event):
-    #     self.keyPressed = event.key()
 
     def setVideo(self, state):
         #State can be play, pause, or simply "toggle"
@@ -347,16 +319,12 @@ class MainWindow(QtGui.QMainWindow):
         #Run/pause the main script
         print "MainWindow.scriptToggle(): Toggling script!"
 
-        if self.eventList.mainThread is None:
-            self.eventList.startThread(self, self.robot)
-            self.scriptToggleBtn.setIcon(QtGui.QIcon('Images/'))
-        else:
-            self.eventList.endThread()
 
     def openSettingsView(self):
         #Pause video so that camera scanning doesn't cause a crash
         self.setVideo("pause")
         self.centralWidget.setCurrentWidget(self.settingsView)
+
     def closeSettingsView(self, buttonClicked):
         print "MainWindow.closeSettingsView(): Closing settings from button: ", buttonClicked
 
@@ -388,6 +356,7 @@ class MainWindow(QtGui.QMainWindow):
         #Go back to dashboard
         self.centralWidget.setCurrentWidget(self.dashboardView)
 
+
     def save(self, promptSave):
         print "MainWindow.save(): Saving project"
 
@@ -398,7 +367,7 @@ class MainWindow(QtGui.QMainWindow):
             self.fileName = filename
 
         #Update the save file
-        saveData = self.commandList.getSaveData()
+        saveData = self.controlPanel.getSaveData()
 
         pickle.dump(saveData, open(self.fileName, "wb"))
 
@@ -413,13 +382,14 @@ class MainWindow(QtGui.QMainWindow):
         commandData = pickle.load( open( filename, "rb" ))
 
         self.fileName = filename
-        self.dashboardView.commandList.loadData(commandData)
+        self.dashboardView.controlPanel.loadData(commandData)
 
         self.setWindowTitle('uArm Creator Dashboard      ' + self.fileName)
 
+
     def closeEvent(self, event):
         self.vStream.endThread()
-        self.eventList.endThread()
+        self.controlPanel.close()
 
 
 

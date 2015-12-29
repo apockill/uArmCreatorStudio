@@ -1,12 +1,57 @@
-test = {"lol": 3, "kek": 4, "haha": '5.012309128309182039'}
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
-z = [x for x in test.itervalues()]
+"""
+ZetCode PyQt4 tutorial
 
-print any((type(x) == str) for x in test.itervalues())
+This program shows a confirmation
+message box when we click on the close
+button of the application window.
 
-print z
-for x in test.itervalues():
-    print x
+author: Jan Bodnar
+website: zetcode.com
+last edited: October 2011
+"""
 
-if 0 in test.values():
-    print "kek"
+import sys
+from PyQt4 import QtGui
+
+
+class Example(QtGui.QWidget):
+
+    def __init__(self):
+        super(Example, self).__init__()
+
+        self.initUI()
+
+
+    def initUI(self):
+
+        self.setGeometry(300, 300, 250, 150)
+        self.setWindowTitle('Message box')
+        self.show()
+
+
+    def closeEvent(self, event):
+
+        reply ="lel"
+        QtGui.QMessageBox.question(self, 'Message', "Error m'lady", QtGui.QMessageBox.Ok)
+
+        print reply
+        if reply == QtGui.QMessageBox.Yes:
+            event.accept()
+            print "accepted"
+        else:
+            event.ignore()
+            print "ignored"
+
+
+def main():
+
+    app = QtGui.QApplication(sys.argv)
+    ex = Example()
+    sys.exit(app.exec_())
+
+
+if __name__ == '__main__':
+    main()

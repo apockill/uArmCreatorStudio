@@ -4,23 +4,120 @@ from time import sleep
 import Icons
 import cPickle as pickle
 
+
+
+class ControlPanel(QtGui.QWidget):
+    def __init__(self):
+        super(ControlPanel, self).__init__()
+        self.eventList     = EventList(self.refresh)
+
+        self.addEventBtn   = QtGui.QPushButton()
+        self.addCommandBtn = QtGui.QPushButton()
+
+        self.commandListStack  = QtGui.QStackedWidget()   #Until something is selected first, there will be no commandListStack
+
+        self.initUI()
+
+        self.addEventBtn.clicked.connect(self.addEvent)
+        self.addCommandBtn.clicked.connect(self.addCommand)
+
+    def initUI(self):
+        self.addCommandBtn.setText("Add Command")
+        self.addEventBtn.setText("Add Event")
+
+        eventVLayout   = QtGui.QVBoxLayout()
+        eventVLayout.addWidget(self.addEventBtn)
+        eventVLayout.addWidget(self.eventList)
+
+
+
+        commandVLayout = QtGui.QVBoxLayout()
+        commandVLayout.addWidget(self.addCommandBtn)
+        commandVLayout.addWidget(self.commandListStack)
+        self.commandListStack.addWidget(CommandList())  #Add a placeholder commandList
+
+        mainHLayout   = QtGui.QHBoxLayout()
+        mainHLayout.addLayout(eventVLayout)
+        mainHLayout.addLayout(commandVLayout)
+
+        self.setLayout(mainHLayout)
+        self.show()
+
+    def refresh(self):
+        print "ControlPanel.refresh(): Refreshing widget!"
+
+        selectedEvent = self.eventList.getSelectedEvent()
+        if selectedEvent is None:
+            print "ControlPanel.refresh(): ERROR: no event selected!"
+            return
+
+        # for c in range(0, self.commandListStack.count()):
+        #     print self.commandListStack.widget(c).commands
+
+        #Add command widget if it does not exist, or ignore it if it already does
+        self.commandListStack.addWidget(selectedEvent.commandList)
+
+        #Display the currently selected event
+        self.commandListStack.setCurrentWidget(selectedEvent.commandList)
+
+
+    def addCommand(self):
+        selectedEvent = self.eventList.getSelectedEvent()
+        if selectedEvent is None:
+            #This occurs when there are no events on the table. Display warning to user in this case.
+            print "ControlPanel.addCommand():\t ERROR: Selected event does not have a commandList! Displaying error"
+            QtGui.QMessageBox.question(self, 'Error', 'You need to select an event or add '
+                                       'an event before you can add commands', QtGui.QMessageBox.Ok)
+            return
+
+        selectedEvent.commandList.addCommand(MoveXYZCommand)
+
+    def addEvent(self):
+        self.eventList.promptUser()
+
+
+    def getSaveData(self):
+        pass
+
+    def loadData(self, data):
+        pass
+
+
+    def closeEvent(self, event):
+        self.eventList.endThread()
+
+
 ########## EVENT LIST ##########
 class EventList(QtGui.QListWidget):
-    def __init__(self):
+    def __init__(self, refresh):
         super(EventList, self).__init__()
         #GLOBALS
+        self.refresh = refresh
         self.exitApp = False
         self.mainThread = None
         self.events = {}  #A hash map of the current events in the list. The listWidget leads to the event object
 
-        self.initUI()
+        self.itemSelectionChanged.connect(self.refresh)
 
+        self.initUI()
 
     def initUI(self):
         self.setFixedWidth(200)
         # self.setMaximumWidth(600)
         # self.setMinimumWidth(250)
 
+
+    def getSelectedEvent(self):
+        selected = self.selectedItems()
+
+        #Error check
+        if len(selected) == 0 or len(selected) > 1:
+            print "EventList.getSelected(): ERROR: ", len(selected), "events selected"
+            return None
+        selected = selected[0]
+
+        #Get the corresponding event
+        return self.events[selected]
 
     def promptUser(self):
         eventPrompt = EventWindow()
@@ -31,14 +128,16 @@ class EventList(QtGui.QListWidget):
 
     def addEvent(self, eventType):
         #Check if the event being added already exists in the self.events dictionary
-        if any((type(x) == eventType) for x in self.events.itervalues()):
+        if any((isinstance(x, eventType)) for x in self.events.itervalues()):
             print "EventList.addEvent():\t Event already exists, disregarding user input."
             return
 
-        # #Create hte list widget to visualize the event
-        newEvent = eventType()
-        eventWidget = newEvent.getWidget()
 
+        #Create the widget and list item to visualize the event
+        newEvent = eventType()
+        newEvent.commandList = CommandList()
+
+        eventWidget = newEvent.getWidget()
         listWidgetItem = QtGui.QListWidgetItem(self)
         listWidgetItem.setSizeHint(eventWidget.sizeHint())   #Widget will not appear without this line
         self.addItem(listWidgetItem)
@@ -49,6 +148,8 @@ class EventList(QtGui.QListWidget):
         self.events[listWidgetItem] = newEvent
 
 
+        self.setCurrentRow(self.count() - 1)  #Select the newly added event
+        self.refresh()                        #Call for a refresh of the ControlPanel so it shows the commandList
 
 
     def startThread(self, mainWindow, robot):
@@ -70,6 +171,9 @@ class EventList(QtGui.QListWidget):
         while not self.exitApp:
             print "running thread still"
             sleep(1)
+
+    def updateCommands(self):
+        pass
 
 class EventWidget(QtGui.QWidget):
     def __init__(self, parent = None):
@@ -116,17 +220,11 @@ class EventWindow(QtGui.QDialog):
         self.initUI()
 
     def initUI(self):
-
-
-
         self.initButtons()
         self.initButtonMenus()
 
-
-
         #Create grid layout
         grid = QtGui.QGridLayout()
-        #grid.setSpacing(10)
 
         grid.addWidget(      self.initBtn, 0, 0, QtCore.Qt.AlignLeft)
         grid.addWidget( self.keyboardBtn, 0, 1, QtCore.Qt.AlignLeft)
@@ -182,8 +280,9 @@ class EventWindow(QtGui.QDialog):
         self.intersectBtn .setIcon(QtGui.QIcon(Icons.intersect_event))
         self.cancelBtn    .setIcon(QtGui.QIcon(Icons.cancel))
 
+        #CONNECT BUTTONS THAT DON'T HAVE MENUS
         self.initBtn      .clicked.connect(lambda: self.btnClicked(InitEvent))
-        self.stepBtn      .clicked.connect(lambda: self.btnClicked('Step'))
+        self.stepBtn      .clicked.connect(lambda: self.btnClicked(StepEvent))
         self.cancelBtn    .clicked.connect(self.cancelClicked)
 
     def initButtonMenus(self):
@@ -252,6 +351,7 @@ class EventWindow(QtGui.QDialog):
 
     def setIcon(self, icon):
         self.icon.setPixmap(QtGui.QPixmap(icon))
+
 
 
 
@@ -326,7 +426,6 @@ class CommandList(QtGui.QListWidget):
                 del self.commands[item]
                 self.takeItem(self.row(item))
 
-
     def dropEvent(self, event):
         event.setDropAction(QtCore.Qt.MoveAction)
         super(CommandList, self).dropEvent(event)
@@ -360,13 +459,6 @@ class CommandList(QtGui.QListWidget):
         #Fill the list with new data
         for index, parameters in enumerate(data):
             self.addCommand(parameters["type"], parameters=parameters)
-
-
-    def runScript(self, robot):
-        for index in xrange(self.count()):
-            item = self.item(index)
-            command = self.commands[item]
-            command.run(robot)
 
 class CommandWidget(QtGui.QWidget):
     def __init__(self, parent = None):
@@ -407,9 +499,55 @@ class CommandWidget(QtGui.QWidget):
     def setIcon(self, icon):
         self.icon.setPixmap(QtGui.QPixmap(icon))
 
-class CommandWindow(QtGui.QDialog):
+
+
+
+########## EVENTS ##########
+class Event():
     def __init__(self):
-        super(CommandWindow, self).__init__()
+        self.commandList = None
+
+class InitEvent(Event):
+    def __init__(self):
+        Event.__init__(self)
+        self.hasBeenRun = False
+
+    def getWidget(self):
+        listWidget = EventWidget()
+        listWidget.setIcon(Icons.creation_event)
+        listWidget.setTitle('Initialization')
+
+        return listWidget
+
+    def isActive(self):
+        #Returns true or false if this event should be activated
+
+        if self.hasBeenRun:
+            return False
+        else:
+            self.hasBeenRun = True
+            return True
+
+class StepEvent(Event):
+    def __init__(self):
+        Event.__init__(self)
+
+    def getWidget(self):
+        listWidget = EventWidget()
+        listWidget.setIcon(Icons.step_event)
+        listWidget.setTitle('Step')
+
+        return listWidget
+
+    def isActive(self):
+        #Since this is a "step" event, it will run each time the events are checked
+        return True
+
+
+########## COMMANDS ##########
+class Command(QtGui.QDialog):
+    def __init__(self):
+        super(Command, self).__init__()
         #self.parameters = {}  #Will be filled with parameters for the particular command
         self.accepted    = False
         self.mainVLayout = QtGui.QVBoxLayout()
@@ -464,37 +602,11 @@ class CommandWindow(QtGui.QDialog):
         else:
             print 'CommandWindow.openView(): User Canceled.'
 
-
-
-########## EVENTS ##########
-class InitEvent():
-    def __init__(self):
-        self.hasBeenRun = False
-
-    def getWidget(self):
-        listWidget = EventWidget()
-        listWidget.setIcon(Icons.creation_event)
-        listWidget.setTitle('Initialization')
-
-        return listWidget
-
-    def isActive(self):
-        #Returns true or false if this event should be activated
-
-        if self.hasBeenRun:
-            return False
-        else:
-            self.hasBeenRun = True
-            return True
-
-
-
-########## COMMANDS ##########
-class MoveXYZCommand(CommandWindow):
+class MoveXYZCommand(Command):
     def __init__(self, **kwargs):
         self.title       = "Move XYZ"
 
-        CommandWindow.__init__(self)
+        Command.__init__(self)
 
         #Set default parameters that will show up on the window
         self.parameters = kwargs.get("parameters",
