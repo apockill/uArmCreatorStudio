@@ -1,13 +1,12 @@
-# Save a dictionary into a pickle file.
-import pickle
+test = {"lol": 3, "kek": 4, "haha": '5.012309128309182039'}
 
-favorite_color = { "lion": "yellow", "kitty": "red" }
+z = [x for x in test.itervalues()]
 
-pickle.dump( favorite_color, open( "save.p", "wb" ) )
+print any((type(x) == str) for x in test.itervalues())
 
+print z
+for x in test.itervalues():
+    print x
 
-
-# Load the dictionary back from the pickle file.
-
-favorite_color = pickle.load( open( "save.p", "rb" ) )
-# favorite_color is now { "lion": "yellow", "kitty": "red" }
+if 0 in test.values():
+    print "kek"

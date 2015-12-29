@@ -21,7 +21,7 @@ class Example(QtGui.QMainWindow):
     
     def __init__(self):
         super(Example, self).__init__()
-        
+
         self.initUI()
         
         

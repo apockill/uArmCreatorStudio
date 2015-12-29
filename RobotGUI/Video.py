@@ -9,13 +9,10 @@ def getConnectedCameras():
     cameraList = []
 
     for i in range(0, tries):
-        print "getting ",i
         testCap = cv2.VideoCapture(i)
-        print "got ",i
-
 
         if testCap.isOpened():
-            print "releasing ", i
+
             cameraList.append(i)
             testCap.release()
 
@@ -84,7 +81,7 @@ class VideoStream:
 
     def startThread(self):
         if self.mainThread is None:
-            self.mainThread = Thread(target = self.main)
+            self.mainThread = Thread(target=self.main)
             self.mainThread.start()
         else:
             print "VideoStream.startThread(): ERROR: Tried to create mainThread, but mainThread already existed."

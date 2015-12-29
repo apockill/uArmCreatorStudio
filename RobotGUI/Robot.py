@@ -1,6 +1,6 @@
 import serial
 import serial.tools.list_ports
-from time import sleep
+from UArmForPython.uarm_python import Uarm
 
 def getConnectedRobots():
     #FIND THE ROBOTS ARDUINO PORT AND CREATE ser1 TO CONNECT TO IT
@@ -12,17 +12,22 @@ def getConnectedRobots():
     return ports
 
 class Robot():
+    """
+    X:
+    Y:
+    Z: Ground level is at 6.5cm
+    """
     def __init__(self):
-        self.pos = {'rotation': 0.0,
-                    'stretch':  0.0,
-                    'height':   0.0,
-                    'wrist':    0.0,
-                    'grabber':  0.0,
-                    'touch':      0}
-        self.serial = None
+        self.pos = {'x':       0.0,
+                    'y':       0.0,
+                    'z':       0.0,
+                    'wrist':   0.0,
+                    'grabber': 0.0,
+                    'touch':     0}
+        self.uArm = None
 
     def moveTo(self, **kwargs):
-        relative = kwargs.get('relative', False)
+        relative = kwargs.get('relative',     False)
         waitFor  = kwargs.get('waitForRobot', False)  #If true, waitForRobot() will be run at the end of the function
 
         #HANDLE ANY OTHER COMMANDS, INCLUDING POLAR COMMANDS
@@ -34,31 +39,42 @@ class Robot():
                     self.pos[name] += value
                 else:
                     self.pos[name] = value
-        self.sendPos()
 
-        if waitFor: self.waitForRobot()
+
+        success = self.sendPos()
+
+        if waitFor and success: self.waitForRobot()
+
+    def setPos(self, **kwargs):
+        relative = kwargs.get('relative',     False)
+
+        for name, value in kwargs.items():  #Cycles through any variable that might have been in the kwargs. This is any position command!
+            if name in self.pos:  #If it is a position statement.
+                if self.pos[name] is "": continue
+                if relative:
+                    self.pos[name] += value
+                else:
+                    self.pos[name] = value
 
     def sendPos(self):
         #Sends all positional data in self.pos to the robot
 
-        if self.serial is None:
-            print "Robot.sendPos() ERROR: Tried sending command while Serial is None"
-            return
+        if self.uArm is None:
+            print "Robot.sendPos() ERROR: Tried sending command while uArm is None"
+            return False
+
+        self.uArm.moveToKw(x=self.pos['x'],
+                           y=self.pos['y'],
+                           z=self.pos['z'])
+        return True
 
 
-        self.serial.write('%s:%s' % ('r', round(self.pos['rotation'], 2)))
-        self.serial.write('%s:%s' % ('s', round(self.pos[ 'stretch'], 2)))
-        self.serial.write('%s:%s' % ('h', round(self.pos[  'height'], 2)))
-        self.serial.write('%s:%s' % ('w', round(self.pos[   'wrist'], 2)))
-
-
-        # except:
-        #     print "Robot.sendPos(): ERROR: Failed to send moveTo command to Robot!"
-
-    def setSerial(self, com):
+    def setuArm(self, com):
         #TODO: Impliment a handshake with the robot here
-        self.serial = serial.Serial(com, 9600, timeout=0)  #Create connection
+        self.uArm = Uarm(com)
 
     def waitForRobot(self):
         #Todo: add communication with robot
         sleep(.75)
+
+

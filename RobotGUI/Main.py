@@ -14,12 +14,15 @@ last edited: October 2011
 """
 
 import sys
+
 import cv2
 import pickle
 import Robot
 import Video
 import Commands
+import Icons
 from PyQt4 import QtGui, QtCore
+
 
 ########## WIDGETS ##########
 class CameraWidget(QtGui.QWidget):
@@ -189,49 +192,52 @@ class DashboardView(QtGui.QWidget):
 
         #UI Globals setup
         self.commandList    = Commands.CommandList()
+        self.eventList      = Commands.EventList()
         self.addCommandBtn  = QtGui.QPushButton("Add Command")
+        self.addEventBtn    = QtGui.QPushButton("Add Event")
         self.cameraWidget   = CameraWidget(getFrameFunction)
 
         self.initUI()
 
-        # for index, name, icon in [
-        #     ('No.1', 'Meyoko',  'icon.png'),
-        #     ('No.2', 'Nyaruko', 'icon.png'),
-        #     ('No.3', 'Louise',  'icon.png')]:
-        #
-        #     self.commandList.addCommand(index, name)
+        self.addCommandBtn.clicked.connect(self.addCommand)
+        self.addEventBtn.clicked.connect(self.addEvent)
+
 
     def initUI(self):
 
+        self.cameraWidget.setMinimumWidth(640)
+        self.cameraWidget.setMinimumHeight(480)
         #Create main layout
         mainHLayout = QtGui.QHBoxLayout()
         mainVLayout = QtGui.QVBoxLayout()
         mainVLayout.addLayout(mainHLayout)
 
+        #Create event list
+        eventVLayout = QtGui.QVBoxLayout()
+        eventVLayout.addWidget(self.addEventBtn)
+        eventVLayout.addWidget(self.eventList)
 
         #Create command list (LEFT)
-        listVLayout = QtGui.QVBoxLayout()
-        listVLayout.addWidget(self.addCommandBtn)
-        listVLayout.addWidget(self.commandList)
-        mainHLayout.addLayout(listVLayout)
+        commandVLayout = QtGui.QVBoxLayout()
+        commandVLayout.addWidget(self.addCommandBtn)
+        commandVLayout.addWidget(self.commandList)
 
+        mainHLayout.addLayout(eventVLayout)
+        mainHLayout.addLayout(commandVLayout)          #Add  commandList with "Create command" button on top (LEFT)
+       # mainHLayout.addStretch(1)                   #Put a space between control list and camera view
+        mainHLayout.addWidget(self.cameraWidget)    #Create Camera view (RIGHT)
 
-        #Put a space between control list and camera view
-        mainHLayout.addStretch(1)
-
-
-        #Create Camera view (RIGHT)
-        mainHLayout.addWidget(self.cameraWidget)
-
+        #mainHLayout.addLayout(listVLayout)
         self.setLayout(mainVLayout)
-        self.addCommandBtn.clicked.connect(self.addCommand)
+
 
     def addCommand(self):
         #For controlling the commandList
         #Eventually, this will open a Menu window that will offer various types of commands that can be created
-        self.commandList.addCommand(Commands.MoveRSHCommand)
+        self.commandList.addCommand(Commands.MoveXYZCommand)
 
-
+    def addEvent(self):
+        self.eventList.promptUser()
 
 ########## MAIN WINDOW ##########
 class MainWindow(QtGui.QMainWindow):
@@ -239,42 +245,59 @@ class MainWindow(QtGui.QMainWindow):
         super(MainWindow, self).__init__()
 
         #Set Global variables
-        self.settings = {"robotID": None, "cameraID": 0}
+        self.fileName = None
+        self.settings = {"robotID": None, "cameraID": None}
         self.vStream  = Video.VideoStream(self.settings["cameraID"])
         self.robot    = Robot.Robot()
 
         #Set Global UI Variables
         self.centralWidget   = QtGui.QStackedWidget()
         self.dashboardView   = DashboardView(self.vStream.getPixFrame)
+        self.eventList       = self.dashboardView.eventList
         self.settingsView    = ScanView()
-        self.scriptToggleBtn = QtGui.QAction(QtGui.QIcon('Images/run_script.png'),   'Run/Pause the command script (Ctrl+R)', self)
-        self.videoToggleBtn  = QtGui.QAction(QtGui.QIcon('Images/play_video.png'),    'Play/Pause the video stream (Ctrl+P)', self)
-        self.settingsBtn     = QtGui.QAction(QtGui.QIcon(  'Images/settings.png'), 'Open Camera and Robot settings (Ctrl+T)', self)
+        self.scriptToggleBtn = QtGui.QAction(QtGui.QIcon(Icons.run_script),   'Run/Pause the command script (Ctrl+R)', self)
+        self.videoToggleBtn  = QtGui.QAction(QtGui.QIcon(Icons.play_video),    'Play/Pause the video stream (Ctrl+P)', self)
+        self.settingsBtn     = QtGui.QAction(QtGui.QIcon(Icons.settings), 'Open Camera and Robot settings (Ctrl+T)', self)
 
-
-        #Set up buttons
-        self.settingsView.applyBtn.clicked.connect( lambda: self.closeSettingsView("Apply"))
-        self.settingsView.cancelBtn.clicked.connect(lambda: self.closeSettingsView("Cancel"))
-        self.scriptToggleBtn.triggered.connect(     self.scriptToggle)
-        self.videoToggleBtn.triggered.connect(      lambda: self.setVideo("toggle"))
-        self.settingsBtn.triggered.connect(         self.openSettingsView)
 
         self.initUI()
 
         self.setVideo("play")  #Play video
 
     def initUI(self):
+        #Create Menu
+        menuBar      = self.menuBar()
+        fileMenu     = menuBar.addMenu('File')
+        saveAction   = QtGui.QAction(QtGui.QIcon(Icons.save_file), "Save Task", self)
+        saveAsAction = QtGui.QAction(QtGui.QIcon(Icons.save_file), "Save Task As", self)
+        loadAction   = QtGui.QAction(QtGui.QIcon(Icons.load_file), "Load Task", self)
+
+        saveAction.triggered.connect(self.save)
+        saveAsAction.triggered.connect(lambda: self.save(True))
+        loadAction.triggered.connect(self.load)
+
+        fileMenu.addAction(saveAction)
+        fileMenu.addAction(saveAsAction)
+        fileMenu.addAction(loadAction)
+        menuBar.addMenu(fileMenu)
+
+
+
         #Create toolbar
         toolbar = self.addToolBar("MainToolbar")
-            #Run/Pause script button
         self.scriptToggleBtn.setShortcut('Ctrl+R')
-        toolbar.addAction(self.scriptToggleBtn)
-            #Play/Pause video button
         self.videoToggleBtn.setShortcut('Ctrl+P')
-        toolbar.addAction(self.videoToggleBtn)
-            #Settings button
         self.settingsBtn.setShortcut('Ctrl+S')
+
+        self.scriptToggleBtn.triggered.connect(self.scriptToggle)
+        self.videoToggleBtn.triggered.connect(lambda: self.setVideo("toggle"))
+        self.settingsBtn.triggered.connect(self.openSettingsView)
+
+        toolbar.addAction(self.scriptToggleBtn)
+        toolbar.addAction(self.videoToggleBtn)
         toolbar.addAction(self.settingsBtn)
+
+
 
         #Create the main layout
         self.setCentralWidget(self.centralWidget)
@@ -282,9 +305,20 @@ class MainWindow(QtGui.QMainWindow):
         self.centralWidget.addWidget(self.settingsView)
 
 
+
+        #Connect Buttons
+        self.settingsView.applyBtn.clicked.connect( lambda: self.closeSettingsView("Apply"))
+        self.settingsView.cancelBtn.clicked.connect(lambda: self.closeSettingsView("Cancel"))
+
+
+
+        #Final touches
         self.setWindowTitle('uArm Creator Dashboard')
-        self.setWindowIcon(QtGui.QIcon('Images/taskbar_icon.png'))
+        self.setWindowIcon(QtGui.QIcon(Icons.taskbar))
         self.show()
+
+    # def keyPressEvent(self, event):
+    #     self.keyPressed = event.key()
 
     def setVideo(self, state):
         #State can be play, pause, or simply "toggle"
@@ -296,12 +330,12 @@ class MainWindow(QtGui.QMainWindow):
         if state == "play":
             self.dashboardView.cameraWidget.play()
             self.vStream.setPaused(False)
-            self.videoToggleBtn.setIcon(QtGui.QIcon("Images/pause_video.png"))
+            self.videoToggleBtn.setIcon(QtGui.QIcon(Icons.pause_video))
 
         if state == "pause":
             self.dashboardView.cameraWidget.pause()
             self.vStream.setPaused(True)
-            self.videoToggleBtn.setIcon(QtGui.QIcon("Images/play_video.png"))
+            self.videoToggleBtn.setIcon(QtGui.QIcon(Icons.play_video))
 
         if state == "toggle":
             if self.vStream.paused:
@@ -312,9 +346,12 @@ class MainWindow(QtGui.QMainWindow):
     def scriptToggle(self):
         #Run/pause the main script
         print "MainWindow.scriptToggle(): Toggling script!"
-        self.dashboardView.commandList.saveList("save.p")
-        self.dashboardView.commandList.loadList("save.p")
-        #self.dashboardView.commandList.runScript(self.robot)
+
+        if self.eventList.mainThread is None:
+            self.eventList.startThread(self, self.robot)
+            self.scriptToggleBtn.setIcon(QtGui.QIcon('Images/'))
+        else:
+            self.eventList.endThread()
 
     def openSettingsView(self):
         #Pause video so that camera scanning doesn't cause a crash
@@ -322,28 +359,67 @@ class MainWindow(QtGui.QMainWindow):
         self.centralWidget.setCurrentWidget(self.settingsView)
     def closeSettingsView(self, buttonClicked):
         print "MainWindow.closeSettingsView(): Closing settings from button: ", buttonClicked
+
+        isNew = lambda old, new: old is not None and not old == new
+
         if buttonClicked == "Apply":
             #Apply settings
             newSettings = self.settingsView.getSettings()
 
-            if newSettings["cameraID"] is not None and not newSettings["cameraID"] == self.settings["cameraID"]:
+            if isNew(newSettings["cameraID"], self.settings["cameraID"]):  #
                 print "Main.closeSettingsView()\t Changing cameraID from ", \
                       self.settings["cameraID"], "to", newSettings["cameraID"]
+
                 self.settings["cameraID"] = newSettings["cameraID"]
                 self.vStream.setNewCamera(self.settings["cameraID"])
 
 
-            if newSettings["robotID"] is not None:
+            if isNew(newSettings["robotID"], self.settings["robotID"]):
+                print "Main.closeSettingsView()\t Changing robotID from ", \
+                      self.settings["robotID"], "to", newSettings["robotID"]
+
                 self.settings["robotID"] = newSettings["robotID"]
-                self.robot.setSerial(self.settings["robotID"])
+                self.robot.setuArm(self.settings["robotID"])
 
         if buttonClicked == "Cancel":
             #Don't apply settings
             pass
+
+        #Go back to dashboard
         self.centralWidget.setCurrentWidget(self.dashboardView)
+
+    def save(self, promptSave):
+        print "MainWindow.save(): Saving project"
+
+        #If there is no filename, ask for one
+        if promptSave or self.fileName is None:
+            filename = QtGui.QFileDialog.getSaveFileName(self, "Save Task", "MyTask", "*.task")
+            if filename == "": return  #If user hit cancel
+            self.fileName = filename
+
+        #Update the save file
+        saveData = self.commandList.getSaveData()
+
+        pickle.dump(saveData, open(self.fileName, "wb"))
+
+        self.setWindowTitle('uArm Creator Dashboard       ' + self.fileName)
+
+    def load(self):
+        print "MainWindow.save(): Loading project"
+
+        filename = QtGui.QFileDialog.getOpenFileName(self, "Load Task", "", "*.task")
+        if filename == "": return  #If user hit cancel
+
+        commandData = pickle.load( open( filename, "rb" ))
+
+        self.fileName = filename
+        self.dashboardView.commandList.loadData(commandData)
+
+        self.setWindowTitle('uArm Creator Dashboard      ' + self.fileName)
 
     def closeEvent(self, event):
         self.vStream.endThread()
+        self.eventList.endThread()
 
 
 

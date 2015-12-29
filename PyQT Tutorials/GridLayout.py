@@ -27,7 +27,6 @@ class Example(QtGui.QWidget):
         self.initUI()
         
     def initUI(self):
-        
         title = QtGui.QLabel('Title')
         author = QtGui.QLabel('Author')
         review = QtGui.QLabel('Review')
