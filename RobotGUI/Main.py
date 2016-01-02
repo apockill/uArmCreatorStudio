@@ -1,77 +1,18 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""
-ZetCode PyQt4 tutorial 
-
-In this example, we position two push
-buttons in the bottom-right corner 
-of the window. 
-
-author: Jan Bodnar
-website: zetcode.com 
-last edited: October 2011
-"""
-
 import sys
 
-import cv2
 import pickle
 import Robot
 import Video
 import Commands
 import Icons
+import Global
 from PyQt4 import QtGui, QtCore
 
 
-########## WIDGETS ##########
-class CameraWidget(QtGui.QWidget):
-    def __init__(self, getFrameFunction):
-        """
-        :param cameraID:
-        :param getFrameFunction: A function that when called will return a frame
-                that can be put in a QLabel. In this case the frame will come from
-                a VideoStream object's getFrame function.
-        :return:
-        """
-        super(CameraWidget, self).__init__()
 
-        #Set up globals
-        self.getFrame = getFrameFunction
-        self.fps      = 24
-        self.paused   = True   #Keeps track of the video's state
-        self.timer    = None
-
-        #Initialize the UI
-        self.video_frame = QtGui.QLabel("ERROR: Could not open camera.")  #Temp label for the frame
-        self.vbox = QtGui.QVBoxLayout(self)
-        self.vbox.addWidget(self.video_frame)
-        self.setLayout(self.vbox)
-
-        #Get one frame and display it, and wait for play to be pressed
-        self.nextFrameSlot()
-
-
-    def play(self):
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.nextFrameSlot)
-        self.timer.start(1000./self.fps)
-
-        self.paused = False
-
-    def pause(self):
-        self.timer.stop()
-        self.paused = True
-
-    def nextFrameSlot(self):
-
-        pixFrame = self.getFrame()
-
-        #If a frame was returned correctly
-        if pixFrame is None:
-            return
-
-        self.video_frame.setPixmap(pixFrame)
 
 
 ########## VIEWS ##########
@@ -184,17 +125,16 @@ class ScanView(QtGui.QWidget):
     def getSettings(self):
         return self.settings
 
+
 class DashboardView(QtGui.QWidget):
     def __init__(self, getFrameFunction):
         super(DashboardView, self).__init__()
 
         #UI Globals setup
         self.controlPanel   = Commands.ControlPanel()
-        self.cameraWidget   = CameraWidget(getFrameFunction)
+        self.cameraWidget   = Video.CameraWidget(getFrameFunction)
 
         self.initUI()
-
-
 
     def initUI(self):
 
@@ -219,37 +159,47 @@ class MainWindow(QtGui.QMainWindow):
         super(MainWindow, self).__init__()
 
         #Set Global variables
-        self.fileName = None
-        self.settings = {"robotID": None, "cameraID": None}
-        self.vStream  = Video.VideoStream(self.settings["cameraID"])
-        self.robot    = Robot.Robot()
+        Global.init()
+        self.fileName  = None
+        self.settings  = {"robotID": None, "cameraID": None, "lastOpenedFile": None}
+        Global.vStream = Video.VideoStream(None)
+        Global.robot   = Robot.Robot(None)
+
+
 
         #Set Global UI Variables
         self.centralWidget   = QtGui.QStackedWidget()
-        self.dashboardView   = DashboardView(self.vStream.getPixFrame)
+        self.dashboardView   = DashboardView(Global.vStream.getPixFrame)
         self.controlPanel    = self.dashboardView.controlPanel
         self.settingsView    = ScanView()
         self.scriptToggleBtn = QtGui.QAction(QtGui.QIcon(Icons.run_script),   'Run/Pause the command script (Ctrl+R)', self)
         self.videoToggleBtn  = QtGui.QAction(QtGui.QIcon(Icons.play_video),    'Play/Pause the video stream (Ctrl+P)', self)
         self.settingsBtn     = QtGui.QAction(QtGui.QIcon(Icons.settings), 'Open Camera and Robot settings (Ctrl+T)', self)
 
+        #Now that objects are specified, load all settings
+        self.loadSettings()
 
         self.initUI()
 
-        self.setVideo("play")  #Play video
+        #self.setVideo("play")  #Play video
+        if self.settings["lastOpenedFile"] is not None: self.loadTask(filename=self.settings["lastOpenedFile"])
 
     def initUI(self):
         #Create Menu
         menuBar      = self.menuBar()
         fileMenu     = menuBar.addMenu('File')
+
+        newAction    = QtGui.QAction( QtGui.QIcon(Icons.new_file), "New Task", self)
         saveAction   = QtGui.QAction(QtGui.QIcon(Icons.save_file), "Save Task", self)
         saveAsAction = QtGui.QAction(QtGui.QIcon(Icons.save_file), "Save Task As", self)
         loadAction   = QtGui.QAction(QtGui.QIcon(Icons.load_file), "Load Task", self)
 
-        saveAction.triggered.connect(self.save)
-        saveAsAction.triggered.connect(lambda: self.save(True))
-        loadAction.triggered.connect(self.load)
+        newAction.triggered.connect(self.newTask)
+        saveAction.triggered.connect(self.saveTask)
+        saveAsAction.triggered.connect(lambda: self.saveTask(True))
+        loadAction.triggered.connect(self.loadTask)
 
+        fileMenu.addAction(newAction)
         fileMenu.addAction(saveAction)
         fileMenu.addAction(saveAsAction)
         fileMenu.addAction(loadAction)
@@ -292,6 +242,40 @@ class MainWindow(QtGui.QMainWindow):
         self.show()
 
 
+    def setSettings(self, newSettings):
+        #Apply settings
+        isNew = lambda key: key in newSettings and newSettings[key] is not None and not self.settings[key] == newSettings[key]
+
+        if isNew("cameraID"):  #
+            print "Main.closeSettingsView()\t Changing cameraID from ", \
+                  self.settings["cameraID"], "to", newSettings["cameraID"]
+
+            self.settings["cameraID"] = newSettings["cameraID"]
+
+            success = Global.vStream.setNewCamera(self.settings["cameraID"])
+            if success:
+                self.setVideo("play")
+            else:
+                self.setVideo("pause")
+
+
+
+        if isNew("robotID"):
+            print "Main.closeSettingsView()\t Changing robotID from ", \
+                  self.settings["robotID"], "to", newSettings["robotID"]
+
+            self.settings["robotID"] = newSettings["robotID"]
+            Global.robot.setUArm(self.settings["robotID"])
+
+
+
+        if isNew("lastOpenedFile"):
+            print "Main.setSettings()\t Loading file ", str(newSettings["lastOpenedFile"])
+            self.settings["lastOpenedFile"] = newSettings["lastOpenedFile"]
+            self.loadTask(filename=self.settings["lastOpenedFile"])
+
+        self.saveSettings()  #Save settings to a config file
+
     def setVideo(self, state):
         #State can be play, pause, or simply "toggle"
         print "MainWindow.setVideo(): Setting video to state: ", state
@@ -300,17 +284,18 @@ class MainWindow(QtGui.QMainWindow):
 
 
         if state == "play":
+            print "Playing!"
             self.dashboardView.cameraWidget.play()
-            self.vStream.setPaused(False)
+            Global.vStream.setPaused(False)
             self.videoToggleBtn.setIcon(QtGui.QIcon(Icons.pause_video))
 
         if state == "pause":
             self.dashboardView.cameraWidget.pause()
-            self.vStream.setPaused(True)
+            Global.vStream.setPaused(True)
             self.videoToggleBtn.setIcon(QtGui.QIcon(Icons.play_video))
 
         if state == "toggle":
-            if self.vStream.paused:
+            if Global.vStream.paused:
                 self.setVideo("play")
             else:
                 self.setVideo("pause")
@@ -318,6 +303,13 @@ class MainWindow(QtGui.QMainWindow):
     def scriptToggle(self):
         #Run/pause the main script
         print "MainWindow.scriptToggle(): Toggling script!"
+        if self.controlPanel.running:
+            self.controlPanel.endThread()
+            self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.run_script))
+        else:
+            self.controlPanel.startThread()
+            self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.pause_script))
+
 
 
     def openSettingsView(self):
@@ -326,38 +318,28 @@ class MainWindow(QtGui.QMainWindow):
         self.centralWidget.setCurrentWidget(self.settingsView)
 
     def closeSettingsView(self, buttonClicked):
+        print "lol"
         print "MainWindow.closeSettingsView(): Closing settings from button: ", buttonClicked
-
-        isNew = lambda old, new: old is not None and not old == new
+        newSettings = self.settingsView.getSettings()
 
         if buttonClicked == "Apply":
-            #Apply settings
-            newSettings = self.settingsView.getSettings()
-
-            if isNew(newSettings["cameraID"], self.settings["cameraID"]):  #
-                print "Main.closeSettingsView()\t Changing cameraID from ", \
-                      self.settings["cameraID"], "to", newSettings["cameraID"]
-
-                self.settings["cameraID"] = newSettings["cameraID"]
-                self.vStream.setNewCamera(self.settings["cameraID"])
-
-
-            if isNew(newSettings["robotID"], self.settings["robotID"]):
-                print "Main.closeSettingsView()\t Changing robotID from ", \
-                      self.settings["robotID"], "to", newSettings["robotID"]
-
-                self.settings["robotID"] = newSettings["robotID"]
-                self.robot.setuArm(self.settings["robotID"])
+            print 'Main.closeSettingsView(): "Apply" clicked, applying settings...'
+            self.setSettings(newSettings)
 
         if buttonClicked == "Cancel":
             #Don't apply settings
-            pass
+            print 'Main.closeSettingsView(): "Cancel" clicked, no settings applied.'
 
         #Go back to dashboard
         self.centralWidget.setCurrentWidget(self.dashboardView)
 
 
-    def save(self, promptSave):
+    def newTask(self):
+        self.dashboardView.controlPanel.loadData([])
+        self.fileName = None
+
+
+    def saveTask(self, promptSave):
         print "MainWindow.save(): Saving project"
 
         #If there is no filename, ask for one
@@ -368,35 +350,83 @@ class MainWindow(QtGui.QMainWindow):
 
         #Update the save file
         saveData = self.controlPanel.getSaveData()
-
+        print "MainWindow.save(): Saving: ", saveData
         pickle.dump(saveData, open(self.fileName, "wb"))
 
         self.setWindowTitle('uArm Creator Dashboard       ' + self.fileName)
 
-    def load(self):
-        print "MainWindow.save(): Loading project"
+        self.saveSettings()
 
-        filename = QtGui.QFileDialog.getOpenFileName(self, "Load Task", "", "*.task")
-        if filename == "": return  #If user hit cancel
+    def loadTask(self,  **kwargs):
 
-        commandData = pickle.load( open( filename, "rb" ))
+        filename = kwargs.get("filename", None)
 
+        if filename is None:  #If no filename was specified, prompt the user for where to save
+            filename = QtGui.QFileDialog.getOpenFileName(self, "Load Task", "", "*.task")
+            if filename == "": return  #If user hit cancel
+
+        commandData = pickle.load( open( filename, "rb"))
+        print "MainWindow.save(): Loading Project. SaveData: ", commandData
         self.fileName = filename
         self.dashboardView.controlPanel.loadData(commandData)
 
         self.setWindowTitle('uArm Creator Dashboard      ' + self.fileName)
 
+        self.saveSettings()
+
+    def saveSettings(self):
+        self.settings["lastOpenedFile"] = self.fileName
+        pickle.dump(self.settings, open("Settings.p", "wb"))
+
+    def loadSettings(self):
+        try:
+            newSettings = pickle.load(open( "Settings.p", "rb"))
+            print "MainWindow.loadSettings(): Loading settings: ", newSettings, "..."
+            self.setSettings(newSettings)
+            #return newSettings
+        except IOError:
+            print "MainWindow.loadSettings(): ERROR: No settings file detected. Using default values."
+            #return {"robotID": None, "cameraID": None, "lastOpenedFile": None}
+
 
     def closeEvent(self, event):
-        self.vStream.endThread()
+        Global.vStream.endThread()
         self.controlPanel.close()
 
 
+class Application(QtGui.QApplication):
+    """
+        I modified the QtGui.QApplication class slightly in order to intercept keypress events
+        and write them in the Global.keysPressed list
+    """
+    def __init__(self, args):
+      super(Application, self).__init__(args)
+
+    def notify(self, receiver, event):
+        #Intercept any events before they reach their object
+        if event.type() == QtCore.QEvent.Close:
+            print "Application.notify():\t Closing window! Event: ", event
+
+        #Add any keys that are pressed to Global.keysPressed
+        if event.type() == QtCore.QEvent.KeyPress:
+            if event.key() not in Global.keysPressed:
+                Global.keysPressed.append(event.key())
+
+        #Remove any keys that are released from Global.keysPressed
+        if event.type() == QtCore.QEvent.KeyRelease:
+            if event.key() in Global.keysPressed:
+                Global.keysPressed = filter(lambda x: x != event.key(), Global.keysPressed)
+
+        #Call Base Class Method to Continue Normal Event Processing
+        return super(Application, self).notify(receiver, event)
 
 if __name__ == '__main__':
-    app = QtGui.QApplication(sys.argv)
-    mainWindow = MainWindow()
-    mainWindow.show()
 
-    sys.exit(app.exec_())
+    app = Application(sys.argv)
+    mainWindow = MainWindow()
+    print "__main__():\t mainWindow class successfully initiated!"
+    mainWindow.show()
+    print "__main__():\t mainWindow successfully shown()"
+    app.exec_()  #TODO: MAY NEED TO REMOVE SYS.EXIT to fix some weird bugs..
+    print "__main__():\t Program successfully executed."
 

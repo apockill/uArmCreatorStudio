@@ -1,57 +1,49 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+#!/usr/bin/python ~/workspace/pyqt/memory/main.py
 
-"""
-ZetCode PyQt4 tutorial
+from PyQt4 import QtCore, QtGui
 
-This program shows a confirmation
-message box when we click on the close
-button of the application window.
+class SampleDialog(QtGui.QDialog):
+    def __init__(self, parent):
+        super(SampleDialog, self).__init__(parent)
+        self.setWindowTitle('Testing')
+        self.resize(200, 100)
 
-author: Jan Bodnar
-website: zetcode.com
-last edited: October 2011
-"""
+class MainWindow(QtGui.QMainWindow):
+    def __init__(self, parent = None):
+        super(MainWindow, self).__init__(parent)
+        
+        # create the menu
+        test_menu = self.menuBar().addMenu('Testing')
+        
+        # create the menu actions
+        exec_act  = test_menu.addAction('Exec Dialog')
+        show_act  = test_menu.addAction('Show Dialog')
+        count_act = test_menu.addAction('Show Count')
+        
+        # create the connections
+        exec_act.triggered.connect( self.execDialog )
+        show_act.triggered.connect( self.showDialog )
+        count_act.triggered.connect( self.showCount )
+    
+    def execDialog(self):
+        dlg = SampleDialog(self)
+        dlg.exec_()
+        
+    def showDialog(self):
+        dlg = SampleDialog(self)
+        dlg.show()
+    
+    def showCount(self):
+        count = len(self.findChildren(QtGui.QDialog))
+        QtGui.QMessageBox.information(self, 'Dialog Count', str(count))
 
-import sys
-from PyQt4 import QtGui
-
-
-class Example(QtGui.QWidget):
-
-    def __init__(self):
-        super(Example, self).__init__()
-
-        self.initUI()
-
-
-    def initUI(self):
-
-        self.setGeometry(300, 300, 250, 150)
-        self.setWindowTitle('Message box')
-        self.show()
-
-
-    def closeEvent(self, event):
-
-        reply ="lel"
-        QtGui.QMessageBox.question(self, 'Message', "Error m'lady", QtGui.QMessageBox.Ok)
-
-        print reply
-        if reply == QtGui.QMessageBox.Yes:
-            event.accept()
-            print "accepted"
-        else:
-            event.ignore()
-            print "ignored"
-
-
-def main():
-
-    app = QtGui.QApplication(sys.argv)
-    ex = Example()
-    sys.exit(app.exec_())
-
-
-if __name__ == '__main__':
-    main()
+if ( __name__ == '__main__' ):
+    app = None
+    if ( not app ):
+        app = QtGui.QApplication([])
+    
+    window = MainWindow()
+    window.show()
+    
+    if ( app ):
+        app.exec_()

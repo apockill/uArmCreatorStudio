@@ -9,6 +9,7 @@ img_file = "Images/"
 cancel          = img_file + "cancel.png"
 
 taskbar         = img_file + "taskbar"
+new_file        = img_file + "new_file.png"
 save_file       = img_file + "save_file.png"
 load_file       = img_file + "load_file.png"
 
@@ -24,3 +25,4 @@ intersect_event = img_file + "intersect_event.png"
 keyboard_event  = img_file + "keyboard_event.png"
 
 xyz_command    = img_file + "xyz_command.png"
+detach_command = img_file + "detach_command.png"

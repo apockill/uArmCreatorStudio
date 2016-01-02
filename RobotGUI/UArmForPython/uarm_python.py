@@ -31,14 +31,16 @@ class Uarm(object):
     g_interpol_val_arr = {}
     angle = {}
 
+
     attachStatus = 0
 
     def __init__(self, port):
         self.uarm = Arduino(port)
-        self.uarmDetach()
+        self.uarmAttach()
 
 
     def servoAttach(self, servo_number):
+        #print "attaching servo: ", servo_number
         if servo_number == 1:
             self.servo_base = self.uarm.get_pin('d:11:s')
         elif servo_number == 2:
@@ -52,6 +54,8 @@ class Uarm(object):
 
 
     def servoDetach(self, servo_number):
+        #print "detaching servo: ", servo_number
+
         if servo_number == 1:
             self.uarm.servoDetach(11)
         elif servo_number == 2:
@@ -69,7 +73,7 @@ class Uarm(object):
 
 
     def uarmAttach(self):
-
+        print "uArm.uarmAttach():\t ERROR: This function should never be run"
         curAngles = {}
 
         if self.uarm_status == 0:
@@ -83,9 +87,13 @@ class Uarm(object):
             time.sleep(0.1)
             self.writeAngle(curAngles[1], curAngles[2], curAngles[3], curAngles[4])
             self.uarm_status = 1
+        else:
+            print "Uarm.uarmAttach():\t ERROR: Tried attaching uarm when uarm_status was 1"
 
 
     def uarmDetach(self):
+        print "uArm.uarmDetach():\t ERROR: This function should never be run"
+
         n = 1
         while n < 5:
             self.servoDetach(n)
@@ -310,54 +318,57 @@ class Uarm(object):
         g_right_all = (1 - g_y_in * g_y_in - g_z_in * g_z_in - MATH_L43 * MATH_L43) / (2 * MATH_L43)
         g_sqrt_z_y = math.sqrt(g_z_in * g_z_in + g_y_in * g_y_in)
 
-        if x == 0:
-            # Calculate value of theta 1
-            g_theta_1 = 90;
-            # Calculate value of theta 3
-            if g_z_in == 0:
-                g_phi = 90
-            else:
-                g_phi = math.atan(-g_y_in / g_z_in) * MATH_TRANS
-            if g_phi > 0:
-                g_phi = g_phi - 180
-            g_theta_3 = math.asin(g_right_all / g_sqrt_z_y) * MATH_TRANS - g_phi
-
-            if g_theta_3 < 0:
-                g_theta_3 = 0
-            # Calculate value of theta 2
-            g_theta_2 = math.asin((z + MATH_L4 * math.sin(g_theta_3 / MATH_TRANS) - MATH_L1) / MATH_L3) * MATH_TRANS
-        else:
-            # Calculate value of theta 1
-            g_theta_1 = math.atan(y / x) * MATH_TRANS
-            if (y / x) > 0:
-                g_theta_1 = g_theta_1
-            if (y / x) < 0:
-                g_theta_1 = g_theta_1 + 180
-            if y == 0:
-                if x > 0:
-                    g_theta_1 = 180
+        try:
+            if x == 0:
+                # Calculate value of theta 1
+                g_theta_1 = 90;
+                # Calculate value of theta 3
+                if g_z_in == 0:
+                    g_phi = 90
                 else:
-                    g_theta_1 = 0
-            # Calculate value of theta 3
-            g_x_in = (-x / math.cos(g_theta_1 / MATH_TRANS) - MATH_L2) / MATH_L3;
-            if g_z_in == 0:
-                g_phi = 90
+                    g_phi = math.atan(-g_y_in / g_z_in) * MATH_TRANS
+                if g_phi > 0:
+                    g_phi = g_phi - 180
+                g_theta_3 = math.asin(g_right_all / g_sqrt_z_y) * MATH_TRANS - g_phi
+
+                if g_theta_3 < 0:
+                    g_theta_3 = 0
+                # Calculate value of theta 2
+                g_theta_2 = math.asin((z + MATH_L4 * math.sin(g_theta_3 / MATH_TRANS) - MATH_L1) / MATH_L3) * MATH_TRANS
             else:
-                g_phi = math.atan(-g_x_in / g_z_in) * MATH_TRANS
-            if g_phi > 0:
-                g_phi = g_phi - 180
+                # Calculate value of theta 1
+                g_theta_1 = math.atan(y / x) * MATH_TRANS
+                if (y / x) > 0:
+                    g_theta_1 = g_theta_1
+                if (y / x) < 0:
+                    g_theta_1 = g_theta_1 + 180
+                if y == 0:
+                    if x > 0:
+                        g_theta_1 = 180
+                    else:
+                        g_theta_1 = 0
+                # Calculate value of theta 3
+                g_x_in = (-x / math.cos(g_theta_1 / MATH_TRANS) - MATH_L2) / MATH_L3;
+                if g_z_in == 0:
+                    g_phi = 90
+                else:
+                    g_phi = math.atan(-g_x_in / g_z_in) * MATH_TRANS
+                if g_phi > 0:
+                    g_phi = g_phi - 180
 
-            g_sqrt_z_x = math.sqrt(g_z_in * g_z_in + g_x_in * g_x_in)
+                g_sqrt_z_x = math.sqrt(g_z_in * g_z_in + g_x_in * g_x_in)
 
-            g_right_all_2 = -1 * (g_z_in * g_z_in + g_x_in * g_x_in + MATH_L43 * MATH_L43 - 1) / (2 * MATH_L43)
-            g_theta_3 = math.asin(g_right_all_2 / g_sqrt_z_x) * MATH_TRANS
-            g_theta_3 = g_theta_3 - g_phi
+                g_right_all_2 = -1 * (g_z_in * g_z_in + g_x_in * g_x_in + MATH_L43 * MATH_L43 - 1) / (2 * MATH_L43)
+                g_theta_3 = math.asin(g_right_all_2 / g_sqrt_z_x) * MATH_TRANS
+                g_theta_3 = g_theta_3 - g_phi
 
-            if g_theta_3 < 0:
-                g_theta_3 = 0
-            # Calculate value of theta 2
-            g_theta_2 = math.asin(g_z_in + MATH_L43 * math.sin(abs(g_theta_3 / MATH_TRANS))) * MATH_TRANS
-
+                if g_theta_3 < 0:
+                    g_theta_3 = 0
+                # Calculate value of theta 2
+                g_theta_2 = math.asin(g_z_in + MATH_L43 * math.sin(abs(g_theta_3 / MATH_TRANS))) * MATH_TRANS
+        except Exception:
+            print "ERROR IN IVSKINE. Parameters:  x", x, "  y", y, "  z", z
+            raise
         g_theta_1 = abs(g_theta_1);
         g_theta_2 = abs(g_theta_2);
 
@@ -448,8 +459,7 @@ class Uarm(object):
         for n in range(0, 50):
             self.ivsKine(x_arr[n], y_arr[n], z_arr[n])
             self.writeAngle(self.angle[1], self.angle[2], self.angle[3], 0)
-            print 'Angle outputs %f %f %f' % (self.angle[1], self.angle[2], self.angle[3])
-            print 'Read angles %f %f %f' % (self.readAngle(1), self.readAngle(2), self.readAngle(3))
+
 
             time.sleep(0.04)
 
@@ -466,7 +476,6 @@ class Uarm(object):
 
         """
         if "x" in kwargs or "y" in kwargs or "z" in kwargs:
-            print "positional change detected"
             curXYZ = self.currentCoord()  #If a positional statement was changed, get current position
 
         x         = kwargs.get('x', curXYZ[1])
@@ -475,6 +484,7 @@ class Uarm(object):
         relative  = kwargs.get('relative', False)
         timeSpend = kwargs.get('timeSpend', .5)
 
+        print "relative?: ", relative
         if relative:
             self.moveToWithTime(x + curXYZ[1], y + curXYZ[2], z + curXYZ[3], timeSpend)
         else:

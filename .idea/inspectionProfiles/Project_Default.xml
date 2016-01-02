@@ -15,9 +15,19 @@
           <option value="E201" />
           <option value="E303" />
           <option value="E501" />
+          <option value="E127" />
         </list>
       </option>
     </inspection_tool>
     <inspection_tool class="PyPep8NamingInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <value>
+          <list size="1">
+            <item index="0" class="java.lang.String" itemvalue="RobotGUI.Global.keysPressed" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
   </profile>
 </component>

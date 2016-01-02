@@ -70,7 +70,7 @@ def resizeImages(dir_list, dir_name, width):
         wPercent = (width/float(imTemp.size[0]))
         height = int((float(imTemp.size[1]) * float(wPercent)))
         imTemp = imTemp.resize((width, height), Image.BILINEAR)
-        imTemp.save(os.path.join(dir_name, dir_list[i]))
+        imTemp.saveTask(os.path.join(dir_name, dir_list[i]))
 
 def stitchImages(base_img_rgb, images_array, round):
     if ( len(images_array) < 1 ):

@@ -1,0 +1,28 @@
+-Prompt user if they wish to save a file, after they changed something
+-Once the program is close to being done, prevent the user from running the script without a robot connected
+        -Make this a lst minute thing so that you can make sure no bugs crop up if the robot is disconnected mid-way
+-Program sometimes crashes when 'add command' is clicked
+
+
+
+
+Event Ideas:
+    Basic:
+        Alarms
+
+    Vision:
+        Motion detected (waving)
+
+    Other:
+        Robot tip is activated
+
+Command Ideas:
+    Basic:
+        Detach servos
+        Move XYZ
+        Stop all movement
+        Save position to variable
+
+    Vision:
+        Focus on object
+        Pick up object

@@ -1,0 +1,23 @@
+(dp0
+S'robotID'
+p1
+S'COM9'
+p2
+sS'lastOpenedFile'
+p3
+csip
+_unpickle_type
+p4
+(S'PyQt4.QtCore'
+p5
+S'QString'
+p6
+(VF:/Google Drive/Projects/Git Repositories/RobotGUIProgramming/RobotGUI/test.task
+p7
+tp8
+tp9
+Rp10
+sS'cameraID'
+p11
+I1
+s.

@@ -1,6 +1,7 @@
 import cv2
 import time
-from PyQt4 import QtGui
+import Global
+from PyQt4 import QtGui, QtCore
 from threading import Thread
 
 
@@ -28,7 +29,7 @@ class VideoStream:
         self.cap      = None
         self.fps      = 24.0
 
-        self.millis     = lambda: int(round(time.time() * 1000))  #Get current time in millis
+        self.millis     = lambda: int(round(time.time() * 1000))  #Create function that gets current time in millis
         self.mainThread = None
 
     def main(self):
@@ -109,8 +110,10 @@ class VideoStream:
 
         if not self.cap.isOpened():
             print "VideoStream.setNewCamera():\t ERROR: Camera not opened. cam ID: ", cameraID
+            return False
 
         self.setPaused(paused)  #Return to whatever state the camera was in before switching
+        return True
 
     def setFPS(self, fps):
         #Sets how often the main function grabs frames (Default: 24)
@@ -126,119 +129,51 @@ class VideoStream:
         return self.pixFrame
 
 
+########## WIDGETS ##########
+class CameraWidget(QtGui.QWidget):
+    def __init__(self, getFrameFunction):
+        """
+        :param cameraID:
+        :param getFrameFunction: A function that when called will return a frame
+                that can be put in a QLabel. In this case the frame will come from
+                a VideoStream object's getFrame function.
+        :return:
+        """
+        super(CameraWidget, self).__init__()
 
+        #Set up globals
+        self.getFrame = getFrameFunction
+        self.fps      = 24
+        self.paused   = True   #Keeps track of the video's state
+        self.timer    = None
 
-class Video:  #Handles basic video functions
+        #Initialize the UI
+        self.video_frame = QtGui.QLabel("ERROR: Could not open camera.")  #Temp label for the frame
+        self.vbox = QtGui.QVBoxLayout(self)
+        self.vbox.addWidget(self.video_frame)
+        self.setLayout(self.vbox)
 
-    def __init__(self, **kwargs):
-        recordFrames = kwargs.get('recordFrames', 2)
+        #Get one frame and display it, and wait for play to be pressed
+        self.nextFrameSlot()
 
-        print "Video.__init():\tSetting up video capture..."
-        self.cap = cv2.VideoCapture(1)
-        self.frame = None
-        self.previousFrames = []  #Useful for some object recognition purposes. Keeps only stock frames
-        self.windowFrame = {}  #Has the frames for every window saved. Example: {"Main": mainFrame, "Edged": edgedFrame} These are added in createNewWindow()
+    def play(self):
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.nextFrameSlot)
+        self.timer.start(1000./self.fps)
+
         self.paused = False
-        self.frameCount = 0  #This helps other functions test if there has been a new, processed frame yet. It counts up to 100 then stops
 
-    def createNewWindow(self, name, **kwargs):
-        """
-        Args:
-            name: the name of the window, in order to be accessed later.
-            kwargs: "frame" (decides which frame to put on the window. Can be used for screenshots, or video)
-                    "xPos"   The x position on the screen to create the window
-                    "yPos"  The y position on the screen to create the window
-        """
-        #SET UP VARIABLES
-        frameForWindow = kwargs.get("frame", self.frame)
-        if frameForWindow is None:
-            blankFrame = np.zeros((640, 480, 3), np.uint8)
-            #self.getVideo()
-            frameForWindow = blankFrame  #In case this is the first window opened, and no frames have been read yet.
+    def pause(self):
+        if self.timer is not None: self.timer.stop()
+        self.paused = True
 
-        xPos = kwargs.get("xPos", 20)
-        yPos = kwargs.get("yPos", 20)
+    def nextFrameSlot(self):
 
-        #CREATE AND SET UP WINDOW
-        cv2.namedWindow(name)
-        cv2.moveWindow(name, xPos, yPos)
-        self.windowFrame[name] = frameForWindow[1]  #Add a frame for the window to show.
+        pixFrame = self.getFrame()
 
-    def isCameraConnected(self):
-        return self.cap.isOpened()
+        #If a frame was returned correctly
+        if pixFrame is None:
+            return
 
-    def getVideo(self, **kwargs):
-        returnFrame = kwargs.get('returnFrame', False)
-        numberOfFrames = kwargs.get('readXFrames', 1)  #Read multiple frames in one go. These all get recorded on the previousFrames list
-        if not self.paused:
-            for i in range(numberOfFrames):
-                ret, newFrame = self.cap.read()
-
-                if ret:  #If there was no frame captured
-                    try:  #CHECK IF CAP SENT AN IMAGE BACK. If not, this will throw an error, and the "frame" image will not be replaced
-                        self.frame = newFrame.copy()                    #If it is indeed a frame, put it into self.frame, which all the programs use.
-                        self.previousFrames.append(self.frame.copy())   #Add the frame to the cache of 10 frames in previousFrames
-                    except:
-                        print "ERROR: getVideo(XXX): Frame has no attribute copy."
-                else:
-                    print "getVideo():\tError while capturing frame. Attempting to reconnect..."
-                    cv2.waitKey(1000)
-                    self.cap = cv2.VideoCapture(1)
-                    self.getVideo(**kwargs)
-                    return
-
-                #self.frame= cv2.Canny(self.frame,100,200)
-
-
-
-        #HANDLE RECORDING OF FRAMES. RECORDS ONLY 10 OF THE PREVIOUS FRAMES
-        while len(self.previousFrames) > 10:
-            del self.previousFrames[0]
-
-        if self.frameCount >= 100:  #Keeps the framecount to under 100
-            self.frameCount = 0
-        else:
-            self.frameCount += 1
-
-        if returnFrame:
-            print "returning frame"
-            return self.frame
-
-    def setCamResolution(self, width, height):
-
-        originalWidth  = self.cap.get(cv.CV_CAP_PROP_FRAME_WIDTH)
-        originalHeight = self.cap.get(cv.CV_CAP_PROP_FRAME_HEIGHT)
-
-        successWidth   = self.cap.set(cv.CV_CAP_PROP_FRAME_WIDTH,  width)
-        successHeight  = self.cap.set(cv.CV_CAP_PROP_FRAME_HEIGHT, height)
-
-        finalWidth     = self.cap.get(cv.CV_CAP_PROP_FRAME_WIDTH)
-        finalHeight    = self.cap.get(cv.CV_CAP_PROP_FRAME_HEIGHT)
-
-        if not successWidth or not successHeight:
-            print "Video.setResolution():\tError in setting resolution using cap.set()"
-
-        if not width == finalWidth or not height == finalHeight:
-            print "Video.setResolution():\tError in setting resolution. Final width: ", finalWidth, " Final Height: ", finalHeight
-
-    def resizeFrame(self, frameToResize, finalWidth):
-        if frameToResize.shape[1] == finalWidth:
-            return frameToResize
-        r = finalWidth / float(frameToResize.shape[1])
-        dim = (finalWidth, int(float(frameToResize.shape[0]) * r))
-        resized = cv2.resize(frameToResize, dim, interpolation = cv2.INTER_AREA)
-        return resized
-
-    def display(self, window, **kwargs):
-        """
-        Args:
-            window: The string name of the window to display the image
-        KWARGS:
-            "frame" : The frame to display. Defaults to the frame corrosponding to this window in the array self.windowFrame
-        """
-
-        cv2.imshow(window, self.windowFrame[window])
-
-    def getDimensions(self):
-        return [self.cap.get(3), self.cap.get(4)]
+        self.video_frame.setPixmap(pixFrame)
 
