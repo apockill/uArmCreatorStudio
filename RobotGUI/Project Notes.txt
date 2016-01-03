@@ -1,0 +1,41 @@
+DONT FORGET TO GIVE thenounproject.com CREDIT FOR THE ICONS
+
+-Prompt user if they wish to save a file, after they changed something
+-Once the program is close to being programmed, add a condition that prevent the user from running the script without a robot connected
+        -Make this a last minute thing so that I'll have debugged crashes that could potentially happen
+
+-Program sometimes crashes when 'add command' is clicked
+
+
+
+
+Event Ideas:
+    Basic:
+        Alarms
+
+    Vision:
+        Motion detected (waving)
+        Color detected
+
+    Other:
+        Robot tip is activated
+
+Command Ideas:
+    Basic:
+        Detach servos
+        Move XYZ
+        Stop all movement
+        Save position to variable, or have an inherent variable for the robots position
+        Write letters/strings
+
+    Control
+        If/then
+        Else
+        Variable
+        Test variable
+
+    Vision:
+        Focus on object
+        Pick up object
+        Move towards movement
+        Focus on color

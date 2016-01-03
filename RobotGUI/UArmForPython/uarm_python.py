@@ -25,7 +25,7 @@ class Uarm(object):
     uarm = None
     kAddrOffset = 90
     kAddrAandB = 60
-
+    pin2_status = 0
     uarm_status = 0
     coord = {}
     g_interpol_val_arr = {}
@@ -73,7 +73,6 @@ class Uarm(object):
 
 
     def uarmAttach(self):
-        print "uArm.uarmAttach():\t ERROR: This function should never be run"
         curAngles = {}
 
         if self.uarm_status == 0:
@@ -535,7 +534,7 @@ class Uarm(object):
 
 
     def stopperStatus(self):
-        if (self.pin2_status == 0):
+        if self.pin2_status == 0:
             self.stopper = self.uarm.get_pin('d:2:i')
             self.pin2_status == 1
 

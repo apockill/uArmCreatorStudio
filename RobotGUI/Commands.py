@@ -23,41 +23,57 @@ class ControlPanel(QtGui.QWidget):
         self.eventList         = EventList(self.refresh)
         self.running           = False                    #Whether or not the main thread should be running or not
         self.mainThread        = None                     #This holds the 'Thread' object of the main thread.
-        self.addEventBtn       = QtGui.QPushButton()
-        self.addCommandBtn     = QtGui.QPushButton()
+        self.addCommandWidget  = CommandMenuWidget(self.addCommand)
         self.commandListStack  = QtGui.QStackedWidget()   #Until something is selected first, there will be no commandListStack
 
         self.initUI()
 
-        #Connect Events
-        self.addEventBtn.clicked.connect(self.addEvent)
-        self.addCommandBtn.clicked.connect(self.addCommand)
+
 
     def initUI(self):
-        self.addCommandBtn.setText("Add Command")
-        self.addEventBtn.setText("Add Event")
+        #Set Up Buttons
+        addEventBtn       = QtGui.QPushButton()
+        deleteEventBtn    = QtGui.QPushButton()
+        changeEventBtn    = QtGui.QPushButton()
+        addEventBtn.setText("Add Event")
+        deleteEventBtn.setText("Delete")
+        changeEventBtn.setText("Change")
+
+        #Connect Button Events
+        addEventBtn.clicked.connect(self.addEvent)
+        deleteEventBtn.clicked.connect(self.deleteEvent)
+        changeEventBtn.clicked.connect(self.replaceEvent)
+
 
         eventVLayout   = QtGui.QVBoxLayout()
-        eventVLayout.addWidget(self.addEventBtn)
+        eventVLayout.addWidget(addEventBtn)
+        btnRowHLayout  = QtGui.QHBoxLayout()
+        btnRowHLayout.addWidget(deleteEventBtn)
+        btnRowHLayout.addWidget(changeEventBtn)
+        eventVLayout.addLayout(btnRowHLayout)
         eventVLayout.addWidget(self.eventList)
 
-
-
         commandVLayout = QtGui.QVBoxLayout()
-        commandVLayout.addWidget(self.addCommandBtn)
         commandVLayout.addWidget(self.commandListStack)
+
+        addCmndVLayout = QtGui.QVBoxLayout()
+        addCmndVLayout.addWidget(self.addCommandWidget)
+        addCmndVLayout.addStretch(1)
+
+
         self.commandListStack.addWidget(CommandList())  #Add a placeholder commandList
 
         mainHLayout   = QtGui.QHBoxLayout()
         mainHLayout.addLayout(eventVLayout)
         mainHLayout.addLayout(commandVLayout)
+        mainHLayout.addLayout(addCmndVLayout)
 
         self.setLayout(mainHLayout)
         self.show()
 
     def refresh(self):
         #Refresh which commandList is currently being displayed to the one the user has highlighted
-        print "ControlPanel.refresh(): Refreshing widget!"
+        #print "ControlPanel.refresh(): Refreshing widget!"
         #Get the currently selected event on the eventList
         selectedEvent = self.eventList.getSelectedEvent()
 
@@ -105,12 +121,12 @@ class ControlPanel(QtGui.QWidget):
         print "ControlPanel.programThread(): #################### STARTING PROGRAM THREAD! ######################"
         millis         = lambda: int(round(time.time() * 1000))
         readyForNext   = lambda lastMillis: millis() - lastMillis >= (1 / float(stepsPerSecond)) * 1000
-        stepsPerSecond = 1
+        stepsPerSecond = 10
         lastMillis     = millis()
 
         #Deepcopy all of the events, so that every time you run the script it runs with no modified variables
         events = copy.deepcopy(self.eventList.getEventsOrdered())
-
+        eventItem  = self.eventList.getItemsOrdered()
 
         while self.running:
 
@@ -119,15 +135,23 @@ class ControlPanel(QtGui.QWidget):
             lastMillis = millis()
 
             print "\n\nControlPanel.programThread():   ########## PERFORMING    ALL    EVENTS ##########"
+
             #Check all events and tell them to run their commands when appropriate
-            for event in events:
+            for index, event in enumerate(events):
 
                 if event.isActive():
                     event.runCommands()
+                    eventItem[index].setBackgroundColor(QtGui.QColor(150, 255, 150))
                     print "\n"
+                else:
+                    eventItem[index].setBackgroundColor(QtGui.QColor(QtCore.Qt.transparent))
 
             #Only "Render" the robots movement once per step
             Global.robot.refresh()
+
+        #Turn each list item transparent once more
+        for item in eventItem:
+            item.setBackgroundColor(QtGui.QColor(QtCore.Qt.transparent))
 
         #Re-lock the servos on the robot
         Global.robot.setPos(**Global.robot.home)
@@ -136,7 +160,7 @@ class ControlPanel(QtGui.QWidget):
 
 
 
-    def addCommand(self):
+    def addCommand(self, type):
         #When the addCommand button is pressed
         print "ControlPanel.addCommand():\t Add Command button clicked. Adding command!"
 
@@ -148,11 +172,16 @@ class ControlPanel(QtGui.QWidget):
                                        'an event before you can add commands', QtGui.QMessageBox.Ok)
             return
 
-        selectedEvent.commandList.addCommand(MoveXYZCommand)
+        selectedEvent.commandList.addCommand(type)
 
     def addEvent(self):
         self.eventList.promptUser()
 
+    def deleteEvent(self):
+        self.eventList.deleteEvent()
+
+    def replaceEvent(self):
+        self.eventList.replaceEvent()
 
 
     def getSaveData(self):
@@ -170,9 +199,11 @@ class ControlPanel(QtGui.QWidget):
 
 
 
+
 ########## EVENT LIST ##########
 class EventList(QtGui.QListWidget):
     def __init__(self, refresh):
+
         super(EventList, self).__init__()
         #GLOBALS
         self.refreshControlPanel = refresh
@@ -184,12 +215,11 @@ class EventList(QtGui.QListWidget):
 
         #The following is a function that returns a dictionary of the events, in the correct order
         self.getEventsOrdered = lambda: [self.events[self.item(index)] for index in xrange(self.count())]
-
+        self.getItemsOrdered  = lambda: [self.item(index) for index in xrange(self.count())]
         self.initUI()
 
     def initUI(self):
         self.setFixedWidth(200)
-
 
 
     def getSelectedEvent(self):
@@ -208,6 +238,7 @@ class EventList(QtGui.QListWidget):
 
         #Get the corresponding event
         return self.events[selected]
+
 
     def promptUser(self):
         #Open the eventPromptWindow to ask the user what event they wish to create
@@ -237,7 +268,6 @@ class EventList(QtGui.QListWidget):
         if params is None or params == {}:
             newEvent = eventType()
         else:
-            print "adding params", params
             newEvent = eventType(params)
 
 
@@ -257,6 +287,43 @@ class EventList(QtGui.QListWidget):
 
         self.setCurrentRow(self.count() - 1)  #Select the newly added event
         self.refreshControlPanel()            #Call for a refresh of the ControlPanel so it shows the commandList
+
+    def deleteEvent(self):
+        print "EventList.deleteEvent():\t Removing selected event"
+
+        #Make sure the user does want to delete an event
+        reply = QtGui.QMessageBox.question(self, 'Message',
+                                           "Are you sure you want to delete this event and all its commands?",
+                                           QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
+
+        if reply == QtGui.QMessageBox.No:
+            print "EventList.addCommand():\t User rejected deleting the event"
+            return
+
+        #Get the current item it's corresponding event
+        selectedItems = self.selectedItems()
+        if len(selectedItems) == 0 or len(selectedItems) > 1:
+            print "EventList.deleteEvent(): ERROR: ", len(selectedItems), " events selected"
+            return None
+        selectedItem = selectedItems[0]
+
+        if selectedItems is None:
+            print "EventList.deleteEvent():\t ERROR: selectedEvent was none!"
+            return
+
+        print self.currentRow()
+        self.takeItem(self.currentRow())
+        del self.events[selectedItem]
+        #self.takeItem(self.indexFromItem(selectedItem))
+       # print self.indexFromItem(selectedItem).
+        #QtCore.QModelIndex.
+        #self.take
+        #del self.events[selectedItem]
+        #self.takeItem()
+
+
+    def replaceEvent(self):
+        print "EventList.deleteEvent():\t Changing selected event"
 
 
     def getSaveData(self):
@@ -316,6 +383,8 @@ class EventWidget(QtGui.QWidget):
     def setIcon(self, icon):
         self.icon.setPixmap(QtGui.QPixmap(icon))
 
+    def setTip(self, tip):
+        self.setToolTip(tip)
 
 class EventPromptWindow(QtGui.QDialog):
     def __init__(self):
@@ -336,10 +405,10 @@ class EventPromptWindow(QtGui.QDialog):
         grid = QtGui.QGridLayout()
 
         grid.addWidget(      self.initBtn, 0, 0, QtCore.Qt.AlignLeft)
-        grid.addWidget( self.keyboardBtn, 0, 1, QtCore.Qt.AlignLeft)
+        grid.addWidget(  self.keyboardBtn, 0, 1, QtCore.Qt.AlignLeft)
         grid.addWidget(      self.stepBtn, 1, 0, QtCore.Qt.AlignLeft)
         grid.addWidget( self.intersectBtn, 1, 1, QtCore.Qt.AlignLeft)
-
+        grid.addWidget(       self.tipBtn, 2, 0, QtCore.Qt.AlignLeft)
 
         #Set up Cancel button in it's own layout:
         cancelLayout = QtGui.QHBoxLayout()
@@ -360,37 +429,30 @@ class EventPromptWindow(QtGui.QDialog):
 
     def initButtons(self):
         buttonWidth = 115
-
-        #Create widgets
-        self.initBtn      = QtGui.QPushButton('Initialization')
-        self.keyboardBtn  = QtGui.QPushButton('Keyboard')
-        self.stepBtn      = QtGui.QPushButton('Step')
-        self.intersectBtn = QtGui.QPushButton('Intersect')
+        #Create the cancel button
         self.cancelBtn    = QtGui.QPushButton('Cancel')
-
-        self.initBtn      .setStyleSheet("Text-align:left")
-        self.keyboardBtn  .setStyleSheet("Text-align:left")
-        self.stepBtn      .setStyleSheet("Text-align:left")
-        self.intersectBtn .setStyleSheet("Text-align:left")
-        self.initBtn      .setStyleSheet("Text-align:left")
-
-        self.initBtn      .setFixedWidth(buttonWidth)
-        self.keyboardBtn  .setFixedWidth(buttonWidth)
-        self.stepBtn      .setFixedWidth(buttonWidth)
-        self.intersectBtn .setFixedWidth(buttonWidth)
         self.cancelBtn    .setFixedWidth(buttonWidth * 1.5)
         self.cancelBtn    .setFixedHeight(25)
-
-        self.initBtn      .setIcon(QtGui.QIcon(Icons.creation_event))
-        self.keyboardBtn  .setIcon(QtGui.QIcon(Icons.keyboard_event))
-        self.stepBtn      .setIcon(QtGui.QIcon(Icons.step_event))
-        self.intersectBtn .setIcon(QtGui.QIcon(Icons.intersect_event))
         self.cancelBtn    .setIcon(QtGui.QIcon(Icons.cancel))
+
+
+        #Create Event Buttons
+        self.initBtn      = self.getNewButton('Initialization', Icons.creation_event)
+        self.keyboardBtn  = self.getNewButton(      'Keyboard', Icons.keyboard_event)
+        self.stepBtn      = self.getNewButton(          'Step', Icons.step_event)
+        self.tipBtn       = self.getNewButton(    'Tip Sensor', Icons.tip_event)
+        self.intersectBtn = self.getNewButton(     'Intersect', Icons.intersect_event)
+
 
         #CONNECT BUTTONS THAT DON'T HAVE MENUS
         self.initBtn      .clicked.connect(lambda: self.btnClicked(InitEvent))
         self.stepBtn      .clicked.connect(lambda: self.btnClicked(StepEvent))
+        self.tipBtn       .clicked.connect(lambda: self.btnClicked(TipEvent))
         self.cancelBtn    .clicked.connect(self.cancelClicked)
+
+
+
+
 
     def initButtonMenus(self):
         """
@@ -453,6 +515,14 @@ class EventPromptWindow(QtGui.QDialog):
     def cancelClicked(self, event):
         self.close()
 
+    def getNewButton(self, buttonText, icon):
+        buttonWidth = 115
+
+        newButton = QtGui.QPushButton(buttonText)
+        newButton.setStyleSheet("Text-align:left")
+        newButton.setFixedWidth(buttonWidth)
+        newButton.setIcon(QtGui.QIcon(icon))
+        return newButton
 
 
 
@@ -626,140 +696,36 @@ class CommandWidget(QtGui.QWidget):
         self.icon.setPixmap(QtGui.QPixmap(icon))
 
 
-class CommandPromptWindow(QtGui.QDialog):
-    def __init__(self):
-        super(CommandPromptWindow, self).__init__()
-        self.accepted         = False
-        self.chosenCommand    = None  #What event the user chose to add (changed in btnClicked() function)
+class CommandMenuWidget(QtGui.QWidget):
+    def __init__(self, addCmndFunc):
+        super(CommandMenuWidget, self).__init__()
+        self.addCmndFunc = addCmndFunc
         self.initUI()
-        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        self.exec_()  #Open self, and prevent anyone clicking on other windows
-
 
     def initUI(self):
-        self.initButtons()
-        self.initButtonMenus()
 
-        #Create grid layout
+
+        moveXYZButton = QtGui.QPushButton()
+        moveXYZButton.setIcon(QtGui.QIcon(Icons.xyz_command))
+        moveXYZButton.setIconSize(QtCore.QSize(32, 32))
+        moveXYZButton.clicked.connect(lambda: self.addCmndFunc(MoveXYZCommand))
+
+        detachButton  = QtGui.QPushButton()
+        detachButton.setIcon(QtGui.QIcon(Icons.detach_command))
+        detachButton.setIconSize(QtCore.QSize(32, 32))
+        detachButton.clicked.connect(lambda: self.addCmndFunc(DetachCommand))
+
+        attachButton  = QtGui.QPushButton()
+        attachButton.setIcon(QtGui.QIcon(Icons.attach_command))
+        attachButton.setIconSize(QtCore.QSize(32, 32))
+        attachButton.clicked.connect(lambda: self.addCmndFunc(AttachCommand))
+
         grid = QtGui.QGridLayout()
+        grid.addWidget(moveXYZButton, 0, 0, QtCore.Qt.AlignTop)
+        grid.addWidget( detachButton, 1, 0, QtCore.Qt.AlignTop)
+        grid.addWidget( attachButton, 2, 0, QtCore.Qt.AlignTop)
+        self.setLayout(grid)
 
-        grid.addWidget(      self.initBtn, 0, 0, QtCore.Qt.AlignLeft)
-        grid.addWidget( self.keyboardBtn, 0, 1, QtCore.Qt.AlignLeft)
-        grid.addWidget(      self.stepBtn, 1, 0, QtCore.Qt.AlignLeft)
-        grid.addWidget( self.intersectBtn, 1, 1, QtCore.Qt.AlignLeft)
-
-
-        #Set up Cancel button in it's own layout:
-        cancelLayout = QtGui.QHBoxLayout()
-        cancelLayout.addWidget(self.cancelBtn)
-
-
-        #Create main layout
-        mainVLayout = QtGui.QVBoxLayout()
-        mainVLayout.addLayout(grid)
-        mainVLayout.addLayout(cancelLayout, QtCore.Qt.AlignHCenter)
-
-
-        #Finalize everything
-        self.setLayout(mainVLayout)
-        self.setFixedSize(self.sizeHint())  #Make the window a fixed size
-        self.setWindowTitle('Add an Event')
-
-
-    def initButtons(self):
-        buttonWidth = 115
-
-        #Create widgets
-        self.initBtn      = QtGui.QPushButton('Initialization')
-        self.keyboardBtn  = QtGui.QPushButton('Keyboard')
-        self.stepBtn      = QtGui.QPushButton('Step')
-        self.intersectBtn = QtGui.QPushButton('Intersect')
-        self.cancelBtn    = QtGui.QPushButton('Cancel')
-
-        self.initBtn      .setStyleSheet("Text-align:left")
-        self.keyboardBtn  .setStyleSheet("Text-align:left")
-        self.stepBtn      .setStyleSheet("Text-align:left")
-        self.intersectBtn .setStyleSheet("Text-align:left")
-        self.initBtn      .setStyleSheet("Text-align:left")
-
-        self.initBtn      .setFixedWidth(buttonWidth)
-        self.keyboardBtn  .setFixedWidth(buttonWidth)
-        self.stepBtn      .setFixedWidth(buttonWidth)
-        self.intersectBtn .setFixedWidth(buttonWidth)
-        self.cancelBtn    .setFixedWidth(buttonWidth * 1.5)
-        self.cancelBtn    .setFixedHeight(25)
-
-        self.initBtn      .setIcon(QtGui.QIcon(Icons.creation_event))
-        self.keyboardBtn  .setIcon(QtGui.QIcon(Icons.keyboard_event))
-        self.stepBtn      .setIcon(QtGui.QIcon(Icons.step_event))
-        self.intersectBtn .setIcon(QtGui.QIcon(Icons.intersect_event))
-        self.cancelBtn    .setIcon(QtGui.QIcon(Icons.cancel))
-
-        #CONNECT BUTTONS THAT DON'T HAVE MENUS
-        self.initBtn      .clicked.connect(lambda: self.btnClicked(InitEvent))
-        self.stepBtn      .clicked.connect(lambda: self.btnClicked(StepEvent))
-        self.cancelBtn    .clicked.connect(self.cancelClicked)
-
-    def initButtonMenus(self):
-        """
-        initBtn         NO menu
-        keyboardBtn     Has menu
-        stepBtn         Has menu
-        intersectBtn    Has menu
-        cancelBtn       NO menu
-        :return:
-        """
-        #Set up Menus for buttons that have menus:
-
-        #KEYBOARD MENU
-        keyboardMnu = QtGui.QMenu()
-        keyboardMnu.addAction(   '<Up>', lambda: self.btnClicked('Up Clicked'))
-        keyboardMnu.addAction( '<Down>', lambda: self.btnClicked('Down Clicked'))
-        keyboardMnu.addAction( '<Left>', lambda: self.btnClicked('Left Clicked'))
-        keyboardMnu.addAction('<Right>', lambda: self.btnClicked('Right Clicked'))
-
-            #Create Letters Sub Menu
-        self.lettersSubMnu = QtGui.QMenu("Letters")  #Has to be self or else doesn't work. Don't know why...
-        alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I','J', 'K', 'L', 'M',
-                    'N', 'O', 'P', 'Q','R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-        for letter in alphabet:
-            #About the lambda letter=letter:. I don't know why it fixes the problem, but it does. Here's a better
-            #Explanation: http://stackoverflow.com/questions/4578861/connecting-slots-and-signals-in-pyqt4-in-a-loop
-            self.lettersSubMnu.addAction(letter, lambda letter=letter: self.btnClicked(KeypressEvent, parameters={"checkKey": letter}))
-
-            #Create Digits Sub Menu
-        self.digitsSubMnu = QtGui.QMenu("Digits")  #Has to be self or else doesn't work. Don't know why...
-        digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-        for index, digit in enumerate(digits):
-            self.digitsSubMnu.addAction(digit, lambda digit=digit: self.btnClicked(digit))
-
-            #Add Sub Menus
-        keyboardMnu.addMenu(self.lettersSubMnu)
-        keyboardMnu.addMenu(self.digitsSubMnu)
-        self.keyboardBtn.setMenu(keyboardMnu)
-
-
-
-        #INTERSECT MENU
-        intersectMnu = QtGui.QMenu()
-        intersectMnu.addAction('Intersect +X Boundary', lambda: self.btnClicked("+X"))
-        intersectMnu.addAction('Intersect -X Boundary', lambda: self.btnClicked("-X"))
-        intersectMnu.addAction('Intersect  X Boundary', lambda: self.btnClicked("X"))
-        intersectMnu.addAction('Intersect +Y Boundary', lambda: self.btnClicked("+Y"))
-        intersectMnu.addAction('Intersect -Y Boundary', lambda: self.btnClicked("-Y"))
-        intersectMnu.addAction('Intersect  Y Boundary', lambda: self.btnClicked("Y"))
-        self.intersectBtn.setMenu(intersectMnu)
-
-
-    def btnClicked(self, eventType, **kwargs):
-        print "EventWindow.buttonSelected():\t Event Type ", eventType, "selected"
-        self.chosenEvent      = eventType
-        self.chosenParameters = kwargs.get("parameters", None)
-        self.accepted = True
-        self.close()
-
-    def cancelClicked(self, event):
-        self.close()
 
 
 
@@ -772,7 +738,6 @@ class Event(object):
         such as A KeyPress or ZKeypress. THe self.parameters makes sure that you can differentiate between events
         when adding new ones, so you can make sure there aren't two 'A Keypress' events.
         """
-
         self.commandList = None
         self.parameters = {}
 
@@ -792,7 +757,7 @@ class InitEvent(Event):
         listWidget = EventWidget()
         listWidget.setIcon(Icons.creation_event)
         listWidget.setTitle('Initialization')
-
+        listWidget.setTip('Activates once each time the program is run')
         return listWidget
 
     def isActive(self):
@@ -817,6 +782,7 @@ class StepEvent(Event):
         listWidget = EventWidget()
         listWidget.setIcon(Icons.step_event)
         listWidget.setTitle('Step')
+        listWidget.setTip('Activates every time the events are refreshed')
 
         return listWidget
 
@@ -830,13 +796,12 @@ class KeypressEvent(Event):
         Event.__init__(self)
 
         self.parameters = parameters
-        print "event started with a checkey of ", parameters
 
     def getWidget(self):
         listWidget = EventWidget()
         listWidget.setIcon(Icons.keyboard_event)
         listWidget.setTitle('Keypress ' + self.parameters["checkKey"])
-
+        listWidget.setTip('Activates when the letter ' + self.parameters["checkKey"] + " is pressed")
         return listWidget
 
     def isActive(self):
@@ -850,9 +815,46 @@ class KeypressEvent(Event):
         #     return False
 
 
+class TipEvent(Event):
+    """
+    This event activates when the sensor on the tip of the robots sucker is pressed/triggered
+    """
+    def __init__(self):
+        Event.__init__(self)
+
+    def getWidget(self):
+        listWidget = EventWidget()
+        listWidget.setIcon(Icons.tip_event)
+        listWidget.setTitle('Tip')
+        listWidget.setTip('Activates when the sensor on the tip of the arm is pressed')
+
+        return listWidget
+
+    def isActive(self):
+        print Global.robot.getTipSensor()
+        #Since this is a "step" event, it will run each time the events are checked
+        return True
 
 
+class MotionEvent(Event):
+    """
+    This event activates when the sensor on the tip of the robots sucker is pressed/triggered
+    """
+    def __init__(self):
+        Event.__init__(self)
 
+    def getWidget(self):
+        listWidget = EventWidget()
+        listWidget.setIcon(Icons.tip_event)
+        listWidget.setTitle('Motion Detected')
+        listWidget.setTip('Activates when there is motion detected')
+
+        return listWidget
+
+    def isActive(self):
+        print Global.robot.getTipSensor()
+        #Since this is a "step" event, it will run each time the events are checked
+        return True
 
 
 
@@ -900,13 +902,12 @@ class Command(QtGui.QDialog):
     def openView(self):  #Open window\
         #Run the info window and prevent other windows from being clicked while open:
 
-        try:
-            print "Command.openView():\t About to execute self..."
-            #self.show()
-            self.exec_()
-            print "Command.openView():\t Finished executing self..."
-        except:
-            print "Command.openView():\t ERROR ERROR ERROR while opening view of command window. Fix!"
+        print "Command.openView():\t About to execute self..."
+        self.exec_()
+        #self.show()
+        print "Command.openView():\t Finished executing self..."
+
+        #print "Command.openView():\t ERROR ERROR ERROR while opening view of command window. Fix!"
 
         #See if the user pressed Ok or if he cancelled/exited out
         if self.accepted:
@@ -928,12 +929,11 @@ class Command(QtGui.QDialog):
 class MoveXYZCommand(Command):
     def __init__(self, parent, **kwargs):
         self.title       = "Move XYZ"
-
         super(MoveXYZCommand, self).__init__(parent)
 
         #Set default parameters that will show up on the window
+        self.icon        = Icons.xyz_command
         currentXYZ = Global.robot.currentCoord()
-
         self.parameters = kwargs.get("parameters",
                             {'x': round(currentXYZ[1], 1),
                              'y': round(currentXYZ[2], 1),
@@ -947,6 +947,7 @@ class MoveXYZCommand(Command):
         self.hgtEdit     = QtGui.QLineEdit()  #  Height textbox
         self.relCheck    = QtGui.QCheckBox()  #  "relative" CheckBox
         self.initUI()
+        self.setWindowIcon(QtGui.QIcon(self.icon))
 
     def initUI(self):
         #Set up all the labels for the inputs
@@ -984,6 +985,7 @@ class MoveXYZCommand(Command):
         self.mainVLayout.addLayout(row3)
         self.mainVLayout.addLayout(row4)
 
+
     def getInfo(self):
         #Build the info inputed into the window into a Json and return it. Used in parent class
 
@@ -1008,7 +1010,7 @@ class MoveXYZCommand(Command):
             return None
         else:
             listWidget = CommandWidget()
-            listWidget.setIcon(Icons.xyz_command)
+            listWidget.setIcon(self.icon)
             listWidget.setTitle(self.title)
             listWidget.setDescription('X: '                + str(int(self.parameters['x'])) +
                                            '   Y: '        + str(int(self.parameters['y'])) +
@@ -1034,6 +1036,7 @@ class DetachCommand(Command):
         #Command.__init__(self)
 
         #Set default parameters that will show up on the window
+        self.icon       = Icons.detach_command
         self.parameters = kwargs.get("parameters",
                                      {'servo1': False,
                                       'servo2': False,
@@ -1045,6 +1048,7 @@ class DetachCommand(Command):
         self.srvo3Box = QtGui.QCheckBox()  #  Height textbox
         self.srvo4Box = QtGui.QCheckBox()  #  "relative" CheckBox
         self.initUI()
+        self.setWindowIcon(QtGui.QIcon(self.icon))
 
     def initUI(self):
         #Set up all the labels for the inputs
@@ -1097,7 +1101,7 @@ class DetachCommand(Command):
             return None
         else:
             listWidget = CommandWidget()
-            listWidget.setIcon(Icons.detach_command)
+            listWidget.setIcon(self.icon)
             listWidget.setTitle(self.title)
 
             descriptionBuild = "Servos"
@@ -1119,3 +1123,104 @@ class DetachCommand(Command):
         if self.parameters['servo2']: Global.robot.setServos(servo2=False)
         if self.parameters['servo3']: Global.robot.setServos(servo3=False)
         if self.parameters['servo4']: Global.robot.setServos(servo4=False)
+
+
+class AttachCommand(Command):
+    """
+    A command for detaching the servos of the robot
+    """
+    def __init__(self, parent, **kwargs):
+        self.title       = "Attach Servos"
+        super(AttachCommand, self).__init__(parent)
+        #Command.__init__(self)
+
+        #Set default parameters that will show up on the window
+        self.icon       = Icons.attach_command
+        self.parameters = kwargs.get("parameters",
+                                     {'servo1': False,
+                                      'servo2': False,
+                                      'servo3': False,
+                                      'servo4': False})
+
+        self.srvo1Box = QtGui.QCheckBox()  #  Rotation textbox
+        self.srvo2Box = QtGui.QCheckBox()  #  Stretch textbox
+        self.srvo3Box = QtGui.QCheckBox()  #  Height textbox
+        self.srvo4Box = QtGui.QCheckBox()  #  "relative" CheckBox
+        self.initUI()
+        self.setWindowIcon(QtGui.QIcon(self.icon))
+
+    def initUI(self):
+        #Set up all the labels for the inputs
+        label1 = QtGui.QLabel('Rotation Servo:')
+        label2 = QtGui.QLabel('Stretch Servo:')
+        label3 = QtGui.QLabel('Height Servo:')
+        label4 = QtGui.QLabel('Wrist Servo:')
+
+        #Fill the textboxes with the default parameters
+        self.srvo1Box.setChecked(self.parameters['servo1'])
+        self.srvo2Box.setChecked(self.parameters['servo2'])
+        self.srvo3Box.setChecked(self.parameters['servo3'])
+        self.srvo4Box.setChecked(self.parameters['servo4'])
+
+        row1 = QtGui.QHBoxLayout()
+        row2 = QtGui.QHBoxLayout()
+        row3 = QtGui.QHBoxLayout()
+        row4 = QtGui.QHBoxLayout()
+
+        row1.addWidget(label1, QtCore.Qt.AlignRight)
+        row1.addWidget(self.srvo1Box, QtCore.Qt.AlignLeft)
+
+        row2.addWidget(label2, QtCore.Qt.AlignRight)
+        row2.addWidget(self.srvo2Box, QtCore.Qt.AlignLeft)
+
+        row3.addWidget(label3, QtCore.Qt.AlignRight)
+        row3.addWidget(self.srvo3Box, QtCore.Qt.AlignLeft)
+
+        row4.addWidget(label4, QtCore.Qt.AlignRight)
+        row4.addWidget(self.srvo4Box, QtCore.Qt.AlignLeft)
+
+        self.mainVLayout.addLayout(row1)
+        self.mainVLayout.addLayout(row2)
+        self.mainVLayout.addLayout(row3)
+        self.mainVLayout.addLayout(row4)
+
+    def getInfo(self):
+        #Build the info inputed into the window into a Json and return it. Used in parent class
+
+        newParameters = {'servo1': self.srvo1Box.isChecked(),
+                         'servo2': self.srvo2Box.isChecked(),
+                         'servo3': self.srvo3Box.isChecked(),
+                         'servo4': self.srvo4Box.isChecked()}
+
+        return newParameters
+
+    def getWidget(self):
+        #Verify that there are no None statements in the parameters
+        if any(self.parameters) is None or self.parameters.__len__() == 0:#any(x is None for x in self.parameters.itervalues()):
+            return None
+        else:
+            listWidget = CommandWidget()
+            listWidget.setIcon(self.icon)
+            listWidget.setTitle(self.title)
+
+            descriptionBuild = "Servos"
+            if self.parameters["servo1"]: descriptionBuild += "  Rotation"
+            if self.parameters["servo2"]: descriptionBuild += "  Stretch"
+            if self.parameters["servo3"]: descriptionBuild += "  Height"
+            if self.parameters["servo4"]: descriptionBuild += "  Wrist"
+
+            listWidget.setDescription(descriptionBuild)
+
+            return listWidget
+
+    def run(self):
+        print "DetachCommand.run(): Detaching servos ", self.parameters['servo1'], \
+                                                        self.parameters['servo2'], \
+                                                        self.parameters['servo3'], \
+                                                        self.parameters['servo4']
+        pos = Global.robot.currentCoord()
+        Global.robot.setPos(x=pos[1], y=pos[2], z=pos[3])  #This makes the robot attach at the current position it's at
+        if self.parameters['servo1']: Global.robot.setServos(servo1=True)
+        if self.parameters['servo2']: Global.robot.setServos(servo2=True)
+        if self.parameters['servo3']: Global.robot.setServos(servo3=True)
+        if self.parameters['servo4']: Global.robot.setServos(servo4=True)

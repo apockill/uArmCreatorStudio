@@ -161,15 +161,16 @@ class MainWindow(QtGui.QMainWindow):
         #Set Global variables
         Global.init()
         self.fileName  = None
+        self.loadData  = None   #Set when file is loaded. Used to check if the user has changed anything and prompt save
         self.settings  = {"robotID": None, "cameraID": None, "lastOpenedFile": None}
-        Global.vStream = Video.VideoStream(None)
+        self.vStream = Video.VideoStream(None)
         Global.robot   = Robot.Robot(None)
 
 
 
         #Set Global UI Variables
         self.centralWidget   = QtGui.QStackedWidget()
-        self.dashboardView   = DashboardView(Global.vStream.getPixFrame)
+        self.dashboardView   = DashboardView(self.vStream.getPixFrame)
         self.controlPanel    = self.dashboardView.controlPanel
         self.settingsView    = ScanView()
         self.scriptToggleBtn = QtGui.QAction(QtGui.QIcon(Icons.run_script),   'Run/Pause the command script (Ctrl+R)', self)
@@ -252,7 +253,7 @@ class MainWindow(QtGui.QMainWindow):
 
             self.settings["cameraID"] = newSettings["cameraID"]
 
-            success = Global.vStream.setNewCamera(self.settings["cameraID"])
+            success = self.vStream.setNewCamera(self.settings["cameraID"])
             if success:
                 self.setVideo("play")
             else:
@@ -286,16 +287,16 @@ class MainWindow(QtGui.QMainWindow):
         if state == "play":
             print "Playing!"
             self.dashboardView.cameraWidget.play()
-            Global.vStream.setPaused(False)
+            self.vStream.setPaused(False)
             self.videoToggleBtn.setIcon(QtGui.QIcon(Icons.pause_video))
 
         if state == "pause":
             self.dashboardView.cameraWidget.pause()
-            Global.vStream.setPaused(True)
+            self.vStream.setPaused(True)
             self.videoToggleBtn.setIcon(QtGui.QIcon(Icons.play_video))
 
         if state == "toggle":
-            if Global.vStream.paused:
+            if self.vStream.paused:
                 self.setVideo("play")
             else:
                 self.setVideo("pause")
@@ -365,10 +366,10 @@ class MainWindow(QtGui.QMainWindow):
             filename = QtGui.QFileDialog.getOpenFileName(self, "Load Task", "", "*.task")
             if filename == "": return  #If user hit cancel
 
-        commandData = pickle.load( open( filename, "rb"))
-        print "MainWindow.save(): Loading Project. SaveData: ", commandData
+        self.loadData = pickle.load( open( filename, "rb"))
+        print "MainWindow.save(): Loading Project. SaveData: ", self.loadData
         self.fileName = filename
-        self.dashboardView.controlPanel.loadData(commandData)
+        self.dashboardView.controlPanel.loadData(self.loadData)
 
         self.setWindowTitle('uArm Creator Dashboard      ' + self.fileName)
 
@@ -390,8 +391,20 @@ class MainWindow(QtGui.QMainWindow):
 
 
     def closeEvent(self, event):
-        Global.vStream.endThread()
+        if not self.loadData is None and not self.loadData == self.controlPanel.getSaveData():
+            print "MainWindow.closeEvent(): Prompting user to save changes"
+            reply = QtGui.QMessageBox.question(self, 'Message',
+                                           "You have unsaved changes. Would you like to save before quitting?",
+                                           QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
+            if reply == QtGui.QMessageBox.Yes:
+                print "MainWindow.closeEvent(): Saving changes"
+                print
+                self.saveTask(False)
+
+        self.vStream.endThread()
         self.controlPanel.close()
+
+
 
 
 class Application(QtGui.QApplication):

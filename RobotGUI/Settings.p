@@ -12,7 +12,7 @@ p4
 p5
 S'QString'
 p6
-(VF:/Google Drive/Projects/Git Repositories/RobotGUIProgramming/RobotGUI/test.task
+(VF:/Google Drive/Projects/Git Repositories/RobotGUIProgramming/RobotGUI/TestEverything.task
 p7
 tp8
 tp9

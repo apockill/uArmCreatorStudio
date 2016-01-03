@@ -19,6 +19,7 @@ def getConnectedCameras():
 
     return cameraList
 
+
 class VideoStream:
     def __init__(self, cameraID):
         self.exitApp  = False
@@ -100,6 +101,7 @@ class VideoStream:
 
     def setNewCamera(self, cameraID):
         #Set or change the current camera to a new one
+        print "VideoStream.setNewCamera():\t Setting camera to cameraID ", cameraID
         paused = self.paused
         self.setPaused(True)  #Make sure cap won't be called in the main thread while releasing the cap
 
@@ -113,7 +115,9 @@ class VideoStream:
             return False
 
         self.setPaused(paused)  #Return to whatever state the camera was in before switching
+        print "done"
         return True
+
 
     def setFPS(self, fps):
         #Sets how often the main function grabs frames (Default: 24)
@@ -129,6 +133,11 @@ class VideoStream:
         return self.pixFrame
 
 
+class Vision:
+    def __init__(self, vStream):
+
+        pass
+
 ########## WIDGETS ##########
 class CameraWidget(QtGui.QWidget):
     def __init__(self, getFrameFunction):
@@ -143,18 +152,21 @@ class CameraWidget(QtGui.QWidget):
 
         #Set up globals
         self.getFrame = getFrameFunction
-        self.fps      = 24
+        self.fps      = 24     #The maximum FPS the camera will
         self.paused   = True   #Keeps track of the video's state
         self.timer    = None
 
         #Initialize the UI
-        self.video_frame = QtGui.QLabel("ERROR: Could not open camera.")  #Temp label for the frame
-        self.vbox = QtGui.QVBoxLayout(self)
-        self.vbox.addWidget(self.video_frame)
-        self.setLayout(self.vbox)
+        self.initUI()
 
         #Get one frame and display it, and wait for play to be pressed
         self.nextFrameSlot()
+
+    def initUI(self):
+        self.video_frame = QtGui.QLabel("ERROR: Could not open camera.")  #Temp label for the frame
+        self.vbox        = QtGui.QVBoxLayout(self)
+        self.vbox.addWidget(self.video_frame)
+        self.setLayout(self.vbox)
 
     def play(self):
         self.timer = QtCore.QTimer()

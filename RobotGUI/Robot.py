@@ -5,12 +5,9 @@ from threading import Thread
 from UArmForPython.uarm_python import Uarm
 
 def getConnectedRobots():
-    #FIND THE ROBOTS ARDUINO PORT AND CREATE ser1 TO CONNECT TO IT
+    #Returns any arduino serial ports in a list [port, port, port]
+    #This is used to let the user choose the correct port that is their robot
     ports = list(serial.tools.list_ports.comports())
-    # for intex, port in enumerate(ports):
-    #     if "FTDIBUS" in port[2]:
-    #         print "Found arduino on port: ", port[0]
-    #         ser1 = serial.Serial(port[0], 9600, timeout=0)  #Create connection
     return ports
 
 class Robot():
@@ -47,6 +44,7 @@ class Robot():
 
 
 
+
     # def moveTo(self, **kwargs):
     #     relative = kwargs.get('relative',     False)
     #     waitFor  = kwargs.get('waitForRobot', False)  #If true, waitForRobot() will be run at the end of the function
@@ -71,7 +69,7 @@ class Robot():
     def currentCoord(self):
         if self.uArm is None or self.running:
             print "Robot.currentCoord():\t Robot not found or setupThread is running, returning 0 for all coordinates.."
-            return {1:0, 2:0, 3:0}
+            return {1: 0, 2: 0, 3: 0}
         else:
             print "Robot.currentCoord():\t Getting coordinates for robot..."
             return self.uArm.currentCoord()
@@ -103,21 +101,41 @@ class Robot():
         #print "setServos run: ", self.newServoStatus, self.servoStatus
 
 
+    def getTipSensor(self):
+        #If the robots tip sensor is currently being pressed
+        print self.uArm.stopperStatus()
+        return False
+
+
+
     def refresh(self):
             #Sends all positional data in self.pos to the robot
 
             if self.uArm is None or self.running:
                 print "Robot.refresh() ERROR: Tried sending command while uArm is None or setupThread was running"
-                return False
+                return
 
             self.updateServo(1)
             self.updateServo(2)
             self.updateServo(3)
             self.updateServo(4)
+            dist = lambda p1, p2: ((p2[0] - p1[0]) ** 2 + (p2[1] - p1[1]) ** 2 + (p2[2] - p1[2]) ** 2) ** .5
 
             if self.positionChanged:
-                self.uArm.moveToWithTime(self.pos['x'], self.pos['y'], self.pos['z'], 0)
+                #Calculate the amount of time the move should take so as to reach an avg speed of cmps (cm per second)
+                currXYZ  = self.currentCoord()
+                currXYZ  = [currXYZ[1], currXYZ[2], currXYZ[3]]
+                setXYZ   = [self.pos["x"], self.pos["y"], self.pos["z"]]
+                distance = dist(currXYZ, setXYZ)
+
+                cmps     = 35   #Desired centimeters/per/second of average speed from the robot
+                time     = distance / cmps
+
+
+                self.uArm.moveToWithTime(self.pos['x'], self.pos['y'], self.pos['z'], time)
                 self.positionChanged = False
+
+
 
     def updateServo(self, num):
         if not self.newServoStatus[num] == self.servoStatus[num]:
