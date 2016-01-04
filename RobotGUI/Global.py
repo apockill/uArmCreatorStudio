@@ -10,12 +10,11 @@ def init():
 
     global robot
     global keysPressed
-    #global promptSave
+
 
 
     keysPressed    = []        #Used in keyboardEvent
     robot          = None      #Used in any movement related commands, or position based events
 
-    #promptSave  = False       #If true, when the user closes the program it will prompt them if they want to save
 
 

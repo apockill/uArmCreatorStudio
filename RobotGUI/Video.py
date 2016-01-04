@@ -86,7 +86,7 @@ class VideoStream:
             self.mainThread = Thread(target=self.main)
             self.mainThread.start()
         else:
-            print "VideoStream.startThread(): ERROR: Tried to create mainThread, but mainThread already existed."
+            print "VideoStream.startThread():\t ERROR: Tried to create mainThread, but mainThread already existed."
 
     def endThread(self):
         self.exitApp = True

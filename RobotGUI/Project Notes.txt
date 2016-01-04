@@ -1,10 +1,14 @@
 DONT FORGET TO GIVE thenounproject.com CREDIT FOR THE ICONS
 
--Prompt user if they wish to save a file, after they changed something
+
+
+######   TO DO    #####
+-Do not prompt user if they are deleting an event that has no commands inside it
+
 -Once the program is close to being programmed, add a condition that prevent the user from running the script without a robot connected
         -Make this a last minute thing so that I'll have debugged crashes that could potentially happen
 
--Program sometimes crashes when 'add command' is clicked
+-Stop the what-the-hell random crashes
 
 
 

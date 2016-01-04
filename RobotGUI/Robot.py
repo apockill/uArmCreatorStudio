@@ -4,11 +4,13 @@ import Global
 from threading import Thread
 from UArmForPython.uarm_python import Uarm
 
+
 def getConnectedRobots():
     #Returns any arduino serial ports in a list [port, port, port]
     #This is used to let the user choose the correct port that is their robot
     ports = list(serial.tools.list_ports.comports())
     return ports
+
 
 class Robot():
     """
@@ -40,8 +42,8 @@ class Robot():
                                  4: True}
 
         self.positionChanged = True
+        self.servoChanged    = False  #This should only be used in Robot.refresh() to set movement time to 0
         self.running         = False  #If the setup Thread is running currently
-
 
 
 
@@ -50,7 +52,7 @@ class Robot():
     #     waitFor  = kwargs.get('waitForRobot', False)  #If true, waitForRobot() will be run at the end of the function
     #
     #     #HANDLE ANY OTHER COMMANDS, INCLUDING POLAR COMMANDS
-    #     for name, value in kwargs.items():  #Cycles through any variable that might have been in the kwargs. This is any position command!
+    #     for name, value in kwargs.items():\t  #Cycles through any variable that might have been in the kwargs. This is any position command!
     #
     #         if name in self.pos:  #If it is a position statement.
     #             if self.pos[name] is "": continue
@@ -89,7 +91,6 @@ class Robot():
 
         #If this command has changed the position, or if the position was changed earlier
         self.positionChanged = (not (posBefore == self.pos)) or self.positionChanged
-        print "positionchanged: ", self.positionChanged
 
     def setServos(self, **kwargs):
         #If anything changed, set the appropriate newServoStatus to reflect that
@@ -103,7 +104,6 @@ class Robot():
 
     def getTipSensor(self):
         #If the robots tip sensor is currently being pressed
-        print self.uArm.stopperStatus()
         return False
 
 
@@ -112,18 +112,26 @@ class Robot():
             #Sends all positional data in self.pos to the robot
 
             if self.uArm is None or self.running:
-                print "Robot.refresh() ERROR: Tried sending command while uArm is None or setupThread was running"
+                print "Robot.refresh():\t ERROR: Tried sending command while uArm is None or setupThread was running"
                 return
 
             self.updateServo(1)
             self.updateServo(2)
             self.updateServo(3)
             self.updateServo(4)
+
+            currXYZ  = self.currentCoord()
+            if self.servoChanged:
+                    print "TIME IS 0"
+                    self.servoChanged = False
+                    self.uArm.moveToWithTime(currXYZ[1], currXYZ[2], currXYZ[3], 0)
+
+
             dist = lambda p1, p2: ((p2[0] - p1[0]) ** 2 + (p2[1] - p1[1]) ** 2 + (p2[2] - p1[2]) ** 2) ** .5
 
             if self.positionChanged:
                 #Calculate the amount of time the move should take so as to reach an avg speed of cmps (cm per second)
-                currXYZ  = self.currentCoord()
+
                 currXYZ  = [currXYZ[1], currXYZ[2], currXYZ[3]]
                 setXYZ   = [self.pos["x"], self.pos["y"], self.pos["z"]]
                 distance = dist(currXYZ, setXYZ)
@@ -131,11 +139,14 @@ class Robot():
                 cmps     = 35   #Desired centimeters/per/second of average speed from the robot
                 time     = distance / cmps
 
+                #If the servo has changed, disregard the time calculations. This is because when servos are engaged
+                #the robot will jerk. By moving "quickly" the robot will not jerk as much. Thus time is set to 0
+
+                    # currentPos =
+                    # self.uArm.moveToWithTime
 
                 self.uArm.moveToWithTime(self.pos['x'], self.pos['y'], self.pos['z'], time)
                 self.positionChanged = False
-
-
 
     def updateServo(self, num):
         if not self.newServoStatus[num] == self.servoStatus[num]:
@@ -143,7 +154,8 @@ class Robot():
                 #Attach the servo
                 self.uArm.servoAttach(num)
                 self.servoStatus[num] = True
-                self.positionChanged = True
+                self.servoChanged     = True  #This prompts the robot to "moveToWithTime" with 0 as time
+                self.positionChanged  = True
                 print "Robot.updateServo():\t Servo", num, "attached"
             else:
                 #Detach the servo
@@ -153,15 +165,16 @@ class Robot():
 
 
     def setupThread(self, com):
+        print "Robot.setupThread():\t Thread Created"
         try:
             self.uArm = Uarm(com)
             #self.servoDetach()
-            print "Robot.setUArm():\t uArm successfully connected"
+            print "Robot.setupThread():\t uArm successfully connected"
 
         except serial.SerialException:
-            print "Robot.setUArm():\t ERROR SerialException while setting uArm to ", com
+            print "Robot.setupThread():\t ERROR SerialException while setting uArm to ", com
         self.running = False
-        self.refresh()
+        #self.refresh()
 
     def setUArm(self, com):
         if com is not None and not self.running:
@@ -169,6 +182,7 @@ class Robot():
             setupThread = Thread(target=lambda: self.setupThread(com))
             self.running = True
             setupThread.start()
+
         else:
             if self.running: print "Robot.setUArm()\t ERROR: setUArm() run while setupThread was already running!"
         self.setPos(**self.home)

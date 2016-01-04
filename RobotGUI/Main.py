@@ -2,11 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import sys
-
 import pickle
 import Robot
 import Video
-import Commands
+import ControlPanel
 import Icons
 import Global
 from PyQt4 import QtGui, QtCore
@@ -20,7 +19,6 @@ class ScanView(QtGui.QWidget):
 
     def __init__(self):
         super(ScanView, self).__init__()
-        #When Apply is clicked, these settings are sent to the main app TODO: Have these settings filled out by a settings file
         self.settings  = {"robotID": None, "cameraID": None}
 
         #Init UI Globals
@@ -131,7 +129,7 @@ class DashboardView(QtGui.QWidget):
         super(DashboardView, self).__init__()
 
         #UI Globals setup
-        self.controlPanel   = Commands.ControlPanel()
+        self.controlPanel   = ControlPanel.ControlPanel()
         self.cameraWidget   = Video.CameraWidget(getFrameFunction)
 
         self.initUI()
@@ -151,6 +149,8 @@ class DashboardView(QtGui.QWidget):
 
         #mainHLayout.addLayout(listVLayout)
         self.setLayout(mainVLayout)
+
+
 
 
 ########## MAIN WINDOW ##########
@@ -279,7 +279,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def setVideo(self, state):
         #State can be play, pause, or simply "toggle"
-        print "MainWindow.setVideo(): Setting video to state: ", state
+        print "MainWindow.setVideo():\t Setting video to state: ", state
 
         if self.settings["cameraID"] is None: return  #Don't change anything if no camera ID has been added yet
 
@@ -320,28 +320,41 @@ class MainWindow(QtGui.QMainWindow):
 
     def closeSettingsView(self, buttonClicked):
         print "lol"
-        print "MainWindow.closeSettingsView(): Closing settings from button: ", buttonClicked
+        print "MainWindow.closeSettingsView():\t Closing settings from button: ", buttonClicked
         newSettings = self.settingsView.getSettings()
 
         if buttonClicked == "Apply":
-            print 'Main.closeSettingsView(): "Apply" clicked, applying settings...'
+            print 'Main.closeSettingsView():\t "Apply" clicked, applying settings...'
             self.setSettings(newSettings)
 
         if buttonClicked == "Cancel":
             #Don't apply settings
-            print 'Main.closeSettingsView(): "Cancel" clicked, no settings applied.'
+            print 'Main.closeSettingsView():\t "Cancel" clicked, no settings applied.'
 
         #Go back to dashboard
         self.centralWidget.setCurrentWidget(self.dashboardView)
 
 
+    def promptSave(self):
+        #Prompts the user if they want to save, but only if they've changed something in the program
+        if not self.loadData is None and not self.loadData == self.controlPanel.getSaveData():
+            print "MainWindow.promptSave():\t Prompting user to save changes"
+            reply = QtGui.QMessageBox.question(self, 'Warning',
+                                           "You have unsaved changes. Would you like to save before continuing?",
+                                           QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
+            if reply == QtGui.QMessageBox.Yes:
+                print "MainWindow.promptSave():\tSaving changes"
+
+                self.saveTask(False)
     def newTask(self):
+        self.promptSave()
         self.dashboardView.controlPanel.loadData([])
         self.fileName = None
+        self.loadData = self.controlPanel.getSaveData()
 
 
     def saveTask(self, promptSave):
-        print "MainWindow.save(): Saving project"
+        print "MainWindow.save():\t Saving project"
 
         #If there is no filename, ask for one
         if promptSave or self.fileName is None:
@@ -351,7 +364,7 @@ class MainWindow(QtGui.QMainWindow):
 
         #Update the save file
         saveData = self.controlPanel.getSaveData()
-        print "MainWindow.save(): Saving: ", saveData
+        print "MainWindow.save():\t Saving: ", saveData
         pickle.dump(saveData, open(self.fileName, "wb"))
 
         self.setWindowTitle('uArm Creator Dashboard       ' + self.fileName)
@@ -367,7 +380,7 @@ class MainWindow(QtGui.QMainWindow):
             if filename == "": return  #If user hit cancel
 
         self.loadData = pickle.load( open( filename, "rb"))
-        print "MainWindow.save(): Loading Project. SaveData: ", self.loadData
+        print "MainWindow.save():\t Loading Project. SaveData: ", self.loadData
         self.fileName = filename
         self.dashboardView.controlPanel.loadData(self.loadData)
 
@@ -382,29 +395,19 @@ class MainWindow(QtGui.QMainWindow):
     def loadSettings(self):
         try:
             newSettings = pickle.load(open( "Settings.p", "rb"))
-            print "MainWindow.loadSettings(): Loading settings: ", newSettings, "..."
+            print "MainWindow.loadSettings():\t Loading settings: ", newSettings, "..."
             self.setSettings(newSettings)
             #return newSettings
         except IOError:
-            print "MainWindow.loadSettings(): ERROR: No settings file detected. Using default values."
+            print "MainWindow.loadSettings():\t ERROR: No settings file detected. Using default values."
             #return {"robotID": None, "cameraID": None, "lastOpenedFile": None}
 
 
     def closeEvent(self, event):
-        if not self.loadData is None and not self.loadData == self.controlPanel.getSaveData():
-            print "MainWindow.closeEvent(): Prompting user to save changes"
-            reply = QtGui.QMessageBox.question(self, 'Message',
-                                           "You have unsaved changes. Would you like to save before quitting?",
-                                           QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
-            if reply == QtGui.QMessageBox.Yes:
-                print "MainWindow.closeEvent(): Saving changes"
-                print
-                self.saveTask(False)
+        self.promptSave()
 
         self.vStream.endThread()
         self.controlPanel.close()
-
-
 
 
 class Application(QtGui.QApplication):
@@ -433,6 +436,9 @@ class Application(QtGui.QApplication):
         #Call Base Class Method to Continue Normal Event Processing
         return super(Application, self).notify(receiver, event)
 
+
+
+
 if __name__ == '__main__':
 
     app = Application(sys.argv)
@@ -440,6 +446,6 @@ if __name__ == '__main__':
     print "__main__():\t mainWindow class successfully initiated!"
     mainWindow.show()
     print "__main__():\t mainWindow successfully shown()"
-    app.exec_()  #TODO: MAY NEED TO REMOVE SYS.EXIT to fix some weird bugs..
+    app.exec_()
     print "__main__():\t Program successfully executed."
 
