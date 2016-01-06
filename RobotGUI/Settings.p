@@ -12,12 +12,21 @@ p4
 p5
 S'QString'
 p6
-(VF:/Google Drive/Projects/Git Repositories/RobotGUIProgramming/RobotGUI/TestEverything.task
+(VF:/Google Drive/Projects/Git Repositories/RobotGUIProgramming/RobotGUI/NewTask.task
 p7
 tp8
 tp9
 Rp10
 sS'cameraID'
 p11
-I0
-s.
+I1
+sS'motionCalibrations'
+p12
+(dp13
+S'stationaryMovement'
+p14
+F2.1
+sS'activeMovement'
+p15
+F39.8
+ss.

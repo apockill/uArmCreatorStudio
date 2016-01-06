@@ -10,7 +10,7 @@ class EventWidget(QtGui.QWidget):
     This is the widget that appears on the EventList.
     It's supposed to be prettier than the normal list items.
     """
-    def __init__(self, parent = None):
+    def __init__(self, parent):
         super(EventWidget, self).__init__(parent)
         self.title       = QtGui.QLabel()
         self.icon        = QtGui.QLabel("No icon found.")
@@ -38,8 +38,8 @@ class EventWidget(QtGui.QWidget):
 
 
 class EventPromptWindow(QtGui.QDialog):
-    def __init__(self):
-        super(EventPromptWindow, self).__init__()
+    def __init__(self, parent):
+        super(EventPromptWindow, self).__init__(parent)
         self.accepted         = False
         self.chosenEvent      = None  #What event the user chose to add (changed in btnClicked() function)
         self.chosenParameters = None
@@ -62,7 +62,7 @@ class EventPromptWindow(QtGui.QDialog):
         grid.addWidget(  self.keyboardBtn, 0, 1, QtCore.Qt.AlignLeft)
         grid.addWidget( self.intersectBtn, 1, 1, QtCore.Qt.AlignLeft)
         grid.addWidget(       self.tipBtn, 2, 1, QtCore.Qt.AlignLeft)
-
+        grid.addWidget(    self.motionBtn, 2, 1, QtCore.Qt.AlignLeft)
 
         #Set up Cancel button in it's own layout:
         cancelLayout = QtGui.QHBoxLayout()
@@ -80,7 +80,6 @@ class EventPromptWindow(QtGui.QDialog):
         self.setFixedSize(self.sizeHint())  #Make the window a fixed size
         self.setWindowTitle('Add an Event')
 
-
     def initButtons(self):
         buttonWidth = 115
         #Create the cancel button
@@ -91,12 +90,13 @@ class EventPromptWindow(QtGui.QDialog):
 
 
         #Create Event Buttons
-        self.initBtn      = self.getNewButton('Initialization', Icons.creation_event)
-        self.destroyBtn   = self.getNewButton('End of Program', Icons.destroy_event)
-        self.keyboardBtn  = self.getNewButton(      'Keyboard', Icons.keyboard_event)
-        self.stepBtn      = self.getNewButton(          'Step', Icons.step_event)
-        self.tipBtn       = self.getNewButton(    'Tip Sensor', Icons.tip_event)
-        self.intersectBtn = self.getNewButton(     'Intersect', Icons.intersect_event)
+        self.initBtn      = self.getNewButton( 'Initialization',     InitEvent.icon)
+        self.destroyBtn   = self.getNewButton( 'End of Program',  DestroyEvent.icon)
+        self.keyboardBtn  = self.getNewButton(       'Keyboard', KeypressEvent.icon)
+        self.stepBtn      = self.getNewButton(           'Step',     StepEvent.icon)
+        self.tipBtn       = self.getNewButton(     'Tip Sensor',      TipEvent.icon)
+        self.intersectBtn = self.getNewButton(      'Intersect', Icons.intersect_event)
+        self.motionBtn    = self.getNewButton('Motion Detected',   MotionEvent.icon)
 
 
         #CONNECT BUTTONS THAT DON'T HAVE MENUS
@@ -104,6 +104,7 @@ class EventPromptWindow(QtGui.QDialog):
         self.destroyBtn   .clicked.connect(lambda: self.btnClicked(DestroyEvent))
         self.stepBtn      .clicked.connect(lambda: self.btnClicked(StepEvent))
         self.tipBtn       .clicked.connect(lambda: self.btnClicked(TipEvent))
+        self.motionBtn    .clicked.connect(lambda: self.btnClicked(MotionEvent))
         self.cancelBtn    .clicked.connect(self.cancelClicked)
 
     def initButtonMenus(self):
@@ -117,27 +118,22 @@ class EventPromptWindow(QtGui.QDialog):
         """
         #Set up Menus for buttons that have menus:
 
-        #KEYBOARD MENU
+        ######################     KEYBOARD MENU     ######################
         keyboardMnu = QtGui.QMenu()
-        keyboardMnu.addAction(   '<Up>', lambda: self.btnClicked('Up Clicked'))
-        keyboardMnu.addAction( '<Down>', lambda: self.btnClicked('Down Clicked'))
-        keyboardMnu.addAction( '<Left>', lambda: self.btnClicked('Left Clicked'))
-        keyboardMnu.addAction('<Right>', lambda: self.btnClicked('Right Clicked'))
-
             #Create Letters Sub Menu
-        self.lettersSubMnu = QtGui.QMenu("Letters")  #Has to be self or else doesn't work. Don't know why...
+        self.lettersSubMnu = QtGui.QMenu("Letters")  #Has to be self or something glitches with garbage collection....
         alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I','J', 'K', 'L', 'M',
-                    'N', 'O', 'P', 'Q','R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+                    'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
         for letter in alphabet:
             #About the lambda letter=letter:. I don't know why it fixes the problem, but it does. Here's a better
             #Explanation: http://stackoverflow.com/questions/4578861/connecting-slots-and-signals-in-pyqt4-in-a-loop
-            self.lettersSubMnu.addAction(letter, lambda letter=letter: self.btnClicked(KeypressEvent, parameters={"checkKey": letter}))
+            self.lettersSubMnu.addAction(letter, lambda letter=letter: self.btnClicked(KeypressEvent, params={"checkKey": letter}))
 
             #Create Digits Sub Menu
-        self.digitsSubMnu = QtGui.QMenu("Digits")  #Has to be self or else doesn't work. Don't know why...
+        self.digitsSubMnu = QtGui.QMenu("Digits")
         digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
         for index, digit in enumerate(digits):
-            self.digitsSubMnu.addAction(digit, lambda digit=digit: self.btnClicked(digit))
+            self.digitsSubMnu.addAction(digit, lambda digit=digit: self.btnClicked(KeypressEvent, params={"checkKey": digit}))
 
             #Add Sub Menus
         keyboardMnu.addMenu(self.lettersSubMnu)
@@ -145,6 +141,24 @@ class EventPromptWindow(QtGui.QDialog):
         self.keyboardBtn.setMenu(keyboardMnu)
 
 
+        ######################     MOTION MENU     ######################
+        newMotionBtn = lambda params: self.btnClicked(MotionEvent, params=params)
+        motionMnu = QtGui.QMenu()
+        #motionMnu.addAction(    'Any Movement', lambda: newMotionBtn({"low": "None", "high":  "Inf"}))
+        #motionMnu.addSeparator()
+        motionMnu.addAction(   'Low to Medium', lambda: newMotionBtn({"low":  "Low", "high":  "Med"}))
+        motionMnu.addAction(  'Medium to High', lambda: newMotionBtn({"low":  "Med", "high": "High"}))
+        motionMnu.addAction(     'Low to High', lambda: newMotionBtn({"low":  "Low", "high": "High"}))
+        motionMnu.addSeparator()
+        motionMnu.addAction(   'Low and Above', lambda: newMotionBtn({"low":  "Low", "high":  "Inf"}))
+        motionMnu.addAction('Medium and Above', lambda: newMotionBtn({"low":  "Med", "high":  "Inf"}))
+        motionMnu.addAction(  'High and Above', lambda: newMotionBtn({"low": "High", "high":  "Inf"}))
+        motionMnu.addSeparator()
+        motionMnu.addAction(   'Low and Below', lambda: newMotionBtn({"low": "None", "high":  "Low"}))
+        motionMnu.addAction('Medium and Below', lambda: newMotionBtn({"low": "None", "high":  "Med"}))
+        motionMnu.addAction(  'High and Below', lambda: newMotionBtn({"low": "None", "high": "High"}))
+
+        self.motionBtn.setMenu(motionMnu)
 
         #INTERSECT MENU
         intersectMnu = QtGui.QMenu()
@@ -160,12 +174,13 @@ class EventPromptWindow(QtGui.QDialog):
     def btnClicked(self, eventType, **kwargs):
         print "EventWindow.buttonSelected():\t Event Type ", eventType, "selected"
         self.chosenEvent      = eventType
-        self.chosenParameters = kwargs.get("parameters", None)
+        self.chosenParameters = kwargs.get("params", None)
         self.accepted = True
         self.close()
 
     def cancelClicked(self, event):
         self.close()
+
 
     def getNewButton(self, buttonText, icon):
         buttonWidth = 115
@@ -175,6 +190,7 @@ class EventPromptWindow(QtGui.QDialog):
         newButton.setFixedWidth(buttonWidth)
         newButton.setIcon(QtGui.QIcon(icon))
         return newButton
+
 
 
 
@@ -190,26 +206,26 @@ class Event(object):
         self.commandList = None
         self.parameters = {}
 
-    def runCommands(self):
+    def runCommands(self, shared):
         commandsOrdered = self.commandList.getCommandsOrdered()
         print commandsOrdered
         for command in commandsOrdered:
-            command.run()
+            command.run(shared)
 
 
 class InitEvent(Event):
+    icon = Icons.creation_event
     def __init__(self, parameters):
         super(InitEvent, self).__init__()
         self.hasBeenRun = False
 
-    def getWidget(self):
-        listWidget = EventWidget()
-        listWidget.setIcon(Icons.creation_event)
-        listWidget.setTitle('Initialization')
-        listWidget.setTip('Activates once each time the program is run')
-        return listWidget
+    def getWidget(self, widget):
+        widget.setIcon(self.icon)
+        widget.setTitle('Initialization')
+        widget.setTip('Activates once each time the program is run')
+        return widget
 
-    def isActive(self):
+    def isActive(self, shared):
         #Returns true or false if this event should be activated
 
         if self.hasBeenRun:
@@ -217,109 +233,146 @@ class InitEvent(Event):
         else:
             return True
 
-    def runCommands(self):
+    def runCommands(self, shared):
         #Intercept the parent class events so that you can set self.hasBeenRun to true
-        Event.runCommands(self)
+        Event.runCommands(self, shared)
         self.hasBeenRun = True
 
 
 class DestroyEvent(Event):
+    icon = Icons.destroy_event
     def __init__(self, parameters):
         super(DestroyEvent, self).__init__()
 
-    def getWidget(self):
-        listWidget = EventWidget()
-        listWidget.setIcon(Icons.destroy_event)
-        listWidget.setTitle('End of Program')
-        listWidget.setTip('Activates once, when the program is ended')
-        return listWidget
+    def getWidget(self, widget):
+        widget.setIcon(self.icon)
+        widget.setTitle('End of Program')
+        widget.setTip('Activates once, when the program is ended')
+        return widget
 
-    def isActive(self):
+    def isActive(self, shared):
         #This event always returns false, because it is run DIRECTLY by the ControlPanel.programThread()
         #programThread() will check if the event exists. If it does, it will run all of its commands.
         #Otherwise, this event will never run while the program is running.
-
         return False
 
 
 class StepEvent(Event):
+    icon = Icons.step_event
     def __init__(self, parameters):
         Event.__init__(self)
 
-    def getWidget(self):
-        listWidget = EventWidget()
-        listWidget.setIcon(Icons.step_event)
-        listWidget.setTitle('Step')
-        listWidget.setTip('Activates every time the events are refreshed')
+    def getWidget(self, widget):
+        widget.setIcon(self.icon)
+        widget.setTitle('Step')
+        widget.setTip('Activates every time the events are refreshed')
 
-        return listWidget
+        return widget
 
-    def isActive(self):
+    def isActive(self, shared):
         #Since this is a "step" event, it will run each time the events are checked
         return True
 
 
 class KeypressEvent(Event):
+    icon = Icons.keyboard_event
+
     def __init__(self, parameters):
         Event.__init__(self)
-
         self.parameters = parameters
 
-    def getWidget(self):
-        listWidget = EventWidget()
-        listWidget.setIcon(Icons.keyboard_event)
-        listWidget.setTitle('Keypress ' + self.parameters["checkKey"])
-        listWidget.setTip('Activates when the letter ' + self.parameters["checkKey"] + " is pressed")
-        return listWidget
+    def getWidget(self, widget):
+        widget.setIcon(self.icon)
+        widget.setTitle('Keypress ' + self.parameters["checkKey"])
+        widget.setTip('Activates when the letter ' + self.parameters["checkKey"] + " is pressed")
+        return widget
 
-    def isActive(self):
+    def getMenus(self):
+        print "lol"
+
+    def isActive(self, shared):
         if ord(self.parameters["checkKey"]) in Global.keysPressed:
             return True
         else:
             return False
-        # if len(Global.keysPressed) > 0:
-        #     return True
-        # else:
-        #     return False
 
 
 class MotionEvent(Event):
     """
     This event activates when the sensor on the tip of the robots sucker is pressed/triggered
     """
-    def __init__(self):
+    icon = Icons.motion_event
+
+    def __init__(self, parameters):
         Event.__init__(self)
+        self.parameters = parameters
 
-    def getWidget(self):
-        listWidget = EventWidget()
-        listWidget.setIcon(Icons.tip_event)
-        listWidget.setTitle('Motion Detected')
-        listWidget.setTip('Activates when there is motion detected')
+        #Constants for movement. These are set the first time isActive() is run
+        self.low  = None
+        self.med  = None
+        self.high = None
 
-        return listWidget
 
-    def isActive(self):
-        print Global.robot.getTipSensor()
-        #Since this is a "step" event, it will run each time the events are checked
-        return True
+    def getWidget(self, widget):
+        widget.setIcon(self.icon)
+        widget.setTitle('Motion ' + self.parameters["low"] + "-" + self.parameters["high"])
+        widget.setTip('Activates when there is motion detected')
+
+        return widget
+
+    def isActive(self, shared):
+        if self.low is None:  #If this is the first time the event is being done, calculate the thresholds
+            calib      = shared.settings["motionCalibrations"]
+            stationary = calib["stationaryMovement"]
+            active     = calib["activeMovement"]
+
+            diff  = (active - stationary) / 3
+            self.low  = diff
+            self.med  = diff * 2
+            self.high = diff * 3
+
+
+        currentMotion = shared.vision.getMotion()
+
+        active = True
+
+        if self.parameters["low"] == "Low":
+            active = active and self.low < currentMotion
+        if self.parameters["low"] == "Med":
+            active = active and self.med < currentMotion
+        if self.parameters["low"] == "High":
+            active = active and self.high < currentMotion
+
+        if self.parameters["high"] == "Low":
+            active = active and currentMotion < self.low
+        if self.parameters["high"] == "Med":
+            active = active and currentMotion < self.med
+        if self.parameters["high"] == "High":
+            active = active and currentMotion < self.high
+
+
+
+        return active  #self.parameters["lowThreshold"] < motion < self.parameters["upperThreshold"]
+
 
 class TipEvent(Event):
     """
     This event activates when the sensor on the tip of the robots sucker is pressed/triggered
     """
+    icon = Icons.tip_event
+
     def __init__(self, parameters):
         Event.__init__(self)
 
-    def getWidget(self):
-        listWidget = EventWidget()
-        listWidget.setIcon(Icons.tip_event)
-        listWidget.setTitle('Tip')
-        listWidget.setTip('Activates when the sensor on the tip of the arm is pressed')
+    def getWidget(self, widget):
+        widget.setIcon(self.icon)
+        widget.setTitle('Tip')
+        widget.setTip('Activates when the sensor on the tip of the arm is pressed')
 
-        return listWidget
+        return widget
 
-    def isActive(self):
-        return Global.robot.getTipSensor()
+    def isActive(self, shared):
+        return shared.robot.getTipSensor()
 
 
 
