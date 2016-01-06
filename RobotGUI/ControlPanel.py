@@ -16,8 +16,16 @@ class Shared():
     """
 
     def __init__(self, robot, vision, settings):
+
+        #Used in any movement related task
         self.robot       = robot
+
+
+        #Used in the motion detection event, ColorTrackCommand, etc
         self.vision      = vision
+
+
+        #Used in the motion detection event to get the motionCalibration settings
         self.settings    = settings
 
 
@@ -156,14 +164,14 @@ class ControlPanel(QtGui.QWidget):
             if not readyForNext(lastMillis): continue
             lastMillis = millis()
 
-            print "\n\nControlPanel.programThread():\t  ########## PERFORMING    ALL    EVENTS ##########"
+            #print "\n\nControlPanel.programThread():\t  ########## PERFORMING    ALL    EVENTS ##########"
             #Check all events and tell them to run their commands when appropriate
             for index, event in enumerate(events):
 
                 if event.isActive(self.shared):
                     eventItem[index].setBackgroundColor(QtGui.QColor(150, 255, 150))  #Highlight event thats going to run
                     event.runCommands(self.shared)
-                    print "\n"
+                    #print "\n"
                 else:
                     eventItem[index].setBackgroundColor(QtGui.QColor(QtCore.Qt.transparent))
 

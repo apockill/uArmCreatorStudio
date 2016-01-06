@@ -144,12 +144,6 @@ class EventPromptWindow(QtGui.QDialog):
         ######################     MOTION MENU     ######################
         newMotionBtn = lambda params: self.btnClicked(MotionEvent, params=params)
         motionMnu = QtGui.QMenu()
-        #motionMnu.addAction(    'Any Movement', lambda: newMotionBtn({"low": "None", "high":  "Inf"}))
-        #motionMnu.addSeparator()
-        motionMnu.addAction(   'Low to Medium', lambda: newMotionBtn({"low":  "Low", "high":  "Med"}))
-        motionMnu.addAction(  'Medium to High', lambda: newMotionBtn({"low":  "Med", "high": "High"}))
-        motionMnu.addAction(     'Low to High', lambda: newMotionBtn({"low":  "Low", "high": "High"}))
-        motionMnu.addSeparator()
         motionMnu.addAction(   'Low and Above', lambda: newMotionBtn({"low":  "Low", "high":  "Inf"}))
         motionMnu.addAction('Medium and Above', lambda: newMotionBtn({"low":  "Med", "high":  "Inf"}))
         motionMnu.addAction(  'High and Above', lambda: newMotionBtn({"low": "High", "high":  "Inf"}))
@@ -157,6 +151,10 @@ class EventPromptWindow(QtGui.QDialog):
         motionMnu.addAction(   'Low and Below', lambda: newMotionBtn({"low": "None", "high":  "Low"}))
         motionMnu.addAction('Medium and Below', lambda: newMotionBtn({"low": "None", "high":  "Med"}))
         motionMnu.addAction(  'High and Below', lambda: newMotionBtn({"low": "None", "high": "High"}))
+        motionMnu.addSeparator()
+        motionMnu.addAction(   'Low to Medium', lambda: newMotionBtn({"low":  "Low", "high":  "Med"}))
+        motionMnu.addAction(  'Medium to High', lambda: newMotionBtn({"low":  "Med", "high": "High"}))
+        motionMnu.addAction(     'Low to High', lambda: newMotionBtn({"low":  "Low", "high": "High"}))
 
         self.motionBtn.setMenu(motionMnu)
 
@@ -208,7 +206,7 @@ class Event(object):
 
     def runCommands(self, shared):
         commandsOrdered = self.commandList.getCommandsOrdered()
-        print commandsOrdered
+
         for command in commandsOrdered:
             command.run(shared)
 

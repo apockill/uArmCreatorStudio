@@ -111,12 +111,16 @@ class Robot():
 
     def getTipSensor(self):
         #If the robots tip sensor is currently being pressed
+        #Currently buggy, so not implimented
         return False
 
 
 
     def refresh(self, **kwargs):
-        #ONLY USE when doing camera calibrations that require reading the camera while the robots moving
+        #Send information to the robot to perform a move
+
+
+        #ONLY USE this argumentwhen doing camera calibrations that require reading the camera while the robots moving
         instantMovement = kwargs.get("instant", False)
 
 

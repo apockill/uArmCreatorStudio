@@ -3,10 +3,7 @@ DONT FORGET TO GIVE thenounproject.com CREDIT FOR THE ICONS
 
 
 ######   TO DO    #####
--Do not prompt user if they are deleting an event that has no commands inside it
-
--Once the program is close to being programmed, add a condition that prevent the user from running the script without a robot connected
-        -Make this a last minute thing so that I'll have debugged crashes that could potentially happen
+- Have some sort of indication when the robot is done connecting, either succesfully or not.
 
 -Stop the what-the-hell random crashes
 

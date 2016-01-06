@@ -232,6 +232,7 @@ class Vision:
         averageColor = cv2.mean(frame)       #RGB
         return averageColor
 
+
     def findObjectColor(self, hue, tolerance, lowSat, highSat, lowVal, highVal):
         low, high = self.getRange(hue, tolerance)
 
@@ -256,7 +257,7 @@ class Vision:
 
         contours, hierarchy = cv2.findContours(finalThresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
-
+        cv2.imshow("frame", finalThresh)
         # Find the contour with maximum area and store it as best_cnt
         max_area = 0
         best_cnt = None
@@ -275,7 +276,7 @@ class Vision:
 
 
     def getRange(self, hue, tolerance):
-        #Input an HSV
+        #Input an HSV, get a range
         low  = hue - tolerance / 2
         high = hue + tolerance / 2
 
@@ -322,6 +323,11 @@ class Vision:
             return [h, s, v]
         else:
             return h, s, v
+
+
+
+
+
 ########## WIDGETS ##########
 class CameraWidget(QtGui.QWidget):
     def __init__(self, getFrameFunction):
