@@ -355,7 +355,7 @@ class CameraWidget(QtGui.QWidget):
     def initUI(self):
         #self.setMinimumWidth(640)
         #self.setMinimumHeight(480)
-        self.video_frame = QtGui.QLabel("ERROR: Could not open camera.")  #Temp label for the frame
+        self.video_frame = QtGui.QLabel("No camera data.")  #Temp label for the frame
         self.vbox        = QtGui.QVBoxLayout(self)
         self.vbox.addWidget(self.video_frame)
         self.setLayout(self.vbox)
