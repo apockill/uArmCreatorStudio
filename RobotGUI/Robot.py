@@ -1,9 +1,8 @@
 import serial
 import serial.tools.list_ports
-import Global
 from threading import Thread
 from UArmForPython.uarm_python import Uarm
-
+import math
 
 def getConnectedRobots():
     #Returns any arduino serial ports in a list [port, port, port]
@@ -210,5 +209,47 @@ class Robot():
 
 
 
+def getRelative(x1, y1, baseAngle):
+    angle = math.radians(baseAngle) - math.radians(90)
+
+    x = x1 * math.cos(angle) - y1 * math.sin(angle)
+    y = x1 * math.sin(angle) + y1 * math.cos(angle)
+    return  x,y
 
 
+#Functions that combine the camera and robot
+def getDirectionToTarget(targetPos, screenDimensions, tolerance):
+    """
+    Returns what direction in the x and y (relative) the robot should move
+    """
+    targetFocus = [screenDimensions[0] / 2, screenDimensions[1] / 2]
+    sign        = lambda x: (1.0, -1.0)[x < 0]  #sign(x) will return the sign of a number'
+
+
+    ##Calculate the pixel distance from the target focus to the target object
+    #distance = ((targetPos[0] - targetFocus[0]) ** 2 + (targetPos[1] - targetFocus[1]) ** 2) ** 0.5
+    yMove = 0.0
+    xMove = 0.0
+    xDist = targetFocus[0] - targetPos[0]
+    yDist = targetFocus[1] - targetPos[1]
+
+    #Figure out what direction to move and how much
+    if abs(yDist) >= tolerance:
+        yMove  = sign(yDist)
+
+
+    if abs(xDist) >= tolerance:
+        xMove  = sign(xDist)
+
+    #PERFORM THE MOVE
+    if not (abs(xDist) < tolerance and abs(yDist) < tolerance):
+        return xMove, -yMove
+    else:
+        return True
+
+
+
+# screenDim        = [640, 480]
+# targetCoords     = [100, 100]
+# tolerance        = 10
+# focusOnTarget(targetCoords, screenDim, tolerance)

@@ -17,6 +17,113 @@
   <component name="DaemonCodeAnalyzer">
     <disable_hints />
   </component>
+  <component name="DockManager">
+    <window id="1">
+      <content type="file-editors">
+        <state>
+          <leaf>
+            <file leaf-file-name="Main.py" pinned="false" current="false" current-in-tab="true">
+              <entry file="file://$PROJECT_DIR$/old files/Main.py">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state vertical-scroll-proportion="-0.3244963" vertical-offset="765" max-vertical-offset="3145">
+                    <caret line="511" column="0" selection-start-line="511" selection-start-column="0" selection-end-line="511" selection-end-column="0" />
+                    <folding>
+                      <element signature="e#292#6231#0" expanded="false" />
+                      <element signature="e#292#1549#1" expanded="false" />
+                      <element signature="e#6396#7075#0" expanded="false" />
+                      <element signature="e#7115#9673#0" expanded="false" />
+                      <element signature="e#7115#7422#1" expanded="false" />
+                      <element signature="e#9708#10329#0" expanded="false" />
+                      <element signature="e#10355#10973#0" expanded="false" />
+                      <element signature="e#10355#10526#1" expanded="false" />
+                      <element signature="e#11038#16879#0" expanded="false" />
+                      <element signature="e#16908#17223#0" expanded="false" />
+                      <element signature="e#17285#24163#0" expanded="false" />
+                      <element signature="e#17285#18251#1" expanded="false" />
+                      <element signature="e#24210#24619#0" expanded="false" />
+                      <element signature="e#24668#27914#0" expanded="false" />
+                      <element signature="e#24668#25201#1" expanded="false" />
+                      <element signature="e#27985#36492#0" expanded="false" />
+                      <element signature="e#36586#39262#0" expanded="false" />
+                      <element signature="e#36586#37144#1" expanded="false" />
+                      <element signature="e#39312#40370#0" expanded="false" />
+                      <element signature="e#39312#39497#1" expanded="false" />
+                      <element signature="e#40421#42958#0" expanded="false" />
+                      <element signature="e#40421#40973#1" expanded="false" />
+                      <element signature="e#43019#44410#0" expanded="false" />
+                      <element signature="e#43019#43186#1" expanded="false" />
+                      <element signature="e#44500#45796#0" expanded="false" />
+                      <element signature="e#45933#52573#0" expanded="false" />
+                      <element signature="e#52657#53723#0" expanded="false" />
+                      <element signature="e#53780#60982#0" expanded="false" />
+                      <element signature="e#53780#55678#1" expanded="false" />
+                      <element signature="e#61018#61975#0" expanded="false" />
+                      <element signature="e#61018#61548#1" expanded="false" />
+                      <element signature="e#62013#62946#0" expanded="false" />
+                      <element signature="e#62013#62138#1" expanded="false" />
+                      <element signature="e#62996#63822#0" expanded="false" />
+                      <element signature="e#62996#63508#1" expanded="false" />
+                      <element signature="e#63862#65956#0" expanded="false" />
+                      <element signature="e#63862#64299#1" expanded="false" />
+                      <element signature="e#66000#69035#0" expanded="false" />
+                      <element signature="e#66000#67228#1" expanded="false" />
+                      <element signature="e#69076#71052#0" expanded="false" />
+                      <element signature="e#69076#69693#1" expanded="false" />
+                      <element signature="e#71091#71958#0" expanded="false" />
+                      <element signature="e#71091#71280#1" expanded="false" />
+                      <element signature="e#72022#75380#0" expanded="false" />
+                      <element signature="e#72022#72472#1" expanded="false" />
+                      <element signature="e#75438#77143#0" expanded="false" />
+                      <element signature="e#77167#77305#0" expanded="false" />
+                      <element signature="e#77368#80367#0" expanded="false" />
+                    </folding>
+                  </state>
+                </provider>
+              </entry>
+            </file>
+            <file leaf-file-name="Video.py" pinned="false" current="false" current-in-tab="false">
+              <entry file="file://$PROJECT_DIR$/RobotGUI/Video.py">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state vertical-scroll-proportion="0.0" vertical-offset="638" max-vertical-offset="1632">
+                    <caret line="258" column="22" selection-start-line="258" selection-start-column="22" selection-end-line="258" selection-end-column="22" />
+                    <folding>
+                      <element signature="e#150#368#0" expanded="false" />
+                      <element signature="e#394#6324#0" expanded="false" />
+                      <element signature="e#432#1040#0" expanded="false" />
+                      <element signature="e#1082#1368#0" expanded="false" />
+                      <element signature="e#1406#3654#0" expanded="false" />
+                      <element signature="e#3691#3946#0" expanded="false" />
+                      <element signature="e#3981#4180#0" expanded="false" />
+                      <element signature="e#4229#5507#0" expanded="false" />
+                      <element signature="e#5544#5627#0" expanded="false" />
+                      <element signature="e#5662#5821#0" expanded="false" />
+                      <element signature="e#5859#6060#0" expanded="false" />
+                      <element signature="e#5859#6027#1" expanded="false" />
+                      <element signature="e#6097#6207#0" expanded="false" />
+                      <element signature="e#6248#6324#0" expanded="false" />
+                      <element signature="e#6382#6404#0" expanded="false" />
+                      <element signature="e#6439#6998#0" expanded="false" />
+                      <element signature="e#7681#8070#0" expanded="false" />
+                      <element signature="e#9826#10176#0" expanded="false" />
+                      <element signature="e#10220#11035#0" expanded="false" />
+                      <element signature="e#10220#10378#1" expanded="false" />
+                      <element signature="e#11104#12725#0" expanded="false" />
+                      <element signature="e#11150#11911#0" expanded="false" />
+                      <element signature="e#11150#11429#1" expanded="false" />
+                      <element signature="e#11943#12236#0" expanded="false" />
+                      <element signature="e#12266#12419#0" expanded="false" />
+                      <element signature="e#12450#12521#0" expanded="false" />
+                      <element signature="e#12561#12725#0" expanded="false" />
+                    </folding>
+                  </state>
+                </provider>
+              </entry>
+            </file>
+          </leaf>
+        </state>
+      </content>
+    </window>
+  </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
     <favorites_list name="RobotGUIProgramming" />
@@ -26,75 +133,72 @@
       <file leaf-file-name="Commands.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/RobotGUI/Commands.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1054">
-              <caret line="677" column="41" selection-start-line="677" selection-start-column="41" selection-end-line="677" selection-end-column="41" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="534" max-vertical-offset="2210">
+              <caret line="680" column="0" selection-start-line="680" selection-start-column="0" selection-end-line="680" selection-end-column="0" />
               <folding>
-                <element signature="e#167#1440#0" expanded="false" />
-                <element signature="e#203#1162#0" expanded="false" />
-                <element signature="e#1202#1226#0" expanded="false" />
-                <element signature="e#1272#1302#0" expanded="false" />
-                <element signature="e#1341#1381#0" expanded="false" />
-                <element signature="e#1419#1440#0" expanded="false" />
-                <element signature="e#1487#3098#0" expanded="false" />
-                <element signature="e#1536#1749#0" expanded="false" />
-                <element signature="e#1782#2790#0" expanded="false" />
-                <element signature="e#2831#3098#0" expanded="false" />
-                <element signature="e#3135#5972#0" expanded="false" />
-                <element signature="e#3172#3406#0" expanded="false" />
-                <element signature="e#3442#4146#0" expanded="false" />
-                <element signature="e#4184#4225#0" expanded="false" />
-                <element signature="e#4264#4276#0" expanded="false" />
-                <element signature="e#4325#5322#0" expanded="false" />
-                <element signature="e#5385#5968#0" expanded="false" />
-                <element signature="e#5385#5671#1" expanded="false" />
-                <element signature="e#6038#10955#0" expanded="false" />
-                <element signature="e#6215#7461#0" expanded="false" />
-                <element signature="e#7493#9039#0" expanded="false" />
-                <element signature="e#9072#9566#0" expanded="false" />
-                <element signature="e#9601#10529#0" expanded="false" />
-                <element signature="e#10566#10955#0" expanded="false" />
-                <element signature="e#10992#15300#0" expanded="false" />
-                <element signature="e#10992#11055#1" expanded="false" />
-                <element signature="e#11194#11946#0" expanded="false" />
-                <element signature="e#11978#13368#0" expanded="false" />
-                <element signature="e#13401#13767#0" expanded="false" />
-                <element signature="e#13802#14633#0" expanded="false" />
-                <element signature="e#14670#15300#0" expanded="false" />
-                <element signature="e#15337#19812#0" expanded="false" />
-                <element signature="e#15337#15400#1" expanded="false" />
-                <element signature="e#15539#16292#0" expanded="false" />
-                <element signature="e#16324#17714#0" expanded="false" />
-                <element signature="e#17747#18113#0" expanded="false" />
-                <element signature="e#18148#18979#0" expanded="false" />
-                <element signature="e#19016#19812#0" expanded="false" />
-                <element signature="e#19847#21741#0" expanded="false" />
-                <element signature="e#19995#20340#0" expanded="false" />
-                <element signature="e#20372#20780#0" expanded="false" />
-                <element signature="e#20813#21024#0" expanded="false" />
-                <element signature="e#21059#21589#0" expanded="false" />
-                <element signature="e#21626#21741#0" expanded="false" />
-                <element signature="e#21779#22800#0" expanded="false" />
-                <element signature="e#21779#22033#1" expanded="false" />
-                <element signature="e#22242#22359#0" expanded="false" />
-                <element signature="e#22392#22414#0" expanded="false" />
-                <element signature="e#22449#22741#0" expanded="false" />
-                <element signature="e#22778#22800#0" expanded="false" />
-                <element signature="e#22837#23594#0" expanded="false" />
-                <element signature="e#22967#23144#0" expanded="false" />
-                <element signature="e#23179#23201#0" expanded="false" />
-                <element signature="e#23236#23528#0" expanded="false" />
-                <element signature="e#23565#23594#0" expanded="false" />
-                <element signature="e#23630#24392#0" expanded="false" />
-                <element signature="e#23762#23941#0" expanded="false" />
-                <element signature="e#23976#23998#0" expanded="false" />
-                <element signature="e#24033#24325#0" expanded="false" />
-                <element signature="e#24362#24392#0" expanded="false" />
-                <element signature="e#24588#25761#0" expanded="false" />
-                <element signature="e#25801#28065#0" expanded="false" />
-                <element signature="e#28110#28940#0" expanded="false" />
-                <element signature="e#28973#29648#0" expanded="false" />
-                <element signature="e#29683#30223#0" expanded="false" />
-                <element signature="e#30260#30797#0" expanded="false" />
+                <element signature="e#227#1500#0" expanded="false" />
+                <element signature="e#263#1222#0" expanded="false" />
+                <element signature="e#1262#1286#0" expanded="false" />
+                <element signature="e#1332#1362#0" expanded="false" />
+                <element signature="e#1401#1441#0" expanded="false" />
+                <element signature="e#1479#1500#0" expanded="false" />
+                <element signature="e#1547#3158#0" expanded="false" />
+                <element signature="e#1596#1809#0" expanded="false" />
+                <element signature="e#1842#2850#0" expanded="false" />
+                <element signature="e#2891#3158#0" expanded="false" />
+                <element signature="e#3195#6032#0" expanded="false" />
+                <element signature="e#3232#3466#0" expanded="false" />
+                <element signature="e#3502#4206#0" expanded="false" />
+                <element signature="e#4244#4285#0" expanded="false" />
+                <element signature="e#4324#4336#0" expanded="false" />
+                <element signature="e#4385#5382#0" expanded="false" />
+                <element signature="e#5445#6028#0" expanded="false" />
+                <element signature="e#5445#5731#1" expanded="false" />
+                <element signature="e#6098#11015#0" expanded="false" />
+                <element signature="e#6275#7521#0" expanded="false" />
+                <element signature="e#7553#9099#0" expanded="false" />
+                <element signature="e#9132#9626#0" expanded="false" />
+                <element signature="e#9661#10589#0" expanded="false" />
+                <element signature="e#10626#11015#0" expanded="false" />
+                <element signature="e#11052#15360#0" expanded="false" />
+                <element signature="e#11052#11115#1" expanded="false" />
+                <element signature="e#11254#12006#0" expanded="false" />
+                <element signature="e#12038#13428#0" expanded="false" />
+                <element signature="e#13461#13827#0" expanded="false" />
+                <element signature="e#13862#14693#0" expanded="false" />
+                <element signature="e#14730#15360#0" expanded="false" />
+                <element signature="e#15397#19872#0" expanded="false" />
+                <element signature="e#15397#15460#1" expanded="false" />
+                <element signature="e#15599#16352#0" expanded="false" />
+                <element signature="e#16384#17774#0" expanded="false" />
+                <element signature="e#17807#18173#0" expanded="false" />
+                <element signature="e#18208#19039#0" expanded="false" />
+                <element signature="e#19076#19872#0" expanded="false" />
+                <element signature="e#19907#21801#0" expanded="false" />
+                <element signature="e#20055#20400#0" expanded="false" />
+                <element signature="e#20432#20840#0" expanded="false" />
+                <element signature="e#20873#21084#0" expanded="false" />
+                <element signature="e#21119#21649#0" expanded="false" />
+                <element signature="e#21686#21801#0" expanded="false" />
+                <element signature="e#21839#22860#0" expanded="false" />
+                <element signature="e#21839#22093#1" expanded="false" />
+                <element signature="e#22302#22419#0" expanded="false" />
+                <element signature="e#22452#22474#0" expanded="false" />
+                <element signature="e#22509#22801#0" expanded="false" />
+                <element signature="e#22838#22860#0" expanded="false" />
+                <element signature="e#22897#23654#0" expanded="false" />
+                <element signature="e#23027#23204#0" expanded="false" />
+                <element signature="e#23239#23261#0" expanded="false" />
+                <element signature="e#23296#23588#0" expanded="false" />
+                <element signature="e#23625#23654#0" expanded="false" />
+                <element signature="e#23690#24452#0" expanded="false" />
+                <element signature="e#23822#24001#0" expanded="false" />
+                <element signature="e#24036#24058#0" expanded="false" />
+                <element signature="e#24093#24385#0" expanded="false" />
+                <element signature="e#24422#24452#0" expanded="false" />
+                <element signature="e#25896#28160#0" expanded="false" />
+                <element signature="e#29060#29735#0" expanded="false" />
+                <element signature="e#29770#30310#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -103,46 +207,175 @@
       <file leaf-file-name="ControlPanel.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/RobotGUI/ControlPanel.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="979" max-vertical-offset="2193">
-              <caret line="234" column="0" selection-start-line="234" selection-start-column="0" selection-end-line="234" selection-end-column="0" />
+            <state vertical-scroll-proportion="-12.75" vertical-offset="1547" max-vertical-offset="4369">
+              <caret line="225" column="45" selection-start-line="225" selection-start-column="45" selection-end-line="225" selection-end-column="45" />
               <folding>
                 <element signature="e#161#772#0" expanded="false" />
                 <element signature="e#161#421#1" expanded="false" />
                 <element signature="e#481#772#0" expanded="false" />
-                <element signature="e#817#1171#1" expanded="false" />
-                <element signature="e#1237#1982#0" expanded="false" />
-                <element signature="e#2016#3401#0" expanded="false" />
                 <element signature="e#3434#4474#0" expanded="false" />
                 <element signature="e#4513#4841#0" expanded="false" />
                 <element signature="e#4876#5136#0" expanded="false" />
-                <element signature="e#7230#7953#0" expanded="false" />
+                <element signature="e#5175#7185#0" expanded="false" />
                 <element signature="e#7987#8014#0" expanded="false" />
                 <element signature="e#8051#8079#0" expanded="false" />
                 <element signature="e#8117#8146#0" expanded="false" />
                 <element signature="e#8184#8219#0" expanded="false" />
-                <element signature="e#8259#8312#0" expanded="false" />
-                <element signature="e#8356#8426#0" expanded="false" />
-                <element signature="e#8515#9305#0" expanded="false" />
-                <element signature="e#9337#9360#0" expanded="false" />
-                <element signature="e#9403#9831#0" expanded="false" />
-                <element signature="e#9403#9611#1" expanded="false" />
-                <element signature="e#9877#10327#0" expanded="false" />
-                <element signature="e#10364#10694#0" expanded="false" />
-                <element signature="e#10750#12160#0" expanded="false" />
-                <element signature="e#12197#13342#0" expanded="false" />
-                <element signature="e#13380#14851#0" expanded="false" />
-                <element signature="e#14890#15253#0" expanded="false" />
-                <element signature="e#15294#15753#0" expanded="false" />
-                <element signature="e#15798#20185#0" expanded="false" />
-                <element signature="e#15834#16469#0" expanded="false" />
-                <element signature="e#16501#16526#0" expanded="false" />
-                <element signature="e#16563#16824#0" expanded="false" />
-                <element signature="e#16884#18360#0" expanded="false" />
-                <element signature="e#18406#18696#0" expanded="false" />
-                <element signature="e#18738#18907#0" expanded="false" />
-                <element signature="e#18949#19471#0" expanded="false" />
-                <element signature="e#19509#19826#0" expanded="false" />
-                <element signature="e#19866#20185#0" expanded="false" />
+                <element signature="e#8369#8439#0" expanded="false" />
+                <element signature="e#8528#9318#0" expanded="false" />
+                <element signature="e#9350#9373#0" expanded="false" />
+                <element signature="e#9416#9844#0" expanded="false" />
+                <element signature="e#9416#9624#1" expanded="false" />
+                <element signature="e#9890#10340#0" expanded="false" />
+                <element signature="e#10377#10707#0" expanded="false" />
+                <element signature="e#10763#12173#0" expanded="false" />
+                <element signature="e#13393#14864#0" expanded="false" />
+                <element signature="e#14903#15266#0" expanded="false" />
+                <element signature="e#15863#16498#0" expanded="false" />
+                <element signature="e#16530#16555#0" expanded="false" />
+                <element signature="e#16592#16853#0" expanded="false" />
+                <element signature="e#18416#18706#0" expanded="false" />
+                <element signature="e#18748#18917#0" expanded="false" />
+                <element signature="e#18959#19481#0" expanded="false" />
+                <element signature="e#19519#19836#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Robot.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/RobotGUI/Robot.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="459">
+              <caret line="208" column="0" selection-start-line="208" selection-start-column="0" selection-end-line="208" selection-end-column="0" />
+              <folding>
+                <element signature="e#160#370#0" expanded="false" />
+                <element signature="e#392#8023#0" expanded="false" />
+                <element signature="e#392#449#1" expanded="false" />
+                <element signature="e#491#2588#0" expanded="false" />
+                <element signature="e#2627#2958#0" expanded="false" />
+                <element signature="e#3002#3647#0" expanded="false" />
+                <element signature="e#3692#4149#0" expanded="false" />
+                <element signature="e#4193#4308#0" expanded="false" />
+                <element signature="e#4347#4465#0" expanded="false" />
+                <element signature="e#4510#6409#0" expanded="false" />
+                <element signature="e#6451#7057#0" expanded="false" />
+                <element signature="e#7101#7482#0" expanded="false" />
+                <element signature="e#7520#8023#0" expanded="false" />
+                <element signature="e#8067#8238#0" expanded="false" />
+                <element signature="e#8356#9226#0" expanded="false" />
+                <element signature="e#8356#8442#1" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestUArm.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/RobotGUI/UArmForPython/TestUArm.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="527">
+              <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
+              <folding>
+                <element signature="e#123#294#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="uarm_python.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/RobotGUI/UArmForPython/uarm_python.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-7.964286" vertical-offset="1579" max-vertical-offset="4012">
+              <caret line="244" column="17" selection-start-line="244" selection-start-column="8" selection-end-line="244" selection-end-column="17" />
+              <folding>
+                <element signature="e#578#629#0" expanded="false" />
+                <element signature="e#681#1063#0" expanded="false" />
+                <element signature="e#1115#1417#0" expanded="false" />
+                <element signature="e#1458#1474#0" expanded="false" />
+                <element signature="e#1956#2062#0" expanded="false" />
+                <element signature="e#2110#2232#0" expanded="false" />
+                <element signature="e#2299#2727#0" expanded="false" />
+                <element signature="e#2791#3337#0" expanded="false" />
+                <element signature="e#3411#3932#0" expanded="false" />
+                <element signature="e#4009#4240#0" expanded="false" />
+                <element signature="e#4292#4874#0" expanded="false" />
+                <element signature="e#4930#5323#0" expanded="false" />
+                <element signature="e#5398#6024#0" expanded="false" />
+                <element signature="e#6085#6612#0" expanded="false" />
+                <element signature="e#6762#6810#0" expanded="false" />
+                <element signature="e#6845#6893#0" expanded="false" />
+                <element signature="e#6928#6976#0" expanded="false" />
+                <element signature="e#7026#7422#0" expanded="false" />
+                <element signature="e#7475#7871#0" expanded="false" />
+                <element signature="e#7932#8659#0" expanded="false" />
+                <element signature="e#8692#8772#0" expanded="false" />
+                <element signature="e#8806#8956#0" expanded="false" />
+                <element signature="e#12148#13227#0" expanded="false" />
+                <element signature="e#13270#14016#0" expanded="false" />
+                <element signature="e#14078#15075#0" expanded="false" />
+                <element signature="e#15155#15159#0" expanded="false" />
+                <element signature="e#15200#15378#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="scrap.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/RobotGUI/scrap.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="306">
+              <caret line="3" column="0" selection-start-line="3" selection-start-column="0" selection-end-line="8" selection-end-column="13" />
+              <folding>
+                <element signature="e#0#31#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Main.py" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/RobotGUI/Main.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.47975078" vertical-offset="559" max-vertical-offset="1598">
+              <caret line="560" column="27" selection-start-line="560" selection-start-column="27" selection-end-line="560" selection-end-column="27" />
+              <folding>
+                <element signature="e#313#4437#0" expanded="false" />
+                <element signature="e#313#562#1" expanded="false" />
+                <element signature="e#624#1146#0" expanded="false" />
+                <element signature="e#1180#2337#0" expanded="false" />
+                <element signature="e#2375#2674#0" expanded="false" />
+                <element signature="e#2715#4377#0" expanded="false" />
+                <element signature="e#4414#4437#0" expanded="false" />
+                <element signature="e#4479#9532#0" expanded="false" />
+                <element signature="e#4479#4657#1" expanded="false" />
+                <element signature="e#4703#5170#0" expanded="false" />
+                <element signature="e#5202#7291#0" expanded="false" />
+                <element signature="e#7337#8204#0" expanded="false" />
+                <element signature="e#8252#9109#0" expanded="false" />
+                <element signature="e#9151#9213#0" expanded="false" />
+                <element signature="e#9255#9331#0" expanded="false" />
+                <element signature="e#9376#9475#0" expanded="false" />
+                <element signature="e#9512#9532#0" expanded="false" />
+                <element signature="e#9575#10321#0" expanded="false" />
+                <element signature="e#9644#9823#0" expanded="false" />
+                <element signature="e#9856#10316#0" expanded="false" />
+                <element signature="e#10424#12554#0" expanded="false" />
+                <element signature="e#12586#15045#0" expanded="false" />
+                <element signature="e#15097#16595#0" expanded="false" />
+                <element signature="e#16636#17418#0" expanded="false" />
+                <element signature="e#17460#18258#0" expanded="false" />
+                <element signature="e#18305#18552#0" expanded="false" />
+                <element signature="e#18610#19042#0" expanded="false" />
+                <element signature="e#19101#19650#0" expanded="false" />
+                <element signature="e#19688#20393#0" expanded="false" />
+                <element signature="e#20426#20581#0" expanded="false" />
+                <element signature="e#20629#21260#0" expanded="false" />
+                <element signature="e#21305#22104#0" expanded="false" />
+                <element signature="e#22143#22251#0" expanded="false" />
+                <element signature="e#22661#22746#0" expanded="false" />
+                <element signature="e#22792#24000#0" expanded="false" />
+                <element signature="e#22792#22952#1" expanded="false" />
+                <element signature="e#22991#23030#0" expanded="false" />
+                <element signature="e#23080#24000#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -151,8 +384,8 @@
       <file leaf-file-name="Events.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/RobotGUI/Events.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1377" max-vertical-offset="2108">
-              <caret line="153" column="32" selection-start-line="153" selection-start-column="32" selection-end-line="153" selection-end-column="32" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="602" max-vertical-offset="2108">
+              <caret line="148" column="102" selection-start-line="148" selection-start-column="102" selection-end-line="148" selection-end-column="102" />
               <folding>
                 <element signature="e#101#927#0" expanded="false" />
                 <element signature="e#101#227#1" expanded="false" />
@@ -199,66 +432,6 @@
                 <element signature="e#13431#13451#0" expanded="false" />
                 <element signature="e#13494#13657#0" expanded="false" />
                 <element signature="e#13699#13733#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Project Notes.txt" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/RobotGUI/Project Notes.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="17" max-vertical-offset="816">
-              <caret line="5" column="92" selection-start-line="5" selection-start-column="92" selection-end-line="5" selection-end-column="92" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Main.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/RobotGUI/Main.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="10044" max-vertical-offset="11169">
-              <caret line="521" column="63" selection-start-line="521" selection-start-column="63" selection-end-line="521" selection-end-column="63" />
-              <folding>
-                <element signature="e#43#53#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Video.py" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/RobotGUI/Video.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.46800733" vertical-offset="696" max-vertical-offset="1564">
-              <caret line="259" column="39" selection-start-line="259" selection-start-column="39" selection-end-line="259" selection-end-column="39" />
-              <folding>
-                <element signature="e#150#368#0" expanded="false" />
-                <element signature="e#394#6324#0" expanded="false" />
-                <element signature="e#432#1040#0" expanded="false" />
-                <element signature="e#1082#1368#0" expanded="false" />
-                <element signature="e#1406#3654#0" expanded="false" />
-                <element signature="e#3691#3946#0" expanded="false" />
-                <element signature="e#3981#4180#0" expanded="false" />
-                <element signature="e#4229#5507#0" expanded="false" />
-                <element signature="e#5544#5627#0" expanded="false" />
-                <element signature="e#5662#5821#0" expanded="false" />
-                <element signature="e#5859#6060#0" expanded="false" />
-                <element signature="e#5859#6027#1" expanded="false" />
-                <element signature="e#6097#6207#0" expanded="false" />
-                <element signature="e#6248#6324#0" expanded="false" />
-                <element signature="e#6382#6404#0" expanded="false" />
-                <element signature="e#6439#6998#0" expanded="false" />
-                <element signature="e#7681#8070#0" expanded="false" />
-                <element signature="e#9789#10139#0" expanded="false" />
-                <element signature="e#10183#10998#0" expanded="false" />
-                <element signature="e#10183#10341#1" expanded="false" />
-                <element signature="e#11067#12688#0" expanded="false" />
-                <element signature="e#11113#11874#0" expanded="false" />
-                <element signature="e#11113#11392#1" expanded="false" />
-                <element signature="e#11906#12199#0" expanded="false" />
-                <element signature="e#12229#12382#0" expanded="false" />
-                <element signature="e#12413#12484#0" expanded="false" />
-                <element signature="e#12524#12688#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -314,21 +487,21 @@
         <option value="$PROJECT_DIR$/RobotGUI/ToDo.txt" />
         <option value="$PROJECT_DIR$/RobotGUI/TestEverything.task" />
         <option value="$PROJECT_DIR$/RobotGUI/UArmForPython/uarm_python.py" />
-        <option value="$PROJECT_DIR$/RobotGUI/UArmForPython/TestUArm.py" />
         <option value="$PROJECT_DIR$/RobotGUI/Global.py" />
         <option value="$PROJECT_DIR$/RobotGUI/Settings.p" />
         <option value="$PROJECT_DIR$/OpenCV Tutorials/LKOpticalFlow.py" />
         <option value="$PROJECT_DIR$/OpenCV Tutorials/FarneBackOpticalFlow.py" />
-        <option value="$PROJECT_DIR$/RobotGUI/scrap.py" />
         <option value="$PROJECT_DIR$/OpenCV Tutorials/ColorContourTracking.py" />
+        <option value="$PROJECT_DIR$/RobotGUI/Icons.py" />
+        <option value="$PROJECT_DIR$/RobotGUI/Project Notes.txt" />
+        <option value="$PROJECT_DIR$/RobotGUI/scrap.py" />
+        <option value="$PROJECT_DIR$/RobotGUI/UArmForPython/TestUArm.py" />
+        <option value="$PROJECT_DIR$/RobotGUI/Events.py" />
+        <option value="$PROJECT_DIR$/RobotGUI/Robot.py" />
+        <option value="$PROJECT_DIR$/RobotGUI/Video.py" />
         <option value="$PROJECT_DIR$/RobotGUI/Commands.py" />
         <option value="$PROJECT_DIR$/RobotGUI/Main.py" />
-        <option value="$PROJECT_DIR$/RobotGUI/Icons.py" />
-        <option value="$PROJECT_DIR$/RobotGUI/Robot.py" />
         <option value="$PROJECT_DIR$/RobotGUI/ControlPanel.py" />
-        <option value="$PROJECT_DIR$/RobotGUI/Project Notes.txt" />
-        <option value="$PROJECT_DIR$/RobotGUI/Events.py" />
-        <option value="$PROJECT_DIR$/RobotGUI/Video.py" />
       </list>
     </option>
   </component>
@@ -392,6 +565,20 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="old files" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="RobotGUIProgramming" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="RobotGUIProgramming" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="RobotGUI" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -406,7 +593,11 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="OpenCV Tutorials" />
+              <option name="myItemId" value="RobotGUI" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="UArmForPython" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -476,42 +667,6 @@
       <ConfigurationWrapper RunnerId="PythonRunner" />
       <method />
     </configuration>
-    <configuration default="false" name="TestUArm" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/RobotGUI/Tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="RobotGUIProgramming" />
-      <option name="SCRIPT_NAME" value="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\UArmForPython\TestUArm.py" />
-      <option name="PARAMETERS" value="" />
-      <RunnerSettings RunnerId="PythonRunner" />
-      <ConfigurationWrapper RunnerId="PythonRunner" />
-      <method />
-    </configuration>
-    <configuration default="false" name="LKOpticalFlow" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/OpenCV Tutorials" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="RobotGUIProgramming" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/OpenCV Tutorials/LKOpticalFlow.py" />
-      <option name="PARAMETERS" value="" />
-      <RunnerSettings RunnerId="PythonRunner" />
-      <ConfigurationWrapper RunnerId="PythonRunner" />
-      <method />
-    </configuration>
     <configuration default="false" name="ColorContourTracking" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -525,6 +680,42 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="RobotGUIProgramming" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/OpenCV Tutorials/ColorContourTracking.py" />
+      <option name="PARAMETERS" value="" />
+      <RunnerSettings RunnerId="PythonRunner" />
+      <ConfigurationWrapper RunnerId="PythonRunner" />
+      <method />
+    </configuration>
+    <configuration default="false" name="TestUArm (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/RobotGUI/UArmForPython" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="RobotGUIProgramming" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/RobotGUI/UArmForPython/TestUArm.py" />
+      <option name="PARAMETERS" value="" />
+      <RunnerSettings RunnerId="PythonRunner" />
+      <ConfigurationWrapper RunnerId="PythonRunner" />
+      <method />
+    </configuration>
+    <configuration default="false" name="Robot" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/RobotGUI" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="RobotGUIProgramming" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/RobotGUI/Robot.py" />
       <option name="PARAMETERS" value="" />
       <RunnerSettings RunnerId="PythonRunner" />
       <ConfigurationWrapper RunnerId="PythonRunner" />
@@ -654,17 +845,17 @@
     <list size="5">
       <item index="0" class="java.lang.String" itemvalue="Python.Main" />
       <item index="1" class="java.lang.String" itemvalue="Python.scrap" />
-      <item index="2" class="java.lang.String" itemvalue="Python.TestUArm" />
-      <item index="3" class="java.lang.String" itemvalue="Python.LKOpticalFlow" />
-      <item index="4" class="java.lang.String" itemvalue="Python.ColorContourTracking" />
+      <item index="2" class="java.lang.String" itemvalue="Python.ColorContourTracking" />
+      <item index="3" class="java.lang.String" itemvalue="Python.TestUArm (1)" />
+      <item index="4" class="java.lang.String" itemvalue="Python.Robot" />
     </list>
     <recent_temporary>
       <list size="5">
         <item index="0" class="java.lang.String" itemvalue="Python.Main" />
-        <item index="1" class="java.lang.String" itemvalue="Python.ColorContourTracking" />
-        <item index="2" class="java.lang.String" itemvalue="Python.scrap" />
-        <item index="3" class="java.lang.String" itemvalue="Python.LKOpticalFlow" />
-        <item index="4" class="java.lang.String" itemvalue="Python.TestUArm" />
+        <item index="1" class="java.lang.String" itemvalue="Python.Robot" />
+        <item index="2" class="java.lang.String" itemvalue="Python.TestUArm (1)" />
+        <item index="3" class="java.lang.String" itemvalue="Python.scrap" />
+        <item index="4" class="java.lang.String" itemvalue="Python.ColorContourTracking" />
       </list>
     </recent_temporary>
   </component>
@@ -713,7 +904,7 @@
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3975501" sideWeight="0.5349233" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.20169252" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.116926506" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3596882" sideWeight="0.6796628" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25389755" sideWeight="0.6796628" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -730,17 +921,17 @@
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32628062" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.36525613" sideWeight="0.5349233" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3975501" sideWeight="0.5349233" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.20169252" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.116926506" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.29287305" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.15173867" sideWeight="0.49822065" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.15964173" sideWeight="0.49822065" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.5044543" sideWeight="0.6796628" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19265033" sideWeight="0.6796628" order="2" side_tool="false" content_ui="tabs" />
     </layout-to-restore>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -761,13 +952,6 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="python-line">
-          <url>file://$PROJECT_DIR$/RobotGUI/UArmForPython/TestUArm.py</url>
-          <line>1</line>
-          <option name="timeStamp" value="83" />
-        </line-breakpoint>
-      </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
@@ -804,16 +988,16 @@
             <element signature="e#6382#6404#0" expanded="false" />
             <element signature="e#6439#6998#0" expanded="false" />
             <element signature="e#7681#8070#0" expanded="false" />
-            <element signature="e#9789#10139#0" expanded="false" />
-            <element signature="e#10183#10998#0" expanded="false" />
-            <element signature="e#10183#10341#1" expanded="false" />
-            <element signature="e#11067#12688#0" expanded="false" />
-            <element signature="e#11113#11874#0" expanded="false" />
-            <element signature="e#11113#11392#1" expanded="false" />
-            <element signature="e#11906#12199#0" expanded="false" />
-            <element signature="e#12229#12382#0" expanded="false" />
-            <element signature="e#12413#12484#0" expanded="false" />
-            <element signature="e#12524#12688#0" expanded="false" />
+            <element signature="e#9826#10176#0" expanded="false" />
+            <element signature="e#10220#11035#0" expanded="false" />
+            <element signature="e#10220#10378#1" expanded="false" />
+            <element signature="e#11104#12725#0" expanded="false" />
+            <element signature="e#11150#11911#0" expanded="false" />
+            <element signature="e#11150#11429#1" expanded="false" />
+            <element signature="e#11943#12236#0" expanded="false" />
+            <element signature="e#12266#12419#0" expanded="false" />
+            <element signature="e#12450#12521#0" expanded="false" />
+            <element signature="e#12561#12725#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1007,21 +1191,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/old files/Main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33333334" vertical-offset="1077" max-vertical-offset="28220">
-          <caret line="85" column="63" selection-start-line="85" selection-start-column="63" selection-end-line="85" selection-end-column="63" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/UArmForPython/TestUArm.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="289">
-          <caret line="7" column="7" selection-start-line="7" selection-start-column="7" selection-end-line="7" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/old files/Robot.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.3482587" vertical-offset="516" max-vertical-offset="4947">
@@ -1078,20 +1247,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/UArmForPython/uarm_python.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="4947" max-vertical-offset="8925">
-          <caret line="291" column="12" selection-start-line="291" selection-start-column="8" selection-end-line="291" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/scrap.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="153">
-          <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/old files/Video/Vision.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.5132556" vertical-offset="519" max-vertical-offset="1462">
@@ -1106,16 +1261,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/Main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="10044" max-vertical-offset="11169">
-          <caret line="521" column="63" selection-start-line="521" selection-start-column="63" selection-end-line="521" selection-end-column="63" />
-          <folding>
-            <element signature="e#43#53#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/RobotGUI/Icons.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.3107861" vertical-offset="0" max-vertical-offset="884">
@@ -1124,161 +1269,64 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/Robot.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="306">
-          <caret line="14" column="14" selection-start-line="14" selection-start-column="14" selection-end-line="14" selection-end-column="14" />
-          <folding>
-            <element signature="e#163#373#0" expanded="false" />
-            <element signature="e#395#8026#0" expanded="false" />
-            <element signature="e#395#452#1" expanded="false" />
-            <element signature="e#494#2591#0" expanded="false" />
-            <element signature="e#2630#2961#0" expanded="false" />
-            <element signature="e#3005#3650#0" expanded="false" />
-            <element signature="e#3695#4152#0" expanded="false" />
-            <element signature="e#4196#4311#0" expanded="false" />
-            <element signature="e#4350#4468#0" expanded="false" />
-            <element signature="e#4513#6412#0" expanded="false" />
-            <element signature="e#6454#7060#0" expanded="false" />
-            <element signature="e#7104#7485#0" expanded="false" />
-            <element signature="e#7523#8026#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/ControlPanel.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="979" max-vertical-offset="2193">
-          <caret line="234" column="0" selection-start-line="234" selection-start-column="0" selection-end-line="234" selection-end-column="0" />
-          <folding>
-            <element signature="e#161#772#0" expanded="false" />
-            <element signature="e#161#421#1" expanded="false" />
-            <element signature="e#481#772#0" expanded="false" />
-            <element signature="e#817#1171#1" expanded="false" />
-            <element signature="e#1237#1982#0" expanded="false" />
-            <element signature="e#2016#3401#0" expanded="false" />
-            <element signature="e#3434#4474#0" expanded="false" />
-            <element signature="e#4513#4841#0" expanded="false" />
-            <element signature="e#4876#5136#0" expanded="false" />
-            <element signature="e#7230#7953#0" expanded="false" />
-            <element signature="e#7987#8014#0" expanded="false" />
-            <element signature="e#8051#8079#0" expanded="false" />
-            <element signature="e#8117#8146#0" expanded="false" />
-            <element signature="e#8184#8219#0" expanded="false" />
-            <element signature="e#8259#8312#0" expanded="false" />
-            <element signature="e#8356#8426#0" expanded="false" />
-            <element signature="e#8515#9305#0" expanded="false" />
-            <element signature="e#9337#9360#0" expanded="false" />
-            <element signature="e#9403#9831#0" expanded="false" />
-            <element signature="e#9403#9611#1" expanded="false" />
-            <element signature="e#9877#10327#0" expanded="false" />
-            <element signature="e#10364#10694#0" expanded="false" />
-            <element signature="e#10750#12160#0" expanded="false" />
-            <element signature="e#12197#13342#0" expanded="false" />
-            <element signature="e#13380#14851#0" expanded="false" />
-            <element signature="e#14890#15253#0" expanded="false" />
-            <element signature="e#15294#15753#0" expanded="false" />
-            <element signature="e#15798#20185#0" expanded="false" />
-            <element signature="e#15834#16469#0" expanded="false" />
-            <element signature="e#16501#16526#0" expanded="false" />
-            <element signature="e#16563#16824#0" expanded="false" />
-            <element signature="e#16884#18360#0" expanded="false" />
-            <element signature="e#18406#18696#0" expanded="false" />
-            <element signature="e#18738#18907#0" expanded="false" />
-            <element signature="e#18949#19471#0" expanded="false" />
-            <element signature="e#19509#19826#0" expanded="false" />
-            <element signature="e#19866#20185#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/RobotGUI/Project Notes.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="17" max-vertical-offset="816">
+        <state vertical-scroll-proportion="0.15539305" vertical-offset="0" max-vertical-offset="816">
           <caret line="5" column="92" selection-start-line="5" selection-start-column="92" selection-end-line="5" selection-end-column="92" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/RobotGUI/Commands.py">
+    <entry file="file://$PROJECT_DIR$/RobotGUI/UArmForPython/uarm_python.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1054">
-          <caret line="677" column="41" selection-start-line="677" selection-start-column="41" selection-end-line="677" selection-end-column="41" />
+        <state vertical-scroll-proportion="-7.964286" vertical-offset="1579" max-vertical-offset="4012">
+          <caret line="244" column="17" selection-start-line="244" selection-start-column="8" selection-end-line="244" selection-end-column="17" />
           <folding>
-            <element signature="e#167#1440#0" expanded="false" />
-            <element signature="e#203#1162#0" expanded="false" />
-            <element signature="e#1202#1226#0" expanded="false" />
-            <element signature="e#1272#1302#0" expanded="false" />
-            <element signature="e#1341#1381#0" expanded="false" />
-            <element signature="e#1419#1440#0" expanded="false" />
-            <element signature="e#1487#3098#0" expanded="false" />
-            <element signature="e#1536#1749#0" expanded="false" />
-            <element signature="e#1782#2790#0" expanded="false" />
-            <element signature="e#2831#3098#0" expanded="false" />
-            <element signature="e#3135#5972#0" expanded="false" />
-            <element signature="e#3172#3406#0" expanded="false" />
-            <element signature="e#3442#4146#0" expanded="false" />
-            <element signature="e#4184#4225#0" expanded="false" />
-            <element signature="e#4264#4276#0" expanded="false" />
-            <element signature="e#4325#5322#0" expanded="false" />
-            <element signature="e#5385#5968#0" expanded="false" />
-            <element signature="e#5385#5671#1" expanded="false" />
-            <element signature="e#6038#10955#0" expanded="false" />
-            <element signature="e#6215#7461#0" expanded="false" />
-            <element signature="e#7493#9039#0" expanded="false" />
-            <element signature="e#9072#9566#0" expanded="false" />
-            <element signature="e#9601#10529#0" expanded="false" />
-            <element signature="e#10566#10955#0" expanded="false" />
-            <element signature="e#10992#15300#0" expanded="false" />
-            <element signature="e#10992#11055#1" expanded="false" />
-            <element signature="e#11194#11946#0" expanded="false" />
-            <element signature="e#11978#13368#0" expanded="false" />
-            <element signature="e#13401#13767#0" expanded="false" />
-            <element signature="e#13802#14633#0" expanded="false" />
-            <element signature="e#14670#15300#0" expanded="false" />
-            <element signature="e#15337#19812#0" expanded="false" />
-            <element signature="e#15337#15400#1" expanded="false" />
-            <element signature="e#15539#16292#0" expanded="false" />
-            <element signature="e#16324#17714#0" expanded="false" />
-            <element signature="e#17747#18113#0" expanded="false" />
-            <element signature="e#18148#18979#0" expanded="false" />
-            <element signature="e#19016#19812#0" expanded="false" />
-            <element signature="e#19847#21741#0" expanded="false" />
-            <element signature="e#19995#20340#0" expanded="false" />
-            <element signature="e#20372#20780#0" expanded="false" />
-            <element signature="e#20813#21024#0" expanded="false" />
-            <element signature="e#21059#21589#0" expanded="false" />
-            <element signature="e#21626#21741#0" expanded="false" />
-            <element signature="e#21779#22800#0" expanded="false" />
-            <element signature="e#21779#22033#1" expanded="false" />
-            <element signature="e#22242#22359#0" expanded="false" />
-            <element signature="e#22392#22414#0" expanded="false" />
-            <element signature="e#22449#22741#0" expanded="false" />
-            <element signature="e#22778#22800#0" expanded="false" />
-            <element signature="e#22837#23594#0" expanded="false" />
-            <element signature="e#22967#23144#0" expanded="false" />
-            <element signature="e#23179#23201#0" expanded="false" />
-            <element signature="e#23236#23528#0" expanded="false" />
-            <element signature="e#23565#23594#0" expanded="false" />
-            <element signature="e#23630#24392#0" expanded="false" />
-            <element signature="e#23762#23941#0" expanded="false" />
-            <element signature="e#23976#23998#0" expanded="false" />
-            <element signature="e#24033#24325#0" expanded="false" />
-            <element signature="e#24362#24392#0" expanded="false" />
-            <element signature="e#24588#25761#0" expanded="false" />
-            <element signature="e#25801#28065#0" expanded="false" />
-            <element signature="e#28110#28940#0" expanded="false" />
-            <element signature="e#28973#29648#0" expanded="false" />
-            <element signature="e#29683#30223#0" expanded="false" />
-            <element signature="e#30260#30797#0" expanded="false" />
+            <element signature="e#578#629#0" expanded="false" />
+            <element signature="e#681#1063#0" expanded="false" />
+            <element signature="e#1115#1417#0" expanded="false" />
+            <element signature="e#1458#1474#0" expanded="false" />
+            <element signature="e#1956#2062#0" expanded="false" />
+            <element signature="e#2110#2232#0" expanded="false" />
+            <element signature="e#2299#2727#0" expanded="false" />
+            <element signature="e#2791#3337#0" expanded="false" />
+            <element signature="e#3411#3932#0" expanded="false" />
+            <element signature="e#4009#4240#0" expanded="false" />
+            <element signature="e#4292#4874#0" expanded="false" />
+            <element signature="e#4930#5323#0" expanded="false" />
+            <element signature="e#5398#6024#0" expanded="false" />
+            <element signature="e#6085#6612#0" expanded="false" />
+            <element signature="e#6762#6810#0" expanded="false" />
+            <element signature="e#6845#6893#0" expanded="false" />
+            <element signature="e#6928#6976#0" expanded="false" />
+            <element signature="e#7026#7422#0" expanded="false" />
+            <element signature="e#7475#7871#0" expanded="false" />
+            <element signature="e#7932#8659#0" expanded="false" />
+            <element signature="e#8692#8772#0" expanded="false" />
+            <element signature="e#8806#8956#0" expanded="false" />
+            <element signature="e#12148#13227#0" expanded="false" />
+            <element signature="e#13270#14016#0" expanded="false" />
+            <element signature="e#14078#15075#0" expanded="false" />
+            <element signature="e#15155#15159#0" expanded="false" />
+            <element signature="e#15200#15378#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RobotGUI/scrap.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="306">
+          <caret line="3" column="0" selection-start-line="3" selection-start-column="0" selection-end-line="8" selection-end-column="13" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/RobotGUI/Events.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1377" max-vertical-offset="2108">
-          <caret line="153" column="32" selection-start-line="153" selection-start-column="32" selection-end-line="153" selection-end-column="32" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="602" max-vertical-offset="2108">
+          <caret line="148" column="102" selection-start-line="148" selection-start-column="102" selection-end-line="148" selection-end-column="102" />
           <folding>
             <element signature="e#101#927#0" expanded="false" />
             <element signature="e#101#227#1" expanded="false" />
@@ -1331,8 +1379,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/RobotGUI/Video.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.46800733" vertical-offset="696" max-vertical-offset="1564">
-          <caret line="259" column="39" selection-start-line="259" selection-start-column="39" selection-end-line="259" selection-end-column="39" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="638" max-vertical-offset="1632">
+          <caret line="258" column="22" selection-start-line="258" selection-start-column="22" selection-end-line="258" selection-end-column="22" />
           <folding>
             <element signature="e#150#368#0" expanded="false" />
             <element signature="e#394#6324#0" expanded="false" />
@@ -1351,16 +1399,264 @@
             <element signature="e#6382#6404#0" expanded="false" />
             <element signature="e#6439#6998#0" expanded="false" />
             <element signature="e#7681#8070#0" expanded="false" />
-            <element signature="e#9789#10139#0" expanded="false" />
-            <element signature="e#10183#10998#0" expanded="false" />
-            <element signature="e#10183#10341#1" expanded="false" />
-            <element signature="e#11067#12688#0" expanded="false" />
-            <element signature="e#11113#11874#0" expanded="false" />
-            <element signature="e#11113#11392#1" expanded="false" />
-            <element signature="e#11906#12199#0" expanded="false" />
-            <element signature="e#12229#12382#0" expanded="false" />
-            <element signature="e#12413#12484#0" expanded="false" />
-            <element signature="e#12524#12688#0" expanded="false" />
+            <element signature="e#9826#10176#0" expanded="false" />
+            <element signature="e#10220#11035#0" expanded="false" />
+            <element signature="e#10220#10378#1" expanded="false" />
+            <element signature="e#11104#12725#0" expanded="false" />
+            <element signature="e#11150#11911#0" expanded="false" />
+            <element signature="e#11150#11429#1" expanded="false" />
+            <element signature="e#11943#12236#0" expanded="false" />
+            <element signature="e#12266#12419#0" expanded="false" />
+            <element signature="e#12450#12521#0" expanded="false" />
+            <element signature="e#12561#12725#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RobotGUI/UArmForPython/TestUArm.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="527">
+          <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
+          <folding>
+            <element signature="e#123#294#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/old files/Main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.3244963" vertical-offset="765" max-vertical-offset="3145">
+          <caret line="511" column="0" selection-start-line="511" selection-start-column="0" selection-end-line="511" selection-end-column="0" />
+          <folding>
+            <element signature="e#292#6231#0" expanded="false" />
+            <element signature="e#292#1549#1" expanded="false" />
+            <element signature="e#6396#7075#0" expanded="false" />
+            <element signature="e#7115#9673#0" expanded="false" />
+            <element signature="e#7115#7422#1" expanded="false" />
+            <element signature="e#9708#10329#0" expanded="false" />
+            <element signature="e#10355#10973#0" expanded="false" />
+            <element signature="e#10355#10526#1" expanded="false" />
+            <element signature="e#11038#16879#0" expanded="false" />
+            <element signature="e#16908#17223#0" expanded="false" />
+            <element signature="e#17285#24163#0" expanded="false" />
+            <element signature="e#17285#18251#1" expanded="false" />
+            <element signature="e#24210#24619#0" expanded="false" />
+            <element signature="e#24668#27914#0" expanded="false" />
+            <element signature="e#24668#25201#1" expanded="false" />
+            <element signature="e#27985#36492#0" expanded="false" />
+            <element signature="e#36586#39262#0" expanded="false" />
+            <element signature="e#36586#37144#1" expanded="false" />
+            <element signature="e#39312#40370#0" expanded="false" />
+            <element signature="e#39312#39497#1" expanded="false" />
+            <element signature="e#40421#42958#0" expanded="false" />
+            <element signature="e#40421#40973#1" expanded="false" />
+            <element signature="e#43019#44410#0" expanded="false" />
+            <element signature="e#43019#43186#1" expanded="false" />
+            <element signature="e#44500#45796#0" expanded="false" />
+            <element signature="e#45933#52573#0" expanded="false" />
+            <element signature="e#52657#53723#0" expanded="false" />
+            <element signature="e#53780#60982#0" expanded="false" />
+            <element signature="e#53780#55678#1" expanded="false" />
+            <element signature="e#61018#61975#0" expanded="false" />
+            <element signature="e#61018#61548#1" expanded="false" />
+            <element signature="e#62013#62946#0" expanded="false" />
+            <element signature="e#62013#62138#1" expanded="false" />
+            <element signature="e#62996#63822#0" expanded="false" />
+            <element signature="e#62996#63508#1" expanded="false" />
+            <element signature="e#63862#65956#0" expanded="false" />
+            <element signature="e#63862#64299#1" expanded="false" />
+            <element signature="e#66000#69035#0" expanded="false" />
+            <element signature="e#66000#67228#1" expanded="false" />
+            <element signature="e#69076#71052#0" expanded="false" />
+            <element signature="e#69076#69693#1" expanded="false" />
+            <element signature="e#71091#71958#0" expanded="false" />
+            <element signature="e#71091#71280#1" expanded="false" />
+            <element signature="e#72022#75380#0" expanded="false" />
+            <element signature="e#72022#72472#1" expanded="false" />
+            <element signature="e#75438#77143#0" expanded="false" />
+            <element signature="e#77167#77305#0" expanded="false" />
+            <element signature="e#77368#80367#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RobotGUI/Commands.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="534" max-vertical-offset="2210">
+          <caret line="680" column="0" selection-start-line="680" selection-start-column="0" selection-end-line="680" selection-end-column="0" />
+          <folding>
+            <element signature="e#227#1500#0" expanded="false" />
+            <element signature="e#263#1222#0" expanded="false" />
+            <element signature="e#1262#1286#0" expanded="false" />
+            <element signature="e#1332#1362#0" expanded="false" />
+            <element signature="e#1401#1441#0" expanded="false" />
+            <element signature="e#1479#1500#0" expanded="false" />
+            <element signature="e#1547#3158#0" expanded="false" />
+            <element signature="e#1596#1809#0" expanded="false" />
+            <element signature="e#1842#2850#0" expanded="false" />
+            <element signature="e#2891#3158#0" expanded="false" />
+            <element signature="e#3195#6032#0" expanded="false" />
+            <element signature="e#3232#3466#0" expanded="false" />
+            <element signature="e#3502#4206#0" expanded="false" />
+            <element signature="e#4244#4285#0" expanded="false" />
+            <element signature="e#4324#4336#0" expanded="false" />
+            <element signature="e#4385#5382#0" expanded="false" />
+            <element signature="e#5445#6028#0" expanded="false" />
+            <element signature="e#5445#5731#1" expanded="false" />
+            <element signature="e#6098#11015#0" expanded="false" />
+            <element signature="e#6275#7521#0" expanded="false" />
+            <element signature="e#7553#9099#0" expanded="false" />
+            <element signature="e#9132#9626#0" expanded="false" />
+            <element signature="e#9661#10589#0" expanded="false" />
+            <element signature="e#10626#11015#0" expanded="false" />
+            <element signature="e#11052#15360#0" expanded="false" />
+            <element signature="e#11052#11115#1" expanded="false" />
+            <element signature="e#11254#12006#0" expanded="false" />
+            <element signature="e#12038#13428#0" expanded="false" />
+            <element signature="e#13461#13827#0" expanded="false" />
+            <element signature="e#13862#14693#0" expanded="false" />
+            <element signature="e#14730#15360#0" expanded="false" />
+            <element signature="e#15397#19872#0" expanded="false" />
+            <element signature="e#15397#15460#1" expanded="false" />
+            <element signature="e#15599#16352#0" expanded="false" />
+            <element signature="e#16384#17774#0" expanded="false" />
+            <element signature="e#17807#18173#0" expanded="false" />
+            <element signature="e#18208#19039#0" expanded="false" />
+            <element signature="e#19076#19872#0" expanded="false" />
+            <element signature="e#19907#21801#0" expanded="false" />
+            <element signature="e#20055#20400#0" expanded="false" />
+            <element signature="e#20432#20840#0" expanded="false" />
+            <element signature="e#20873#21084#0" expanded="false" />
+            <element signature="e#21119#21649#0" expanded="false" />
+            <element signature="e#21686#21801#0" expanded="false" />
+            <element signature="e#21839#22860#0" expanded="false" />
+            <element signature="e#21839#22093#1" expanded="false" />
+            <element signature="e#22302#22419#0" expanded="false" />
+            <element signature="e#22452#22474#0" expanded="false" />
+            <element signature="e#22509#22801#0" expanded="false" />
+            <element signature="e#22838#22860#0" expanded="false" />
+            <element signature="e#22897#23654#0" expanded="false" />
+            <element signature="e#23027#23204#0" expanded="false" />
+            <element signature="e#23239#23261#0" expanded="false" />
+            <element signature="e#23296#23588#0" expanded="false" />
+            <element signature="e#23625#23654#0" expanded="false" />
+            <element signature="e#23690#24452#0" expanded="false" />
+            <element signature="e#23822#24001#0" expanded="false" />
+            <element signature="e#24036#24058#0" expanded="false" />
+            <element signature="e#24093#24385#0" expanded="false" />
+            <element signature="e#24422#24452#0" expanded="false" />
+            <element signature="e#25896#28160#0" expanded="false" />
+            <element signature="e#29060#29735#0" expanded="false" />
+            <element signature="e#29770#30310#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RobotGUI/ControlPanel.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-12.75" vertical-offset="1547" max-vertical-offset="4369">
+          <caret line="225" column="45" selection-start-line="225" selection-start-column="45" selection-end-line="225" selection-end-column="45" />
+          <folding>
+            <element signature="e#161#772#0" expanded="false" />
+            <element signature="e#161#421#1" expanded="false" />
+            <element signature="e#481#772#0" expanded="false" />
+            <element signature="e#3434#4474#0" expanded="false" />
+            <element signature="e#4513#4841#0" expanded="false" />
+            <element signature="e#4876#5136#0" expanded="false" />
+            <element signature="e#5175#7185#0" expanded="false" />
+            <element signature="e#7987#8014#0" expanded="false" />
+            <element signature="e#8051#8079#0" expanded="false" />
+            <element signature="e#8117#8146#0" expanded="false" />
+            <element signature="e#8184#8219#0" expanded="false" />
+            <element signature="e#8369#8439#0" expanded="false" />
+            <element signature="e#8528#9318#0" expanded="false" />
+            <element signature="e#9350#9373#0" expanded="false" />
+            <element signature="e#9416#9844#0" expanded="false" />
+            <element signature="e#9416#9624#1" expanded="false" />
+            <element signature="e#9890#10340#0" expanded="false" />
+            <element signature="e#10377#10707#0" expanded="false" />
+            <element signature="e#10763#12173#0" expanded="false" />
+            <element signature="e#13393#14864#0" expanded="false" />
+            <element signature="e#14903#15266#0" expanded="false" />
+            <element signature="e#15863#16498#0" expanded="false" />
+            <element signature="e#16530#16555#0" expanded="false" />
+            <element signature="e#16592#16853#0" expanded="false" />
+            <element signature="e#18416#18706#0" expanded="false" />
+            <element signature="e#18748#18917#0" expanded="false" />
+            <element signature="e#18959#19481#0" expanded="false" />
+            <element signature="e#19519#19836#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RobotGUI/Robot.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="459">
+          <caret line="208" column="0" selection-start-line="208" selection-start-column="0" selection-end-line="208" selection-end-column="0" />
+          <folding>
+            <element signature="e#160#370#0" expanded="false" />
+            <element signature="e#392#8023#0" expanded="false" />
+            <element signature="e#392#449#1" expanded="false" />
+            <element signature="e#491#2588#0" expanded="false" />
+            <element signature="e#2627#2958#0" expanded="false" />
+            <element signature="e#3002#3647#0" expanded="false" />
+            <element signature="e#3692#4149#0" expanded="false" />
+            <element signature="e#4193#4308#0" expanded="false" />
+            <element signature="e#4347#4465#0" expanded="false" />
+            <element signature="e#4510#6409#0" expanded="false" />
+            <element signature="e#6451#7057#0" expanded="false" />
+            <element signature="e#7101#7482#0" expanded="false" />
+            <element signature="e#7520#8023#0" expanded="false" />
+            <element signature="e#8067#8238#0" expanded="false" />
+            <element signature="e#8356#9226#0" expanded="false" />
+            <element signature="e#8356#8442#1" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RobotGUI/Main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.47975078" vertical-offset="559" max-vertical-offset="1598">
+          <caret line="560" column="27" selection-start-line="560" selection-start-column="27" selection-end-line="560" selection-end-column="27" />
+          <folding>
+            <element signature="e#313#4437#0" expanded="false" />
+            <element signature="e#313#562#1" expanded="false" />
+            <element signature="e#624#1146#0" expanded="false" />
+            <element signature="e#1180#2337#0" expanded="false" />
+            <element signature="e#2375#2674#0" expanded="false" />
+            <element signature="e#2715#4377#0" expanded="false" />
+            <element signature="e#4414#4437#0" expanded="false" />
+            <element signature="e#4479#9532#0" expanded="false" />
+            <element signature="e#4479#4657#1" expanded="false" />
+            <element signature="e#4703#5170#0" expanded="false" />
+            <element signature="e#5202#7291#0" expanded="false" />
+            <element signature="e#7337#8204#0" expanded="false" />
+            <element signature="e#8252#9109#0" expanded="false" />
+            <element signature="e#9151#9213#0" expanded="false" />
+            <element signature="e#9255#9331#0" expanded="false" />
+            <element signature="e#9376#9475#0" expanded="false" />
+            <element signature="e#9512#9532#0" expanded="false" />
+            <element signature="e#9575#10321#0" expanded="false" />
+            <element signature="e#9644#9823#0" expanded="false" />
+            <element signature="e#9856#10316#0" expanded="false" />
+            <element signature="e#10424#12554#0" expanded="false" />
+            <element signature="e#12586#15045#0" expanded="false" />
+            <element signature="e#15097#16595#0" expanded="false" />
+            <element signature="e#16636#17418#0" expanded="false" />
+            <element signature="e#17460#18258#0" expanded="false" />
+            <element signature="e#18305#18552#0" expanded="false" />
+            <element signature="e#18610#19042#0" expanded="false" />
+            <element signature="e#19101#19650#0" expanded="false" />
+            <element signature="e#19688#20393#0" expanded="false" />
+            <element signature="e#20426#20581#0" expanded="false" />
+            <element signature="e#20629#21260#0" expanded="false" />
+            <element signature="e#21305#22104#0" expanded="false" />
+            <element signature="e#22143#22251#0" expanded="false" />
+            <element signature="e#22661#22746#0" expanded="false" />
+            <element signature="e#22792#24000#0" expanded="false" />
+            <element signature="e#22792#22952#1" expanded="false" />
+            <element signature="e#22991#23030#0" expanded="false" />
+            <element signature="e#23080#24000#0" expanded="false" />
           </folding>
         </state>
       </provider>

@@ -255,9 +255,13 @@ class Vision:
         else:
             finalThresh  = cv2.inRange(hsv, np.array((low, lowSat, lowVal)), np.array((high, highSat, highVal)))
 
+        cv2.imshow(str(lowSat), finalThresh.copy())
+        cv2.waitKey(1)
+
         contours, hierarchy = cv2.findContours(finalThresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
-        cv2.imshow("frame", finalThresh)
+
+
         # Find the contour with maximum area and store it as best_cnt
         max_area = 0
         best_cnt = None
