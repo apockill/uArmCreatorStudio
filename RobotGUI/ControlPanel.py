@@ -425,12 +425,16 @@ class CommandList(QtGui.QListWidget):
     def __init__(self, parent):
         super(CommandList, self).__init__()
         #GLOBALS
-        self.commands = {}      #Dictionary of commands. Ex: {QListItem: MoveXYZCommand, QListItem: PickupCommand}
+        self.commands = {}       #Dictionary of commands. Ex: {QListItem: MoveXYZCommand, QListItem: PickupCommand}
+        self.commandWidgets = {} #Dictionary of command widgets.
         self.setDragDropMode(QtGui.QAbstractItemView.DragDrop)
         self.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
         self.setAcceptDrops(True)
-        self.itemDoubleClicked.connect(self.doubleClickEvent)
 
+        self.itemDoubleClicked.connect(self.doubleClickEvent)
+        self.itemClicked.connect(self.clickEvent)
+        self.itemSelectionChanged.connect(self.selectionChangedEvent)
+        self.selectedCommand = None
 
         #The following is a function that returns a dictionary of the commands, in the correct order
         self.getCommandsOrdered = lambda: [self.commands[self.item(index)] for index in xrange(self.count())]
@@ -439,6 +443,17 @@ class CommandList(QtGui.QListWidget):
 
     def initUI(self):
         self.setMinimumWidth(250)
+
+    def clickEvent(self, listWidgetItem):
+        # Notify the clicked item that it is in focus
+        self.commandWidgets[listWidgetItem].focusIn()
+        self.selectedCommand =  self.commandWidgets[listWidgetItem]
+
+    def selectionChangedEvent(self):
+        # Notify the last focused item that it is no longer in focus
+        if self.selectedCommand != None:
+            self.selectedCommand.focusOut()
+            self.selectedCommand = None
 
     def updateWidth(self):
         #Update the width of the commandList to the widest element within it
@@ -467,10 +482,8 @@ class CommandList(QtGui.QListWidget):
         else:
             newCommand.parameters = parameters
 
-
-
         #Create the list widget to visualize the widget
-        commandWidget = newCommand.getWidget()
+        commandWidget = newCommand.getWidget(self.deleteCommandEvent)
 
         listWidgetItem = QtGui.QListWidgetItem(self)
         listWidgetItem.setSizeHint(commandWidget.sizeHint())  #Widget will not appear without this line
@@ -481,9 +494,18 @@ class CommandList(QtGui.QListWidget):
 
         #Add the new command to the list of commands, linking it with its corresponding listWidgetItem
         self.commands[listWidgetItem] = newCommand
+        self.commandWidgets[listWidgetItem] = commandWidget
 
         #Update the width of the commandList to the widest element within it
         self.updateWidth()
+
+    def deleteCommandEvent(self, widget):
+        for key, val in self.commandWidgets.iteritems():
+            if val == widget:
+                del self.commands[key]
+                del self.commandWidgets[key]
+                self.takeItem(self.row(key))
+                break
 
     def keyPressEvent(self, event):
         #modifiers = QtGui.QApplication.keyboardModifiers()
@@ -492,6 +514,7 @@ class CommandList(QtGui.QListWidget):
         if event.key() == QtCore.Qt.Key_Delete:
             for item in self.selectedItems():
                 del self.commands[item]
+                del self.commandWidgets[item]
                 self.takeItem(self.row(item))
 
     def dropEvent(self, event):
@@ -536,4 +559,3 @@ class CommandList(QtGui.QListWidget):
             type = commandInfo["type"]
             parameters = commandInfo["parameters"]
             self.addCommand(type, parameters=parameters)
-

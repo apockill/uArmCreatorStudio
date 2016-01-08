@@ -47,10 +47,10 @@ Temporary Items
 .apdisk
 
 # Python precompiled files
-.pyc
+*.pyc
 
 # Config files
 Settings.p
 
 # Vim
-.swp
+*.swp

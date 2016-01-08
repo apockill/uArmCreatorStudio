@@ -7,34 +7,52 @@ from time import sleep  #Should only be used in the WaitCommand
 
 
 class CommandWidget(QtGui.QWidget):
-    def __init__(self, parent):
+    def __init__(self, parent, onDeleteFunction):
         super(CommandWidget, self).__init__(parent)
         self.title       = QtGui.QLabel()
         self.description = QtGui.QLabel()
         self.icon        = QtGui.QLabel("No icon found.")
+
+        # Create the delete button
+        self.delete      = QtGui.QPushButton("")
+        self.delete.setFlat(True)
+        self.delete.setIcon(QtGui.QIcon(Icons.delete))
+        self.delete.setVisible(False)
+        self.delete.clicked.connect(lambda: onDeleteFunction(self))
 
         font = QtGui.QFont()
         font.setBold(True)
         self.title.setFont(font)
 
         leftLayout  = QtGui.QVBoxLayout()
+        midLayout = QtGui.QVBoxLayout()
         rightLayout = QtGui.QVBoxLayout()
 
         leftLayout.addWidget(self.icon)
 
-        rightLayout.setSpacing(1)
-        rightLayout.addWidget(self.title)
-        rightLayout.addWidget(self.description)
+        midLayout.setSpacing(1)
+        midLayout.addWidget(self.title)
+        midLayout.addWidget(self.description)
+
+        rightLayout.addWidget(self.delete)
+        rightLayout.setAlignment(QtCore.Qt.AlignRight)
 
         mainHLayout = QtGui.QHBoxLayout()
         mainHLayout.addLayout(leftLayout)
-        mainHLayout.addLayout(rightLayout, QtCore.Qt.AlignLeft)
+        mainHLayout.addLayout(midLayout, QtCore.Qt.AlignLeft)
+        mainHLayout.addLayout(rightLayout, QtCore.Qt.AlignRight)
         # self.textQVBoxLayout.addWidget(self.textUpQLabel)
         # self.textQVBoxLayout.addWidget(self.textDownQLabel)
         # self.allQHBoxLayout.addWidget(self.iconQLabel, 0)
         # self.allQHBoxLayout.addLayout(self.textQVBoxLayout, 1)
 
         self.setLayout(mainHLayout)
+
+    def focusIn(self):
+        self.delete.setVisible(True)
+
+    def focusOut(self):
+        self.delete.setVisible(False)
 
     def setTitle(self, text):
         self.title.setText(text)
@@ -266,13 +284,13 @@ class MoveXYZCommand(Command):
 
         return newParameters
 
-    def getWidget(self):
+    def getWidget(self, onDeleteFunction):
         #Verify that there are no None statements in the parameters
         if any(self.parameters) is None or self.parameters.__len__() == 0:#any(x is None for x in self.parameters.itervalues()):
             return None
         else:
 
-            listWidget = CommandWidget(parent=self)
+            listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
             listWidget.setIcon(self.icon)
             listWidget.setTitle(self.title)
             listWidget.setTip(self.tooltip)
@@ -368,12 +386,12 @@ class DetachCommand(Command):
 
         return newParameters
 
-    def getWidget(self):
+    def getWidget(self, onDeleteFunction):
         #Verify that there are no None statements in the parameters
         if any(self.parameters) is None or self.parameters.__len__() == 0:#any(x is None for x in self.parameters.itervalues()):
             return None
         else:
-            listWidget = CommandWidget(parent=self)
+            listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
             listWidget.setIcon(self.icon)
             listWidget.setTitle(self.title)
             listWidget.setTip(self.tooltip)
@@ -477,12 +495,12 @@ class AttachCommand(Command):
 
         return newParameters
 
-    def getWidget(self):
+    def getWidget(self, onDeleteFunction):
         #Verify that there are no None statements in the parameters
         if any(self.parameters) is None or self.parameters.__len__() == 0:#any(x is None for x in self.parameters.itervalues()):
             return None
         else:
-            listWidget = CommandWidget(parent=self)
+            listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
             listWidget.setIcon(self.icon)
             listWidget.setTitle(self.title)
             listWidget.setTip(self.tooltip)
@@ -549,13 +567,13 @@ class WaitCommand(Command):
 
         return newParameters
 
-    def getWidget(self):
+    def getWidget(self, onDeleteFunction):
         #Verify that there are no None statements in the parameters
         if any(self.parameters) is None or self.parameters.__len__() == 0:#any(x is None for x in self.parameters.itervalues()):
             return None
         else:
 
-            listWidget = CommandWidget(parent=self)
+            listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
             listWidget.setIcon(self.icon)
             listWidget.setTitle(self.title)
             listWidget.setTip(self.tooltip)
@@ -586,10 +604,10 @@ class RefreshCommand(Command):
     def getInfo(self):
         return self.parameters
 
-    def getWidget(self):
+    def getWidget(self, onDeleteFunction):
         #Verify that there are no None statements in the parameters
 
-        listWidget = CommandWidget(parent=self)
+        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
         listWidget.setIcon(self.icon)
         listWidget.setTitle(self.title)
         listWidget.setTip(self.tooltip)
@@ -621,10 +639,10 @@ class GripCommand(Command):
     def getInfo(self):
         return self.parameters
 
-    def getWidget(self):
+    def getWidget(self, onDeleteFunction):
         #Verify that there are no None statements in the parameters
 
-        listWidget = CommandWidget(parent=self)
+        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
         listWidget.setIcon(self.icon)
         listWidget.setTitle(self.title)
         listWidget.setTip(self.tooltip)
@@ -655,10 +673,10 @@ class DropCommand(Command):
     def getInfo(self):
         return self.parameters
 
-    def getWidget(self):
+    def getWidget(self, onDeleteFunction):
         #Verify that there are no None statements in the parameters
 
-        listWidget = CommandWidget(parent=self)
+        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
         listWidget.setIcon(self.icon)
         listWidget.setTitle(self.title)
         listWidget.setTip(self.tooltip)
@@ -800,13 +818,13 @@ class ColorTrackCommand(Command):
                          'hVal': self.sanitizeFloat(self.hValEdit, self.parameters['hVal'])}
         return newParameters
 
-    def getWidget(self):
+    def getWidget(self, onDeleteFunction):
         #Verify that there are no None statements in the parameters
         if any(self.parameters) is None or self.parameters.__len__() == 0:#any(x is None for x in self.parameters.itervalues()):
             return None
         else:
 
-            listWidget = CommandWidget(parent=self)
+            listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
             listWidget.setIcon(self.icon)
             listWidget.setTitle(self.title)
             listWidget.setTip(self.tooltip)
@@ -822,6 +840,3 @@ class ColorTrackCommand(Command):
                                                self.parameters['lVal'],
                                                self.parameters['hVal'])
         print "found object at pos", objPos
-
-
-

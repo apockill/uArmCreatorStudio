@@ -8,6 +8,7 @@ img_file = "Images/"
 
 #Other
 cancel             = img_file + "cancel.png"
+delete             = img_file + "delete.png"
 
 
 #"File" Menu
