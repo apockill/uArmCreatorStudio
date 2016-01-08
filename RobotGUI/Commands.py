@@ -1,6 +1,6 @@
 from PyQt4 import QtGui, QtCore
 import Icons
-import Global
+import Robot            #Used for any peripheral functions in the library
 from time import sleep  #Should only be used in the WaitCommand
 
 
@@ -693,10 +693,10 @@ class ColorTrackCommand(Command):
     tooltip    = "Tracks objects by looking for a certain color."
     icon       = Icons.colortrack_command
 
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, shared, **kwargs):
         self.title       = "Move to Color"
         super(ColorTrackCommand, self).__init__(parent)
-
+        print shared.robot
         self.parameters = kwargs.get("parameters",
                             {'cHue':  0,
                              'tHue': 0,
@@ -706,7 +706,7 @@ class ColorTrackCommand(Command):
                              'hVal': 0})
 
         #Pull color from robot here
-        shared = kwargs.get("shared", None)
+        #shared = kwargs.get("shared", None)
         # if shared is not None:
         #     currentXYZ = shared.robot.currentCoord()
         #     self.parameters = {'x': round(currentXYZ[1], 1),
@@ -793,7 +793,7 @@ class ColorTrackCommand(Command):
         print "ColorTrackCommand.scanColors(): Scanning colors!"
 
         if shared is None:
-            print "ColorTrackCommand.scanColors(): ERROR: Tried to scan colors while shared was None! colors!"
+            print "ColorTrackCommand.scanColors(): ERROR: Tried to scan colors while shared was None!"
             return
 
         avgColor = shared.vision.bgr2hsv(shared.vision.getColor())
@@ -833,10 +833,20 @@ class ColorTrackCommand(Command):
 
     def run(self, shared):
         print "ColorTrackCommand.run():\t Tracking colored objects! "
-        objPos = shared.vision.findObjectColor(self.parameters['cHue'],
-                                               self.parameters['tHue'],
-                                               self.parameters['lSat'],
-                                               self.parameters['hSat'],
-                                               self.parameters['lVal'],
-                                               self.parameters['hVal'])
-        print "found object at pos", objPos
+
+        #Build a function that will return the objects position whenever it is called, using the self.parameters
+        objPos = lambda: shared.vision.findObjectColor(self.parameters['cHue'],
+                                                       self.parameters['tHue'],
+                                                       self.parameters['lSat'],
+                                                       self.parameters['hSat'],
+                                                       self.parameters['lVal'],
+                                                       self.parameters['hVal'])
+        objCoords = objPos()
+        print "found object at pos", objCoords
+
+        if objCoords is None: return
+
+        print "current dimensions", shared.vision.vStream.dimensions
+        #Robot.getDirectionToTarget(targetPos, screenDimensions, tolerance)
+        direction = Robot.getDirectionToTarget(objCoords, shared.vision.vStream.dimensions, 10)
+        print "chosen direction: ", direction

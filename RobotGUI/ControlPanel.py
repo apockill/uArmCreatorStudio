@@ -223,7 +223,7 @@ class ControlPanel(QtGui.QWidget):
         return self.eventList.getSaveData()
 
     def loadData(self, data):
-        self.eventList.loadData(data)
+        self.eventList.loadData(self.shared, data)
         #self.refresh()
 
 
@@ -403,7 +403,7 @@ class EventList(QtGui.QListWidget):
 
         return eventList
 
-    def loadData(self, data):
+    def loadData(self, shared, data):
 
         self.events = {}
         self.clear()  #clear eventList
@@ -412,7 +412,7 @@ class EventList(QtGui.QListWidget):
         for index, eventSave in enumerate(data):
 
             commandList = CommandList(parent=self)
-            commandList.loadData(eventSave['commandList'])
+            commandList.loadData(shared, eventSave['commandList'])
 
             self.addEvent(eventSave['type'], commandList=commandList, parameters=eventSave["parameters"])
 
@@ -462,15 +462,15 @@ class CommandList(QtGui.QListWidget):
             self.setMinimumWidth(self.sizeHintForColumn(0) + 10)
 
 
-    def addCommand(self, commandType, **kwargs):
+    def addCommand(self, commandType, shared, **kwargs):
         #If adding a pre-filled command (used when loading a save)
         parameters = kwargs.get("parameters", None)
-        shared     = kwargs.get(    "shared", None)
+        #shared     = kwargs.get(    "shared", None)
 
         if parameters is None:
-            newCommand = commandType(parent=self, shared=shared)
+            newCommand = commandType(self, shared)
         else:
-            newCommand = commandType(parent=self, shared=shared, parameters=parameters)
+            newCommand = commandType(self, shared, parameters=parameters)
 
 
         #Fill command with information either by opening window or loading it in
@@ -549,7 +549,7 @@ class CommandList(QtGui.QListWidget):
 
         return commandList
 
-    def loadData(self, data):
+    def loadData(self, shared, data):
         #Clear all data on the current list
         self.commands = {}
         self.clear()
@@ -558,4 +558,4 @@ class CommandList(QtGui.QListWidget):
         for index, commandInfo in enumerate(data):
             type = commandInfo["type"]
             parameters = commandInfo["parameters"]
-            self.addCommand(type, parameters=parameters)
+            self.addCommand(type, shared, parameters=parameters)

@@ -641,14 +641,13 @@ class Application(QtGui.QApplication):
 if __name__ == '__main__':
 
     Global.init()
-    try:
-        app = Application(sys.argv)
-        mainWindow = MainWindow()
-        print "__main__():\t mainWindow class successfully initiated!"
-        mainWindow.show()
-        print "__main__():\t mainWindow successfully shown()"
-        app.exec_()
-        print "__main__():\t Program successfully executed."
-    except:
-        print "__main__(): ERROR: omething big went wrong!"
+
+    app = Application(sys.argv)
+    mainWindow = MainWindow()
+    print "__main__():\t mainWindow class successfully initiated!"
+    mainWindow.show()
+    print "__main__():\t mainWindow successfully shown()"
+    app.exec_()
+    print "__main__():\t Program successfully executed."
+
 
