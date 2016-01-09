@@ -197,7 +197,7 @@ class MoveXYZCommand(Command):
     tooltip    = "Set the robots position. The robot will move after all events are evaluated"
     icon       = Icons.xyz_command
 
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, shared, **kwargs):
         self.title       = "Move XYZ"
         super(MoveXYZCommand, self).__init__(parent)
 
@@ -316,7 +316,7 @@ class DetachCommand(Command):
     """
     icon       = Icons.detach_command
     tooltip    = "Disengage servos on the robot"
-    def __init__(self, parent,  **kwargs):
+    def __init__(self, parent, shared,  **kwargs):
         self.title       = "Detach Servos"
         super(DetachCommand, self).__init__(parent)
 
@@ -424,7 +424,7 @@ class AttachCommand(Command):
     icon       = Icons.attach_command
     tooltip    = "Re-engage servos on the robot"
 
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, shared, **kwargs):
         self.title       = "Attach Servos"
         super(AttachCommand, self).__init__(parent)
 
@@ -532,7 +532,7 @@ class WaitCommand(Command):
     tooltip    = "Halts the program for a preset amount of time"
     icon       = Icons.wait_command
 
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, shared, **kwargs):
         self.title       = "Wait"
         super(WaitCommand, self).__init__(parent)
 
@@ -595,7 +595,7 @@ class RefreshCommand(Command):
     icon       = Icons.refresh_command
     tooltip    = "Send any changed position information to the robot. This will stop event processing for a moment."
 
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, shared, **kwargs):
         self.title       = "Refresh Robot"
         super(RefreshCommand, self).__init__(parent)
 
@@ -626,7 +626,7 @@ class GripCommand(Command):
     icon       = Icons.grip_command
     tooltip    = "Activate the robots gripper"
 
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, shared, **kwargs):
         self.title       = "Activate Gripper"
         super(GripCommand, self).__init__(parent)
 
@@ -660,7 +660,7 @@ class DropCommand(Command):
     icon       = Icons.drop_command
     tooltip    = "Deactivate the robots gripper"
 
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, shared, **kwargs):
         self.title       = "Deactivate Gripper"
         super(DropCommand, self).__init__(parent)
 
