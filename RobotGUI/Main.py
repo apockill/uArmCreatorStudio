@@ -328,16 +328,18 @@ class MainWindow(QtGui.QMainWindow):
 
 
         #Now that objects have been created, load the settings
-        self.loadSettings()
+        configExists = self.loadSettings()
 
         self.initUI()
-
 
         #If any file is specified in "lastOpenedFile" then load it.
         if self.settings["lastOpenedFile"] is not None:
             self.loadTask(filename=self.settings["lastOpenedFile"])
         else:
             self.newTask()
+
+        if not configExists:
+            self.setView(self.settingsView)
 
     def initUI(self):
         #Create Menu
@@ -590,9 +592,10 @@ class MainWindow(QtGui.QMainWindow):
             newSettings = pickle.load(open( "Settings.p", "rb"))
             print "MainWindow.loadSettings():\t Loading settings: ", newSettings, "..."
             self.setSettings(newSettings)
+            return True
         except IOError:
-            print "MainWindow.loadSettings():\t ERROR: No settings file detected. Using default values."
-
+            print "MainWindow.loadSettings():\t No settings file detected. Using default values."
+            return False
 
     def closeEvent(self, event):
         self.promptSave()

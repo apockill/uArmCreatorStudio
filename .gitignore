@@ -45,3 +45,12 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Python precompiled files
+*.pyc
+
+# Config files
+Settings.p
+
+# Vim
+*.swp

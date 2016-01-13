@@ -7,34 +7,52 @@ from time import sleep  #Should only be used in the WaitCommand
 
 
 class CommandWidget(QtGui.QWidget):
-    def __init__(self, parent):
+    def __init__(self, parent, onDeleteFunction):
         super(CommandWidget, self).__init__(parent)
         self.title       = QtGui.QLabel()
         self.description = QtGui.QLabel()
         self.icon        = QtGui.QLabel("No icon found.")
+
+        # Create the delete button
+        self.delete      = QtGui.QPushButton("")
+        self.delete.setFlat(True)
+        self.delete.setIcon(QtGui.QIcon(Icons.delete))
+        self.delete.setVisible(False)
+        self.delete.clicked.connect(lambda: onDeleteFunction(self))
 
         font = QtGui.QFont()
         font.setBold(True)
         self.title.setFont(font)
 
         leftLayout  = QtGui.QVBoxLayout()
+        midLayout = QtGui.QVBoxLayout()
         rightLayout = QtGui.QVBoxLayout()
 
         leftLayout.addWidget(self.icon)
 
-        rightLayout.setSpacing(1)
-        rightLayout.addWidget(self.title)
-        rightLayout.addWidget(self.description)
+        midLayout.setSpacing(1)
+        midLayout.addWidget(self.title)
+        midLayout.addWidget(self.description)
+
+        rightLayout.addWidget(self.delete)
+        rightLayout.setAlignment(QtCore.Qt.AlignRight)
 
         mainHLayout = QtGui.QHBoxLayout()
         mainHLayout.addLayout(leftLayout)
-        mainHLayout.addLayout(rightLayout, QtCore.Qt.AlignLeft)
+        mainHLayout.addLayout(midLayout, QtCore.Qt.AlignLeft)
+        mainHLayout.addLayout(rightLayout, QtCore.Qt.AlignRight)
         # self.textQVBoxLayout.addWidget(self.textUpQLabel)
         # self.textQVBoxLayout.addWidget(self.textDownQLabel)
         # self.allQHBoxLayout.addWidget(self.iconQLabel, 0)
         # self.allQHBoxLayout.addLayout(self.textQVBoxLayout, 1)
 
         self.setLayout(mainHLayout)
+
+    def focusIn(self):
+        self.delete.setVisible(True)
+
+    def focusOut(self):
+        self.delete.setVisible(False)
 
     def setTitle(self, text):
         self.title.setText(text)
@@ -179,7 +197,7 @@ class MoveXYZCommand(Command):
     tooltip    = "Set the robots position. The robot will move after all events are evaluated"
     icon       = Icons.xyz_command
 
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, shared, **kwargs):
         self.title       = "Move XYZ"
         super(MoveXYZCommand, self).__init__(parent)
 
@@ -266,13 +284,13 @@ class MoveXYZCommand(Command):
 
         return newParameters
 
-    def getWidget(self):
+    def getWidget(self, onDeleteFunction):
         #Verify that there are no None statements in the parameters
         if any(self.parameters) is None or self.parameters.__len__() == 0:#any(x is None for x in self.parameters.itervalues()):
             return None
         else:
 
-            listWidget = CommandWidget(parent=self)
+            listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
             listWidget.setIcon(self.icon)
             listWidget.setTitle(self.title)
             listWidget.setTip(self.tooltip)
@@ -298,7 +316,7 @@ class DetachCommand(Command):
     """
     icon       = Icons.detach_command
     tooltip    = "Disengage servos on the robot"
-    def __init__(self, parent,  **kwargs):
+    def __init__(self, parent, shared,  **kwargs):
         self.title       = "Detach Servos"
         super(DetachCommand, self).__init__(parent)
 
@@ -368,12 +386,12 @@ class DetachCommand(Command):
 
         return newParameters
 
-    def getWidget(self):
+    def getWidget(self, onDeleteFunction):
         #Verify that there are no None statements in the parameters
         if any(self.parameters) is None or self.parameters.__len__() == 0:#any(x is None for x in self.parameters.itervalues()):
             return None
         else:
-            listWidget = CommandWidget(parent=self)
+            listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
             listWidget.setIcon(self.icon)
             listWidget.setTitle(self.title)
             listWidget.setTip(self.tooltip)
@@ -406,7 +424,7 @@ class AttachCommand(Command):
     icon       = Icons.attach_command
     tooltip    = "Re-engage servos on the robot"
 
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, shared, **kwargs):
         self.title       = "Attach Servos"
         super(AttachCommand, self).__init__(parent)
 
@@ -477,12 +495,12 @@ class AttachCommand(Command):
 
         return newParameters
 
-    def getWidget(self):
+    def getWidget(self, onDeleteFunction):
         #Verify that there are no None statements in the parameters
         if any(self.parameters) is None or self.parameters.__len__() == 0:#any(x is None for x in self.parameters.itervalues()):
             return None
         else:
-            listWidget = CommandWidget(parent=self)
+            listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
             listWidget.setIcon(self.icon)
             listWidget.setTitle(self.title)
             listWidget.setTip(self.tooltip)
@@ -514,7 +532,7 @@ class WaitCommand(Command):
     tooltip    = "Halts the program for a preset amount of time"
     icon       = Icons.wait_command
 
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, shared, **kwargs):
         self.title       = "Wait"
         super(WaitCommand, self).__init__(parent)
 
@@ -549,13 +567,13 @@ class WaitCommand(Command):
 
         return newParameters
 
-    def getWidget(self):
+    def getWidget(self, onDeleteFunction):
         #Verify that there are no None statements in the parameters
         if any(self.parameters) is None or self.parameters.__len__() == 0:#any(x is None for x in self.parameters.itervalues()):
             return None
         else:
 
-            listWidget = CommandWidget(parent=self)
+            listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
             listWidget.setIcon(self.icon)
             listWidget.setTitle(self.title)
             listWidget.setTip(self.tooltip)
@@ -577,7 +595,7 @@ class RefreshCommand(Command):
     icon       = Icons.refresh_command
     tooltip    = "Send any changed position information to the robot. This will stop event processing for a moment."
 
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, shared, **kwargs):
         self.title       = "Refresh Robot"
         super(RefreshCommand, self).__init__(parent)
 
@@ -586,10 +604,10 @@ class RefreshCommand(Command):
     def getInfo(self):
         return self.parameters
 
-    def getWidget(self):
+    def getWidget(self, onDeleteFunction):
         #Verify that there are no None statements in the parameters
 
-        listWidget = CommandWidget(parent=self)
+        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
         listWidget.setIcon(self.icon)
         listWidget.setTitle(self.title)
         listWidget.setTip(self.tooltip)
@@ -608,7 +626,7 @@ class GripCommand(Command):
     icon       = Icons.grip_command
     tooltip    = "Activate the robots gripper"
 
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, shared, **kwargs):
         self.title       = "Activate Gripper"
         super(GripCommand, self).__init__(parent)
 
@@ -621,10 +639,10 @@ class GripCommand(Command):
     def getInfo(self):
         return self.parameters
 
-    def getWidget(self):
+    def getWidget(self, onDeleteFunction):
         #Verify that there are no None statements in the parameters
 
-        listWidget = CommandWidget(parent=self)
+        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
         listWidget.setIcon(self.icon)
         listWidget.setTitle(self.title)
         listWidget.setTip(self.tooltip)
@@ -642,7 +660,7 @@ class DropCommand(Command):
     icon       = Icons.drop_command
     tooltip    = "Deactivate the robots gripper"
 
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, shared, **kwargs):
         self.title       = "Deactivate Gripper"
         super(DropCommand, self).__init__(parent)
 
@@ -655,10 +673,10 @@ class DropCommand(Command):
     def getInfo(self):
         return self.parameters
 
-    def getWidget(self):
+    def getWidget(self, onDeleteFunction):
         #Verify that there are no None statements in the parameters
 
-        listWidget = CommandWidget(parent=self)
+        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
         listWidget.setIcon(self.icon)
         listWidget.setTitle(self.title)
         listWidget.setTip(self.tooltip)
@@ -800,13 +818,13 @@ class ColorTrackCommand(Command):
                          'hVal': self.sanitizeFloat(self.hValEdit, self.parameters['hVal'])}
         return newParameters
 
-    def getWidget(self):
+    def getWidget(self, onDeleteFunction):
         #Verify that there are no None statements in the parameters
         if any(self.parameters) is None or self.parameters.__len__() == 0:#any(x is None for x in self.parameters.itervalues()):
             return None
         else:
 
-            listWidget = CommandWidget(parent=self)
+            listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
             listWidget.setIcon(self.icon)
             listWidget.setTitle(self.title)
             listWidget.setTip(self.tooltip)
@@ -832,7 +850,3 @@ class ColorTrackCommand(Command):
         #Robot.getDirectionToTarget(targetPos, screenDimensions, tolerance)
         direction = Robot.getDirectionToTarget(objCoords, shared.vision.vStream.dimensions, 10)
         print "chosen direction: ", direction
-
-
-
-
