@@ -2,7 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e0b2706b-143a-45fa-b0a7-2a4a1392cd50" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\dictionaries\AlexThiel.xml" afterPath="" />
+      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\inspectionProfiles\Project_Default.xml" afterPath="" />
+      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\inspectionProfiles\profiles_settings.xml" afterPath="" />
+      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\scopes\scope_settings.xml" afterPath="" />
+      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\workspace.xml" afterPath="" />
     </list>
     <ignored path="RobotGUIProgramming.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -119,8 +123,8 @@
       <file leaf-file-name=".gitignore" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.8923077" vertical-offset="523" max-vertical-offset="1105">
-              <caret line="41" column="53" selection-start-line="41" selection-start-column="53" selection-end-line="41" selection-end-column="53" />
+            <state vertical-scroll-proportion="0.63076925" vertical-offset="523" max-vertical-offset="1105">
+              <caret line="38" column="8" selection-start-line="38" selection-start-column="8" selection-end-line="38" selection-end-column="8" />
               <folding />
             </state>
           </provider>
@@ -195,8 +199,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="185" />
-    <option name="y" value="85" />
+    <option name="x" value="133" />
+    <option name="y" value="88" />
     <option name="width" value="1152" />
     <option name="height" value="720" />
   </component>
@@ -575,7 +579,11 @@
       <created>1452735172344</created>
       <updated>1452735172344</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Removed IntelliJ files">
+      <created>1452735212108</created>
+      <updated>1452735212108</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -599,11 +607,11 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="185" y="85" width="1152" height="720" extended-state="0" />
-    <editor active="false" />
+    <frame x="133" y="88" width="1152" height="720" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.55871886" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.55871886" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32739422" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2925473" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3259177" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1250,8 +1258,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8923077" vertical-offset="523" max-vertical-offset="1105">
-          <caret line="41" column="53" selection-start-line="41" selection-start-column="53" selection-end-line="41" selection-end-column="53" />
+        <state vertical-scroll-proportion="0.63076925" vertical-offset="523" max-vertical-offset="1105">
+          <caret line="38" column="8" selection-start-line="38" selection-start-column="8" selection-end-line="38" selection-end-column="8" />
           <folding />
         </state>
       </provider>
