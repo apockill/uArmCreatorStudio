@@ -9,10 +9,11 @@ import Video
 import ControlPanel
 import Icons
 import Global
+from copy import deepcopy
 from PyQt4 import QtGui, QtCore
+from Global import printf
 
-
-
+#Test
 
 
 ########## VIEWS ##########
@@ -86,6 +87,10 @@ class CalibrateView(QtGui.QWidget):
                                    "     Active Movement: " + str(movCalib["activeMovement"]))
 
     def calibrateMotion(self):
+        if not  self.robot.connected():
+            printf("CalibrateView.calibrateMotion(): No uArm connected!")
+            return
+
         #Make sure VideoStream is collecting new frames
         self.vision.vStream.setPaused(False)
 
@@ -125,7 +130,7 @@ class CalibrateView(QtGui.QWidget):
         #Return the vStream to paused
         self.vision.vStream.setPaused(True)
         self.updateLabels()
-        print "CalibrateView.calibrateMotion():\t Function complete! New motion settings: ", self.newSettings
+        printf("CalibrateView.calibrateMotion(): Function complete! New motion settings: ", self.newSettings)
 
     def getSettings(self):
         return self.newSettings
@@ -211,7 +216,7 @@ class SettingsView(QtGui.QWidget):
 
     def scanForRobotsClicked(self):
         connectedDevices = Robot.getConnectedRobots()
-        print "SettingsView.scanForRobots():\t Connected Devices: ", connectedDevices
+        printf("SettingsView.scanForRobots(): Connected Devices: ", connectedDevices)
         self.robotButtonGroup = QtGui.QButtonGroup()
 
         #Update the list of found devices
@@ -342,7 +347,7 @@ class MainWindow(QtGui.QMainWindow):
             self.setView(self.settingsView)
 
     def initUI(self):
-        #Create Menu
+        #Create "File" Menu
         menuBar      = self.menuBar()
         fileMenu     = menuBar.addMenu('File')
 
@@ -366,8 +371,7 @@ class MainWindow(QtGui.QMainWindow):
         menuBar.addMenu(fileMenu)
 
 
-
-        #Create toolbar
+        #Create Toolbar
         toolbar = self.addToolBar("MainToolbar")
 
         settingsBtn  = QtGui.QAction( QtGui.QIcon(Icons.settings),  'Open Camera and Robot settings (Ctrl+T)', self)
@@ -376,7 +380,6 @@ class MainWindow(QtGui.QMainWindow):
         self.scriptToggleBtn.setShortcut('Ctrl+R')
         self.videoToggleBtn.setShortcut('Ctrl+P')
         settingsBtn.setShortcut('Ctrl+S')
-
 
         self.scriptToggleBtn.triggered.connect( lambda: self.setScript("toggle"))
         self.videoToggleBtn.triggered.connect(  lambda: self.setVideo("toggle"))
@@ -395,6 +398,7 @@ class MainWindow(QtGui.QMainWindow):
         self.centralWidget.addWidget(self.settingsView)
         self.centralWidget.addWidget(self.calibrateView)
 
+
         #Final touches
         self.setWindowTitle('uArm Creator Dashboard')
         self.setWindowIcon(QtGui.QIcon(Icons.taskbar))
@@ -406,9 +410,9 @@ class MainWindow(QtGui.QMainWindow):
         #Apply settings
         isNew = lambda key: key in newSettings and newSettings[key] is not None and not self.settings[key] == newSettings[key]
 
-        if isNew("cameraID"):  #
-            print "Main.closeSettingsView()\t Changing cameraID from ", \
-                  self.settings["cameraID"], "to", newSettings["cameraID"]
+        if isNew("cameraID"):
+            printf("Main.closeSettingsView(): Changing cameraID from ", \
+                  self.settings["cameraID"], "to", newSettings["cameraID"])
             self.settings["cameraID"] = newSettings["cameraID"]
             success = self.vStream.setNewCamera(self.settings["cameraID"])
             if success:
@@ -417,15 +421,15 @@ class MainWindow(QtGui.QMainWindow):
                 self.setVideo("pause")
 
 
-        if isNew("robotID"):
-            print "Main.closeSettingsView()\t Changing robotID from ", \
-                  self.settings["robotID"], "to", newSettings["robotID"]
+        if isNew("robotID") or not self.robot.connected():  #If robot is not connected, try connecting
+            printf("Main.closeSettingsView(): Changing robotID from ", \
+                  self.settings["robotID"], "to", newSettings["robotID"])
             self.settings["robotID"] = newSettings["robotID"]
             self.robot.setUArm(self.settings["robotID"])
 
 
         if isNew("lastOpenedFile"):
-            print "Main.setSettings():\t Loading file ", str(newSettings["lastOpenedFile"])
+            printf("MainWindow.setSettings(): Loading file ", str(newSettings["lastOpenedFile"]))
             self.settings["lastOpenedFile"] = newSettings["lastOpenedFile"]
             self.loadTask(filename=self.settings["lastOpenedFile"])
 
@@ -441,7 +445,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def setVideo(self, state):
         #State can be play, pause, or simply "toggle"
-        print "MainWindow.setVideo():\t Setting video to state: ", state
+        printf("MainWindow.setVideo(): Setting video to state: ", state)
 
         if self.settings["cameraID"] is None: return  #Don't change anything if no camera ID has been added yet
 
@@ -465,11 +469,7 @@ class MainWindow(QtGui.QMainWindow):
     def setScript(self, state):
         #Run/pause the main script
 
-        print "MainWindow.setScript(): Setting script to ", state
-
-        if self.robot.uArm is None:
-            print "MainWindow.setScript(): ERROR: Tried to start script with no uArm connected!"
-            return
+        printf("MainWindow.setScript(): Setting script to ", state)
 
         if state == "play":  #self.controlPanel.running:
             self.controlPanel.startThread()
@@ -490,7 +490,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def setView(self, viewWidget):
         #Change between the main view, settings, and calibrations view.
-        print "MainWindow.openSettingsView(): Opening Settings!"
+        printf("MainWindow.openSettingsView(): Opening Settings!")
         self.setScript("pause")
         self.setVideo("pause")
         self.centralWidget.setCurrentWidget(viewWidget)
@@ -499,11 +499,11 @@ class MainWindow(QtGui.QMainWindow):
         newSettings = self.settingsView.getSettings()
 
         if buttonClicked == "Apply":
-            print 'Main.closeSettingsView():\t "Apply" clicked, applying settings...'
+            printf('Main.closeSettingsView(): "Apply" clicked, applying settings...')
             self.setSettings(newSettings)
 
         if buttonClicked == "Cancel":
-            print 'Main.closeSettingsView():\t "Cancel" clicked, no settings applied.'
+            printf('Main.closeSettingsView(): "Cancel" clicked, no settings applied.')
 
         #Go back to dashboard
         self.centralWidget.setCurrentWidget(self.dashboardView)
@@ -512,13 +512,13 @@ class MainWindow(QtGui.QMainWindow):
         self.centralWidget.setCurrentWidget(self.dashboardView)
 
         newSettings = self.calibrateView.getSettings()
-        print "new settings: ", newSettings
+        printf("new settings: ", newSettings)
         if buttonClicked == "Apply":
-            print 'Main.closeCalibrateView():\t "Apply" clicked, applying settings...'
+            printf('Main.closeCalibrateView(): Apply" clicked, applying settings...')
             self.setSettings(newSettings)
 
         if buttonClicked == "Cancel":
-            print 'Main.closeCalibrateView():\t "Cancel" clicked, no calibrations applied...'
+            printf('Main.closeCalibrateView(): "Cancel" clicked, no calibrations applied...')
 
         #Go back to dashboard
         self.centralWidget.setCurrentWidget(self.dashboardView)
@@ -527,13 +527,14 @@ class MainWindow(QtGui.QMainWindow):
 
     def promptSave(self):
         #Prompts the user if they want to save, but only if they've changed something in the program
+
         if not self.loadData is None and not self.loadData == self.controlPanel.getSaveData():
-            print "MainWindow.promptSave():\t Prompting user to save changes"
+            printf("MainWindow.promptSave(): Prompting user to save changes")
             reply = QtGui.QMessageBox.question(self, 'Warning',
                                            "You have unsaved changes. Would you like to save before continuing?",
                                            QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
             if reply == QtGui.QMessageBox.Yes:
-                print "MainWindow.promptSave():\tSaving changes"
+                printf("MainWindow.promptSave():Saving changes")
 
                 self.saveTask(False)
 
@@ -541,12 +542,12 @@ class MainWindow(QtGui.QMainWindow):
         self.promptSave()
         self.dashboardView.controlPanel.loadData([])
         self.fileName = None
-        self.loadData = self.controlPanel.getSaveData()
+        self.loadData = self.controlPanel.getSaveData()[:]
 
 
 
     def saveTask(self, promptSave):
-        print "MainWindow.save():\t Saving project"
+        printf("MainWindow.save(): Saving project")
 
         #If there is no filename, ask for one
         if promptSave or self.fileName is None:
@@ -556,7 +557,7 @@ class MainWindow(QtGui.QMainWindow):
 
         #Update the save file
         saveData = self.controlPanel.getSaveData()
-        print "MainWindow.save():\t Saving: ", saveData
+        printf("MainWindow.save(): Saving: ", saveData)
         pickle.dump(saveData, open(self.fileName, "wb"))
 
         self.setWindowTitle('uArm Creator Dashboard       ' + self.fileName)
@@ -572,12 +573,14 @@ class MainWindow(QtGui.QMainWindow):
         try:
             self.loadData = pickle.load( open( filename, "rb"))
         except IOError:
-            print "MainWindow.loadTask():\t ERROR: Task file ", filename, "not found!"
+            printf("MainWindow.loadTask(): ERROR: Task file ", filename, "not found!")
             self.settings["lastOpenedFile"] = None
             return
-        print "MainWindow.save():\t Loading Project."
+        printf("MainWindow.save(): Loading Project.")
         self.fileName = filename
-        self.dashboardView.controlPanel.loadData(self.loadData)
+
+        #Load the data- BUT MAKE SURE TO DEEPCOPY otherwise any change in the program will change in self.loadData
+        self.dashboardView.controlPanel.loadData(deepcopy(self.loadData))
         self.setWindowTitle('uArm Creator Dashboard      ' + self.fileName)
 
         self.saveSettings()
@@ -590,11 +593,11 @@ class MainWindow(QtGui.QMainWindow):
     def loadSettings(self):
         try:
             newSettings = pickle.load(open( "Settings.p", "rb"))
-            print "MainWindow.loadSettings():\t Loading settings: ", newSettings, "..."
+            printf("MainWindow.loadSettings(): Loading settings: ", newSettings, "...")
             self.setSettings(newSettings)
             return True
         except IOError:
-            print "MainWindow.loadSettings():\t No settings file detected. Using default values."
+            printf("MainWindow.loadSettings(): No settings file detected. Using default values.")
             return False
 
     def closeEvent(self, event):
@@ -604,6 +607,7 @@ class MainWindow(QtGui.QMainWindow):
         self.controlPanel.close()
 
 
+#Application subclass, to record keypresses
 class Application(QtGui.QApplication):
     """
         I modified the QtGui.QApplication class slightly in order to intercept keypress events
@@ -612,15 +616,7 @@ class Application(QtGui.QApplication):
     def __init__(self, args):
         super(Application, self).__init__(args)
 
-
     def notify(self, receiver, event):
-        #Intercept any events before they reach their object
-        if event.type() == QtCore.QEvent.Close:
-            print "Application.notify():\t Closing window! Event: ", event
-
-        #if event.type() == QtCore.QEvent.WindowActivate:
-            #print "Application.notify():\t Opening window! Event: ", event
-
         #Add any keys that are pressed to keysPressed
         if event.type() == QtCore.QEvent.KeyPress:
             if event.key() not in Global.keysPressed:
@@ -644,10 +640,8 @@ if __name__ == '__main__':
 
     app = Application(sys.argv)
     mainWindow = MainWindow()
-    print "__main__():\t mainWindow class successfully initiated!"
     mainWindow.show()
-    print "__main__():\t mainWindow successfully shown()"
     app.exec_()
-    print "__main__():\t Program successfully executed."
+    printf("__main__(): Program successfully executed.")
 
 

@@ -1,7 +1,8 @@
 from PyQt4 import QtGui, QtCore
 import Icons
-import Robot            #Used for any peripheral functions in the library
+import Robot
 from time import sleep  #Should only be used in the WaitCommand
+from Global import printf
 
 
 
@@ -25,7 +26,7 @@ class CommandWidget(QtGui.QWidget):
         self.title.setFont(font)
 
         leftLayout  = QtGui.QVBoxLayout()
-        midLayout = QtGui.QVBoxLayout()
+        midLayout   = QtGui.QVBoxLayout()
         rightLayout = QtGui.QVBoxLayout()
 
         leftLayout.addWidget(self.icon)
@@ -77,24 +78,27 @@ class CommandMenuWidget(QtGui.QWidget):
 
     def initUI(self):
 
-        moveXYZButton = self.getButton(MoveXYZCommand)
-        detachButton  = self.getButton(DetachCommand)
-        attachButton  = self.getButton(AttachCommand)
-        refreshButton = self.getButton(RefreshCommand)
-        waitButton    = self.getButton(WaitCommand)
-        gripButton    = self.getButton(GripCommand)
-        dropButton    = self.getButton(DropCommand)
-        colorButton   = self.getButton(ColorTrackCommand)
+        moveXYZBtn  = self.getButton(MoveXYZCommand)
+        detachBtn   = self.getButton(DetachCommand)
+        attachBtn   = self.getButton(AttachCommand)
+        refreshBtn  = self.getButton(RefreshCommand)
+        waitBtn     = self.getButton(WaitCommand)
+        gripBtn     = self.getButton(GripCommand)
+        dropBtn     = self.getButton(DropCommand)
+        colorBtn    = self.getButton(ColorTrackCommand)
+        startBlkBtn = self.getButton(StartBlockCommand)
 
         grid = QtGui.QGridLayout()
-        grid.addWidget( moveXYZButton, 0, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(  detachButton, 1, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(  attachButton, 2, 0, QtCore.Qt.AlignTop)
-        grid.addWidget( refreshButton, 3, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(    waitButton, 4, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(    gripButton, 5, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(    dropButton, 6, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(   colorButton, 7, 0, QtCore.Qt.AlignTop)
+        grid.addWidget( moveXYZBtn, 0, 0, QtCore.Qt.AlignTop)
+        grid.addWidget(  detachBtn, 1, 0, QtCore.Qt.AlignTop)
+        grid.addWidget(  attachBtn, 2, 0, QtCore.Qt.AlignTop)
+        grid.addWidget( refreshBtn, 3, 0, QtCore.Qt.AlignTop)
+        grid.addWidget(    waitBtn, 4, 0, QtCore.Qt.AlignTop)
+        grid.addWidget(    dropBtn, 5, 0, QtCore.Qt.AlignTop)
+        grid.addWidget(    gripBtn, 6, 0, QtCore.Qt.AlignTop)
+        grid.addWidget(   colorBtn, 7, 0, QtCore.Qt.AlignTop)
+        grid.addWidget(startBlkBtn, 7, 0, QtCore.Qt.AlignTop)
+
         self.setLayout(grid)
 
     def getButton(self, type):
@@ -108,10 +112,9 @@ class CommandMenuWidget(QtGui.QWidget):
 
 class Command(QtGui.QDialog):
     def __init__(self, parent):
-
         super(Command, self).__init__(parent)
-
-        #self.parameters = {}  #Will be filled with parameters for the particular command
+        self.title = ""
+        self.parameters = {}  #For commands with no parameters, this should stay empty
         self.accepted    = False
         self.mainVLayout = QtGui.QVBoxLayout()
         self.initBaseUI()
@@ -150,15 +153,15 @@ class Command(QtGui.QDialog):
 
 
         if len(self.parameters):  #If this object has a window object, then execute
-            print "Command.openView():\t About to execute self..."
+            printf("Command.openView(): About to execute self...")
             self.exec_()
         else:
             self.accepted = True
             return
         #self.show()
-        print "Command.openView():\t Finished executing self..."
+        printf("Command.openView(): Finished executing self...")
 
-        #print "Command.openView():\t ERROR ERROR ERROR while opening view of command window. Fix!"
+        #printf("Command.openView(): ERROR ERROR ERROR while opening view of command window. Fix!")
 
         #See if the user pressed Ok or if he cancelled/exited out
         if self.accepted:
@@ -170,10 +173,23 @@ class Command(QtGui.QDialog):
 
 
 
-            print 'CommandWindow.openView():\t New parameters: ', self.parameters
+            printf('CommandWindow.openView(): New parameters: ', self.parameters)
 
         else:
-            print 'CommandWindow.openView():\t User Canceled.'
+            printf('CommandWindow.openView(): User Canceled.')
+
+
+    def getInfo(self):
+        #In case there is a command that does not have info, if it is called then
+        #There will be no error. For example, "start block of code" "refresh" or
+        #"activate/deactivate gripper" do not have info to give
+        pass
+
+    def run(self):
+        #For any command that does not have a function such as "start block of code"
+        #Then this function will run in it's place.
+        pass
+
 
     def sanitizeFloat(self, inputTextbox, fallback):
         """
@@ -184,7 +200,6 @@ class Command(QtGui.QDialog):
         #Sanitize input from the user
         try:
             intInput = float(str(inputTextbox.text()))
-            print "before: ", inputTextbox.text(), "after: ", intInput
         except:
             intInput = fallback
             inputTextbox.setText(str(fallback))
@@ -198,27 +213,19 @@ class MoveXYZCommand(Command):
     icon       = Icons.xyz_command
 
     def __init__(self, parent, shared, **kwargs):
-        self.title       = "Move XYZ"
         super(MoveXYZCommand, self).__init__(parent)
 
+        self.title       = "Move XYZ"
+
         #Set default parameters that will show up on the window
-        self.parameters = kwargs.get("parameters",
-                            {'x': 0,
-                             'y': 0,
-                             'z': 0,
-                             'rel': False,  #Relative move?
-                             'ref': True})  #Refresh after move?
-
-
-        shared = kwargs.get("shared", None)
-        if shared is not None:
-            currentXYZ = shared.robot.currentCoord()
+        if 'parameters' in kwargs:
+            self.parameters = kwargs["parameters"]
+        else:
+            currentXYZ = shared.robot.getCurrentCoord()
             self.parameters = {'x': round(currentXYZ[1], 1),
                                'y': round(currentXYZ[2], 1),
                                'z': round(currentXYZ[3], 1),
-                               'rel': False,
-                               'ref': True}
-
+                               'rel': False}
 
 
 
@@ -237,20 +244,17 @@ class MoveXYZCommand(Command):
         strLabel = QtGui.QLabel('Y:')
         hgtLabel = QtGui.QLabel('Z:')
         relLabel = QtGui.QLabel('Relative')
-        refLabel = QtGui.QLabel('Refresh')
 
         #Fill the textboxes with the default parameters
         self.rotEdit.setText(str(self.parameters['x']))
         self.strEdit.setText(str(self.parameters['y']))
         self.hgtEdit.setText(str(self.parameters['z']))
         self.relCheck.setChecked(self.parameters['rel'])
-        self.refCheck.setChecked(self.parameters['ref'])
 
         row1 = QtGui.QHBoxLayout()
         row2 = QtGui.QHBoxLayout()
         row3 = QtGui.QHBoxLayout()
         row4 = QtGui.QHBoxLayout()
-        row5 = QtGui.QHBoxLayout()
 
         row1.addWidget(rotLabel, QtCore.Qt.AlignRight)
         row1.addWidget(self.rotEdit, QtCore.Qt.AlignJustify)
@@ -264,50 +268,37 @@ class MoveXYZCommand(Command):
         row4.addWidget(relLabel, QtCore.Qt.AlignRight)
         row4.addWidget(self.relCheck, QtCore.Qt.AlignJustify)
 
-        row5.addWidget(refLabel, QtCore.Qt.AlignRight)
-        row5.addWidget(self.refCheck, QtCore.Qt.AlignJustify)
 
         self.mainVLayout.addLayout(row1)
         self.mainVLayout.addLayout(row2)
         self.mainVLayout.addLayout(row3)
         self.mainVLayout.addLayout(row4)
-        self.mainVLayout.addLayout(row5)
 
     def getInfo(self):
-        #Build the info inputed into the window into a Json and return it. Used in parent class
-
         newParameters = {'x': self.sanitizeFloat(self.rotEdit, self.parameters["x"]),
                          'y': self.sanitizeFloat(self.strEdit, self.parameters["y"]),
                          'z': self.sanitizeFloat(self.hgtEdit, self.parameters["z"]),
-                         'rel': self.relCheck.isChecked(),
-                         'ref': self.refCheck.isChecked()}
+                         'rel': self.relCheck.isChecked()}
 
         return newParameters
 
     def getWidget(self, onDeleteFunction):
-        #Verify that there are no None statements in the parameters
-        if any(self.parameters) is None or self.parameters.__len__() == 0:#any(x is None for x in self.parameters.itervalues()):
-            return None
-        else:
-
-            listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
-            listWidget.setIcon(self.icon)
-            listWidget.setTitle(self.title)
-            listWidget.setTip(self.tooltip)
-            listWidget.setDescription('X: '                + str(round(self.parameters['x'], 1))  +
-                                           '   Y: '        + str(round(self.parameters['y'], 1))  +
-                                           '   Z: '        + str(round(self.parameters['z'], 1))  +
-                                           '   Relative: ' + str(    self.parameters['rel']) +
-                                           '   Refresh: '  + str(    self.parameters['ref']))
-            return listWidget
+        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
+        listWidget.setIcon(self.icon)
+        listWidget.setTitle(self.title)
+        listWidget.setTip(self.tooltip)
+        listWidget.setDescription('X: '                + str(round(self.parameters['x'], 1))  +
+                                       '   Y: '        + str(round(self.parameters['y'], 1))  +
+                                       '   Z: '        + str(round(self.parameters['z'], 1))  +
+                                       '   Relative: ' + str(    self.parameters['rel']))
+        return listWidget
 
     def run(self, shared):
-        print "MoveXYZCommand.run():\t Moving robot to ", self.parameters['x'], self.parameters['y'], self.parameters['z']
+        printf("MoveXYZCommand.run(): Moving robot to ", self.parameters['x'], self.parameters['y'], self.parameters['z'])
         shared.robot.setPos(x=self.parameters['x'],
                             y=self.parameters['y'],
                             z=self.parameters['z'],
                             relative=self.parameters['rel'])
-        if self.parameters['ref']: shared.robot.refresh()
 
 
 class DetachCommand(Command):
@@ -316,14 +307,12 @@ class DetachCommand(Command):
     """
     icon       = Icons.detach_command
     tooltip    = "Disengage servos on the robot"
-    def __init__(self, parent, shared,  **kwargs):
-        self.title       = "Detach Servos"
+    def __init__(self, parent, shared, **kwargs):
         super(DetachCommand, self).__init__(parent)
 
+        self.title       = "Detach Servos"
+
         #Set default parameters that will show up on the window
-
-
-
         self.parameters = kwargs.get("parameters",
                                      {'servo1': False,
                                       'servo2': False,
@@ -377,8 +366,6 @@ class DetachCommand(Command):
         self.mainVLayout.addLayout(row4)
 
     def getInfo(self):
-        #Build the info inputed into the window into a Json and return it. Used in parent class
-
         newParameters = {'servo1': self.srvo1Box.isChecked(),
                          'servo2': self.srvo2Box.isChecked(),
                          'servo3': self.srvo3Box.isChecked(),
@@ -387,30 +374,27 @@ class DetachCommand(Command):
         return newParameters
 
     def getWidget(self, onDeleteFunction):
-        #Verify that there are no None statements in the parameters
-        if any(self.parameters) is None or self.parameters.__len__() == 0:#any(x is None for x in self.parameters.itervalues()):
-            return None
-        else:
-            listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
-            listWidget.setIcon(self.icon)
-            listWidget.setTitle(self.title)
-            listWidget.setTip(self.tooltip)
 
-            descriptionBuild = "Servos"
-            if self.parameters["servo1"]: descriptionBuild += "  Rotation"
-            if self.parameters["servo2"]: descriptionBuild += "  Stretch"
-            if self.parameters["servo3"]: descriptionBuild += "  Height"
-            if self.parameters["servo4"]: descriptionBuild += "  Wrist"
+        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
+        listWidget.setIcon(self.icon)
+        listWidget.setTitle(self.title)
+        listWidget.setTip(self.tooltip)
 
-            listWidget.setDescription(descriptionBuild)
+        descriptionBuild = "Servos"
+        if self.parameters["servo1"]: descriptionBuild += "  Rotation"
+        if self.parameters["servo2"]: descriptionBuild += "  Stretch"
+        if self.parameters["servo3"]: descriptionBuild += "  Height"
+        if self.parameters["servo4"]: descriptionBuild += "  Wrist"
 
-            return listWidget
+        listWidget.setDescription(descriptionBuild)
+
+        return listWidget
 
     def run(self, shared):
-        print "DetachCommand.run():\t Detaching servos ", self.parameters['servo1'], \
-                                                        self.parameters['servo2'], \
-                                                        self.parameters['servo3'], \
-                                                        self.parameters['servo4']
+        printf("DetachCommand.run(): Detaching servos ", self.parameters['servo1'], \
+                                                         self.parameters['servo2'], \
+                                                         self.parameters['servo3'], \
+                                                         self.parameters['servo4'])
         if self.parameters['servo1']: shared.robot.setServos(servo1=False)
         if self.parameters['servo2']: shared.robot.setServos(servo2=False)
         if self.parameters['servo3']: shared.robot.setServos(servo3=False)
@@ -419,19 +403,15 @@ class DetachCommand(Command):
 
 class AttachCommand(Command):
     """
-    A command for detaching the servos of the robot
+    A command for attaching the servos of the robot
     """
     icon       = Icons.attach_command
     tooltip    = "Re-engage servos on the robot"
 
     def __init__(self, parent, shared, **kwargs):
-        self.title       = "Attach Servos"
         super(AttachCommand, self).__init__(parent)
 
-
-        #Set default parameters that will show up on the window
-
-
+        self.title       = "Attach Servos"
 
         self.parameters = kwargs.get("parameters",
                                      {'servo1': False,
@@ -486,8 +466,6 @@ class AttachCommand(Command):
         self.mainVLayout.addLayout(row4)
 
     def getInfo(self):
-        #Build the info inputed into the window into a Json and return it. Used in parent class
-
         newParameters = {'servo1': self.srvo1Box.isChecked(),
                          'servo2': self.srvo2Box.isChecked(),
                          'servo3': self.srvo3Box.isChecked(),
@@ -496,32 +474,27 @@ class AttachCommand(Command):
         return newParameters
 
     def getWidget(self, onDeleteFunction):
-        #Verify that there are no None statements in the parameters
-        if any(self.parameters) is None or self.parameters.__len__() == 0:#any(x is None for x in self.parameters.itervalues()):
-            return None
-        else:
-            listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
-            listWidget.setIcon(self.icon)
-            listWidget.setTitle(self.title)
-            listWidget.setTip(self.tooltip)
+        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
+        listWidget.setIcon(self.icon)
+        listWidget.setTitle(self.title)
+        listWidget.setTip(self.tooltip)
 
-            descriptionBuild = "Servos"
-            if self.parameters["servo1"]: descriptionBuild += "  Rotation"
-            if self.parameters["servo2"]: descriptionBuild += "  Stretch"
-            if self.parameters["servo3"]: descriptionBuild += "  Height"
-            if self.parameters["servo4"]: descriptionBuild += "  Wrist"
+        descriptionBuild = "Servos"
+        if self.parameters["servo1"]: descriptionBuild += "  Rotation"
+        if self.parameters["servo2"]: descriptionBuild += "  Stretch"
+        if self.parameters["servo3"]: descriptionBuild += "  Height"
+        if self.parameters["servo4"]: descriptionBuild += "  Wrist"
 
-            listWidget.setDescription(descriptionBuild)
+        listWidget.setDescription(descriptionBuild)
 
-            return listWidget
+        return listWidget
 
     def run(self, shared):
-        print "AttachCommand.run():\t Attaching servos ", self.parameters['servo1'], \
+        printf("AttachCommand.run(): Attaching servos ", self.parameters['servo1'], \
                                                           self.parameters['servo2'], \
                                                           self.parameters['servo3'], \
-                                                          self.parameters['servo4']
-        #pos = Global.robot.currentCoord()
-        #Global.robot.setPos(x=pos[1], y=pos[2], z=pos[3])  #This makes the robot attach at the current position it's at
+                                                          self.parameters['servo4'])
+
         if self.parameters['servo1']: shared.robot.setServos(servo1=True)
         if self.parameters['servo2']: shared.robot.setServos(servo2=True)
         if self.parameters['servo3']: shared.robot.setServos(servo3=True)
@@ -533,14 +506,14 @@ class WaitCommand(Command):
     icon       = Icons.wait_command
 
     def __init__(self, parent, shared, **kwargs):
-        self.title       = "Wait"
         super(WaitCommand, self).__init__(parent)
+
+        self.title       = "Wait"
 
         #Set default parameters that will show up on the window
         self.parameters = kwargs.get("parameters", {'time': 1.0})
 
-
-        self.timeEdit = QtGui.QLineEdit()  #  Rotation textbox
+        self.timeEdit = QtGui.QLineEdit()
 
         self.initUI()
         self.setWindowIcon(QtGui.QIcon(self.icon))
@@ -561,27 +534,20 @@ class WaitCommand(Command):
         self.mainVLayout.addLayout(row1)
 
     def getInfo(self):
-        #Build the info inputed into the window into a Json and return it. Used in parent class
-
         newParameters = {'time': self.sanitizeFloat(self.timeEdit, self.parameters["time"])}
-
         return newParameters
 
     def getWidget(self, onDeleteFunction):
-        #Verify that there are no None statements in the parameters
-        if any(self.parameters) is None or self.parameters.__len__() == 0:#any(x is None for x in self.parameters.itervalues()):
-            return None
-        else:
+        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
+        listWidget.setIcon(self.icon)
+        listWidget.setTitle(self.title)
+        listWidget.setTip(self.tooltip)
+        listWidget.setDescription(str(round(self.parameters['time'], 1)) + " seconds")
+        return listWidget
 
-            listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
-            listWidget.setIcon(self.icon)
-            listWidget.setTitle(self.title)
-            listWidget.setTip(self.tooltip)
-            listWidget.setDescription(str(round(self.parameters['time'], 1)) + " seconds")
-            return listWidget
 
     def run(self, shared):
-        print "WaitCommand.run():\t Waiting for", self.parameters["time"], "seconds"
+        printf("WaitCommand.run(): Waiting for", self.parameters["time"], "seconds")
         sleep(self.parameters["time"])
 
 
@@ -596,17 +562,11 @@ class RefreshCommand(Command):
     tooltip    = "Send any changed position information to the robot. This will stop event processing for a moment."
 
     def __init__(self, parent, shared, **kwargs):
-        self.title       = "Refresh Robot"
         super(RefreshCommand, self).__init__(parent)
 
-        self.parameters = {}
-
-    def getInfo(self):
-        return self.parameters
+        self.title       = "Refresh Robot"
 
     def getWidget(self, onDeleteFunction):
-        #Verify that there are no None statements in the parameters
-
         listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
         listWidget.setIcon(self.icon)
         listWidget.setTitle(self.title)
@@ -621,27 +581,15 @@ class RefreshCommand(Command):
 
 
 class GripCommand(Command):
-
-
     icon       = Icons.grip_command
     tooltip    = "Activate the robots gripper"
 
     def __init__(self, parent, shared, **kwargs):
-        self.title       = "Activate Gripper"
         super(GripCommand, self).__init__(parent)
 
-
-        #Since parameters is blank, no window will open up
-        self.parameters = {}
-
-
-
-    def getInfo(self):
-        return self.parameters
+        self.title       = "Activate Gripper"
 
     def getWidget(self, onDeleteFunction):
-        #Verify that there are no None statements in the parameters
-
         listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
         listWidget.setIcon(self.icon)
         listWidget.setTitle(self.title)
@@ -660,22 +608,13 @@ class DropCommand(Command):
     icon       = Icons.drop_command
     tooltip    = "Deactivate the robots gripper"
 
-    def __init__(self, parent, shared, **kwargs):
-        self.title       = "Deactivate Gripper"
+    def __init__(self, parent, shared,  **kwargs):
         super(DropCommand, self).__init__(parent)
 
+        self.title       = "Deactivate Gripper"
 
-        #Since parameters is blank, no window will open up
-        self.parameters = {}
-
-
-
-    def getInfo(self):
-        return self.parameters
 
     def getWidget(self, onDeleteFunction):
-        #Verify that there are no None statements in the parameters
-
         listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
         listWidget.setIcon(self.icon)
         listWidget.setTitle(self.title)
@@ -694,26 +633,16 @@ class ColorTrackCommand(Command):
     icon       = Icons.colortrack_command
 
     def __init__(self, parent, shared, **kwargs):
-        self.title       = "Move to Color"
-        super(ColorTrackCommand, self).__init__(parent)
-        print shared.robot
-        self.parameters = kwargs.get("parameters",
-                            {'cHue':  0,
-                             'tHue': 0,
-                             'lSat':  0,
-                             'hSat': 0,
-                             'lVal':  0,
-                             'hVal': 0})
 
-        #Pull color from robot here
-        #shared = kwargs.get("shared", None)
-        # if shared is not None:
-        #     currentXYZ = shared.robot.currentCoord()
-        #     self.parameters = {'x': round(currentXYZ[1], 1),
-        #                        'y': round(currentXYZ[2], 1),
-        #                        'z': round(currentXYZ[3], 1),
-        #                        'rel': False,
-        #                        'ref': True}
+        super(ColorTrackCommand, self).__init__(parent)
+        self.title       = "Move to Color"
+        self.parameters = kwargs.get("parameters",
+                            {'cHue': 0,
+                             'tHue': 0,
+                             'lSat': 0,
+                             'hSat': 0,
+                             'lVal': 0,
+                             'hVal': 0})
 
 
 
@@ -790,16 +719,17 @@ class ColorTrackCommand(Command):
 
 
     def scanColors(self, shared):
-        print "ColorTrackCommand.scanColors(): Scanning colors!"
+        printf("ColorTrackCommand.scanColors(): Scanning colors!")
 
         if shared is None:
-            print "ColorTrackCommand.scanColors(): ERROR: Tried to scan colors while shared was None!"
+            printf("ColorTrackCommand.scanColors(): ERROR: Tried to scan colors while shared was None! colors!")
+
             return
 
         avgColor = shared.vision.bgr2hsv(shared.vision.getColor())
         percentTolerance = .3
 
-        print "avgColor", avgColor
+        printf("avgColor", avgColor)
         self.cHueEdit.setText(str(round(avgColor[0])))
         self.tHueEdit.setText(str(30))  #Recommended tolerance
         self.lSatEdit.setText(str(round(avgColor[1] - avgColor[1] * percentTolerance, 5)))
@@ -808,7 +738,7 @@ class ColorTrackCommand(Command):
         self.hValEdit.setText(str(round(avgColor[2] + avgColor[2] * percentTolerance, 5)))
 
     def getInfo(self):
-        #Build the info inputed into the window into a Json and return it. Used in parent class
+        #Build the info inputted into the window into a Json and return it. Used in parent class
 
         newParameters = {'cHue': self.sanitizeFloat(self.cHueEdit, self.parameters['cHue']),
                          'tHue': self.sanitizeFloat(self.tHueEdit, self.parameters['tHue']),
@@ -819,20 +749,17 @@ class ColorTrackCommand(Command):
         return newParameters
 
     def getWidget(self, onDeleteFunction):
-        #Verify that there are no None statements in the parameters
-        if any(self.parameters) is None or self.parameters.__len__() == 0:#any(x is None for x in self.parameters.itervalues()):
-            return None
-        else:
 
-            listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
-            listWidget.setIcon(self.icon)
-            listWidget.setTitle(self.title)
-            listWidget.setTip(self.tooltip)
-            listWidget.setDescription('Track objects with a hue of ' + str(self.parameters['cHue']))
-            return listWidget
+        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
+        listWidget.setIcon(self.icon)
+        listWidget.setTitle(self.title)
+        listWidget.setTip(self.tooltip)
+        listWidget.setDescription('Track objects with a hue of ' + str(self.parameters['cHue']))
+        return listWidget
 
     def run(self, shared):
-        print "ColorTrackCommand.run():\t Tracking colored objects! "
+        printf("ColorTrackCommand.run(): Tracking colored objects! ")
+
 
         #Build a function that will return the objects position whenever it is called, using the self.parameters
         objPos = lambda: shared.vision.findObjectColor(self.parameters['cHue'],
@@ -842,11 +769,59 @@ class ColorTrackCommand(Command):
                                                        self.parameters['lVal'],
                                                        self.parameters['hVal'])
         objCoords = objPos()
-        print "found object at pos", objCoords
 
+
+        #If no object was found
         if objCoords is None: return
 
-        print "current dimensions", shared.vision.vStream.dimensions
-        #Robot.getDirectionToTarget(targetPos, screenDimensions, tolerance)
-        direction = Robot.getDirectionToTarget(objCoords, shared.vision.vStream.dimensions, 10)
-        print "chosen direction: ", direction
+        move = Robot.getDirectionToTarget(objCoords, shared.vision.vStream.dimensions, 10)
+
+        #If the robot is already focused
+        if move is None: return
+
+        #Convert the move to one on the base grid
+        baseAngle = shared.robot.getBaseAngle()
+        modDirection = Robot.getRelative(move[0], move[1], baseAngle)
+
+        # if modDirection is None: return
+
+
+        shared.robot.setPos(x=modDirection[0] / 3, y=modDirection[1] / 3, relative=True)
+
+
+
+
+class StartBlockCommand(Command):
+    """
+    Start a block of code with this class
+    """
+
+    icon       = Icons.startblock_command
+    tooltip    = "This is the start of a block of commands that only run if a conditional statement is met."
+
+    def __init__(self, parent, shared, **kwargs):
+        super(StartBlockCommand, self).__init__(parent)
+
+    def getWidget(self, onDeleteFunction):
+        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
+        listWidget.setIcon(self.icon)
+        listWidget.setTip(self.tooltip)
+        return listWidget
+
+class EndBlockCommand(Command):
+    """
+    End a block of code with this command
+    """
+
+    icon       = Icons.endblock_command
+    tooltip    = "This is the end of a block of commands."
+
+    def __init__(self, parent, shared, **kwargs):
+        super(EndBlockCommand, self).__init__(parent)
+
+    def getWidget(self, onDeleteFunction):
+
+        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
+        listWidget.setIcon(self.icon)
+        listWidget.setTip(self.tooltip)
+        return listWidget

@@ -1,4 +1,5 @@
 from PyQt4 import QtGui, QtCore
+from Global import printf
 import Icons
 import Global
 
@@ -170,7 +171,7 @@ class EventPromptWindow(QtGui.QDialog):
 
 
     def btnClicked(self, eventType, **kwargs):
-        print "EventWindow.buttonSelected():\t Event Type ", eventType, "selected"
+        printf("EventWindow.buttonSelected(): Event Type ", eventType, "selected")
         self.chosenEvent      = eventType
         self.chosenParameters = kwargs.get("params", None)
         self.accepted = True
@@ -284,9 +285,6 @@ class KeypressEvent(Event):
         widget.setTitle('Keypress ' + self.parameters["checkKey"])
         widget.setTip('Activates when the letter ' + self.parameters["checkKey"] + " is pressed")
         return widget
-
-    def getMenus(self):
-        print "lol"
 
     def isActive(self, shared):
         if ord(self.parameters["checkKey"]) in Global.keysPressed:

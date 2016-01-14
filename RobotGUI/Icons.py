@@ -4,7 +4,7 @@ This is for storing any static directories
 """
 
 
-img_file = "Images/"
+img_file = "Icons/"
 
 #Other
 cancel             = img_file + "cancel.png"
@@ -46,3 +46,5 @@ wait_command       = img_file + "wait_command.png"
 grip_command       = img_file + "grip_command.png"
 drop_command       = img_file + "drop_command.png"
 colortrack_command = img_file + "colortrack_command.png"
+startblock_command = img_file + "startblock_command.png"
+endblock_command   = img_file + "endblock_command.png"

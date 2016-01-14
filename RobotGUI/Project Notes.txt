@@ -3,11 +3,20 @@ DONT FORGET TO GIVE thenounproject.com CREDIT FOR THE ICONS
 
 
 ######   TO DO    #####
+-Remove kwargs from CommandWidget
+
+-Have getWidget() be on the Command superclass
+
+-Have Commands own their own widget
+
+-Have a "deleteSelected" command on CommandList
 - Have some sort of indication when the robot is done connecting, either succesfully or not.
 
 -Stop the what-the-hell random crashes
 
+-Command line support for running .task files
 
+-Pluggin support to make custom commands
 
 
 Event Ideas:

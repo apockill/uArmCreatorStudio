@@ -1,9 +1,10 @@
-import cv2
-import time
-import numpy as np
-import Global
 from PyQt4 import QtGui, QtCore
 from threading import Thread
+from Global import printf
+from time import time
+import cv2
+import numpy as np
+
 
 
 def getConnectedCameras():
@@ -34,7 +35,7 @@ class VideoStream:
         self.fps        = 24.0
         self.dimensions = None  #Will be [x dimension, y dimension]
 
-        self.millis     = lambda: int(round(time.time() * 1000))  #Create function that gets current time in millis
+        self.millis     = lambda: int(round(time() * 1000))  #Create function that gets current time in millis
         self.mainThread = None
 
     def setPaused(self, value):
@@ -56,7 +57,7 @@ class VideoStream:
         self.frame     = None
         self.frameList = []
 
-        print "VideoStream.main():\t Starting videoStream thread."
+        printf("VideoStream.main(): Starting videoStream thread.")
         lastMillis = self.millis()
         while not self.running:
 
@@ -97,19 +98,19 @@ class VideoStream:
                         self.frameCount += 1
 
                 else:
-                    print "VideoStream.main():\t ERROR while reading frame from Camera: ", self.cameraID
+                    printf("VideoStream.main(): ERROR while reading frame from Camera: ", self.cameraID)
                     self.setNewCamera(self.cameraID)
                     cv2.waitKey(1000)
 
 
-        print "VideoStream.main():\t Ending videoStream thread"
+        printf("VideoStream.main(): Ending videoStream thread")
 
     def startThread(self):
         if self.mainThread is None:
             self.mainThread = Thread(target=self.videoThread)
             self.mainThread.start()
         else:
-            print "VideoStream.startThread():\t ERROR: Tried to create mainThread, but mainThread already existed."
+            printf("VideoStream.startThread(): ERROR: Tried to create mainThread, but mainThread already existed.")
 
     def endThread(self):
         self.running = True
@@ -124,7 +125,7 @@ class VideoStream:
 
     def setNewCamera(self, cameraID):
         #Set or change the current camera to a new one
-        print "VideoStream.setNewCamera():\t Setting camera to cameraID ", cameraID
+        printf("VideoStream.setNewCamera(): Setting camera to cameraID ", cameraID)
         previousState = self.paused  #When the function is over it will set the camera to its previous state
 
         self.setPaused(True)  #Make sure cap won't be called in the main thread while releasing the cap
@@ -135,7 +136,7 @@ class VideoStream:
         self.cap = cv2.VideoCapture(self.cameraID)
 
         if not self.cap.isOpened():
-            print "VideoStream.setNewCamera():\t ERROR: Camera not opened. cam ID: ", cameraID
+            printf("VideoStream.setNewCamera(): ERROR: Camera not opened. cam ID: ", cameraID)
             self.dimensions = None
             return False
 
@@ -144,9 +145,9 @@ class VideoStream:
         ret, frame = self.cap.read()
         if ret:
             self.dimensions = [frame.shape[1], frame.shape[0]]
-            print "dimensions", self.dimensions
+
         else:
-            print "VideoStream.setNewCamera():\t ERROR ERROR: Camera could not read frame. cam ID: ", cameraID
+            printf("VideoStream.setNewCamera(): ERROR ERROR: Camera could not read frame. cam ID: ", cameraID)
             self.dimensions = None
             return False
 
@@ -191,7 +192,7 @@ class Vision:
         #GET TWO CONSECUTIVE FRAMES
         frameList = self.vStream.getFrameList()
         if len(frameList) < 5:  #Make sure there are enough frames to do the motion comparison
-            print "getMovement():\tNot enough frames in self.vid.previousFrames"
+            printf("getMovement():Not enough frames in self.vid.previousFrames")
             return 0    #IF PROGRAM IS RUN BEFORE THE PROGRAM HAS EVEN 10 FRAMES
 
         frame0 = frameList[len(frameList) - 1]
@@ -260,8 +261,8 @@ class Vision:
 
         contours, hierarchy = cv2.findContours(finalThresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
-
-
+        cv2.imshow("frame", finalThresh)
+        cv2.waitKey(1)
         # Find the contour with maximum area and store it as best_cnt
         max_area = 0
         best_cnt = None

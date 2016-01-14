@@ -1,8 +1,11 @@
+
+from threading import Thread
+from Global import printf
+from UArmForPython.uarm_python import Uarm
 import serial
 import serial.tools.list_ports
-from threading import Thread
-from UArmForPython.uarm_python import Uarm
 import math
+
 
 def getConnectedRobots():
     #Returns any arduino serial ports in a list [port, port, port]
@@ -21,8 +24,8 @@ class Robot():
         self.uArm = None
         self.home = {"x": 0, "y": -15, "z": 15}
         self.pos =     {'x':       0.0,
-                        'y':       0.0,
-                        'z':       0.0,
+                        'y':     -15.0,
+                        'z':      15.0,
                         'wrist':   0.0,
                         'touch':     0}
 
@@ -42,7 +45,7 @@ class Robot():
 
         self.positionChanged = True
         self.gripperChanged  = False  #This should only be used in Robot.refresh() to activate the gripper
-        self.servoChanged    = False  #This should only be used in Robot.refresh() to set movement time to 0
+        self.servoAttached    = False  #This should only be used in Robot.refresh() to set movement time to 0
         self.running         = False  #If the setup Thread is running currently
 
 
@@ -52,7 +55,7 @@ class Robot():
     #     waitFor  = kwargs.get('waitForRobot', False)  #If true, waitForRobot() will be run at the end of the function
     #
     #     #HANDLE ANY OTHER COMMANDS, INCLUDING POLAR COMMANDS
-    #     for name, value in kwargs.items():\t  #Cycles through any variable that might have been in the kwargs. This is any position command!
+    #     for name, value in kwargs.items():  #Cycles through any variable that might have been in the kwargs. This is any position command!
     #
     #         if name in self.pos:  #If it is a position statement.
     #             if self.pos[name] is "": continue
@@ -68,14 +71,24 @@ class Robot():
         # def setDetached(self, **kwargs):
 
 
-    def currentCoord(self):
-        if self.uArm is None or self.running:
-            print "Robot.currentCoord():\t Robot not found or setupThread is running, returning 0 for all coordinates.."
+    def getCurrentCoord(self):
+        if not self.connected() or self.running:
+            printf("Robot.currentCoord(): Robot not found or setupThread is running, returning 0 for all coordinates..")
             return {1: 0, 2: 0, 3: 0}
         else:
-            print "Robot.currentCoord():\t Getting coordinates for robot..."
+            printf("Robot.currentCoord(): Getting coordinates for robot...")
             return self.uArm.currentCoord()
 
+    def getBaseAngle(self):
+        if not self.connected()  or self.running:
+            printf("Robot.getBaseAngle(): Robot not found or setupThread is running, returning 90 for base angle...")
+            return 90
+        else:
+            printf("Robot.getBaseAngle(): Getting coordinates for robot...")
+            return self.uArm.readAngle(1)
+
+    def connected(self):
+        return not self.uArm is None
 
 
     def setPos(self, **kwargs):
@@ -100,12 +113,16 @@ class Robot():
         self.newServoStatus[3] = kwargs.get('servo3', self.newServoStatus[3])
         self.newServoStatus[4] = kwargs.get('servo4', self.newServoStatus[4])
 
-        #print "setServos run: ", self.newServoStatus, self.servoStatus
+        #printf("setServos run: ", self.newServoStatus, self.servoStatus)
 
     def setGripper(self, status):
         if not self.gripperStatus == status:
-            self.gripperChanged = True
             self.gripperStatus = status
+
+            if self.gripperStatus:
+                self.uArm.pumpOn()
+            else:
+                self.uArm.pumpOff()
 
 
     def getTipSensor(self):
@@ -124,46 +141,45 @@ class Robot():
 
 
         #Sends all positional data in self.pos to the robot
-        if self.uArm is None or self.running:
-            print "Robot.refresh():\t ERROR: Tried sending command while uArm is None or setupThread was running"
+        if not self.connected() or self.running:
+            printf("Robot.refresh(): ERROR: Tried sending command while uArm is not Connected or setupThread was running")
             return
 
+
+        currXYZ  = self.getCurrentCoord()
         self.updateServo(1)
         self.updateServo(2)
         self.updateServo(3)
         self.updateServo(4)
 
 
-        if self.servoChanged:
-            self.servoChanged = False
-            currXYZ  = self.currentCoord()
-            self.uArm.moveToWithTime(currXYZ[1], currXYZ[2], currXYZ[3], 0)
+        if self.servoAttached:
+            self.servoAttached = False
+            # currXYZ  = self.getCurrentCoord()
+            self.uArm.moveToWithTime(currXYZ[1], currXYZ[2], currXYZ[3], .5)
 
-        if self.gripperChanged:
-            if self.gripperStatus:
-                self.uArm.pumpOn()
-            else:
-                self.uArm.pumpOff()
+
             self.gripperChanged = False
 
         dist = lambda p1, p2: ((p2[0] - p1[0]) ** 2 + (p2[1] - p1[1]) ** 2 + (p2[2] - p1[2]) ** 2) ** .5
 
         if self.positionChanged:
             #Calculate the amount of time the move should take so as to reach an avg speed of cmps (cm per second)
-            currXYZ  = self.currentCoord()
+            currXYZ  = self.getCurrentCoord()
             currXYZ  = [currXYZ[1], currXYZ[2], currXYZ[3]]
             setXYZ   = [self.pos["x"], self.pos["y"], self.pos["z"]]
             distance = dist(currXYZ, setXYZ)
 
-            cmps     = 35   #Desired centimeters/per/second of average speed from the robot
+            cmps     = 40   #Desired centimeters/per/second of average speed from the robot
             time     = distance / cmps
 
             if instantMovement: time = 0
 
             try:
+                print "moving uarm"
                 self.uArm.moveToWithTime(self.pos['x'], self.pos['y'], self.pos['z'], time)
             except ValueError:
-                print "Robot.refresh():\t ERROR: Robot out of bounds and the uarm_python library crashed!"
+                printf("Robot.refresh(): ERROR: Robot out of bounds and the uarm_python library crashed!")
 
             self.positionChanged = False
 
@@ -173,48 +189,41 @@ class Robot():
                 #Attach the servo
                 self.uArm.servoAttach(num)
                 self.servoStatus[num] = True
-                self.servoChanged     = True  #This prompts the robot to "moveToWithTime" with 0 as time
-                print "Robot.updateServo():\t Servo", num, "attached"
+                self.servoAttached     = True  #This prompts the robot to "moveToWithTime" with 0 as time
+                printf("Robot.updateServo(): Servo", num, "attached")
             else:
                 #Detach the servo
                 self.uArm.servoDetach(num)
                 self.servoStatus[num] = False
-                print "Robot.updateServo():\t Servo", num, "detached"
+                printf("Robot.updateServo(): Servo", num, "detached")
 
 
 
     def setupThread(self, com):
-        print "Robot.setupThread():\t Thread Created"
+        printf("Robot.setupThread(): Thread Created")
         try:
             self.uArm = Uarm(com)
             #self.servoDetach()
-            print "Robot.setupThread():\t uArm successfully connected"
+            printf("Robot.setupThread(): uArm successfully connected")
 
         except serial.SerialException:
-            print "Robot.setupThread():\t ERROR SerialException while setting uArm to ", com
+            printf("Robot.setupThread(): ERROR SerialException while setting uArm to ", com)
         self.running = False
-        #self.refresh()
+        self.refresh()
 
     def setUArm(self, com):
         if com is not None and not self.running:
-            print "Robot.setUArm():\t Setting uArm to com", com, "..."
+            printf("Robot.setUArm(): Setting uArm to com", com, "...")
             self.uArm    = None  #This will prevent the 'play script' button from activating
             setupThread  = Thread(target=lambda: self.setupThread(com))
             self.running = True
             setupThread.start()
 
         else:
-            if self.running: print "Robot.setUArm()\t ERROR: setUArm() run while setupThread was already running!"
+            if self.running: printf("Robot.setUArm() ERROR: setUArm() run while setupThread was already running!")
         self.setPos(**self.home)
 
 
-
-def getRelative(x1, y1, baseAngle):
-    angle = math.radians(baseAngle) - math.radians(90)
-
-    x = x1 * math.cos(angle) - y1 * math.sin(angle)
-    y = x1 * math.sin(angle) + y1 * math.cos(angle)
-    return  x,y
 
 
 #Functions that combine the camera and robot
@@ -248,8 +257,10 @@ def getDirectionToTarget(targetPos, screenDimensions, tolerance):
         return True
 
 
+def getRelative(x1, y1, baseAngle):
+    angle = math.radians(baseAngle) - math.radians(90)
 
-# screenDim        = [640, 480]
-# targetCoords     = [100, 100]
-# tolerance        = 10
-# focusOnTarget(targetCoords, screenDim, tolerance)
+    x = x1 * math.cos(angle) - y1 * math.sin(angle)
+    y = x1 * math.sin(angle) + y1 * math.cos(angle)
+    return  x, y
+
