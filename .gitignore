@@ -54,3 +54,7 @@ Settings.p
 
 # Vim
 *.swp
+
+
+# IntelliJ stuff
+.idea/

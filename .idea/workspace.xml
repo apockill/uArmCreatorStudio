@@ -1,78 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e0b2706b-143a-45fa-b0a7-2a4a1392cd50" name="Default" comment="">
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Not used\Attention-24.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Not used\Cancel-24.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Not used\Delete-24.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Not used\Document-24.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Not used\Edit-24.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Not used\Folder-24.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Not used\Home-24.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Not used\Lock-24.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Not used\Minus-24.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Not used\Plus-24.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Not used\Rating-24.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Not used\Restart-24.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Not used\Search-24.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Not used\Synchronize-24.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Not used\Trash-24.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Not used\Unlock-24.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Not used\creation_event.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Original images\attach_command.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Original images\calibrate_system.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Original images\colortrack_command.pdn" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Original images\creation_event.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Original images\destroy_event.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Original images\detach_command.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Original images\drop_event.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Original images\grip_event.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Original images\motion_event.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Original images\pause_script.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Original images\pause_video.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Original images\play_video.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Original images\refresh_command.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Original images\robot.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Original images\rsh_command.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Original images\run_script.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Original images\step_event.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Original images\tip_event.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Original images\wait_command.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\Original images\xyz_command.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\attach_command.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\calibrate.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\cancel.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\colortrack_command.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\creation_event.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\delete.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\destroy_event.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\detach_command.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\drop_command.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\grip_command.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\intersect_event.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\keyboard_event.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\load_file.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\motion_event.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\new_file.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\pause_script.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\pause_video.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\play_video.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\refresh_command.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\run_script.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\save_file.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\settings.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\step_event.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\taskbar.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\tip_event.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\wait_command.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Images\xyz_command.png" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\Main.spec" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\NewTask.task" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/RobotGUI/MyTask.task" afterPath="$PROJECT_DIR$/RobotGUI/MyTask.task" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/RobotGUI/scrap.py" afterPath="$PROJECT_DIR$/RobotGUI/scrap.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/RobotGUI/UArmForPython/uarm_python.py" afterPath="$PROJECT_DIR$/RobotGUI/UArmForPython/uarm_python.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+    <list default="true" id="e0b2706b-143a-45fa-b0a7-2a4a1392cd50" name="Default" comment="Fixing up to merge">
+      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\.name" afterPath="" />
+      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\RobotGUIProgramming.iml" afterPath="" />
+      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\dictionaries\AlexThiel.xml" afterPath="" />
+      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\encodings.xml" afterPath="" />
+      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\inspectionProfiles\Project_Default.xml" afterPath="" />
+      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\inspectionProfiles\profiles_settings.xml" afterPath="" />
+      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\misc.xml" afterPath="" />
+      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\modules.xml" afterPath="" />
+      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\scopes\scope_settings.xml" afterPath="" />
+      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\vcs.xml" afterPath="" />
+      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\workspace.xml" afterPath="" />
+      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\workspace[Conflict].xml" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
     </list>
     <ignored path="RobotGUIProgramming.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -186,63 +128,12 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Project Notes.txt" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/RobotGUI/Project Notes.txt">
+      <file leaf-file-name=".gitignore" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="969">
-              <caret line="7" column="46" selection-start-line="7" selection-start-column="46" selection-end-line="7" selection-end-column="46" />
+            <state vertical-scroll-proportion="0.8923077" vertical-offset="523" max-vertical-offset="1105">
+              <caret line="41" column="53" selection-start-line="41" selection-start-column="53" selection-end-line="41" selection-end-column="53" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ControlPanel.py" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/RobotGUI/ControlPanel.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.25179857" vertical-offset="166" max-vertical-offset="1037">
-              <caret line="442" column="33" selection-start-line="442" selection-start-column="33" selection-end-line="442" selection-end-column="33" />
-              <folding>
-                <element signature="e#187#798#0" expanded="false" />
-                <element signature="e#187#447#1" expanded="false" />
-                <element signature="e#507#798#0" expanded="false" />
-                <element signature="e#843#8366#0" expanded="false" />
-                <element signature="e#843#1197#1" expanded="false" />
-                <element signature="e#1263#1956#0" expanded="false" />
-                <element signature="e#1990#3375#0" expanded="false" />
-                <element signature="e#3408#4388#0" expanded="false" />
-                <element signature="e#4427#4755#0" expanded="false" />
-                <element signature="e#4790#5050#0" expanded="false" />
-                <element signature="e#5089#7136#0" expanded="false" />
-                <element signature="e#7181#7904#0" expanded="false" />
-                <element signature="e#7938#7965#0" expanded="false" />
-                <element signature="e#8002#8030#0" expanded="false" />
-                <element signature="e#8068#8097#0" expanded="false" />
-                <element signature="e#8135#8170#0" expanded="false" />
-                <element signature="e#8210#8252#0" expanded="false" />
-                <element signature="e#8296#8366#0" expanded="false" />
-                <element signature="e#8409#15664#0" expanded="false" />
-                <element signature="e#8455#9245#0" expanded="false" />
-                <element signature="e#9277#9300#0" expanded="false" />
-                <element signature="e#9343#9772#0" expanded="false" />
-                <element signature="e#9343#9551#1" expanded="false" />
-                <element signature="e#9818#10268#0" expanded="false" />
-                <element signature="e#10305#10635#0" expanded="false" />
-                <element signature="e#10691#12101#0" expanded="false" />
-                <element signature="e#12138#13283#0" expanded="false" />
-                <element signature="e#13321#14748#0" expanded="false" />
-                <element signature="e#14787#15150#0" expanded="false" />
-                <element signature="e#15199#15664#0" expanded="false" />
-                <element signature="e#15745#16575#0" expanded="false" />
-                <element signature="e#16607#16632#0" expanded="false" />
-                <element signature="e#16684#16851#0" expanded="false" />
-                <element signature="e#16898#17083#0" expanded="false" />
-                <element signature="e#17120#17381#0" expanded="false" />
-                <element signature="e#17449#18927#0" expanded="false" />
-                <element signature="e#19682#19851#0" expanded="false" />
-                <element signature="e#19893#20402#0" expanded="false" />
-                <element signature="e#20440#20757#0" expanded="false" />
-                <element signature="e#20805#21132#0" expanded="false" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -261,7 +152,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/RobotGUI/PyQT Tutorials/CalculatorLayout.py" />
         <option value="$PROJECT_DIR$/RobotGUI/PyQT Tutorials/hBox and vBox.py" />
         <option value="$PROJECT_DIR$/RobotGUI/PyQT Tutorials/StackedWindows.py" />
         <option value="$PROJECT_DIR$/RobotGUI/PyQT Tutorials/Child Windows.py" />
@@ -312,14 +202,15 @@
         <option value="$PROJECT_DIR$/RobotGUI/Project Notes.txt" />
         <option value="$PROJECT_DIR$/RobotGUI/Main.py" />
         <option value="$PROJECT_DIR$/RobotGUI/ControlPanel.py" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1936" />
-    <option name="height" value="1056" />
+    <option name="x" value="185" />
+    <option name="y" value="85" />
+    <option name="width" value="1152" />
+    <option name="height" value="720" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <OptionsSetting value="true" id="Add" />
@@ -684,7 +575,15 @@
       <created>1452734592568</created>
       <updated>1452734592568</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Fixing up to merge">
+      <created>1452734861425</created>
+      <updated>1452734861425</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Fixing up to merge">
+      <created>1452734969856</created>
+      <updated>1452734969856</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -708,16 +607,16 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
+    <frame x="185" y="85" width="1152" height="720" extended-state="0" />
+    <editor active="false" />
     <layout>
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3496659" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.55871886" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32739422" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2925473" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3259177" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19072708" sideWeight="0.49822065" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3249551" sideWeight="0.49822065" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3975501" sideWeight="0.5349233" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.20169252" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.116926506" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
@@ -777,13 +676,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/RobotGUI/Robot.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="238" max-vertical-offset="3672">
-          <caret line="14" column="14" selection-start-line="14" selection-start-column="14" selection-end-line="14" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/RobotGUI/Video.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="100">
@@ -1316,8 +1208,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/RobotGUI/ControlPanel.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.25179857" vertical-offset="166" max-vertical-offset="1037">
-          <caret line="442" column="33" selection-start-line="442" selection-start-column="33" selection-end-line="442" selection-end-column="33" />
+        <state vertical-scroll-proportion="0.31294963" vertical-offset="217" max-vertical-offset="1037">
+          <caret line="454" column="0" selection-start-line="454" selection-start-column="0" selection-end-line="454" selection-end-column="0" />
           <folding>
             <element signature="e#187#798#0" expanded="false" />
             <element signature="e#187#447#1" expanded="false" />
@@ -1360,6 +1252,14 @@
             <element signature="e#20440#20757#0" expanded="false" />
             <element signature="e#20805#21132#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.8923077" vertical-offset="523" max-vertical-offset="1105">
+          <caret line="41" column="53" selection-start-line="41" selection-start-column="53" selection-end-line="41" selection-end-column="53" />
+          <folding />
         </state>
       </provider>
     </entry>
