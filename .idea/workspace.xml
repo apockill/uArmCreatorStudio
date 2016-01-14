@@ -1,20 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e0b2706b-143a-45fa-b0a7-2a4a1392cd50" name="Default" comment="Fixing up to merge">
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\.name" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\RobotGUIProgramming.iml" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\dictionaries\AlexThiel.xml" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\encodings.xml" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\inspectionProfiles\Project_Default.xml" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\inspectionProfiles\profiles_settings.xml" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\misc.xml" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\modules.xml" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\scopes\scope_settings.xml" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\vcs.xml" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\workspace.xml" afterPath="" />
-      <change type="DELETED" beforePath="F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\.idea\workspace[Conflict].xml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+    <list default="true" id="e0b2706b-143a-45fa-b0a7-2a4a1392cd50" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="RobotGUIProgramming.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -583,7 +571,11 @@
       <created>1452734969856</created>
       <updated>1452734969856</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Removed IntelliJ files">
+      <created>1452735172344</created>
+      <updated>1452735172344</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -665,7 +657,8 @@
       <TodoPanelSettings />
     </option>
     <MESSAGE value="Fixing up to merge" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixing up to merge" />
+    <MESSAGE value="Removed IntelliJ files" />
+    <option name="LAST_COMMIT_MESSAGE" value="Removed IntelliJ files" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
