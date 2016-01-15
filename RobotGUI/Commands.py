@@ -12,14 +12,22 @@ class CommandWidget(QtGui.QWidget):
         super(CommandWidget, self).__init__(parent)
         self.title       = QtGui.QLabel()
         self.description = QtGui.QLabel()
-        self.icon        = QtGui.QLabel("No icon found.")
+        self.icon        = QtGui.QLabel("No Icon Found")
+        self.deleteBtn   = QtGui.QPushButton("")
 
+        self.initUI()
+        self.deleteBtn.clicked.connect(lambda: onDeleteFunction(self))
+
+
+    def setFocus(self):
+        print "HAHA DOIN IT"
+
+    def initUI(self):
         # Create the delete button
-        self.delete      = QtGui.QPushButton("")
-        self.delete.setFlat(True)
-        self.delete.setIcon(QtGui.QIcon(Icons.delete))
-        self.delete.setVisible(False)
-        self.delete.clicked.connect(lambda: onDeleteFunction(self))
+        self.deleteBtn.setFlat(True)
+        self.deleteBtn.setIcon(QtGui.QIcon(Icons.delete))
+        self.deleteBtn.setVisible(False)
+
 
         font = QtGui.QFont()
         font.setBold(True)
@@ -35,25 +43,23 @@ class CommandWidget(QtGui.QWidget):
         midLayout.addWidget(self.title)
         midLayout.addWidget(self.description)
 
-        rightLayout.addWidget(self.delete)
+        rightLayout.addWidget(self.deleteBtn)
         rightLayout.setAlignment(QtCore.Qt.AlignRight)
 
         mainHLayout = QtGui.QHBoxLayout()
         mainHLayout.addLayout(leftLayout)
         mainHLayout.addLayout(midLayout, QtCore.Qt.AlignLeft)
         mainHLayout.addLayout(rightLayout, QtCore.Qt.AlignRight)
-        # self.textQVBoxLayout.addWidget(self.textUpQLabel)
-        # self.textQVBoxLayout.addWidget(self.textDownQLabel)
-        # self.allQHBoxLayout.addWidget(self.iconQLabel, 0)
-        # self.allQHBoxLayout.addLayout(self.textQVBoxLayout, 1)
 
         self.setLayout(mainHLayout)
 
     def focusIn(self):
-        self.delete.setVisible(True)
+        #When it has been clicked
+        self.deleteBtn.setVisible(True)
 
     def focusOut(self):
-        self.delete.setVisible(False)
+        #When something else has been clicked
+        self.deleteBtn.setVisible(False)
 
     def setTitle(self, text):
         self.title.setText(text)
@@ -114,6 +120,7 @@ class Command(QtGui.QDialog):
     def __init__(self, parent):
         super(Command, self).__init__(parent)
         self.title = ""
+        self.description = ""
         self.parameters = {}  #For commands with no parameters, this should stay empty
         self.accepted    = False
         self.mainVLayout = QtGui.QVBoxLayout()
@@ -158,10 +165,9 @@ class Command(QtGui.QDialog):
         else:
             self.accepted = True
             return
-        #self.show()
+
         printf("Command.openView(): Finished executing self...")
 
-        #printf("Command.openView(): ERROR ERROR ERROR while opening view of command window. Fix!")
 
         #See if the user pressed Ok or if he cancelled/exited out
         if self.accepted:
@@ -171,12 +177,31 @@ class Command(QtGui.QDialog):
             #  Add the new parameters to the dictionary, and update changed values
             self.parameters.update(newParameters)
 
-
+            self.updateDescription()
 
             printf('CommandWindow.openView(): New parameters: ', self.parameters)
 
         else:
             printf('CommandWindow.openView(): User Canceled.')
+
+    def dressWidget(self, newWidget):
+        # self.itemWidget = CommandWidget(self, onDeleteFunction)
+        #
+        # self.updateDescription()
+        #
+        # self.itemWidget.setIcon(self.icon)
+        # self.itemWidget.setTitle(self.title)
+        # self.itemWidget.setTip(self.tooltip)
+        # self.itemWidget.setDescription(self.description)
+        #newWidget = CommandWidget(self, onDeleteFunction)
+
+        self.updateDescription()
+
+        newWidget.setIcon(self.icon)
+        newWidget.setTitle(self.title)
+        newWidget.setTip(self.tooltip)
+        newWidget.setDescription(self.description)
+        return newWidget
 
 
     def getInfo(self):
@@ -188,6 +213,10 @@ class Command(QtGui.QDialog):
     def run(self):
         #For any command that does not have a function such as "start block of code"
         #Then this function will run in it's place.
+        pass
+
+    def updateDescription(self):
+        #This is called in openView() and will update the decription to match the parameters
         pass
 
 
@@ -282,16 +311,11 @@ class MoveXYZCommand(Command):
 
         return newParameters
 
-    def getWidget(self, onDeleteFunction):
-        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
-        listWidget.setIcon(self.icon)
-        listWidget.setTitle(self.title)
-        listWidget.setTip(self.tooltip)
-        listWidget.setDescription('X: '                + str(round(self.parameters['x'], 1))  +
-                                       '   Y: '        + str(round(self.parameters['y'], 1))  +
-                                       '   Z: '        + str(round(self.parameters['z'], 1))  +
-                                       '   Relative: ' + str(    self.parameters['rel']))
-        return listWidget
+    def updateDescription(self):
+        self.description =     'X: '        + str(round(self.parameters['x'], 1))  +  \
+                            '   Y: '        + str(round(self.parameters['y'], 1))  +  \
+                            '   Z: '        + str(round(self.parameters['z'], 1))  +  \
+                            '   Relative: ' + str(      self.parameters['rel'])
 
     def run(self, shared):
         printf("MoveXYZCommand.run(): Moving robot to ", self.parameters['x'], self.parameters['y'], self.parameters['z'])
@@ -307,6 +331,7 @@ class DetachCommand(Command):
     """
     icon       = Icons.detach_command
     tooltip    = "Disengage servos on the robot"
+
     def __init__(self, parent, shared, **kwargs):
         super(DetachCommand, self).__init__(parent)
 
@@ -373,22 +398,14 @@ class DetachCommand(Command):
 
         return newParameters
 
-    def getWidget(self, onDeleteFunction):
-
-        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
-        listWidget.setIcon(self.icon)
-        listWidget.setTitle(self.title)
-        listWidget.setTip(self.tooltip)
-
+    def updateDescription(self):
         descriptionBuild = "Servos"
         if self.parameters["servo1"]: descriptionBuild += "  Rotation"
         if self.parameters["servo2"]: descriptionBuild += "  Stretch"
         if self.parameters["servo3"]: descriptionBuild += "  Height"
         if self.parameters["servo4"]: descriptionBuild += "  Wrist"
 
-        listWidget.setDescription(descriptionBuild)
-
-        return listWidget
+        self.description = descriptionBuild
 
     def run(self, shared):
         printf("DetachCommand.run(): Detaching servos ", self.parameters['servo1'], \
@@ -473,21 +490,14 @@ class AttachCommand(Command):
 
         return newParameters
 
-    def getWidget(self, onDeleteFunction):
-        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
-        listWidget.setIcon(self.icon)
-        listWidget.setTitle(self.title)
-        listWidget.setTip(self.tooltip)
-
+    def updateDescription(self):
         descriptionBuild = "Servos"
         if self.parameters["servo1"]: descriptionBuild += "  Rotation"
         if self.parameters["servo2"]: descriptionBuild += "  Stretch"
         if self.parameters["servo3"]: descriptionBuild += "  Height"
         if self.parameters["servo4"]: descriptionBuild += "  Wrist"
 
-        listWidget.setDescription(descriptionBuild)
-
-        return listWidget
+        self.description = descriptionBuild
 
     def run(self, shared):
         printf("AttachCommand.run(): Attaching servos ", self.parameters['servo1'], \
@@ -537,14 +547,8 @@ class WaitCommand(Command):
         newParameters = {'time': self.sanitizeFloat(self.timeEdit, self.parameters["time"])}
         return newParameters
 
-    def getWidget(self, onDeleteFunction):
-        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
-        listWidget.setIcon(self.icon)
-        listWidget.setTitle(self.title)
-        listWidget.setTip(self.tooltip)
-        listWidget.setDescription(str(round(self.parameters['time'], 1)) + " seconds")
-        return listWidget
-
+    def updateDescription(self):
+        self.description = str(round(self.parameters['time'], 1)) + " seconds"
 
     def run(self, shared):
         printf("WaitCommand.run(): Waiting for", self.parameters["time"], "seconds")
@@ -566,16 +570,6 @@ class RefreshCommand(Command):
 
         self.title       = "Refresh Robot"
 
-    def getWidget(self, onDeleteFunction):
-        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
-        listWidget.setIcon(self.icon)
-        listWidget.setTitle(self.title)
-        listWidget.setTip(self.tooltip)
-
-        listWidget.setDescription("")
-
-        return listWidget
-
     def run(self, shared):
         shared.robot.refresh()
 
@@ -588,16 +582,6 @@ class GripCommand(Command):
         super(GripCommand, self).__init__(parent)
 
         self.title       = "Activate Gripper"
-
-    def getWidget(self, onDeleteFunction):
-        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
-        listWidget.setIcon(self.icon)
-        listWidget.setTitle(self.title)
-        listWidget.setTip(self.tooltip)
-
-        listWidget.setDescription("")
-
-        return listWidget
 
     def run(self, shared):
         shared.robot.setGripper(True)
@@ -612,17 +596,6 @@ class DropCommand(Command):
         super(DropCommand, self).__init__(parent)
 
         self.title       = "Deactivate Gripper"
-
-
-    def getWidget(self, onDeleteFunction):
-        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
-        listWidget.setIcon(self.icon)
-        listWidget.setTitle(self.title)
-        listWidget.setTip(self.tooltip)
-
-        listWidget.setDescription("")
-
-        return listWidget
 
     def run(self, shared):
         shared.robot.setGripper(False)
@@ -748,14 +721,8 @@ class ColorTrackCommand(Command):
                          'hVal': self.sanitizeFloat(self.hValEdit, self.parameters['hVal'])}
         return newParameters
 
-    def getWidget(self, onDeleteFunction):
-
-        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
-        listWidget.setIcon(self.icon)
-        listWidget.setTitle(self.title)
-        listWidget.setTip(self.tooltip)
-        listWidget.setDescription('Track objects with a hue of ' + str(self.parameters['cHue']))
-        return listWidget
+    def updateDescription(self):
+        self.description = 'Track objects with a hue of ' + str(self.parameters['cHue'])
 
     def run(self, shared):
         printf("ColorTrackCommand.run(): Tracking colored objects! ")
@@ -802,11 +769,6 @@ class StartBlockCommand(Command):
     def __init__(self, parent, shared, **kwargs):
         super(StartBlockCommand, self).__init__(parent)
 
-    def getWidget(self, onDeleteFunction):
-        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
-        listWidget.setIcon(self.icon)
-        listWidget.setTip(self.tooltip)
-        return listWidget
 
 class EndBlockCommand(Command):
     """
@@ -819,9 +781,3 @@ class EndBlockCommand(Command):
     def __init__(self, parent, shared, **kwargs):
         super(EndBlockCommand, self).__init__(parent)
 
-    def getWidget(self, onDeleteFunction):
-
-        listWidget = CommandWidget(parent=self, onDeleteFunction=onDeleteFunction)
-        listWidget.setIcon(self.icon)
-        listWidget.setTip(self.tooltip)
-        return listWidget

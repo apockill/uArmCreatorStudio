@@ -191,10 +191,6 @@ class EventPromptWindow(QtGui.QDialog):
         return newButton
 
 
-
-
-
-########## EVENTS ##########
 class Event(object):
     def __init__(self):
         """
@@ -211,6 +207,9 @@ class Event(object):
         for command in commandsOrdered:
             command.run(shared)
 
+
+
+########## EVENTS ##########
 
 class InitEvent(Event):
     icon = Icons.creation_event

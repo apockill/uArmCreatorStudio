@@ -506,6 +506,7 @@ class MainWindow(QtGui.QMainWindow):
             printf('Main.closeSettingsView(): "Cancel" clicked, no settings applied.')
 
         #Go back to dashboard
+        self.setVideo("play")
         self.centralWidget.setCurrentWidget(self.dashboardView)
 
     def closeCalibrateView(self, buttonClicked):
@@ -521,6 +522,7 @@ class MainWindow(QtGui.QMainWindow):
             printf('Main.closeCalibrateView(): "Cancel" clicked, no calibrations applied...')
 
         #Go back to dashboard
+        self.setVideo("play")
         self.centralWidget.setCurrentWidget(self.dashboardView)
 
 

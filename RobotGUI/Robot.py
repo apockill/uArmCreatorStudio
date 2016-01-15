@@ -1,4 +1,3 @@
-#test
 from threading import Thread
 from Global import printf
 from UArmForPython.uarm_python import Uarm

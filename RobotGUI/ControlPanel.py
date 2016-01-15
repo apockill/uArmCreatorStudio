@@ -381,7 +381,7 @@ class EventList(QtGui.QListWidget):
 
         #Change the item widget to match
         blankWidget    = EventWidget(self)
-        eventWidget    = newEvent.getWidget(blankWidget)
+        eventWidget    = newEvent.dressWidget(blankWidget)
         self.setItemWidget(selectedItem, eventWidget)
 
         #Update the self.events dictionary with the new event
@@ -424,15 +424,12 @@ class CommandList(QtGui.QListWidget):
         super(CommandList, self).__init__()
         #GLOBALS
         self.commands       = {}      #Dictionary of commands. Ex: {QListItem: MoveXYZCommand, QListItem: PickupCommand}
-        self.commandWidgets = {}
         self.setDragDropMode(QtGui.QAbstractItemView.DragDrop)
         self.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
         self.setAcceptDrops(True)
         self.itemDoubleClicked.connect(self.doubleClickEvent)
         self.itemClicked.connect(self.clickEvent)
         self.itemSelectionChanged.connect(self.selectionChangedEvent)
-        self.selectedCommand = None
-
 
         #The following is a function that returns a dictionary of the commands, in the correct order
         self.getCommandsOrdered = lambda: [self.commands[self.item(index)] for index in xrange(self.count())]
@@ -442,16 +439,20 @@ class CommandList(QtGui.QListWidget):
     def initUI(self):
         self.setMinimumWidth(250)
 
+    def deleteSelected(self):
+        for item in self.selectedItems():
+            del self.commands[item]
+            self.takeItem(self.row(item))
+
     def clickEvent(self, listWidgetItem):
         # Notify the clicked item that it is in focus
-        self.commandWidgets[listWidgetItem].focusIn()
-        self.selectedCommand =  self.commandWidgets[listWidgetItem]
+        pass
 
     def selectionChangedEvent(self):
         # Notify the last focused item that it is no longer in focus
-        if self.selectedCommand != None:
-            self.selectedCommand.focusOut()
-            self.selectedCommand = None
+        #self.selectedCommand.focusOut()
+        pass
+
 
     def updateWidth(self):
         #Update the width of the commandList to the widest element within it
@@ -460,9 +461,8 @@ class CommandList(QtGui.QListWidget):
             self.setMinimumWidth(self.sizeHintForColumn(0) + 10)
 
 
-    def addCommand(self, commandType, shared, **kwargs):
+    def addCommand(self, commandType, shared, parameters=None):
         #If adding a pre-filled command (used when loading a save)
-        parameters = kwargs.get("parameters", None)
 
         if parameters is None:
             newCommand = commandType(self, shared)
@@ -480,40 +480,30 @@ class CommandList(QtGui.QListWidget):
             newCommand.parameters = parameters
 
 
+        #Create the widget to be placed inside the listWidgetItem
+        newWidget = CommandWidget(self, self.deleteSelected)
+        newWidget = newCommand.dressWidget(newWidget)  #Dress up the widget
 
-        #Create the list widget to visualize the widget
-        commandWidget = newCommand.getWidget(self.deleteCommandEvent)
+
+        #Create the list widget item
         listWidgetItem = QtGui.QListWidgetItem(self)
-        listWidgetItem.setSizeHint(commandWidget.sizeHint())  #Widget will not appear without this line
+        listWidgetItem.setSizeHint(newWidget.sizeHint())  #Widget will not appear without this line
         self.addItem(listWidgetItem)
 
+
         #Add list widget to commandList
-        self.setItemWidget(listWidgetItem, commandWidget)
+        self.setItemWidget(listWidgetItem, newWidget)
 
         #Add the new command to the list of commands, linking it with its corresponding listWidgetItem
         self.commands[listWidgetItem] = newCommand
-        self.commandWidgets[listWidgetItem] = commandWidget
 
         #Update the width of the commandList to the widest element within it
         self.updateWidth()
 
-    def deleteCommandEvent(self, widget):
-        for key, val in self.commandWidgets.iteritems():
-            if val == widget:
-                self.commandWidgets[key].deleteLater()
-                del self.commands[key]
-                del self.commandWidgets[key]
-                self.takeItem(self.row(key))
-                break
-
     def keyPressEvent(self, event):
         #Delete selected items when delete key is pressed
         if event.key() == QtCore.Qt.Key_Delete:
-            for item in self.selectedItems():
-                self.commandWidgets[item].deleteLater()
-                del self.commands[item]
-                del self.commandWidgets[item]
-                self.takeItem(self.row(item))
+            self.deleteSelected()
 
     def dropEvent(self, event):
         event.setDropAction(QtCore.Qt.MoveAction)
@@ -527,10 +517,14 @@ class CommandList(QtGui.QListWidget):
         selectedItem    = selectedItems[0]
 
         self.commands[selectedItem].openView()
-        self.commands[selectedItem].getInfo()
-        updatedWidget   =  self.commands[selectedItem].getWidget(self.deleteCommandEvent)
 
-        self.setItemWidget( selectedItem, updatedWidget)
+        #Update the widget to match the new parameters
+        self.commands[selectedItem].getInfo()
+
+        newWidget = CommandWidget(self, self.deleteSelected)
+        newWidget = self.commands[selectedItem].dressWidget(newWidget)
+        self.setItemWidget( selectedItem, newWidget)
+
         self.updateWidth()
 
 
