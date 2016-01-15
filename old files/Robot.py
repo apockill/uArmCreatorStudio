@@ -7,7 +7,6 @@ import math
 from ast import literal_eval
 from time import sleep
 
-
 """
 Experimentally derived information:
 

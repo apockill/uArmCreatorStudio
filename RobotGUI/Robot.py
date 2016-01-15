@@ -1,6 +1,7 @@
 from threading import Thread
 from Global import printf
 from UArmForPython.uarm_python import Uarm
+from time import sleep  #Only use in refresh() command after attaching servos
 import serial
 import serial.tools.list_ports
 import math
@@ -14,11 +15,7 @@ def getConnectedRobots():
 
 
 class Robot():
-    """
-    X:
-    Y:
-    Z: Ground level is at 6.5cm
-    """
+
     def __init__(self, comPort):
         self.uArm = None
         self.home = {"x": 0, "y": -15, "z": 15}
@@ -144,7 +141,6 @@ class Robot():
             printf("Robot.refresh(): ERROR: Tried sending command while uArm is not Connected or setupThread was running")
             return
 
-
         currXYZ  = self.getCurrentCoord()
         self.updateServo(1)
         self.updateServo(2)
@@ -153,9 +149,12 @@ class Robot():
 
 
         if self.servoAttached:
+
             self.servoAttached = False
             # currXYZ  = self.getCurrentCoord()
-            self.uArm.moveToWithTime(currXYZ[1], currXYZ[2], currXYZ[3], .5)
+            self.uArm.moveToWithTime(currXYZ[1], currXYZ[2], currXYZ[3], 0)
+            sleep(.4)
+            self.positionChanged = True
 
 
             self.gripperChanged = False
@@ -175,7 +174,6 @@ class Robot():
             if instantMovement: time = 0
 
             try:
-                print "moving uarm"
                 self.uArm.moveToWithTime(self.pos['x'], self.pos['y'], self.pos['z'], time)
             except ValueError:
                 printf("Robot.refresh(): ERROR: Robot out of bounds and the uarm_python library crashed!")

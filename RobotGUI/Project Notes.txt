@@ -2,23 +2,31 @@ DONT FORGET TO GIVE thenounproject.com CREDIT FOR THE ICONS
 
 
 
-######   TO DO    #####
--Remove kwargs from CommandWidget
+######   SHORT TERM GOALS    #####
+-Prompts for save sometimes when it shouldn't
 
--Have getWidget() be on the Command superclass
+-Console output only when script is running
 
--Have Commands own their own widget
+-Add click/drag to the commandDashboard
 
--Have a "deleteSelected" command on CommandList
+-Add font support
+
+-Impliment a thread stopper while a wait command is active
+
 - Have some sort of indication when the robot is done connecting, either succesfully or not.
 
+
+
+###### LONG TERM GOALS #####
 -Stop the what-the-hell random crashes
 
 -Command line support for running .task files
 
--Pluggin support to make custom commands
+-Plugin support to make custom commands
 
 
+
+##### BRAINSTORMING #####
 Event Ideas:
     Basic:
         Alarms

@@ -300,17 +300,15 @@ class EventList(QtGui.QListWidget):
                 printf("EventList.addEvent(): Event already exists, disregarding user input.")
                 return
 
-        #Check if the event has specific parameters (Such as a KeyPressEvent that specifies A must be the key pressed)
-        # if params is None or params == {}:
-        #     newEvent = eventType()
-        # else:
         newEvent = eventType(params)
 
-
         newEvent.commandList = kwargs.get("commandList", CommandList(parent=self))
-        #Create the widget and list item to visualize the event
+
+        #Create the widget item to visualize the event
         blankWidget    = EventWidget(self)
-        eventWidget    = newEvent.getWidget(blankWidget)
+        eventWidget    = newEvent.dressWidget(blankWidget)
+
+        #Create the list item to put the widget item inside of
         listWidgetItem = QtGui.QListWidgetItem(self)
         listWidgetItem.setSizeHint(eventWidget.sizeHint())   #Widget will not appear without this line
         self.addItem(listWidgetItem)
@@ -319,7 +317,6 @@ class EventList(QtGui.QListWidget):
         self.setItemWidget(listWidgetItem, eventWidget)
 
         self.events[listWidgetItem] = newEvent
-
 
         self.setCurrentRow(self.count() - 1)  #Select the newly added event
         self.refreshControlPanel()            #Call for a refresh of the ControlPanel so it shows the commandList
@@ -378,11 +375,9 @@ class EventList(QtGui.QListWidget):
         newEvent.commandList = self.events[selectedItem].commandList
 
 
-
-        #Change the item widget to match
-        blankWidget    = EventWidget(self)
-        eventWidget    = newEvent.dressWidget(blankWidget)
-        self.setItemWidget(selectedItem, eventWidget)
+        #Transfer the item widget and update the looks
+        oldWidget     = self.itemWidget(selectedItem)
+        newEvent.dressWidget(oldWidget)
 
         #Update the self.events dictionary with the new event
         self.events[selectedItem] = newEvent
@@ -427,9 +422,8 @@ class CommandList(QtGui.QListWidget):
         self.setDragDropMode(QtGui.QAbstractItemView.DragDrop)
         self.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
         self.setAcceptDrops(True)
-        self.itemDoubleClicked.connect(self.doubleClickEvent)
+        self.itemDoubleClicked.connect(self.doubleClickEvent)  #For opening the widget's window
         self.itemClicked.connect(self.clickEvent)
-        self.itemSelectionChanged.connect(self.selectionChangedEvent)
 
         #The following is a function that returns a dictionary of the commands, in the correct order
         self.getCommandsOrdered = lambda: [self.commands[self.item(index)] for index in xrange(self.count())]
@@ -444,14 +438,6 @@ class CommandList(QtGui.QListWidget):
             del self.commands[item]
             self.takeItem(self.row(item))
 
-    def clickEvent(self, listWidgetItem):
-        # Notify the clicked item that it is in focus
-        pass
-
-    def selectionChangedEvent(self):
-        # Notify the last focused item that it is no longer in focus
-        #self.selectedCommand.focusOut()
-        pass
 
 
     def updateWidth(self):
@@ -500,6 +486,7 @@ class CommandList(QtGui.QListWidget):
         #Update the width of the commandList to the widest element within it
         self.updateWidth()
 
+
     def keyPressEvent(self, event):
         #Delete selected items when delete key is pressed
         if event.key() == QtCore.Qt.Key_Delete:
@@ -510,22 +497,28 @@ class CommandList(QtGui.QListWidget):
         super(CommandList, self).dropEvent(event)
         lst = [i.text() for i in self.findItems('', QtCore.Qt.MatchContains)]
 
-    def doubleClickEvent(self):
+
+    def doubleClickEvent(self, clickedItem):
         #Open the command window for the command that was just double clicked
         printf("CommandList.doubleClickEvent(): Opening double clicked command")
-        selectedItems   = self.selectedItems()
-        selectedItem    = selectedItems[0]
 
-        self.commands[selectedItem].openView()
+        self.commands[clickedItem].openView()
 
         #Update the widget to match the new parameters
-        self.commands[selectedItem].getInfo()
+        self.commands[clickedItem].getInfo()
 
-        newWidget = CommandWidget(self, self.deleteSelected)
-        newWidget = self.commands[selectedItem].dressWidget(newWidget)
-        self.setItemWidget( selectedItem, newWidget)
+        #Update the current itemWidget to match the new parameters
+        currentWidget = self.itemWidget(clickedItem)  #Get the current itemWidget
+        self.commands[clickedItem].dressWidget(currentWidget)
 
         self.updateWidth()
+
+    def clickEvent(self, clickedItem):
+        for i in range(self.count()):
+            item = self.item(i)
+            self.itemWidget(item).setFocus(False)
+
+        self.itemWidget(clickedItem).setFocus(True)
 
 
     def getSaveData(self):

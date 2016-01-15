@@ -15,12 +15,10 @@ class CommandWidget(QtGui.QWidget):
         self.icon        = QtGui.QLabel("No Icon Found")
         self.deleteBtn   = QtGui.QPushButton("")
 
+       # parent.itemSelectionChanged.connect(self.setFocus)
+       # parent.
         self.initUI()
-        self.deleteBtn.clicked.connect(lambda: onDeleteFunction(self))
-
-
-    def setFocus(self):
-        print "HAHA DOIN IT"
+        self.deleteBtn.clicked.connect(onDeleteFunction)
 
     def initUI(self):
         # Create the delete button
@@ -53,13 +51,12 @@ class CommandWidget(QtGui.QWidget):
 
         self.setLayout(mainHLayout)
 
-    def focusIn(self):
-        #When it has been clicked
-        self.deleteBtn.setVisible(True)
 
-    def focusOut(self):
-        #When something else has been clicked
-        self.deleteBtn.setVisible(False)
+    def setFocus(self, isFocused):
+        if isFocused:
+            self.deleteBtn.setVisible(True)
+        else:
+            self.deleteBtn.setVisible(False)
 
     def setTitle(self, text):
         self.title.setText(text)
@@ -93,6 +90,7 @@ class CommandMenuWidget(QtGui.QWidget):
         dropBtn     = self.getButton(DropCommand)
         colorBtn    = self.getButton(ColorTrackCommand)
         startBlkBtn = self.getButton(StartBlockCommand)
+        endBlkBtn   = self.getButton(EndBlockCommand)
 
         grid = QtGui.QGridLayout()
         grid.addWidget( moveXYZBtn, 0, 0, QtCore.Qt.AlignTop)
@@ -103,7 +101,8 @@ class CommandMenuWidget(QtGui.QWidget):
         grid.addWidget(    dropBtn, 5, 0, QtCore.Qt.AlignTop)
         grid.addWidget(    gripBtn, 6, 0, QtCore.Qt.AlignTop)
         grid.addWidget(   colorBtn, 7, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(startBlkBtn, 7, 0, QtCore.Qt.AlignTop)
+        grid.addWidget(startBlkBtn, 8, 0, QtCore.Qt.AlignTop)
+        grid.addWidget(  endBlkBtn, 9, 0, QtCore.Qt.AlignTop)
 
         self.setLayout(grid)
 
@@ -117,9 +116,13 @@ class CommandMenuWidget(QtGui.QWidget):
 
 
 class Command(QtGui.QDialog):
+    tooltip = ''
+    icon    = ''
+    title   = ''
+
     def __init__(self, parent):
         super(Command, self).__init__(parent)
-        self.title = ""
+
         self.description = ""
         self.parameters = {}  #For commands with no parameters, this should stay empty
         self.accepted    = False
@@ -148,12 +151,14 @@ class Command(QtGui.QDialog):
         self.setLayout(grid)
         self.setWindowTitle(self.title)
 
+
     def applyClicked(self):
         self.accepted = True
         self.close()
 
     def cancelClicked(self):
         self.close()
+
 
     def openView(self):  #Open window\
         #Run the info window and prevent other windows from being clicked while open:
@@ -185,16 +190,6 @@ class Command(QtGui.QDialog):
             printf('CommandWindow.openView(): User Canceled.')
 
     def dressWidget(self, newWidget):
-        # self.itemWidget = CommandWidget(self, onDeleteFunction)
-        #
-        # self.updateDescription()
-        #
-        # self.itemWidget.setIcon(self.icon)
-        # self.itemWidget.setTitle(self.title)
-        # self.itemWidget.setTip(self.tooltip)
-        # self.itemWidget.setDescription(self.description)
-        #newWidget = CommandWidget(self, onDeleteFunction)
-
         self.updateDescription()
 
         newWidget.setIcon(self.icon)
@@ -202,22 +197,6 @@ class Command(QtGui.QDialog):
         newWidget.setTip(self.tooltip)
         newWidget.setDescription(self.description)
         return newWidget
-
-
-    def getInfo(self):
-        #In case there is a command that does not have info, if it is called then
-        #There will be no error. For example, "start block of code" "refresh" or
-        #"activate/deactivate gripper" do not have info to give
-        pass
-
-    def run(self):
-        #For any command that does not have a function such as "start block of code"
-        #Then this function will run in it's place.
-        pass
-
-    def updateDescription(self):
-        #This is called in openView() and will update the decription to match the parameters
-        pass
 
 
     def sanitizeFloat(self, inputTextbox, fallback):
@@ -235,16 +214,35 @@ class Command(QtGui.QDialog):
         return intInput
 
 
+#The following commands should be empty, and only are there so that subclasses without them don't cause errors
+
+    def getInfo(self):
+        #In case there is a command that does not have info, if it is called then
+        #There will be no error. For example, "start block of code" "refresh" or
+        #"activate/deactivate gripper" do not have info to give
+        pass
+
+    def run(self):
+        #For any command that does not have a function such as "start block of code"
+        #Then this function will run in it's place.
+        pass
+
+    def updateDescription(self):
+        #This is called in openView() and will update the decription to match the parameters
+        pass
+
+
+
+
 
 ########## COMMANDS ##########
 class MoveXYZCommand(Command):
+    title      = "Move XYZ"
     tooltip    = "Set the robots position. The robot will move after all events are evaluated"
     icon       = Icons.xyz_command
 
     def __init__(self, parent, shared, **kwargs):
         super(MoveXYZCommand, self).__init__(parent)
-
-        self.title       = "Move XYZ"
 
         #Set default parameters that will show up on the window
         if 'parameters' in kwargs:
@@ -329,13 +327,13 @@ class DetachCommand(Command):
     """
     A command for detaching the servos of the robot
     """
-    icon       = Icons.detach_command
+    title       = "Detach Servos"
     tooltip    = "Disengage servos on the robot"
+    icon       = Icons.detach_command
 
     def __init__(self, parent, shared, **kwargs):
         super(DetachCommand, self).__init__(parent)
 
-        self.title       = "Detach Servos"
 
         #Set default parameters that will show up on the window
         self.parameters = kwargs.get("parameters",
@@ -422,13 +420,13 @@ class AttachCommand(Command):
     """
     A command for attaching the servos of the robot
     """
-    icon       = Icons.attach_command
+    title      = "Attach Servos"
     tooltip    = "Re-engage servos on the robot"
+    icon       = Icons.attach_command
+
 
     def __init__(self, parent, shared, **kwargs):
         super(AttachCommand, self).__init__(parent)
-
-        self.title       = "Attach Servos"
 
         self.parameters = kwargs.get("parameters",
                                      {'servo1': False,
@@ -512,13 +510,13 @@ class AttachCommand(Command):
 
 
 class WaitCommand(Command):
-    tooltip    = "Halts the program for a preset amount of time"
-    icon       = Icons.wait_command
+    title     = "Wait"
+    tooltip   = "Halts the program for a preset amount of time"
+    icon      = Icons.wait_command
 
     def __init__(self, parent, shared, **kwargs):
         super(WaitCommand, self).__init__(parent)
 
-        self.title       = "Wait"
 
         #Set default parameters that will show up on the window
         self.parameters = kwargs.get("parameters", {'time': 1.0})
@@ -561,54 +559,50 @@ class RefreshCommand(Command):
     It activates the robot.refresh() command, which detects if any movement variables have been changed
     and if they have sends that info over to the robot.
     """
-
-    icon       = Icons.refresh_command
+    title      = "Refresh Robot"
     tooltip    = "Send any changed position information to the robot. This will stop event processing for a moment."
+    icon       = Icons.refresh_command
 
     def __init__(self, parent, shared, **kwargs):
         super(RefreshCommand, self).__init__(parent)
-
-        self.title       = "Refresh Robot"
 
     def run(self, shared):
         shared.robot.refresh()
 
 
 class GripCommand(Command):
-    icon       = Icons.grip_command
+    title       = "Activate Gripper"
     tooltip    = "Activate the robots gripper"
+    icon       = Icons.grip_command
 
     def __init__(self, parent, shared, **kwargs):
         super(GripCommand, self).__init__(parent)
-
-        self.title       = "Activate Gripper"
 
     def run(self, shared):
         shared.robot.setGripper(True)
 
 
 class DropCommand(Command):
-
-    icon       = Icons.drop_command
+    title      = "Deactivate Gripper"
     tooltip    = "Deactivate the robots gripper"
+    icon       = Icons.drop_command
 
     def __init__(self, parent, shared,  **kwargs):
         super(DropCommand, self).__init__(parent)
 
-        self.title       = "Deactivate Gripper"
 
     def run(self, shared):
         shared.robot.setGripper(False)
 
 
 class ColorTrackCommand(Command):
+    title      = "Move to Color"
     tooltip    = "Tracks objects by looking for a certain color."
     icon       = Icons.colortrack_command
 
     def __init__(self, parent, shared, **kwargs):
 
         super(ColorTrackCommand, self).__init__(parent)
-        self.title       = "Move to Color"
         self.parameters = kwargs.get("parameters",
                             {'cHue': 0,
                              'tHue': 0,
@@ -754,8 +748,6 @@ class ColorTrackCommand(Command):
 
 
         shared.robot.setPos(x=modDirection[0] / 3, y=modDirection[1] / 3, relative=True)
-
-
 
 
 class StartBlockCommand(Command):

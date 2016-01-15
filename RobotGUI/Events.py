@@ -201,6 +201,12 @@ class Event(object):
         self.commandList = None
         self.parameters = {}
 
+    def dressWidget(self, widget):
+        widget.setIcon(self.icon)
+        widget.setTitle(self.title)
+        widget.setTip(self.tooltip)
+        return widget
+
     def runCommands(self, shared):
         commandsOrdered = self.commandList.getCommandsOrdered()
 
@@ -212,16 +218,12 @@ class Event(object):
 ########## EVENTS ##########
 
 class InitEvent(Event):
-    icon = Icons.creation_event
+    title    = 'Initialization'
+    tooltip  = 'Activates once each time the program is run'
+    icon     = Icons.creation_event
     def __init__(self, parameters):
         super(InitEvent, self).__init__()
         self.hasBeenRun = False
-
-    def getWidget(self, widget):
-        widget.setIcon(self.icon)
-        widget.setTitle('Initialization')
-        widget.setTip('Activates once each time the program is run')
-        return widget
 
     def isActive(self, shared):
         #Returns true or false if this event should be activated
@@ -238,15 +240,11 @@ class InitEvent(Event):
 
 
 class DestroyEvent(Event):
-    icon = Icons.destroy_event
+    title   = 'End of Program'
+    tooltip = 'Activates once, when the program is ended'
+    icon    = Icons.destroy_event
     def __init__(self, parameters):
         super(DestroyEvent, self).__init__()
-
-    def getWidget(self, widget):
-        widget.setIcon(self.icon)
-        widget.setTitle('End of Program')
-        widget.setTip('Activates once, when the program is ended')
-        return widget
 
     def isActive(self, shared):
         #This event always returns false, because it is run DIRECTLY by the ControlPanel.programThread()
@@ -256,16 +254,12 @@ class DestroyEvent(Event):
 
 
 class StepEvent(Event):
+    title   = 'Step'
+    tooltip = 'Activates every time the events are refreshed'
     icon = Icons.step_event
+
     def __init__(self, parameters):
         Event.__init__(self)
-
-    def getWidget(self, widget):
-        widget.setIcon(self.icon)
-        widget.setTitle('Step')
-        widget.setTip('Activates every time the events are refreshed')
-
-        return widget
 
     def isActive(self, shared):
         #Since this is a "step" event, it will run each time the events are checked
@@ -279,7 +273,7 @@ class KeypressEvent(Event):
         Event.__init__(self)
         self.parameters = parameters
 
-    def getWidget(self, widget):
+    def dressWidget(self, widget):
         widget.setIcon(self.icon)
         widget.setTitle('Keypress ' + self.parameters["checkKey"])
         widget.setTip('Activates when the letter ' + self.parameters["checkKey"] + " is pressed")
@@ -308,7 +302,7 @@ class MotionEvent(Event):
         self.high = None
 
 
-    def getWidget(self, widget):
+    def dressWidget(self, widget):
         widget.setIcon(self.icon)
         widget.setTitle('Motion ' + self.parameters["low"] + "-" + self.parameters["high"])
         widget.setTip('Activates when there is motion detected')
@@ -318,6 +312,9 @@ class MotionEvent(Event):
     def isActive(self, shared):
         if self.low is None:  #If this is the first time the event is being done, calculate the thresholds
             calib      = shared.settings["motionCalibrations"]
+            if not ("stationaryMovement" and "activeMovement") in calib:
+                printf("MotionEvent.isActive(): ERROR: No movementCalibrations found in order to check motion event")
+                return False
             stationary = calib["stationaryMovement"]
             active     = calib["activeMovement"]
 
@@ -354,17 +351,12 @@ class TipEvent(Event):
     """
     This event activates when the sensor on the tip of the robots sucker is pressed/triggered
     """
-    icon = Icons.tip_event
+    title   = 'Tip'
+    tooltip = 'Activates when the sensor on the tip of the arm is pressed'
+    icon    = Icons.tip_event
 
     def __init__(self, parameters):
         Event.__init__(self)
-
-    def getWidget(self, widget):
-        widget.setIcon(self.icon)
-        widget.setTitle('Tip')
-        widget.setTip('Activates when the sensor on the tip of the arm is pressed')
-
-        return widget
 
     def isActive(self, shared):
         return shared.robot.getTipSensor()
