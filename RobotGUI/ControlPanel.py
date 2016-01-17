@@ -14,23 +14,33 @@ class Shared():
     various calibration settings.
 
     I mean, anything is better than globals right?
+
+    Also, having the getRobot, getVision, and getSettings will allow someday for threaded events,
+    if I ever choose to do such a thing.
     """
 
     def __init__(self, robot, vision, settings):
 
         #Used in any movement related task
-        self.robot       = robot
+        self.robotObj    = robot
 
 
         #Used in the motion detection event, ColorTrackCommand, etc
-        self.vision      = vision
+        self.visionObj   = vision
 
 
         #Used in the motion detection event to get the motionCalibration settings
-        self.settings    = settings
+        self.settingsObj = settings
 
 
+    def getRobot(self):
+        return self.robotObj
 
+    def getVision(self):
+        return self.visionObj
+
+    def getSettings(self):
+        return self.settingsObj
 
 
 class ControlPanel(QtGui.QWidget):
@@ -54,7 +64,6 @@ class ControlPanel(QtGui.QWidget):
         self.commandListStack  = QtGui.QStackedWidget()
 
         self.initUI()
-
 
 
     def initUI(self):
@@ -172,7 +181,8 @@ class ControlPanel(QtGui.QWidget):
                 if event.isActive(self.shared):
                     eventItem[index].setBackgroundColor(QtGui.QColor(150, 255, 150))  #Highlight event thats going to run
                     event.runCommands(self.shared)
-                    #printf("\n"
+
+
                 else:
                     eventItem[index].setBackgroundColor(QtGui.QColor(QtCore.Qt.transparent))
 
@@ -193,8 +203,6 @@ class ControlPanel(QtGui.QWidget):
         self.robot.setGripper(False)
         self.robot.refresh()
         #Global.robot.setServos(servo1=True, servo2=True, servo3=True, servo4=True)  #Re-lock all servos on the robot
-
-
 
 
     def addCommand(self, type):
@@ -383,7 +391,6 @@ class EventList(QtGui.QListWidget):
         self.events[selectedItem] = newEvent
 
 
-
     def getSaveData(self):
         eventList = []
         eventsOrdered = self.getEventsOrdered()
@@ -397,7 +404,6 @@ class EventList(QtGui.QListWidget):
             eventList.append(eventSave)
 
         return eventList
-
 
     def loadData(self, data, shared):
         self.events = {}
@@ -422,10 +428,11 @@ class CommandList(QtGui.QListWidget):
         self.setDragDropMode(QtGui.QAbstractItemView.DragDrop)
         self.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
         self.setAcceptDrops(True)
+
         self.itemDoubleClicked.connect(self.doubleClickEvent)  #For opening the widget's window
         self.itemClicked.connect(self.clickEvent)
 
-        #The following is a function that returns a dictionary of the commands, in the correct order
+        #The following defines a function that returns a dictionary of the commands, in the correct order
         self.getCommandsOrdered = lambda: [self.commands[self.item(index)] for index in xrange(self.count())]
 
         self.initUI()
@@ -439,13 +446,27 @@ class CommandList(QtGui.QListWidget):
             self.takeItem(self.row(item))
 
 
-
     def updateWidth(self):
+        commandsOrdered = self.getCommandsOrdered()
+        indent = 0
+
+        for index in xrange(self.count()):
+            command       = self.commands[self.item(index)]
+            commandWidget = self.itemWidget(self.item(index))
+
+            if type(command) is StartBlockCommand:
+                indent += 1
+                #print "command is: ", command
+
+            commandWidget.setIndent(indent)
+
+            if type(command) is EndBlockCommand:
+                indent -= 1
+
         #Update the width of the commandList to the widest element within it
         #This occurs whenever items are changed, or added, to the commandList
         if self.sizeHintForColumn(0) + 10 < 1300:
             self.setMinimumWidth(self.sizeHintForColumn(0) + 10)
-
 
     def addCommand(self, commandType, shared, parameters=None):
         #If adding a pre-filled command (used when loading a save)
@@ -493,16 +514,20 @@ class CommandList(QtGui.QListWidget):
             self.deleteSelected()
 
     def dropEvent(self, event):
+        self.updateWidth()
         event.setDropAction(QtCore.Qt.MoveAction)
+
         super(CommandList, self).dropEvent(event)
-        lst = [i.text() for i in self.findItems('', QtCore.Qt.MatchContains)]
+        self.updateWidth()
+        #lst = [i.text() for i in self.findItems('', QtCore.Qt.MatchContains)]
 
 
     def doubleClickEvent(self, clickedItem):
         #Open the command window for the command that was just double clicked
         printf("CommandList.doubleClickEvent(): Opening double clicked command")
 
-        self.commands[clickedItem].openView()
+        command = self.commands[clickedItem]
+        command.openView()
 
         #Update the widget to match the new parameters
         self.commands[clickedItem].getInfo()
@@ -516,9 +541,10 @@ class CommandList(QtGui.QListWidget):
     def clickEvent(self, clickedItem):
         for i in range(self.count()):
             item = self.item(i)
-            self.itemWidget(item).setFocus(False)
+            self.itemWidget(item).setFocused(False)
 
-        self.itemWidget(clickedItem).setFocus(True)
+        self.itemWidget(clickedItem).setFocused(True)
+        self.updateWidth()
 
 
     def getSaveData(self):
@@ -543,3 +569,4 @@ class CommandList(QtGui.QListWidget):
             type = commandInfo["type"]
             parameters = commandInfo["parameters"]
             self.addCommand(type, shared, parameters=parameters)
+        self.updateWidth()

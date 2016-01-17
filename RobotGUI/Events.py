@@ -311,8 +311,8 @@ class MotionEvent(Event):
 
     def isActive(self, shared):
         if self.low is None:  #If this is the first time the event is being done, calculate the thresholds
-            calib      = shared.settings["motionCalibrations"]
-            if not ("stationaryMovement" and "activeMovement") in calib:
+            calib      = shared.getSettings()["motionCalibrations"]
+            if calib is None or not ("stationaryMovement" and "activeMovement") in calib:
                 printf("MotionEvent.isActive(): ERROR: No movementCalibrations found in order to check motion event")
                 return False
             stationary = calib["stationaryMovement"]
@@ -324,7 +324,7 @@ class MotionEvent(Event):
             self.high = diff * 3
 
 
-        currentMotion = shared.vision.getMotion()
+        currentMotion = shared.getVision().getMotion()
 
         active = True
 
@@ -359,7 +359,7 @@ class TipEvent(Event):
         Event.__init__(self)
 
     def isActive(self, shared):
-        return shared.robot.getTipSensor()
+        return shared.getRobot().getTipSensor()
 
 
 

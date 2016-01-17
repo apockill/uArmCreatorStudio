@@ -411,7 +411,7 @@ class MainWindow(QtGui.QMainWindow):
         isNew = lambda key: key in newSettings and newSettings[key] is not None and not self.settings[key] == newSettings[key]
 
         if isNew("cameraID"):
-            printf("Main.closeSettingsView(): Changing cameraID from ", \
+            printf("MainWindow.closeSettingsView(): Changing cameraID from ", \
                   self.settings["cameraID"], "to", newSettings["cameraID"])
             self.settings["cameraID"] = newSettings["cameraID"]
             success = self.vStream.setNewCamera(self.settings["cameraID"])
@@ -422,7 +422,7 @@ class MainWindow(QtGui.QMainWindow):
 
 
         if isNew("robotID") or not self.robot.connected():  #If robot is not connected, try connecting
-            printf("Main.closeSettingsView(): Changing robotID from ", \
+            printf("MainWindow.closeSettingsView(): Changing robotID from ", \
                   self.settings["robotID"], "to", newSettings["robotID"])
             self.settings["robotID"] = newSettings["robotID"]
             self.robot.setUArm(self.settings["robotID"])
@@ -499,11 +499,11 @@ class MainWindow(QtGui.QMainWindow):
         newSettings = self.settingsView.getSettings()
 
         if buttonClicked == "Apply":
-            printf('Main.closeSettingsView(): "Apply" clicked, applying settings...')
+            printf('MainWindow.closeSettingsView(): "Apply" clicked, applying settings...')
             self.setSettings(newSettings)
 
         if buttonClicked == "Cancel":
-            printf('Main.closeSettingsView(): "Cancel" clicked, no settings applied.')
+            printf('MainWindow.closeSettingsView(): "Cancel" clicked, no settings applied.')
 
         #Go back to dashboard
         self.setVideo("play")
@@ -515,11 +515,11 @@ class MainWindow(QtGui.QMainWindow):
         newSettings = self.calibrateView.getSettings()
         printf("new settings: ", newSettings)
         if buttonClicked == "Apply":
-            printf('Main.closeCalibrateView(): Apply" clicked, applying settings...')
+            printf('MainWindow.closeCalibrateView(): Apply" clicked, applying settings...')
             self.setSettings(newSettings)
 
         if buttonClicked == "Cancel":
-            printf('Main.closeCalibrateView(): "Cancel" clicked, no calibrations applied...')
+            printf('MainWindow.closeCalibrateView(): "Cancel" clicked, no calibrations applied...')
 
         #Go back to dashboard
         self.setVideo("play")
@@ -544,12 +544,12 @@ class MainWindow(QtGui.QMainWindow):
         self.promptSave()
         self.dashboardView.controlPanel.loadData([])
         self.fileName = None
-        self.loadData = self.controlPanel.getSaveData()[:]
+        self.loadData = deepcopy(self.controlPanel.getSaveData())
 
 
 
     def saveTask(self, promptSave):
-        printf("MainWindow.save(): Saving project")
+        printf("MainWindow.saveTask(): Saving project")
 
         #If there is no filename, ask for one
         if promptSave or self.fileName is None:
@@ -559,13 +559,16 @@ class MainWindow(QtGui.QMainWindow):
 
         #Update the save file
         saveData = self.controlPanel.getSaveData()
-        printf("MainWindow.save(): Saving: ", saveData)
         pickle.dump(saveData, open(self.fileName, "wb"))
+
+        printf("MainWindow.saveTask(): Project Saved")
 
         self.setWindowTitle('uArm Creator Dashboard       ' + self.fileName)
         self.saveSettings()
 
     def loadTask(self,  **kwargs):
+        printf("MainWindow.loadTask(): Loading project")
+
         filename = kwargs.get("filename", None)
 
         if filename is None:  #If no filename was specified, prompt the user for where to save
@@ -578,7 +581,8 @@ class MainWindow(QtGui.QMainWindow):
             printf("MainWindow.loadTask(): ERROR: Task file ", filename, "not found!")
             self.settings["lastOpenedFile"] = None
             return
-        printf("MainWindow.save(): Loading Project.")
+
+        printf("MainWindow.save(): Project Loaded")
         self.fileName = filename
 
         #Load the data- BUT MAKE SURE TO DEEPCOPY otherwise any change in the program will change in self.loadData
@@ -589,13 +593,16 @@ class MainWindow(QtGui.QMainWindow):
 
 
     def saveSettings(self):
+        printf("MainWindow.saveSettings(): Saving Settings")
         self.settings["lastOpenedFile"] = self.fileName
         pickle.dump(self.settings, open("Settings.p", "wb"))
 
+
     def loadSettings(self):
+        printf("MainWindow.loadSettings(): Loading Settings")
         try:
             newSettings = pickle.load(open( "Settings.p", "rb"))
-            printf("MainWindow.loadSettings(): Loading settings: ", newSettings, "...")
+            #printf("MainWindow.loadSettings(): Loading settings: ", newSettings, "...")
             self.setSettings(newSettings)
             return True
         except IOError:
@@ -643,7 +650,7 @@ if __name__ == '__main__':
     app = Application(sys.argv)
     mainWindow = MainWindow()
     mainWindow.show()
-    app.exec_()
+    execution = app.exec_()
     printf("__main__(): Program successfully executed.")
 
 

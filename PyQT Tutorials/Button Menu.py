@@ -1,4 +1,5 @@
-from PyQt4 import QtGui, QtCore
+
+from PyQt5 import QtGui
 import sys
 
 

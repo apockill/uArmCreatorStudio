@@ -330,7 +330,10 @@ class Vision:
             return h, s, v
 
 
-
+    def cameraConnected(self):
+        if self.vStream.mainThread is None:
+            return False
+        return True
 
 
 ########## WIDGETS ##########

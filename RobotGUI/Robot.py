@@ -112,6 +112,10 @@ class Robot():
         #printf("setServos run: ", self.newServoStatus, self.servoStatus)
 
     def setGripper(self, status):
+        if not self.connected():
+            printf("Robot.setGripper(): ERROR: No uArm connected, could not set gripper to", status)
+            return
+
         if not self.gripperStatus == status:
             self.gripperStatus = status
 

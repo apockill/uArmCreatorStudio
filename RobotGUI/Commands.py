@@ -10,13 +10,12 @@ from Global import printf
 class CommandWidget(QtGui.QWidget):
     def __init__(self, parent, onDeleteFunction):
         super(CommandWidget, self).__init__(parent)
-        self.title       = QtGui.QLabel()
-        self.description = QtGui.QLabel()
-        self.icon        = QtGui.QLabel("No Icon Found")
-        self.deleteBtn   = QtGui.QPushButton("")
+        self.title        = QtGui.QLabel()
+        self.description  = QtGui.QLabel()
+        self.icon         = QtGui.QLabel("No Icon Found")
+        self.deleteBtn    = QtGui.QPushButton("")
+        self.indent       = 0
 
-       # parent.itemSelectionChanged.connect(self.setFocus)
-       # parent.
         self.initUI()
         self.deleteBtn.clicked.connect(onDeleteFunction)
 
@@ -37,6 +36,7 @@ class CommandWidget(QtGui.QWidget):
 
         leftLayout.addWidget(self.icon)
 
+
         midLayout.setSpacing(1)
         midLayout.addWidget(self.title)
         midLayout.addWidget(self.description)
@@ -52,12 +52,24 @@ class CommandWidget(QtGui.QWidget):
         self.setLayout(mainHLayout)
 
 
-    def setFocus(self, isFocused):
+    def setFocused(self, isFocused):
+        #Determines whether or not the delete button is visible. Should only be visible when widget is clicked
         if isFocused:
             self.deleteBtn.setVisible(True)
         else:
             self.deleteBtn.setVisible(False)
 
+    def setIndent(self, indent):
+        print "set indent: ", indent
+        self.indent = indent
+        if indent >= 0:
+            self.layout().setContentsMargins(25 * indent, 0, 0, 0)
+        else:
+            self.layout().setContentsMargins(0, 0, 0, 0)
+
+
+
+    #The following are accessed only by Command.dressWidget()
     def setTitle(self, text):
         self.title.setText(text)
 
@@ -89,20 +101,23 @@ class CommandMenuWidget(QtGui.QWidget):
         gripBtn     = self.getButton(GripCommand)
         dropBtn     = self.getButton(DropCommand)
         colorBtn    = self.getButton(ColorTrackCommand)
+        testVarBtn  = self.getButton(TestVariable)
         startBlkBtn = self.getButton(StartBlockCommand)
         endBlkBtn   = self.getButton(EndBlockCommand)
 
+
         grid = QtGui.QGridLayout()
-        grid.addWidget( moveXYZBtn, 0, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(  detachBtn, 1, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(  attachBtn, 2, 0, QtCore.Qt.AlignTop)
-        grid.addWidget( refreshBtn, 3, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(    waitBtn, 4, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(    dropBtn, 5, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(    gripBtn, 6, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(   colorBtn, 7, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(startBlkBtn, 8, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(  endBlkBtn, 9, 0, QtCore.Qt.AlignTop)
+        grid.addWidget( moveXYZBtn,  0, 0, QtCore.Qt.AlignTop)
+        grid.addWidget(  detachBtn,  1, 0, QtCore.Qt.AlignTop)
+        grid.addWidget(  attachBtn,  2, 0, QtCore.Qt.AlignTop)
+        grid.addWidget( refreshBtn,  3, 0, QtCore.Qt.AlignTop)
+        grid.addWidget(    waitBtn,  4, 0, QtCore.Qt.AlignTop)
+        grid.addWidget(    dropBtn,  5, 0, QtCore.Qt.AlignTop)
+        grid.addWidget(    gripBtn,  6, 0, QtCore.Qt.AlignTop)
+        grid.addWidget(   colorBtn,  7, 0, QtCore.Qt.AlignTop)
+        grid.addWidget( testVarBtn,  8, 0, QtCore.Qt.AlignTop)
+        grid.addWidget(startBlkBtn,  9, 0, QtCore.Qt.AlignTop)
+        grid.addWidget(  endBlkBtn, 10, 0, QtCore.Qt.AlignTop)
 
         self.setLayout(grid)
 
@@ -122,7 +137,7 @@ class Command(QtGui.QDialog):
 
     def __init__(self, parent):
         super(Command, self).__init__(parent)
-
+        self.parent = parent
         self.description = ""
         self.parameters = {}  #For commands with no parameters, this should stay empty
         self.accepted    = False
@@ -131,8 +146,8 @@ class Command(QtGui.QDialog):
 
     def initBaseUI(self):
         #Create and connect buttons
-        applyBtn  = QtGui.QPushButton('Apply', self)
-        cancelBtn = QtGui.QPushButton('Cancel', self)
+        applyBtn  = QtGui.QPushButton('Apply')
+        cancelBtn = QtGui.QPushButton('Cancel')
         applyBtn.setMaximumWidth(100)
         cancelBtn.setMaximumWidth(100)
         applyBtn.clicked.connect(self.applyClicked)
@@ -165,8 +180,10 @@ class Command(QtGui.QDialog):
 
 
         if len(self.parameters):  #If this object has a window object, then execute
-            printf("Command.openView(): About to execute self...")
+            #printf("Command.openView(): About to execute self...", self, super(Command, self), self.parent)
             self.exec_()
+
+
         else:
             self.accepted = True
             return
@@ -222,7 +239,7 @@ class Command(QtGui.QDialog):
         #"activate/deactivate gripper" do not have info to give
         pass
 
-    def run(self):
+    def run(self, shared):
         #For any command that does not have a function such as "start block of code"
         #Then this function will run in it's place.
         pass
@@ -248,11 +265,12 @@ class MoveXYZCommand(Command):
         if 'parameters' in kwargs:
             self.parameters = kwargs["parameters"]
         else:
-            currentXYZ = shared.robot.getCurrentCoord()
+            currentXYZ = shared.getRobot().getCurrentCoord()
             self.parameters = {'x': round(currentXYZ[1], 1),
                                'y': round(currentXYZ[2], 1),
                                'z': round(currentXYZ[3], 1),
-                               'rel': False}
+                               'rel': False,
+                               'ref': True}
 
 
 
@@ -271,17 +289,20 @@ class MoveXYZCommand(Command):
         strLabel = QtGui.QLabel('Y:')
         hgtLabel = QtGui.QLabel('Z:')
         relLabel = QtGui.QLabel('Relative')
+        refLabel = QtGui.QLabel('Refresh')
 
         #Fill the textboxes with the default parameters
         self.rotEdit.setText(str(self.parameters['x']))
         self.strEdit.setText(str(self.parameters['y']))
         self.hgtEdit.setText(str(self.parameters['z']))
         self.relCheck.setChecked(self.parameters['rel'])
+        self.refCheck.setChecked(self.parameters['ref'])
 
         row1 = QtGui.QHBoxLayout()
         row2 = QtGui.QHBoxLayout()
         row3 = QtGui.QHBoxLayout()
         row4 = QtGui.QHBoxLayout()
+        row5 = QtGui.QHBoxLayout()
 
         row1.addWidget(rotLabel, QtCore.Qt.AlignRight)
         row1.addWidget(self.rotEdit, QtCore.Qt.AlignJustify)
@@ -295,11 +316,14 @@ class MoveXYZCommand(Command):
         row4.addWidget(relLabel, QtCore.Qt.AlignRight)
         row4.addWidget(self.relCheck, QtCore.Qt.AlignJustify)
 
+        row5.addWidget(refLabel, QtCore.Qt.AlignRight)
+        row5.addWidget(self.refCheck, QtCore.Qt.AlignJustify)
 
         self.mainVLayout.addLayout(row1)
         self.mainVLayout.addLayout(row2)
         self.mainVLayout.addLayout(row3)
         self.mainVLayout.addLayout(row4)
+        self.mainVLayout.addLayout(row5)
 
     def getInfo(self):
         newParameters = {'x': self.sanitizeFloat(self.rotEdit, self.parameters["x"]),
@@ -317,10 +341,12 @@ class MoveXYZCommand(Command):
 
     def run(self, shared):
         printf("MoveXYZCommand.run(): Moving robot to ", self.parameters['x'], self.parameters['y'], self.parameters['z'])
-        shared.robot.setPos(x=self.parameters['x'],
-                            y=self.parameters['y'],
-                            z=self.parameters['z'],
-                            relative=self.parameters['rel'])
+        shared.getRobot().setPos(x=self.parameters['x'],
+                                 y=self.parameters['y'],
+                                 z=self.parameters['z'],
+                                 relative=self.parameters['rel'])
+
+        if self.refCheck.isChecked():  shared.getRobot().refresh()
 
 
 class DetachCommand(Command):
@@ -410,10 +436,10 @@ class DetachCommand(Command):
                                                          self.parameters['servo2'], \
                                                          self.parameters['servo3'], \
                                                          self.parameters['servo4'])
-        if self.parameters['servo1']: shared.robot.setServos(servo1=False)
-        if self.parameters['servo2']: shared.robot.setServos(servo2=False)
-        if self.parameters['servo3']: shared.robot.setServos(servo3=False)
-        if self.parameters['servo4']: shared.robot.setServos(servo4=False)
+        if self.parameters['servo1']: shared.getRobot().setServos(servo1=False)
+        if self.parameters['servo2']: shared.getRobot().setServos(servo2=False)
+        if self.parameters['servo3']: shared.getRobot().setServos(servo3=False)
+        if self.parameters['servo4']: shared.getRobot().setServos(servo4=False)
 
 
 class AttachCommand(Command):
@@ -503,10 +529,10 @@ class AttachCommand(Command):
                                                           self.parameters['servo3'], \
                                                           self.parameters['servo4'])
 
-        if self.parameters['servo1']: shared.robot.setServos(servo1=True)
-        if self.parameters['servo2']: shared.robot.setServos(servo2=True)
-        if self.parameters['servo3']: shared.robot.setServos(servo3=True)
-        if self.parameters['servo4']: shared.robot.setServos(servo4=True)
+        if self.parameters['servo1']: shared.getRobot().setServos(servo1=True)
+        if self.parameters['servo2']: shared.getRobot().setServos(servo2=True)
+        if self.parameters['servo3']: shared.getRobot().setServos(servo3=True)
+        if self.parameters['servo4']: shared.getRobot().setServos(servo4=True)
 
 
 class WaitCommand(Command):
@@ -567,7 +593,7 @@ class RefreshCommand(Command):
         super(RefreshCommand, self).__init__(parent)
 
     def run(self, shared):
-        shared.robot.refresh()
+        shared.getRobot().refresh()
 
 
 class GripCommand(Command):
@@ -579,7 +605,7 @@ class GripCommand(Command):
         super(GripCommand, self).__init__(parent)
 
     def run(self, shared):
-        shared.robot.setGripper(True)
+        shared.getRobot().setGripper(True)
 
 
 class DropCommand(Command):
@@ -592,7 +618,7 @@ class DropCommand(Command):
 
 
     def run(self, shared):
-        shared.robot.setGripper(False)
+        shared.getRobot().setGripper(False)
 
 
 class ColorTrackCommand(Command):
@@ -693,7 +719,7 @@ class ColorTrackCommand(Command):
 
             return
 
-        avgColor = shared.vision.bgr2hsv(shared.vision.getColor())
+        avgColor = shared.getVision().bgr2hsv(shared.getVision().getColor())
         percentTolerance = .3
 
         printf("avgColor", avgColor)
@@ -721,33 +747,44 @@ class ColorTrackCommand(Command):
     def run(self, shared):
         printf("ColorTrackCommand.run(): Tracking colored objects! ")
 
+        if not shared.getVision().cameraConnected():
+            printf("ColorTrackCommand.run(): ERROR: No camera detected")
+            return
 
         #Build a function that will return the objects position whenever it is called, using the self.parameters
-        objPos = lambda: shared.vision.findObjectColor(self.parameters['cHue'],
-                                                       self.parameters['tHue'],
-                                                       self.parameters['lSat'],
-                                                       self.parameters['hSat'],
-                                                       self.parameters['lVal'],
-                                                       self.parameters['hVal'])
+        objPos = lambda: shared.getVision().findObjectColor(self.parameters['cHue'],
+                                                            self.parameters['tHue'],
+                                                            self.parameters['lSat'],
+                                                            self.parameters['hSat'],
+                                                            self.parameters['lVal'],
+                                                            self.parameters['hVal'])
         objCoords = objPos()
 
 
         #If no object was found
         if objCoords is None: return
 
-        move = Robot.getDirectionToTarget(objCoords, shared.vision.vStream.dimensions, 10)
+        move = Robot.getDirectionToTarget(objCoords, shared.getVision().vStream.dimensions, 10)
 
         #If the robot is already focused
         if move is None: return
 
         #Convert the move to one on the base grid
-        baseAngle = shared.robot.getBaseAngle()
+        baseAngle = shared.getRobot().getBaseAngle()
         modDirection = Robot.getRelative(move[0], move[1], baseAngle)
 
         # if modDirection is None: return
 
 
-        shared.robot.setPos(x=modDirection[0] / 3, y=modDirection[1] / 3, relative=True)
+        shared.getRobot().setPos(x=modDirection[0] / 3, y=modDirection[1] / 3, relative=True)
+
+
+class TestVariable(Command):
+    icon       = Icons.test_var_command
+    tooltip    = "This will allow/disallow code to run that is in blocked brackets below it."
+
+    def __init__(self, parent, shared, **kwargs):
+        super(TestVariable, self).__init__(parent)
 
 
 class StartBlockCommand(Command):
