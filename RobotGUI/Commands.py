@@ -60,7 +60,8 @@ class CommandWidget(QtGui.QWidget):
             self.deleteBtn.setVisible(False)
 
     def setIndent(self, indent):
-        print "set indent: ", indent
+        if self.indent == indent: return
+        print "set Indent", indent
         self.indent = indent
         if indent >= 0:
             self.layout().setContentsMargins(25 * indent, 0, 0, 0)
@@ -143,6 +144,7 @@ class Command(QtGui.QDialog):
         self.accepted    = False
         self.mainVLayout = QtGui.QVBoxLayout()
         self.initBaseUI()
+        self.indent = 0    #Updated in CommandList.refresh()
 
     def initBaseUI(self):
         #Create and connect buttons
@@ -779,12 +781,75 @@ class ColorTrackCommand(Command):
         shared.getRobot().setPos(x=modDirection[0] / 3, y=modDirection[1] / 3, relative=True)
 
 
+
 class TestVariable(Command):
-    icon       = Icons.test_var_command
+    title      = "Test Variable"
     tooltip    = "This will allow/disallow code to run that is in blocked brackets below it."
+    icon       = Icons.test_var_command
 
     def __init__(self, parent, shared, **kwargs):
         super(TestVariable, self).__init__(parent)
+
+
+        self.parameters = kwargs.get("parameters",
+                                     {'variable': '',
+                                      'not': False})  #Flip the result
+
+        self.varEdit   = QtGui.QLineEdit(self)   #  "Variable" edit
+        self.tstMenu   = QtGui.QComboBox()       #  "test" menu
+        self.notCheck  = QtGui.QCheckBox(self)   #  "Not" CheckBox
+
+        self.initUI()
+        self.setWindowIcon(QtGui.QIcon(self.icon))
+
+    def initUI(self):
+        self.varEdit.setFixedWidth(100)
+        self.tstMenu.setFixedWidth(100)
+
+        self.tstMenu.addItem('Equal To')
+        self.tstMenu.addItem('Greater Than')
+        self.tstMenu.addItem('Less Then')
+
+
+        #Set up all the labels for the inputs
+        varLabel = QtGui.QLabel('Variable: ')
+        tstLabel = QtGui.QLabel('Test: ')
+        notLabel = QtGui.QLabel('Not')
+
+        #Fill the textboxes with the default parameters
+        self.varEdit.setText(str(self.parameters['variable']))
+        self.tstMenu.setCurrentIndex(2)
+        self.notCheck.setChecked(self.parameters['not'])
+
+        row1 = QtGui.QHBoxLayout()
+        row2 = QtGui.QHBoxLayout()
+        row3 = QtGui.QHBoxLayout()
+
+        row1.addWidget(     varLabel, QtCore.Qt.AlignRight)
+        row1.addWidget( self.varEdit, QtCore.Qt.AlignLeft)
+
+        row2.addWidget(tstLabel, QtCore.Qt.AlignRight)
+        row2.addWidget(self.tstMenu, QtCore.Qt.AlignLeft)
+
+        row3.addStretch(1)
+        row3.addWidget(     notLabel)
+        row3.addWidget(self.notCheck)
+
+        self.mainVLayout.addLayout(row1)
+        self.mainVLayout.addLayout(row2)
+        self.mainVLayout.addLayout(row3)
+
+
+    def getInfo(self):
+        newParameters = {'variable': str(self.varEdit.text()),
+                              'not': self.notCheck.isChecked()}
+        return newParameters
+
+    def updateDescription(self):
+        self.description =  'checked: ' + str(self.notCheck.isChecked())
+
+    def run(self, shared):
+        return self.notCheck.isChecked()
 
 
 class StartBlockCommand(Command):
@@ -809,4 +874,21 @@ class EndBlockCommand(Command):
 
     def __init__(self, parent, shared, **kwargs):
         super(EndBlockCommand, self).__init__(parent)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

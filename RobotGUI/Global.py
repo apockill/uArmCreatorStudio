@@ -12,6 +12,7 @@ def init():
 spaceFunc = lambda n: ''.join(' ' for _ in xrange(n))
 def printf(*args):
     buildString = ""
+
     for i in args:
         buildString += str(i)
 

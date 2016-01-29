@@ -155,41 +155,35 @@ class ControlPanel(QtGui.QWidget):
 
     def programThread(self):
         #This is where the script will be run
-
-        printf("ControlPanel.programThread():#################### STARTING PROGRAM THREAD! ######################")
+        printf("ControlPanel.programThread(): #################### STARTING PROGRAM THREAD! ######################")
         millis         = lambda: int(round(time() * 1000))
         readyForNext   = lambda lastMillis: millis() - lastMillis >= (1 / float(stepsPerSecond)) * 1000
         stepsPerSecond = 10
         lastMillis     = millis()
 
         #Deepcopy all of the events, so that every time you run the script it runs with no modified variables
-        events = copy.deepcopy(self.eventList.getEventsOrdered())
+        events     = copy.deepcopy(self.eventList.getEventsOrdered())
         eventItem  = self.eventList.getItemsOrdered()
 
+
         while self.running:
-
-
-
-            #Wait till it's time for a new step
             if not readyForNext(lastMillis): continue
             lastMillis = millis()
 
-            #printf("\n\nControlPanel.programThread():  ########## PERFORMING    ALL    EVENTS ##########"
-            #Check all events and tell them to run their commands when appropriate
+            #Check each event to see if it is active
             for index, event in enumerate(events):
 
                 if event.isActive(self.shared):
-                    eventItem[index].setBackgroundColor(QtGui.QColor(150, 255, 150))  #Highlight event thats going to run
-                    event.runCommands(self.shared)
+                    eventItem[index].setBackgroundColor(QtGui.QColor(150, 255, 150))  #Highlight event that running
 
+                    #Run all commands in the active event
+                    self.interpretCommands(event.commandList)
 
                 else:
                     eventItem[index].setBackgroundColor(QtGui.QColor(QtCore.Qt.transparent))
 
             #Only "Render" the robots movement once per step
             self.robot.refresh()
-
-
 
 
         #Turn each list item transparent once more
@@ -199,11 +193,55 @@ class ControlPanel(QtGui.QWidget):
 
         #Check if there is a DestroyEvent command. If so, run it
         destroyEvent = filter(lambda event: type(event) == DestroyEvent, events)
-        if len(destroyEvent): destroyEvent[0].runCommands(self.shared)
+        if len(destroyEvent): self.interpretCommands(destroyEvent[0].commandList)
+
         self.robot.setGripper(False)
         self.robot.refresh()
-        #Global.robot.setServos(servo1=True, servo2=True, servo3=True, servo4=True)  #Re-lock all servos on the robot
 
+    def interpretCommands(self, commandList):
+        """
+        This is only used in programThread(). It parses through and runs all commands in a commandList,
+        correctly accounting for all the indenting and such. The idea is that you can pass a commandList
+        from an event to this function, and all the commands will be evaluated and run.
+
+        Most commands (almost all) will not return anything. However, any commands that evaluate to
+        True or False will, in fact, return True or False. This determines whether or not code in blocks
+        will run.
+        """
+
+        commandsOrdered = commandList.getCommandsOrdered()
+        index  = 0
+        indent = 0
+
+        while index < len(commandsOrdered):
+            #for command in commandsOrdered:
+
+            command = commandsOrdered[index]
+
+
+            ret = command.run(self.shared)
+
+            #If the command is an evaluation command, test it
+            print "Index: ", index, "\tindent: ", command.indent, "\tret", ret, "cmnd: ", type(command), "next: "
+
+            #if ret is None: continue
+
+
+
+            if ret is not None and not ret:
+                skipToIndent = command.indent
+                print "skipping to next indent of", skipToIndent, "starting at", index
+
+                for i in xrange(index + 1, len(commandsOrdered)):
+                    if commandsOrdered[i].indent == skipToIndent:
+                        index = i - 1
+                        break
+                    #If there are no commands
+                    if i == len(commandsOrdered) - 1:
+                        index = i
+                        break
+
+            index += 1
 
     def addCommand(self, type):
         #When the addCommand button is pressed
@@ -421,7 +459,7 @@ class EventList(QtGui.QListWidget):
 
 
 class CommandList(QtGui.QListWidget):
-    def __init__(self, parent):
+    def __init__(self, parent): #Todo: make commandList have a parent
         super(CommandList, self).__init__()
         #GLOBALS
         self.commands       = {}      #Dictionary of commands. Ex: {QListItem: MoveXYZCommand, QListItem: PickupCommand}
@@ -446,8 +484,9 @@ class CommandList(QtGui.QListWidget):
             self.takeItem(self.row(item))
 
 
-    def updateWidth(self):
-        commandsOrdered = self.getCommandsOrdered()
+    def refresh(self):
+        #commandsOrdered = self.getCommandsOrdered()
+        zeroAndAbove = lambda i: (i < 0) * 0 + (i >= 0) * i
         indent = 0
 
         for index in xrange(self.count()):
@@ -458,7 +497,9 @@ class CommandList(QtGui.QListWidget):
                 indent += 1
                 #print "command is: ", command
 
-            commandWidget.setIndent(indent)
+
+            commandWidget.setIndent(zeroAndAbove(indent))
+            command.indent = zeroAndAbove(indent)
 
             if type(command) is EndBlockCommand:
                 indent -= 1
@@ -505,7 +546,7 @@ class CommandList(QtGui.QListWidget):
         self.commands[listWidgetItem] = newCommand
 
         #Update the width of the commandList to the widest element within it
-        self.updateWidth()
+        self.refresh()
 
 
     def keyPressEvent(self, event):
@@ -514,11 +555,11 @@ class CommandList(QtGui.QListWidget):
             self.deleteSelected()
 
     def dropEvent(self, event):
-        self.updateWidth()
+        self.refresh()
         event.setDropAction(QtCore.Qt.MoveAction)
 
         super(CommandList, self).dropEvent(event)
-        self.updateWidth()
+        self.refresh()
         #lst = [i.text() for i in self.findItems('', QtCore.Qt.MatchContains)]
 
 
@@ -536,7 +577,7 @@ class CommandList(QtGui.QListWidget):
         currentWidget = self.itemWidget(clickedItem)  #Get the current itemWidget
         self.commands[clickedItem].dressWidget(currentWidget)
 
-        self.updateWidth()
+        self.refresh()
 
     def clickEvent(self, clickedItem):
         for i in range(self.count()):
@@ -544,7 +585,7 @@ class CommandList(QtGui.QListWidget):
             self.itemWidget(item).setFocused(False)
 
         self.itemWidget(clickedItem).setFocused(True)
-        self.updateWidth()
+        self.refresh()
 
 
     def getSaveData(self):
@@ -569,4 +610,4 @@ class CommandList(QtGui.QListWidget):
             type = commandInfo["type"]
             parameters = commandInfo["parameters"]
             self.addCommand(type, shared, parameters=parameters)
-        self.updateWidth()
+        self.refresh()

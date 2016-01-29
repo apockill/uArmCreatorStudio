@@ -40,8 +40,7 @@ Event Ideas:
 
 Command Ideas:
     Basic:
-        Detach servos
-        Move XYZ
+        Speed Option
         Stop all movement
         Save position to variable, or have an inherent variable for the robots position
         Write letters/strings
@@ -51,6 +50,7 @@ Command Ideas:
         Else
         Variable
         Test variable
+
 
     Vision:
         Focus on object

@@ -4,6 +4,7 @@
 import sys
 import webbrowser           #Used soley to open the uFactory forum
 import pickle
+
 import Robot
 import Video
 import ControlPanel
@@ -24,7 +25,7 @@ class CalibrateView(QtGui.QWidget):
     visual servo-ing calibrations
     """
 
-    def __init__(self, vision, robot, parent=None):
+    def __init__(self, vision, robot, parent):
         super(CalibrateView, self).__init__(parent)
 
         self.newSettings    = {"motionCalibrations": {"stationaryMovement": None, "activeMovement": None}}
@@ -141,7 +142,7 @@ class SettingsView(QtGui.QWidget):
     Simple view that lets you select your robot and camera.
     The Apply/Cancel buttons are connected in the MainWindow class, which is why they are 'self' variables
     """
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         super(SettingsView, self).__init__(parent)
         self.settings  = {"robotID": None, "cameraID": None}
 
@@ -269,7 +270,7 @@ class SettingsView(QtGui.QWidget):
 
 
 class DashboardView(QtGui.QWidget):
-    def __init__(self, controlPanel, cameraWidget, parent=None):
+    def __init__(self, controlPanel, cameraWidget, parent):
         super(DashboardView, self).__init__(parent)
 
         #UI Globals setup
@@ -403,6 +404,7 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowTitle('uArm Creator Dashboard')
         self.setWindowIcon(QtGui.QIcon(Icons.taskbar))
         self.show()
+        QtGui.QApplication.setStyle(QtGui.QStyleFactory.create('Plastique'))
 
 
 
@@ -560,6 +562,8 @@ class MainWindow(QtGui.QMainWindow):
         #Update the save file
         saveData = self.controlPanel.getSaveData()
         pickle.dump(saveData, open(self.fileName, "wb"))
+        self.loadData = deepcopy(saveData)  #Update what the latest saved changes are
+
 
         printf("MainWindow.saveTask(): Project Saved")
 
@@ -582,7 +586,7 @@ class MainWindow(QtGui.QMainWindow):
             self.settings["lastOpenedFile"] = None
             return
 
-        printf("MainWindow.save(): Project Loaded")
+        printf("MainWindow.save(): Project Loaded:")
         self.fileName = filename
 
         #Load the data- BUT MAKE SURE TO DEEPCOPY otherwise any change in the program will change in self.loadData

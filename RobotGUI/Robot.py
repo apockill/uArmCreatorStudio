@@ -113,6 +113,7 @@ class Robot():
 
     def setGripper(self, status):
         if not self.connected():
+            print "status: ", status
             printf("Robot.setGripper(): ERROR: No uArm connected, could not set gripper to", status)
             return
 

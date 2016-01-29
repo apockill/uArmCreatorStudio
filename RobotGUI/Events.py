@@ -207,11 +207,11 @@ class Event(object):
         widget.setTip(self.tooltip)
         return widget
 
-    def runCommands(self, shared):
-        commandsOrdered = self.commandList.getCommandsOrdered()
-
-        for command in commandsOrdered:
-            command.run(shared)
+    # def runCommands(self, shared):
+    #     commandsOrdered = self.commandList.getCommandsOrdered()
+    #
+    #     for command in commandsOrdered:
+    #         command.run(shared)
 
 
 
@@ -231,12 +231,9 @@ class InitEvent(Event):
         if self.hasBeenRun:
             return False
         else:
+            self.hasBeenRun = True
             return True
 
-    def runCommands(self, shared):
-        #Intercept the parent class events so that you can set self.hasBeenRun to true
-        Event.runCommands(self, shared)
-        self.hasBeenRun = True
 
 
 class DestroyEvent(Event):
