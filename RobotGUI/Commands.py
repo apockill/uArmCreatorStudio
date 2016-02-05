@@ -1,4 +1,4 @@
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
 import Icons
 import Robot
 from time import sleep  #Should only be used in the WaitCommand
@@ -7,13 +7,13 @@ from Global import printf
 
 
 
-class CommandWidget(QtGui.QWidget):
+class CommandWidget(QtWidgets.QWidget):
     def __init__(self, parent, onDeleteFunction):
         super(CommandWidget, self).__init__(parent)
-        self.title        = QtGui.QLabel()
-        self.description  = QtGui.QLabel()
-        self.icon         = QtGui.QLabel("No Icon Found")
-        self.deleteBtn    = QtGui.QPushButton("")
+        self.title        = QtWidgets.QLabel()
+        self.description  = QtWidgets.QLabel()
+        self.icon         = QtWidgets.QLabel("No Icon Found")
+        self.deleteBtn    = QtWidgets.QPushButton("")
         self.indent       = 0
 
         self.initUI()
@@ -30,9 +30,9 @@ class CommandWidget(QtGui.QWidget):
         font.setBold(True)
         self.title.setFont(font)
 
-        leftLayout  = QtGui.QVBoxLayout()
-        midLayout   = QtGui.QVBoxLayout()
-        rightLayout = QtGui.QVBoxLayout()
+        leftLayout  = QtWidgets.QVBoxLayout()
+        midLayout   = QtWidgets.QVBoxLayout()
+        rightLayout = QtWidgets.QVBoxLayout()
 
         leftLayout.addWidget(self.icon)
 
@@ -44,7 +44,7 @@ class CommandWidget(QtGui.QWidget):
         rightLayout.addWidget(self.deleteBtn)
         rightLayout.setAlignment(QtCore.Qt.AlignRight)
 
-        mainHLayout = QtGui.QHBoxLayout()
+        mainHLayout = QtWidgets.QHBoxLayout()
         mainHLayout.addLayout(leftLayout)
         mainHLayout.addLayout(midLayout, QtCore.Qt.AlignLeft)
         mainHLayout.addLayout(rightLayout, QtCore.Qt.AlignRight)
@@ -61,7 +61,7 @@ class CommandWidget(QtGui.QWidget):
 
     def setIndent(self, indent):
         if self.indent == indent: return
-        print "set Indent", indent
+        print("set Indent", indent)
         self.indent = indent
         if indent >= 0:
             self.layout().setContentsMargins(25 * indent, 0, 0, 0)
@@ -84,7 +84,7 @@ class CommandWidget(QtGui.QWidget):
         self.setToolTip(text)
 
 
-class CommandMenuWidget(QtGui.QWidget):
+class CommandMenuWidget(QtWidgets.QWidget):
     def __init__(self, addCmndFunc, parent):
         super(CommandMenuWidget, self).__init__(parent)
 
@@ -107,7 +107,7 @@ class CommandMenuWidget(QtGui.QWidget):
         endBlkBtn   = self.getButton(EndBlockCommand)
 
 
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
         grid.addWidget( moveXYZBtn,  0, 0, QtCore.Qt.AlignTop)
         grid.addWidget(  detachBtn,  1, 0, QtCore.Qt.AlignTop)
         grid.addWidget(  attachBtn,  2, 0, QtCore.Qt.AlignTop)
@@ -123,7 +123,7 @@ class CommandMenuWidget(QtGui.QWidget):
         self.setLayout(grid)
 
     def getButton(self, type):
-        newButton = QtGui.QPushButton()
+        newButton = QtWidgets.QPushButton()
         newButton.setIcon(QtGui.QIcon(type.icon))
         newButton.setIconSize(QtCore.QSize(32, 32))
         newButton.setToolTip(type.tooltip)
@@ -131,7 +131,7 @@ class CommandMenuWidget(QtGui.QWidget):
         return newButton
 
 
-class Command(QtGui.QDialog):
+class Command(QtWidgets.QDialog):
     tooltip = ''
     icon    = ''
     title   = ''
@@ -142,21 +142,21 @@ class Command(QtGui.QDialog):
         self.description = ""
         self.parameters = {}  #For commands with no parameters, this should stay empty
         self.accepted    = False
-        self.mainVLayout = QtGui.QVBoxLayout()
+        self.mainVLayout = QtWidgets.QVBoxLayout()
         self.initBaseUI()
         self.indent = 0    #Updated in CommandList.refresh()
 
     def initBaseUI(self):
         #Create and connect buttons
-        applyBtn  = QtGui.QPushButton('Apply')
-        cancelBtn = QtGui.QPushButton('Cancel')
+        applyBtn  = QtWidgets.QPushButton('Apply')
+        cancelBtn = QtWidgets.QPushButton('Cancel')
         applyBtn.setMaximumWidth(100)
         cancelBtn.setMaximumWidth(100)
         applyBtn.clicked.connect(self.applyClicked)
         cancelBtn.clicked.connect(self.cancelClicked)
 
         #Create layout
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
 
         grid.setSpacing(10)
 
@@ -276,22 +276,22 @@ class MoveXYZCommand(Command):
 
 
 
-        self.rotEdit     = QtGui.QLineEdit()  #  Rotation textbox
-        self.strEdit     = QtGui.QLineEdit()  #  Stretch textbox
-        self.hgtEdit     = QtGui.QLineEdit()  #  Height textbox
-        self.relCheck    = QtGui.QCheckBox()  #  "relative" CheckBox
-        self.refCheck    = QtGui.QCheckBox()  #  "refresh" CheckBox
+        self.rotEdit     = QtWidgets.QLineEdit()  #  Rotation textbox
+        self.strEdit     = QtWidgets.QLineEdit()  #  Stretch textbox
+        self.hgtEdit     = QtWidgets.QLineEdit()  #  Height textbox
+        self.relCheck    = QtWidgets.QCheckBox()  #  "relative" CheckBox
+        self.refCheck    = QtWidgets.QCheckBox()  #  "refresh" CheckBox
 
         self.initUI()
         self.setWindowIcon(QtGui.QIcon(self.icon))
 
     def initUI(self):
         #Set up all the labels for the inputs
-        rotLabel = QtGui.QLabel('X:')
-        strLabel = QtGui.QLabel('Y:')
-        hgtLabel = QtGui.QLabel('Z:')
-        relLabel = QtGui.QLabel('Relative')
-        refLabel = QtGui.QLabel('Refresh')
+        rotLabel = QtWidgets.QLabel('X:')
+        strLabel = QtWidgets.QLabel('Y:')
+        hgtLabel = QtWidgets.QLabel('Z:')
+        relLabel = QtWidgets.QLabel('Relative')
+        refLabel = QtWidgets.QLabel('Refresh')
 
         #Fill the textboxes with the default parameters
         self.rotEdit.setText(str(self.parameters['x']))
@@ -300,11 +300,11 @@ class MoveXYZCommand(Command):
         self.relCheck.setChecked(self.parameters['rel'])
         self.refCheck.setChecked(self.parameters['ref'])
 
-        row1 = QtGui.QHBoxLayout()
-        row2 = QtGui.QHBoxLayout()
-        row3 = QtGui.QHBoxLayout()
-        row4 = QtGui.QHBoxLayout()
-        row5 = QtGui.QHBoxLayout()
+        row1 = QtWidgets.QHBoxLayout()
+        row2 = QtWidgets.QHBoxLayout()
+        row3 = QtWidgets.QHBoxLayout()
+        row4 = QtWidgets.QHBoxLayout()
+        row5 = QtWidgets.QHBoxLayout()
 
         row1.addWidget(rotLabel, QtCore.Qt.AlignRight)
         row1.addWidget(self.rotEdit, QtCore.Qt.AlignJustify)
@@ -370,19 +370,19 @@ class DetachCommand(Command):
                                       'servo3': False,
                                       'servo4': False})
 
-        self.srvo1Box = QtGui.QCheckBox()  #  Rotation textbox
-        self.srvo2Box = QtGui.QCheckBox()  #  Stretch textbox
-        self.srvo3Box = QtGui.QCheckBox()  #  Height textbox
-        self.srvo4Box = QtGui.QCheckBox()  #  "relative" CheckBox
+        self.srvo1Box = QtWidgets.QCheckBox()  #  Rotation textbox
+        self.srvo2Box = QtWidgets.QCheckBox()  #  Stretch textbox
+        self.srvo3Box = QtWidgets.QCheckBox()  #  Height textbox
+        self.srvo4Box = QtWidgets.QCheckBox()  #  "relative" CheckBox
         self.initUI()
         self.setWindowIcon(QtGui.QIcon(self.icon))
 
     def initUI(self):
         #Set up all the labels for the inputs
-        label1 = QtGui.QLabel('Rotation Servo:')
-        label2 = QtGui.QLabel('Stretch Servo:')
-        label3 = QtGui.QLabel('Height Servo:')
-        label4 = QtGui.QLabel('Wrist Servo:')
+        label1 = QtWidgets.QLabel('Rotation Servo:')
+        label2 = QtWidgets.QLabel('Stretch Servo:')
+        label3 = QtWidgets.QLabel('Height Servo:')
+        label4 = QtWidgets.QLabel('Wrist Servo:')
 
         #Fill the textboxes with the default parameters
         self.srvo1Box.setChecked(self.parameters['servo1'])
@@ -390,10 +390,10 @@ class DetachCommand(Command):
         self.srvo3Box.setChecked(self.parameters['servo3'])
         self.srvo4Box.setChecked(self.parameters['servo4'])
 
-        row1 = QtGui.QHBoxLayout()
-        row2 = QtGui.QHBoxLayout()
-        row3 = QtGui.QHBoxLayout()
-        row4 = QtGui.QHBoxLayout()
+        row1 = QtWidgets.QHBoxLayout()
+        row2 = QtWidgets.QHBoxLayout()
+        row3 = QtWidgets.QHBoxLayout()
+        row4 = QtWidgets.QHBoxLayout()
 
         row1.addWidget(label1, QtCore.Qt.AlignRight)
         row1.addStretch(1)
@@ -462,19 +462,19 @@ class AttachCommand(Command):
                                       'servo3': False,
                                       'servo4': False})
 
-        self.srvo1Box = QtGui.QCheckBox()  #  Rotation textbox
-        self.srvo2Box = QtGui.QCheckBox()  #  Stretch textbox
-        self.srvo3Box = QtGui.QCheckBox()  #  Height textbox
-        self.srvo4Box = QtGui.QCheckBox()  #  "relative" CheckBox
+        self.srvo1Box = QtWidgets.QCheckBox()  #  Rotation textbox
+        self.srvo2Box = QtWidgets.QCheckBox()  #  Stretch textbox
+        self.srvo3Box = QtWidgets.QCheckBox()  #  Height textbox
+        self.srvo4Box = QtWidgets.QCheckBox()  #  "relative" CheckBox
         self.initUI()
         self.setWindowIcon(QtGui.QIcon(self.icon))
 
     def initUI(self):
         #Set up all the labels for the inputs
-        label1 = QtGui.QLabel('Rotation Servo:')
-        label2 = QtGui.QLabel('Stretch Servo:')
-        label3 = QtGui.QLabel('Height Servo:')
-        label4 = QtGui.QLabel('Wrist Servo:')
+        label1 = QtWidgets.QLabel('Rotation Servo:')
+        label2 = QtWidgets.QLabel('Stretch Servo:')
+        label3 = QtWidgets.QLabel('Height Servo:')
+        label4 = QtWidgets.QLabel('Wrist Servo:')
 
         #Fill the textboxes with the default parameters
         self.srvo1Box.setChecked(self.parameters['servo1'])
@@ -482,10 +482,10 @@ class AttachCommand(Command):
         self.srvo3Box.setChecked(self.parameters['servo3'])
         self.srvo4Box.setChecked(self.parameters['servo4'])
 
-        row1 = QtGui.QHBoxLayout()
-        row2 = QtGui.QHBoxLayout()
-        row3 = QtGui.QHBoxLayout()
-        row4 = QtGui.QHBoxLayout()
+        row1 = QtWidgets.QHBoxLayout()
+        row2 = QtWidgets.QHBoxLayout()
+        row3 = QtWidgets.QHBoxLayout()
+        row4 = QtWidgets.QHBoxLayout()
 
         row1.addWidget(label1, QtCore.Qt.AlignRight)
         row1.addStretch(1)
@@ -549,20 +549,20 @@ class WaitCommand(Command):
         #Set default parameters that will show up on the window
         self.parameters = kwargs.get("parameters", {'time': 1.0})
 
-        self.timeEdit = QtGui.QLineEdit()
+        self.timeEdit = QtWidgets.QLineEdit()
 
         self.initUI()
         self.setWindowIcon(QtGui.QIcon(self.icon))
 
     def initUI(self):
         #Set up all the labels for the inputs
-        timeLabel = QtGui.QLabel('Number of seconds: ')
+        timeLabel = QtWidgets.QLabel('Number of seconds: ')
 
 
         #Fill the textboxes with the default parameters
         self.timeEdit.setText(str(self.parameters['time']))
 
-        row1 = QtGui.QHBoxLayout()
+        row1 = QtWidgets.QHBoxLayout()
 
         row1.addWidget(timeLabel, QtCore.Qt.AlignRight)
         row1.addWidget(self.timeEdit, QtCore.Qt.AlignJustify)
@@ -642,21 +642,21 @@ class ColorTrackCommand(Command):
 
 
 
-        self.cHueEdit = QtGui.QLineEdit()
-        self.tHueEdit = QtGui.QLineEdit()
-        self.lSatEdit = QtGui.QLineEdit()
-        self.hSatEdit = QtGui.QLineEdit()
-        self.lValEdit = QtGui.QLineEdit()
-        self.hValEdit = QtGui.QLineEdit()
+        self.cHueEdit = QtWidgets.QLineEdit()
+        self.tHueEdit = QtWidgets.QLineEdit()
+        self.lSatEdit = QtWidgets.QLineEdit()
+        self.hSatEdit = QtWidgets.QLineEdit()
+        self.lValEdit = QtWidgets.QLineEdit()
+        self.hValEdit = QtWidgets.QLineEdit()
 
         self.initUI(shared)
         self.setWindowIcon(QtGui.QIcon(self.icon))
 
     def initUI(self, shared):
         #Set up all the labels for the inputs
-        hueLabel = QtGui.QLabel('Hue/Tolerance: ')
-        satLabel = QtGui.QLabel('Saturation range: ')
-        valLabel = QtGui.QLabel('Value range:')
+        hueLabel = QtWidgets.QLabel('Hue/Tolerance: ')
+        satLabel = QtWidgets.QLabel('Saturation range: ')
+        valLabel = QtWidgets.QLabel('Value range:')
 
 
 
@@ -676,33 +676,33 @@ class ColorTrackCommand(Command):
         self.hValEdit.setFixedWidth(75)
 
         #Set up 'scanbutton' that will scan the camera and fill out the parameters for recommended settings
-        scanLabel  = QtGui.QLabel("Press button to automatically fill out values:")
-        scanButton = QtGui.QPushButton("Scan Colors")
+        scanLabel  = QtWidgets.QLabel("Press button to automatically fill out values:")
+        scanButton = QtWidgets.QPushButton("Scan Colors")
         scanButton.clicked.connect(lambda: self.scanColors(shared))
 
 
 
-        row1 = QtGui.QHBoxLayout()
-        row2 = QtGui.QHBoxLayout()
-        row3 = QtGui.QHBoxLayout()
-        row4 = QtGui.QHBoxLayout()
+        row1 = QtWidgets.QHBoxLayout()
+        row2 = QtWidgets.QHBoxLayout()
+        row3 = QtWidgets.QHBoxLayout()
+        row4 = QtWidgets.QHBoxLayout()
 
         row1.addWidget(    scanLabel, QtCore.Qt.AlignLeft)
         row1.addWidget(   scanButton, QtCore.Qt.AlignRight)
 
         row2.addWidget(     hueLabel, QtCore.Qt.AlignLeft)
         row2.addWidget(self.cHueEdit, QtCore.Qt.AlignRight)
-        row2.addWidget(QtGui.QLabel("+-"))
+        row2.addWidget(QtWidgets.QLabel("+-"))
         row2.addWidget(self.tHueEdit, QtCore.Qt.AlignRight)
 
         row3.addWidget(     satLabel, QtCore.Qt.AlignLeft)
         row3.addWidget(self.lSatEdit, QtCore.Qt.AlignRight)
-        row3.addWidget(QtGui.QLabel("to"))
+        row3.addWidget(QtWidgets.QLabel("to"))
         row3.addWidget(self.hSatEdit, QtCore.Qt.AlignRight)
 
         row4.addWidget(     valLabel, QtCore.Qt.AlignLeft)
         row4.addWidget(self.lValEdit, QtCore.Qt.AlignRight)
-        row4.addWidget(QtGui.QLabel("to"))
+        row4.addWidget(QtWidgets.QLabel("to"))
         row4.addWidget(self.hValEdit, QtCore.Qt.AlignRight)
 
 
@@ -795,9 +795,9 @@ class TestVariable(Command):
                                      {'variable': '',
                                       'not': False})  #Flip the result
 
-        self.varEdit   = QtGui.QLineEdit(self)   #  "Variable" edit
-        self.tstMenu   = QtGui.QComboBox()       #  "test" menu
-        self.notCheck  = QtGui.QCheckBox(self)   #  "Not" CheckBox
+        self.varEdit   = QtWidgets.QLineEdit(self)   #  "Variable" edit
+        self.tstMenu   = QtWidgets.QComboBox()       #  "test" menu
+        self.notCheck  = QtWidgets.QCheckBox(self)   #  "Not" CheckBox
 
         self.initUI()
         self.setWindowIcon(QtGui.QIcon(self.icon))
@@ -812,18 +812,18 @@ class TestVariable(Command):
 
 
         #Set up all the labels for the inputs
-        varLabel = QtGui.QLabel('Variable: ')
-        tstLabel = QtGui.QLabel('Test: ')
-        notLabel = QtGui.QLabel('Not')
+        varLabel = QtWidgets.QLabel('Variable: ')
+        tstLabel = QtWidgets.QLabel('Test: ')
+        notLabel = QtWidgets.QLabel('Not')
 
         #Fill the textboxes with the default parameters
         self.varEdit.setText(str(self.parameters['variable']))
         self.tstMenu.setCurrentIndex(2)
         self.notCheck.setChecked(self.parameters['not'])
 
-        row1 = QtGui.QHBoxLayout()
-        row2 = QtGui.QHBoxLayout()
-        row3 = QtGui.QHBoxLayout()
+        row1 = QtWidgets.QHBoxLayout()
+        row2 = QtWidgets.QHBoxLayout()
+        row3 = QtWidgets.QHBoxLayout()
 
         row1.addWidget(     varLabel, QtCore.Qt.AlignRight)
         row1.addWidget( self.varEdit, QtCore.Qt.AlignLeft)

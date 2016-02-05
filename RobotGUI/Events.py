@@ -1,4 +1,4 @@
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
 from Global import printf
 import Icons
 import Global
@@ -6,15 +6,15 @@ import Global
 
 
 
-class EventWidget(QtGui.QWidget):
+class EventWidget(QtWidgets.QWidget):
     """
     This is the widget that appears on the EventList.
     It's supposed to be prettier than the normal list items.
     """
     def __init__(self, parent):
         super(EventWidget, self).__init__(parent)
-        self.title       = QtGui.QLabel()
-        self.icon        = QtGui.QLabel("No icon found.")
+        self.title       = QtWidgets.QLabel()
+        self.icon        = QtWidgets.QLabel("No icon found.")
         self.initUI()
 
     def initUI(self):
@@ -22,7 +22,7 @@ class EventWidget(QtGui.QWidget):
         font.setBold(True)
         self.title.setFont(font)
 
-        mainHLayout = QtGui.QHBoxLayout()
+        mainHLayout = QtWidgets.QHBoxLayout()
         mainHLayout.addWidget(self.icon)
         mainHLayout.addWidget(self.title, QtCore.Qt.AlignLeft)
 
@@ -38,7 +38,7 @@ class EventWidget(QtGui.QWidget):
         self.setToolTip(tip)
 
 
-class EventPromptWindow(QtGui.QDialog):
+class EventPromptWindow(QtWidgets.QDialog):
     def __init__(self, parent):
         super(EventPromptWindow, self).__init__(parent)
         self.accepted         = False
@@ -54,7 +54,7 @@ class EventPromptWindow(QtGui.QDialog):
         self.initButtonMenus()
 
         #Create grid layout
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
             #Left column
         grid.addWidget(      self.initBtn, 0, 0, QtCore.Qt.AlignLeft)
         grid.addWidget(      self.stepBtn, 1, 0, QtCore.Qt.AlignLeft)
@@ -66,12 +66,12 @@ class EventPromptWindow(QtGui.QDialog):
         grid.addWidget(    self.motionBtn, 2, 1, QtCore.Qt.AlignLeft)
 
         #Set up Cancel button in it's own layout:
-        cancelLayout = QtGui.QHBoxLayout()
+        cancelLayout = QtWidgets.QHBoxLayout()
         cancelLayout.addWidget(self.cancelBtn)
 
 
         #Create main layout
-        mainVLayout = QtGui.QVBoxLayout()
+        mainVLayout = QtWidgets.QVBoxLayout()
         mainVLayout.addLayout(grid)
         mainVLayout.addLayout(cancelLayout, QtCore.Qt.AlignHCenter)
 
@@ -84,7 +84,7 @@ class EventPromptWindow(QtGui.QDialog):
     def initButtons(self):
         buttonWidth = 115
         #Create the cancel button
-        self.cancelBtn    = QtGui.QPushButton('Cancel')
+        self.cancelBtn    = QtWidgets.QPushButton('Cancel')
         self.cancelBtn    .setFixedWidth(buttonWidth * 1.5)
         self.cancelBtn    .setFixedHeight(25)
         self.cancelBtn    .setIcon(QtGui.QIcon(Icons.cancel))
@@ -120,9 +120,9 @@ class EventPromptWindow(QtGui.QDialog):
         #Set up Menus for buttons that have menus:
 
         ######################     KEYBOARD MENU     ######################
-        keyboardMnu = QtGui.QMenu()
+        keyboardMnu = QtWidgets.QMenu()
             #Create Letters Sub Menu
-        self.lettersSubMnu = QtGui.QMenu("Letters")  #Has to be self or something glitches with garbage collection....
+        self.lettersSubMnu = QtWidgets.QMenu("Letters")  #Has to be self or something glitches with garbage collection....
         alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I','J', 'K', 'L', 'M',
                     'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
         for letter in alphabet:
@@ -131,7 +131,7 @@ class EventPromptWindow(QtGui.QDialog):
             self.lettersSubMnu.addAction(letter, lambda letter=letter: self.btnClicked(KeypressEvent, params={"checkKey": letter}))
 
             #Create Digits Sub Menu
-        self.digitsSubMnu = QtGui.QMenu("Digits")
+        self.digitsSubMnu = QtWidgets.QMenu("Digits")
         digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
         for index, digit in enumerate(digits):
             self.digitsSubMnu.addAction(digit, lambda digit=digit: self.btnClicked(KeypressEvent, params={"checkKey": digit}))
@@ -144,7 +144,7 @@ class EventPromptWindow(QtGui.QDialog):
 
         ######################     MOTION MENU     ######################
         newMotionBtn = lambda params: self.btnClicked(MotionEvent, params=params)
-        motionMnu = QtGui.QMenu()
+        motionMnu = QtWidgets.QMenu()
         motionMnu.addAction(   'Low and Above', lambda: newMotionBtn({"low":  "Low", "high":  "Inf"}))
         motionMnu.addAction('Medium and Above', lambda: newMotionBtn({"low":  "Med", "high":  "Inf"}))
         motionMnu.addAction(  'High and Above', lambda: newMotionBtn({"low": "High", "high":  "Inf"}))
@@ -160,7 +160,7 @@ class EventPromptWindow(QtGui.QDialog):
         self.motionBtn.setMenu(motionMnu)
 
         #INTERSECT MENU
-        intersectMnu = QtGui.QMenu()
+        intersectMnu = QtWidgets.QMenu()
         intersectMnu.addAction('Intersect +X Boundary', lambda: self.btnClicked("+X"))
         intersectMnu.addAction('Intersect -X Boundary', lambda: self.btnClicked("-X"))
         intersectMnu.addAction('Intersect  X Boundary', lambda: self.btnClicked("X"))
@@ -184,7 +184,7 @@ class EventPromptWindow(QtGui.QDialog):
     def getNewButton(self, buttonText, icon):
         buttonWidth = 115
 
-        newButton = QtGui.QPushButton(buttonText)
+        newButton = QtWidgets.QPushButton(buttonText)
         newButton.setStyleSheet("Text-align:left")
         newButton.setFixedWidth(buttonWidth)
         newButton.setIcon(QtGui.QIcon(icon))
@@ -213,7 +213,10 @@ class Event(object):
     #     for command in commandsOrdered:
     #         command.run(shared)
 
-
+    def reset(self):
+        """Used for events that modify variables in themselves in order to function.
+        Things like InitEvent or AlarmEvent will use this to reset their var's"""
+        pass
 
 ########## EVENTS ##########
 
@@ -234,6 +237,8 @@ class InitEvent(Event):
             self.hasBeenRun = True
             return True
 
+    def reset(self):
+        self.hasBeenRun = False
 
 
 class DestroyEvent(Event):

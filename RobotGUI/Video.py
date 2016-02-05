@@ -1,10 +1,9 @@
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
 from threading import Thread
-from Global import printf
+from Global import printf, FpsTimer
 from time import time
 import cv2
 import numpy as np
-
 
 
 def getConnectedCameras():
@@ -15,7 +14,6 @@ def getConnectedCameras():
         testCap = cv2.VideoCapture(i)
 
         if testCap.isOpened():
-
             cameraList.append(i)
             testCap.release()
 
@@ -24,23 +22,25 @@ def getConnectedCameras():
 
 class VideoStream:
     def __init__(self, cameraID):
-        self.running    = False
-        self.cameraID   = cameraID
-        self.paused     = True
-        self.frame      = None
-        self.frameList  = []
-        self.frameCount = 0     #Used in waitForNewFrame()
-        self.pixFrame   = None  #Holds a QLabel formatted frame. Is calculated in the thread, and returned in getPixFrame
-        self.cap        = None
-        self.fps        = 24.0
-        self.dimensions = None  #Will be [x dimension, y dimension]
+        self.running = False
+        self.paused = True
 
-        self.millis     = lambda: int(round(time() * 1000))  #Create function that gets current time in millis
+        self.cameraID = cameraID
+        self.cap = None
+        self.dimensions = None  # Will be [x dimension, y dimension]
+        self.fps = 24
+
+        self.frame = None
+        self.pixFrame = None  # Holds a QLabel formatted frame. Is calculated in the thread, and returned in getPixFrame
+
+        self.frameList = []
+        self.frameCount = 0  # Used in waitForNewFrame()
+
         self.mainThread = None
 
     def setPaused(self, value):
-        #Tells the main frunction to grab more frames
-        if value is False:  #If you want to play video
+        # Tells the main frunction to grab more frames
+        if value is False:  # If you want to play video
             if self.cap is None:
                 self.setNewCamera(self.cameraID)
             if self.mainThread is None:
@@ -50,58 +50,50 @@ class VideoStream:
 
 
     def videoThread(self):
-        #A main thread that focuses soley on grabbing frames from a camera, limited only by self.fps
-        #Thread is created at startThread, which can be called by setPaused
-        #Thread is ended only at endThread
+        # A main thread that focuses soley on grabbing frames from a camera, limited only by self.fps
+        # Thread is created at startThread, which can be called by setPaused
+        # Thread is ended only at endThread
 
-        self.frame     = None
+        self.frame = None
         self.frameList = []
-
+        fpsTimer = FpsTimer(self.fps)
         printf("VideoStream.main(): Starting videoStream thread.")
-        lastMillis = self.millis()
+
         while not self.running:
+            fpsTimer.wait()
+            if not fpsTimer.ready(): continue
 
-            if self.paused: continue
+            # Get a new frame
+            ret, newFrame = self.cap.read()
 
-            newMillis = self.millis()
-            if newMillis - lastMillis >= (1 / self.fps) * 1000:
-                lastMillis = newMillis
+            # If a frame was successfully returned
+            if ret:
+                self.frame = newFrame.copy()
 
-                #Get a new frame
-                ret, newFrame = self.cap.read()
+                # Add a frame to the frameList that records the 5 latest frames for Vision uses
+                self.frameList.append(self.frame)
+                while len(self.frameList) > 5:
+                    del self.frameList[0]
 
+                # Create a pixMap from the new frame (for getPixFrame() method)
+                # Having this here means less processing work for the main program to do.
+                # TODO: Research if running a QtGui process in a thread will cause crashes
+                pixFrame = cv2.cvtColor(newFrame.copy(), cv2.COLOR_BGR2RGB)
 
-                #If a frame was successfully returned
-                if ret:
-                    self.frame = newFrame.copy()
+                img = QtGui.QImage(pixFrame, pixFrame.shape[1], pixFrame.shape[0], QtGui.QImage.Format_RGB888)
+                pix = QtGui.QPixmap.fromImage(img)
+                self.pixFrame = pix
 
-                    #Add a frame to the frameList that records the 5 latest frames for Vision uses
-                    self.frameList.append(self.frame)
-                    while len(self.frameList) > 5:
-                        del self.frameList[0]
-
-                    #Create a pixMap from the new frame (for getPixFrame() method)
-                    #Having this here means less processing work for the main program to do.
-                    #TODO: Research if running a QtGui process in a thread will cause crashes
-                    pixFrame = cv2.cvtColor(newFrame.copy(),
-                                            cv2.cv.CV_BGR2RGB)
-                    img      = QtGui.QImage(pixFrame, pixFrame.shape[1],
-                                            pixFrame.shape[0], QtGui.QImage.Format_RGB888)
-                    pix      = QtGui.QPixmap.fromImage(img)
-                    self.pixFrame = pix
-
-
-                    #Keep track of new frames by counting them. (100 is an arbitrary number)
-                    if self.frameCount >= 100:
-                        self.frameCount = 0
-                    else:
-                        self.frameCount += 1
-
+                # Keep track of new frames by counting them. (100 is an arbitrary number)
+                if self.frameCount >= 100:
+                    self.frameCount = 0
                 else:
-                    printf("VideoStream.main(): ERROR while reading frame from Camera: ", self.cameraID)
-                    self.setNewCamera(self.cameraID)
-                    cv2.waitKey(1000)
+                    self.frameCount += 1
 
+            else:
+                printf("VideoStream.main(): ERROR while reading frame from Camera: ", self.cameraID)
+                self.setNewCamera(self.cameraID)
+                cv2.waitKey(1000)
 
         printf("VideoStream.main(): Ending videoStream thread")
 
@@ -124,13 +116,13 @@ class VideoStream:
 
 
     def setNewCamera(self, cameraID):
-        #Set or change the current camera to a new one
+        # Set or change the current camera to a new one
         printf("VideoStream.setNewCamera(): Setting camera to cameraID ", cameraID)
-        previousState = self.paused  #When the function is over it will set the camera to its previous state
+        previousState = self.paused  # When the function is over it will set the camera to its previous state
 
-        self.setPaused(True)  #Make sure cap won't be called in the main thread while releasing the cap
+        self.setPaused(True)  # Make sure cap won't be called in the main thread while releasing the cap
 
-        if self.cap is not None: self.cap.release()  #Gracefully close the current capture
+        if self.cap is not None: self.cap.release()  # Gracefully close the current capture
 
         self.cameraID = cameraID
         self.cap = cv2.VideoCapture(self.cameraID)
@@ -140,8 +132,7 @@ class VideoStream:
             self.dimensions = None
             return False
 
-
-        #Try getting a frame and setting self.dimensions. If it does not work, return false
+        # Try getting a frame and setting self.dimensions. If it does not work, return false
         ret, frame = self.cap.read()
         if ret:
             self.dimensions = [frame.shape[1], frame.shape[0]]
@@ -151,17 +142,16 @@ class VideoStream:
             self.dimensions = None
             return False
 
-
-        self.setPaused(previousState)  #Return to whatever state the camera was in before switching
+        self.setPaused(previousState)  # Return to whatever state the camera was in before switching
         return True
 
     def setFPS(self, fps):
-        #Sets how often the main function grabs frames (Default: 24)
+        # Sets how often the main function grabs frames (Default: 24)
         self.fps = fps
 
 
     def getFrame(self):
-        #Returns the latest frame grabbed from the camera
+        # Returns the latest frame grabbed from the camera
         if self.frame is not None:
             return self.frame.copy()
         else:
@@ -176,8 +166,9 @@ class VideoStream:
         return self.frameList[:]
 
     def getPixFrame(self):
-        #Returns the latest frame grabbed from the camera, modified to be put in a QLabel
+        # Returns the latest frame grabbed from the camera, modified to be put in a QLabel
         return self.pixFrame
+
 
     def waitForNewFrame(self):
         lastFrame = self.frameCount
@@ -189,17 +180,15 @@ class Vision:
         self.vStream = vStream
 
     def getMotion(self):
-        #GET TWO CONSECUTIVE FRAMES
+        # GET TWO CONSECUTIVE FRAMES
         frameList = self.vStream.getFrameList()
-        if len(frameList) < 5:  #Make sure there are enough frames to do the motion comparison
+        if len(frameList) < 5:  # Make sure there are enough frames to do the motion comparison
             printf("getMovement():Not enough frames in self.vid.previousFrames")
-            return 0    #IF PROGRAM IS RUN BEFORE THE PROGRAM HAS EVEN 10 FRAMES
+            return 0  # IF PROGRAM IS RUN BEFORE THE PROGRAM HAS EVEN 10 FRAMES
 
         frame0 = frameList[len(frameList) - 1]
         frame1 = frameList[len(frameList) - 3]
         movementImg = cv2.absdiff(frame0, frame1)
-
-
 
         avgDifference = cv2.mean(movementImg)[0]
 
@@ -221,7 +210,7 @@ class Vision:
     #     return avg
 
     def getColor(self, **kwargs):
-        #Get the average color of a rectangle in the main frame. If no rect specified, get the whole frame
+        # Get the average color of a rectangle in the main frame. If no rect specified, get the whole frame
         p1 = kwargs.get("p1", None)
         p2 = kwargs.get("p2", None)
 
@@ -229,32 +218,29 @@ class Vision:
         if p1 is not None and p2 is not None:
             frame = frame[p2[1]:p1[1], p2[0]:p1[0]]
 
-
-        averageColor = cv2.mean(frame)       #RGB
+        averageColor = cv2.mean(frame)  # RGB
         return averageColor
-
 
     def findObjectColor(self, hue, tolerance, lowSat, highSat, lowVal, highVal):
         low, high = self.getRange(hue, tolerance)
 
-        hue         = int(hue)
-        tolerance   = int(tolerance)
-        lowSat      = int( lowSat * 255)
-        highSat     = int(highSat * 255)
-        lowVal      = int( lowVal * 255)
-        highVal     = int(highVal * 255)
+        hue = int(hue)
+        tolerance = int(tolerance)
+        lowSat = int(lowSat * 255)
+        highSat = int(highSat * 255)
+        lowVal = int(lowVal * 255)
+        highVal = int(highVal * 255)
 
-        frame       = self.vStream.getFrame()
-        hsv         = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
+        frame = self.vStream.getFrame()
+        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
         if hue - tolerance < 0 or hue + tolerance > 180:
-            #If the color crosses 0, you have to do two thresholds
-            lowThresh   = cv2.inRange(hsv,    np.array((0, lowSat, lowVal)), np.array((low, highSat, highVal)))
+            # If the color crosses 0, you have to do two thresholds
+            lowThresh = cv2.inRange(hsv, np.array((0, lowSat, lowVal)), np.array((low, highSat, highVal)))
             upperThresh = cv2.inRange(hsv, np.array((high, lowSat, lowVal)), np.array((180, highSat, highVal)))
             finalThresh = upperThresh + lowThresh
         else:
-            finalThresh  = cv2.inRange(hsv, np.array((low, lowSat, lowVal)), np.array((high, highSat, highVal)))
+            finalThresh = cv2.inRange(hsv, np.array((low, lowSat, lowVal)), np.array((high, highSat, highVal)))
 
         cv2.imshow(str(lowSat), finalThresh.copy())
         cv2.waitKey(1)
@@ -275,14 +261,13 @@ class Vision:
         if best_cnt is not None:
             M = cv2.moments(best_cnt)
             cx, cy = int(M['m10'] / M['m00']), int(M['m01'] / M['m00'])
-            #cv2.circle(frame, (cx, cy), 5, 255, -1)
+            # cv2.circle(frame, (cx, cy), 5, 255, -1)
             return [cx, cy]
         return None
 
-
     def getRange(self, hue, tolerance):
-        #Input an HSV, get a range
-        low  = hue - tolerance / 2
+        # Input an HSV, get a range
+        low = hue - tolerance / 2
         high = hue + tolerance / 2
 
         if low < 0:   low += 180
@@ -295,7 +280,6 @@ class Vision:
             return int(high), int(low)
         else:
             return int(low), int(high)
-
 
     def bgr2hsv(self, colorBGR):
         """
@@ -329,7 +313,6 @@ class Vision:
         else:
             return h, s, v
 
-
     def cameraConnected(self):
         if self.vStream.mainThread is None:
             return False
@@ -337,7 +320,7 @@ class Vision:
 
 
 ########## WIDGETS ##########
-class CameraWidget(QtGui.QWidget):
+class CameraWidget(QtWidgets.QWidget):
     def __init__(self, getFrameFunction):
         """
         :param cameraID:
@@ -348,30 +331,30 @@ class CameraWidget(QtGui.QWidget):
         """
         super(CameraWidget, self).__init__()
 
-        #Set up globals
-        self.getFrame = getFrameFunction  #This function is given as a parameters, and returns a frame
-        self.fps      = 24     #The maximum FPS the camera will
-        self.paused   = True   #Keeps track of the video's state
-        self.timer    = None
+        # Set up globals
+        self.getFrame = getFrameFunction  # This function is given as a parameters, and returns a frame
+        self.fps = 24  # The maximum FPS the camera will
+        self.paused = True  # Keeps track of the video's state
+        self.timer = None
 
-        #Initialize the UI
+        # Initialize the UI
         self.initUI()
 
-        #Get one frame and display it, and wait for play to be pressed
+        # Get one frame and display it, and wait for play to be pressed
         self.nextFrameSlot()
 
     def initUI(self):
-        #self.setMinimumWidth(640)
-        #self.setMinimumHeight(480)
-        self.video_frame = QtGui.QLabel("No camera data.")  #Temp label for the frame
-        self.vbox        = QtGui.QVBoxLayout(self)
+        # self.setMinimumWidth(640)
+        # self.setMinimumHeight(480)
+        self.video_frame = QtWidgets.QLabel("No camera data.")  # Temp label for the frame
+        self.vbox = QtWidgets.QVBoxLayout(self)
         self.vbox.addWidget(self.video_frame)
         self.setLayout(self.vbox)
 
     def play(self):
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.nextFrameSlot)
-        self.timer.start(1000./self.fps)
+        self.timer.start(1000. / self.fps)
 
         self.paused = False
 
@@ -383,9 +366,8 @@ class CameraWidget(QtGui.QWidget):
 
         pixFrame = self.getFrame()
 
-        #If a frame was returned correctly
+        # If a frame was returned correctly
         if pixFrame is None:
             return
 
         self.video_frame.setPixmap(pixFrame)
-

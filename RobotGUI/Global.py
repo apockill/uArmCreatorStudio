@@ -1,5 +1,5 @@
 __author__ = 'AlexThiel'
-
+from time import time, sleep
 
 def init():
 
@@ -7,9 +7,7 @@ def init():
     keysPressed    = []        #Used in keyboardEvent. Updated through Main.Application.notify()
 
 
-
-
-spaceFunc = lambda n: ''.join(' ' for _ in xrange(n))
+spaceFunc = lambda n: ''.join(' ' for _ in range(n))
 def printf(*args):
     buildString = ""
 
@@ -34,4 +32,27 @@ def printf(*args):
         buildString = boilerPlate + content
 
 
-    print buildString
+    print(buildString)
+
+
+class FpsTimer:
+    def __init__(self, fps):
+        self.stepDelay = (1 / float(fps))
+        #self.readyForNext = lambda lastTime: time() - lastTime >= self.stepDelay
+        self.lastTime = time()
+
+    def wait(self):
+        waitTime = self.stepDelay - (time() - self.lastTime)
+        if waitTime > .005: sleep(waitTime)
+
+
+    def ready(self):
+        isReady = time() - self.lastTime >= self.stepDelay
+        if isReady: self.lastTime = time()
+
+        return isReady
+
+
+
+
+

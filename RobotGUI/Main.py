@@ -11,14 +11,14 @@ import ControlPanel
 import Icons
 import Global
 from copy import deepcopy
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtCore, QtWidgets, QtGui
 from Global import printf
 
 #Test
 
 
 ########## VIEWS ##########
-class CalibrateView(QtGui.QWidget):
+class CalibrateView(QtWidgets.QWidget):
     """
     This is the dashboard where the user can calibrate different aspects of their robot.
     Things like motion calibration for the camera, color calibration, focus calibration, and maybe even eventually
@@ -31,19 +31,19 @@ class CalibrateView(QtGui.QWidget):
         self.newSettings    = {"motionCalibrations": {"stationaryMovement": None, "activeMovement": None}}
 
         #These buttons are connected in Main.MainWindow.__init__()
-        self.cancelBtn = QtGui.QPushButton("Cancel")
-        self.applyBtn  = QtGui.QPushButton("Apply")
+        self.cancelBtn = QtWidgets.QPushButton("Cancel")
+        self.applyBtn  = QtWidgets.QPushButton("Apply")
         self.vision = vision
         self.robot = robot
         #May be changed in updateLabels()
-        self.motionLbl = QtGui.QLabel("No information for this calibration")
+        self.motionLbl = QtWidgets.QLabel("No information for this calibration")
 
         self.initUI()
 
 
     def initUI(self):
 
-        motionBtn = QtGui.QPushButton("Calibrate Motion")
+        motionBtn = QtWidgets.QPushButton("Calibrate Motion")
 
 
         maxWidth  = 100
@@ -53,24 +53,24 @@ class CalibrateView(QtGui.QWidget):
 
 
 
-        row1 = QtGui.QHBoxLayout()
+        row1 = QtWidgets.QHBoxLayout()
 
         row1.addWidget(     motionBtn, QtCore.Qt.AlignLeft)
         row1.addWidget(self.motionLbl, QtCore.Qt.AlignRight)
 
-        middleVLayout = QtGui.QVBoxLayout()
+        middleVLayout = QtWidgets.QVBoxLayout()
         middleVLayout.addLayout(row1)
         middleVLayout.addStretch(1)
 
         #Set up Cancel and Apply buttons
-        leftVLayout = QtGui.QVBoxLayout()
+        leftVLayout = QtWidgets.QVBoxLayout()
         leftVLayout.addStretch(1)
         leftVLayout.addWidget(self.cancelBtn, QtCore.Qt.AlignRight)
-        rightVLayout = QtGui.QVBoxLayout()
+        rightVLayout = QtWidgets.QVBoxLayout()
         rightVLayout.addStretch(1)
         rightVLayout.addWidget(self.applyBtn, QtCore.Qt.AlignLeft)
 
-        mainHLayout = QtGui.QHBoxLayout()
+        mainHLayout = QtWidgets.QHBoxLayout()
         mainHLayout.addStretch(3)
         mainHLayout.addLayout(leftVLayout)
         mainHLayout.addLayout(middleVLayout)
@@ -99,7 +99,7 @@ class CalibrateView(QtGui.QWidget):
         #Get movement while nothing is happening
         totalMotion = 0.0
         samples     = 50
-        for i in xrange(0, samples):
+        for i in range(0, samples):
             self.vision.vStream.waitForNewFrame()
             totalMotion += self.vision.getMotion()
         noMovement = totalMotion / samples
@@ -110,7 +110,7 @@ class CalibrateView(QtGui.QWidget):
         samples     = 5
         self.robot.setPos( x=-15, y=-15, z=20)   #Start position
         self.robot.refresh()
-        for i in xrange(0, samples):
+        for i in range(0, samples):
             #Shake the robot while getting new frames
             self.vision.vStream.waitForNewFrame()
             self.robot.setPos(x=30, y=0, z=0, relative=True)   #end position
@@ -137,7 +137,7 @@ class CalibrateView(QtGui.QWidget):
         return self.newSettings
 
 
-class SettingsView(QtGui.QWidget):
+class SettingsView(QtWidgets.QWidget):
     """
     Simple view that lets you select your robot and camera.
     The Apply/Cancel buttons are connected in the MainWindow class, which is why they are 'self' variables
@@ -149,21 +149,21 @@ class SettingsView(QtGui.QWidget):
         #Init UI Globals
         self.cameraButtonGroup = None
         self.robotButtonGroup  = None
-        self.robVBox   = QtGui.QVBoxLayout()
-        self.camVBox   = QtGui.QVBoxLayout()
-        self.applyBtn  = QtGui.QPushButton("Apply")  #Gets connected from the MainWindow method
-        self.cancelBtn = QtGui.QPushButton("Cancel")
+        self.robVBox   = QtWidgets.QVBoxLayout()
+        self.camVBox   = QtWidgets.QVBoxLayout()
+        self.applyBtn  = QtWidgets.QPushButton("Apply")  #Gets connected from the MainWindow method
+        self.cancelBtn = QtWidgets.QPushButton("Cancel")
 
         self.initUI()
 
     def initUI(self):
         #Create Text
-        selectRobotTxt  = QtGui.QLabel('Please select the robot you will be using:')
-        selectCameraTxt = QtGui.QLabel('Please select the camera you will be using:')
+        selectRobotTxt  = QtWidgets.QLabel('Please select the robot you will be using:')
+        selectCameraTxt = QtWidgets.QLabel('Please select the camera you will be using:')
 
         #CREATE BUTTONS
-        robotScanBtn  = QtGui.QPushButton("Scan for Robots")
-        cameraScanBtn = QtGui.QPushButton("Scan for Cameras")
+        robotScanBtn  = QtWidgets.QPushButton("Scan for Robots")
+        cameraScanBtn = QtWidgets.QPushButton("Scan for Cameras")
             #Set max widths of buttons
         maxWidth = 100
         robotScanBtn.setFixedWidth(maxWidth)
@@ -171,22 +171,22 @@ class SettingsView(QtGui.QWidget):
         self.applyBtn.setFixedWidth(maxWidth)
         self.cancelBtn.setFixedWidth(maxWidth)
 
-        row1 = QtGui.QHBoxLayout()
+        row1 = QtWidgets.QHBoxLayout()
         row1.addWidget(selectRobotTxt, QtCore.Qt.AlignLeft)
         row1.addWidget(robotScanBtn, QtCore.Qt.AlignRight)
 
-        row2 = QtGui.QHBoxLayout()
+        row2 = QtWidgets.QHBoxLayout()
         row2.addLayout(self.robVBox, QtCore.Qt.AlignLeft)
 
 
-        row3 = QtGui.QHBoxLayout()
+        row3 = QtWidgets.QHBoxLayout()
         row3.addWidget(selectCameraTxt, QtCore.Qt.AlignLeft)
         row3.addWidget(cameraScanBtn, QtCore.Qt.AlignRight)
 
-        row4 = QtGui.QHBoxLayout()
+        row4 = QtWidgets.QHBoxLayout()
         row4.addLayout(self.camVBox)
 
-        middleVLayout = QtGui.QVBoxLayout()
+        middleVLayout = QtWidgets.QVBoxLayout()
         middleVLayout.addLayout(row1)
         middleVLayout.addLayout(row2)
         middleVLayout.addLayout(row3)
@@ -194,15 +194,15 @@ class SettingsView(QtGui.QWidget):
         middleVLayout.addStretch(1)
 
         #Set up Cancel and Apply buttons
-        leftVLayout = QtGui.QVBoxLayout()
+        leftVLayout  = QtWidgets.QVBoxLayout()
         leftVLayout.addStretch(1)
         leftVLayout.addWidget(self.cancelBtn, QtCore.Qt.AlignRight)
-        rightVLayout = QtGui.QVBoxLayout()
+        rightVLayout = QtWidgets.QVBoxLayout()
         rightVLayout.addStretch(1)
         rightVLayout.addWidget(self.applyBtn, QtCore.Qt.AlignLeft)
 
         #Build the final layout
-        mainHLayout = QtGui.QHBoxLayout()
+        mainHLayout = QtWidgets.QHBoxLayout()
         mainHLayout.addStretch(1)
         mainHLayout.addLayout(leftVLayout)
         mainHLayout.addLayout(middleVLayout)
@@ -218,19 +218,19 @@ class SettingsView(QtGui.QWidget):
     def scanForRobotsClicked(self):
         connectedDevices = Robot.getConnectedRobots()
         printf("SettingsView.scanForRobots(): Connected Devices: ", connectedDevices)
-        self.robotButtonGroup = QtGui.QButtonGroup()
+        self.robotButtonGroup = QtWidgets.QButtonGroup()
 
         #Update the list of found devices
         self.clearLayout(self.robVBox)  #  Clear robot list
         for i, port in enumerate(connectedDevices):
-            newButton = QtGui.QRadioButton(port[0])
+            newButton = QtWidgets.QRadioButton(port[0])
             self.robVBox.addWidget(newButton)                        # Add the button to the button layout
             self.robotButtonGroup.addButton(newButton, i)            # Add the button to a group, with an ID of i
             newButton.clicked.connect(self.robButtonClicked) # Connect each radio button to a method
 
 
         if len(connectedDevices) == 0:
-            notFoundTxt = QtGui.QLabel('No devices were found.')
+            notFoundTxt = QtWidgets.QLabel('No devices were found.')
             self.robVBox.addWidget(notFoundTxt)
 
     def scanForCamerasClicked(self):
@@ -238,12 +238,12 @@ class SettingsView(QtGui.QWidget):
         #  Get all of the cameras connected to the computer and list them
         connectedCameras = Video.getConnectedCameras()
 
-        self.cameraButtonGroup = QtGui.QButtonGroup()
+        self.cameraButtonGroup = QtWidgets.QButtonGroup()
 
         #Update the list of found cameras
         self.clearLayout(self.camVBox)  #  Clear camera list
-        for i in xrange(len(connectedCameras)):
-            newButton = QtGui.QRadioButton("Camera " + str(i))
+        for i in range(len(connectedCameras)):
+            newButton = QtWidgets.QRadioButton("Camera " + str(i))
             self.camVBox.addWidget(newButton)                  # Add the button to the button layout
             self.cameraButtonGroup.addButton(newButton, i)     # Add the button to a group, with an ID of i
             newButton.clicked.connect(self.camButtonClicked)   # Connect each radio button to a method
@@ -251,7 +251,7 @@ class SettingsView(QtGui.QWidget):
 
 
         if len(connectedCameras) == 0:
-            notFoundTxt = QtGui.QLabel('No cameras were found.')
+            notFoundTxt = QtWidgets.QLabel('No cameras were found.')
             self.camVBox.addWidget(notFoundTxt)
 
     def camButtonClicked(self):
@@ -269,7 +269,7 @@ class SettingsView(QtGui.QWidget):
         return self.settings
 
 
-class DashboardView(QtGui.QWidget):
+class DashboardView(QtWidgets.QWidget):
     def __init__(self, controlPanel, cameraWidget, parent):
         super(DashboardView, self).__init__(parent)
 
@@ -282,8 +282,8 @@ class DashboardView(QtGui.QWidget):
     def initUI(self):
 
         #Create main layout
-        mainHLayout = QtGui.QHBoxLayout()
-        mainVLayout = QtGui.QVBoxLayout()
+        mainHLayout = QtWidgets.QHBoxLayout()
+        mainVLayout = QtWidgets.QVBoxLayout()
         mainVLayout.addLayout(mainHLayout)
 
         mainHLayout.addWidget(self.controlPanel)
@@ -297,7 +297,7 @@ class DashboardView(QtGui.QWidget):
 
 
 ########## MAIN WINDOW ##########
-class MainWindow(QtGui.QMainWindow):
+class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.settings  = {"robotID": None, "cameraID": None, "lastOpenedFile": None,
@@ -314,7 +314,7 @@ class MainWindow(QtGui.QMainWindow):
 
 
         #Set Global UI Variables
-        self.centralWidget   = QtGui.QStackedWidget()
+        self.centralWidget   = QtWidgets.QStackedWidget()
         self.controlPanel    = ControlPanel.ControlPanel(self.robot, self.vision, self.settings, parent=self)
         self.cameraWidget    = Video.CameraWidget(self.vStream.getPixFrame)
 
@@ -322,8 +322,8 @@ class MainWindow(QtGui.QMainWindow):
         self.settingsView    = SettingsView(parent=self)  #'self' so that StackedWidget can be used
         self.calibrateView   = CalibrateView(self.vision, self.robot, parent=self)
 
-        self.scriptToggleBtn = QtGui.QAction(QtGui.QIcon(Icons.run_script), 'Run/Pause the command script (Ctrl+R)', self)
-        self.videoToggleBtn  = QtGui.QAction(QtGui.QIcon(Icons.play_video), 'Play/Pause the video stream (Ctrl+P)', self)
+        self.scriptToggleBtn = QtWidgets.QAction(QtGui.QIcon(Icons.run_script), 'Run/Pause the command script (Ctrl+R)', self)
+        self.videoToggleBtn  = QtWidgets.QAction(QtGui.QIcon(Icons.play_video), 'Play/Pause the video stream (Ctrl+P)', self)
 
 
         #Connect Cancel/Apply Buttons from various views
@@ -352,11 +352,11 @@ class MainWindow(QtGui.QMainWindow):
         menuBar      = self.menuBar()
         fileMenu     = menuBar.addMenu('File')
 
-        newAction    = QtGui.QAction( QtGui.QIcon(Icons.new_file), "New Task", self)
-        saveAction   = QtGui.QAction(QtGui.QIcon(Icons.save_file), "Save Task", self)
-        saveAsAction = QtGui.QAction(QtGui.QIcon(Icons.save_file), "Save Task As", self)
-        loadAction   = QtGui.QAction(QtGui.QIcon(Icons.load_file), "Load Task", self)
-        forumAction  = QtGui.QAction("Visit the forum!", self)
+        newAction    = QtWidgets.QAction( QtGui.QIcon(Icons.new_file), "New Task", self)
+        saveAction   = QtWidgets.QAction(QtGui.QIcon(Icons.save_file), "Save Task", self)
+        saveAsAction = QtWidgets.QAction(QtGui.QIcon(Icons.save_file), "Save Task As", self)
+        loadAction   = QtWidgets.QAction(QtGui.QIcon(Icons.load_file), "Load Task", self)
+        forumAction  = QtWidgets.QAction("Visit the forum!", self)
 
         newAction.triggered.connect(self.newTask)
         saveAction.triggered.connect(self.saveTask)
@@ -375,8 +375,8 @@ class MainWindow(QtGui.QMainWindow):
         #Create Toolbar
         toolbar = self.addToolBar("MainToolbar")
 
-        settingsBtn  = QtGui.QAction( QtGui.QIcon(Icons.settings),  'Open Camera and Robot settings (Ctrl+T)', self)
-        calibrateBtn = QtGui.QAction(QtGui.QIcon(Icons.calibrate), 'Open Robot and Camera Calibration Center', self)
+        settingsBtn  = QtWidgets.QAction( QtGui.QIcon(Icons.settings),  'Open Camera and Robot settings (Ctrl+T)', self)
+        calibrateBtn = QtWidgets.QAction(QtGui.QIcon(Icons.calibrate), 'Open Robot and Camera Calibration Center', self)
 
         self.scriptToggleBtn.setShortcut('Ctrl+R')
         self.videoToggleBtn.setShortcut('Ctrl+P')
@@ -404,7 +404,7 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowTitle('uArm Creator Dashboard')
         self.setWindowIcon(QtGui.QIcon(Icons.taskbar))
         self.show()
-        QtGui.QApplication.setStyle(QtGui.QStyleFactory.create('Plastique'))
+        #QtWidgets.QApplication.setStyle(QtWidgets.QStyleFactory.create('Plastique'))  #TODO updgrade to pyQt5
 
 
 
@@ -534,10 +534,10 @@ class MainWindow(QtGui.QMainWindow):
 
         if not self.loadData is None and not self.loadData == self.controlPanel.getSaveData():
             printf("MainWindow.promptSave(): Prompting user to save changes")
-            reply = QtGui.QMessageBox.question(self, 'Warning',
-                                           "You have unsaved changes. Would you like to save before continuing?",
-                                           QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
-            if reply == QtGui.QMessageBox.Yes:
+            reply = QtWidgets.QMessageBox.question(self, 'Warning',
+                                       "You have unsaved changes. Would you like to save before continuing?",
+                                       QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.Yes)
+            if reply == QtWidgets.QMessageBox.Yes:
                 printf("MainWindow.promptSave():Saving changes")
 
                 self.saveTask(False)
@@ -555,12 +555,14 @@ class MainWindow(QtGui.QMainWindow):
 
         #If there is no filename, ask for one
         if promptSave or self.fileName is None:
-            filename = QtGui.QFileDialog.getSaveFileName(self, "Save Task", "MyTask", "*.task")
+            filename, filetype = QtWidgets.QFileDialog.getSaveFileName(self, "Save Task", "MyTask", ".task")
+
             if filename == "": return  #If user hit cancel
-            self.fileName = filename
+            self.fileName = filename + filetype
 
         #Update the save file
         saveData = self.controlPanel.getSaveData()
+        print(self.fileName)
         pickle.dump(saveData, open(self.fileName, "wb"))
         self.loadData = deepcopy(saveData)  #Update what the latest saved changes are
 
@@ -576,7 +578,7 @@ class MainWindow(QtGui.QMainWindow):
         filename = kwargs.get("filename", None)
 
         if filename is None:  #If no filename was specified, prompt the user for where to save
-            filename = QtGui.QFileDialog.getOpenFileName(self, "Load Task", "", "*.task")
+            filename, filetype = QtWidgets.QFileDialog.getOpenFileName(self, "Load Task", "", "*.task")
             if filename == "": return  #If user hit cancel
 
         try:
@@ -621,7 +623,7 @@ class MainWindow(QtGui.QMainWindow):
 
 
 #Application subclass, to record keypresses
-class Application(QtGui.QApplication):
+class Application(QtWidgets.QApplication):
     """
         I modified the QtGui.QApplication class slightly in order to intercept keypress events
         and write them in the Global.keysPressed list
@@ -638,7 +640,7 @@ class Application(QtGui.QApplication):
         #Remove any keys that are released from self.keysPressed
         if event.type() == QtCore.QEvent.KeyRelease:
             if event.key() in Global.keysPressed:
-                Global.keysPressed = filter(lambda x: x != event.key(), Global.keysPressed)
+                Global.keysPressed = [k for k in Global.keysPressed if k != event.key()]
 
 
         #Call Base Class Method to Continue Normal Event Processing
@@ -654,7 +656,8 @@ if __name__ == '__main__':
     app = Application(sys.argv)
     mainWindow = MainWindow()
     mainWindow.show()
-    execution = app.exec_()
-    printf("__main__(): Program successfully executed.")
+    sys.exit(app.exec_())
+
+
 
 
