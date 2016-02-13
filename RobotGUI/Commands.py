@@ -1,9 +1,7 @@
-from PyQt5 import QtGui, QtCore, QtWidgets
-import Icons
-import Robot
-from time import sleep  #Should only be used in the WaitCommand
-from Global import printf
-
+from RobotGUI        import Icons, Robot
+from RobotGUI.Global import printf
+from PyQt5           import QtGui, QtCore, QtWidgets
+from time            import sleep  #Should only be used in the WaitCommand
 
 
 

@@ -1,10 +1,10 @@
-from threading import Thread
-from Events import *
-from Commands import *
-from time import time, sleep
-from PyQt5 import QtGui, QtCore, QtWidgets
-from Global import printf, FpsTimer
 import copy
+from RobotGUI.Events   import *
+from RobotGUI.Commands import *
+from RobotGUI.Global   import printf, FpsTimer
+from threading         import Thread
+from PyQt5             import QtGui, QtCore, QtWidgets
+
 
 
 class Shared:

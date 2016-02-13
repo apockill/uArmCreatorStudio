@@ -1,7 +1,7 @@
-from PyQt5 import QtGui, QtCore, QtWidgets
-from Global import printf
-import Icons
-import Global
+from RobotGUI        import Icons, Global
+from RobotGUI.Global import printf
+from PyQt5           import QtGui, QtCore, QtWidgets
+
 
 
 

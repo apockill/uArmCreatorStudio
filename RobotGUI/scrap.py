@@ -1,7 +1,1 @@
-from time import sleep
-
-print("1")
-sleep(1)
-print("2")
-sleep(1)
-print("3")
+print(len("[Command movex-15y15z20t1.5 Successfully Fulf"))

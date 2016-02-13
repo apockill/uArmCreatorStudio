@@ -1,5 +1,5 @@
-__author__ = 'AlexThiel'
 from time import time, sleep
+
 
 def init():
 
@@ -8,6 +8,8 @@ def init():
 
 
 spaceFunc = lambda n: ''.join(' ' for _ in range(n))
+
+
 def printf(*args):
     buildString = ""
 

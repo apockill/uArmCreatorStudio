@@ -4,17 +4,12 @@
 import sys
 import webbrowser           #Used soley to open the uFactory forum
 import pickle
+from RobotGUI        import Robot, Video, ControlPanel, Icons, Global
+from RobotGUI.Global import printf
+from copy            import deepcopy
+from PyQt5           import QtCore, QtWidgets, QtGui
 
-import Robot
-import Video
-import ControlPanel
-import Icons
-import Global
-from copy import deepcopy
-from PyQt5 import QtCore, QtWidgets, QtGui
-from Global import printf
 
-#Test
 
 
 ########## VIEWS ##########

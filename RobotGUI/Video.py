@@ -1,9 +1,9 @@
-from PyQt5 import QtGui, QtCore, QtWidgets
-from threading import Thread
-from Global import printf, FpsTimer
-from time import time
 import cv2
 import numpy as np
+from RobotGUI.Global import printf, FpsTimer
+from PyQt5           import QtGui, QtCore, QtWidgets
+from threading       import Thread
+
 
 
 def getConnectedCameras():

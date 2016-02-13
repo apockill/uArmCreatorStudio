@@ -1,10 +1,10 @@
-from threading import Thread
-from Global import printf
-from UArmForPython.uarm_python import Uarm
-from time import sleep  #Only use in refresh() command after attaching servos
 import serial
-import serial.tools.list_ports
 import math
+from RobotGUI.UArmTextCommunication import Uarm
+from RobotGUI.Global                import printf
+from threading                      import Thread
+from time import sleep  #Only use in refresh() command after attaching servos
+
 
 
 def getConnectedRobots():
@@ -14,7 +14,7 @@ def getConnectedRobots():
     return ports
 
 
-class Robot():
+class Robot:
 
     def __init__(self, comPort):
         self.uArm = None
@@ -80,11 +80,15 @@ class Robot():
             printf("Robot.getBaseAngle(): Robot not found or setupThread is running, returning 90 for base angle...")
             return 90
         else:
-            printf("Robot.getBaseAngle(): Getting coordinates for robot...")
+            printf("Robot.getBaseAngle(): Getting base servo angle for robot...")
             return self.uArm.readAngle(1)
 
     def connected(self):
-        return not self.uArm is None
+        if self.uArm is None:       return False
+        if not self.uArm.connected: return False
+
+        return True
+
 
 
     def setPos(self, **kwargs):
@@ -124,6 +128,7 @@ class Robot():
                 self.uArm.pumpOn()
             else:
                 self.uArm.pumpOff()
+
 
 
     def getTipSensor(self):
