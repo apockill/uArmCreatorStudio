@@ -129,7 +129,7 @@ def getShapeCount(cnts, edged, **kwargs):
 cap = cv2.VideoCapture(1)
 
 while True:
-    ret0, img0 = cap.read()
+    ret0, img0 = cap.__read()
     #img0 = cv2.imread("F:\Google Drive\Projects\Git Repositories\RobotStorage\RobotArm\stitched.png")
     img = cv2.cvtColor(img0, cv2.COLOR_BGR2GRAY)
     cv2.imshow('Main', img)

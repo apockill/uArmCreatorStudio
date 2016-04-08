@@ -18,7 +18,7 @@ lk_params = dict( winSize =(15, 15),
 color = np.random.randint(0, 255, (100, 3))
 
 # Take first frame and find corners in it
-ret, old_frame = cap.read()
+ret, old_frame = cap.__read()
 old_gray = cv2.cvtColor(old_frame, cv2.COLOR_BGR2GRAY)
 
 
@@ -29,7 +29,7 @@ while True:
 
     # Create a mask image for drawing purposes
 
-    ret, frame = cap.read()
+    ret, frame = cap.__read()
     frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     if not ret: print "ERROR no frame grabbed"
     if p0 is None:

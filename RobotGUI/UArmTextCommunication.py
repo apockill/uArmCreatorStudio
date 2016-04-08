@@ -1,87 +1,137 @@
 import serial
+from time            import sleep
 from RobotGUI.Global import printf
 
 
 class Uarm:
 
-
     def __init__(self, port):
         self.successConnect = False
         self.serial = None
-        self.connectToRobot(port)
-
-
+        self.__connectToRobot(port)
 
     def connected(self):
         if self.serial is None:     return False
         if not self.successConnect: return False
-
+        if not self.__handshake():    return False
         return True
 
 
-    def currentCoord(self):
-        printf("Uarm.currentCoord(): Getting current coordinates of robot")
+    # Action commands
+    def moveToWithTime(self, x, y, z, timeSpend):
+        x = str(round(x, 3))
+        y = str(round(y, 3))
+        z = str(round(z, 3))
+        t = str(round(timeSpend, 3))
+        cmnd = "moveX" + x + "Y" + y + "Z" + z + "T" + t
+        response = self.__send(cmnd)
 
+    def wrist(self, angle):
+        angle = str(round(angle, 3))
+        cmnd = "handV" + angle
+        response = self.__send(cmnd)
+        print("uarm response: ", response)
+
+    def pumpOn(self):
+        printf("Uarm.pumpOn(): Activating uArm Pump")
+        cmnd = "pumpV1"
+        response = self.__send(cmnd)
+
+    def pumpOff(self):
+        printf("Uarm.pumpOn(): Deactivating uArm Pump")
+        cmnd = "pumpV0"
+        response = self.__send(cmnd)
+
+    def servoAttach(self, servo_number):
+        servo_number = str(int(servo_number))
+        cmnd = "attachS" + servo_number
+        response = self.__send(cmnd)
+
+    def servoDetach(self, servo_number):
+        servo_number = str(int(servo_number))
+        cmnd = "detachS" + servo_number
+        response = self.__send(cmnd)
+
+
+    # Get commands
+    def currentCoord(self):
+        # printf("Uarm.currentCoord(): Getting current coordinates of robot")
+        response  = self.__send("gcoords")
+        parsedArgs = self.__parseArgs(response, "coords", ["x", "y", "z"])
+        return parsedArgs
 
     def readAngle(self, servo_number):
         printf("Uarm.readAngle(): Error: This function should not be run")
 
-
-    def pumpOn(self):
-        printf("Uarm.pumpOn(): Activating uArm Pump")
-
-
-    def pumpOff(self):
-        printf("Uarm.pumpOn(): Deactivating uArm Pump")
-
-
-    def moveToWithTime(self, x, y, z, timeSpend):
-        #printf("Uarm.moveToWithTime(): Moving to", x, y, z, " in ", timeSpend)
-        cmnd = "moveX" + str(x) + "Y" + str(y) + "Z" + str(z) + "T" + str(timeSpend)
-        self.send(cmnd)
-
-
-    def servoAttach(self, servo_number):
-        printf("Uarm.servoAttach(): Attaching", servo_number)
-
-
-    def servoDetach(self, servo_number):
-        printf("Uarm.servoDetach(): Detaching", servo_number)
+    def isMoving(self):
+        response  = self.__send("gmoving")
+        parsedArgs = self.__parseArgs(response, "moving", ["m"])
+        return parsedArgs['m']
 
 
     # Not to be used outside of library
-    def connectToRobot(self, port):
+    def __connectToRobot(self, port):
         try:
-            self.serial = serial.Serial(port=port, baudrate=115200,
-                                        parity=serial.PARITY_NONE,
-                                        stopbits=serial.STOPBITS_ONE,
-                                        bytesize=serial.EIGHTBITS,
-                                        timeout=.1)
+            self.serial = serial.Serial(port     = port,
+                                        baudrate = 115200,
+                                        parity   = serial.PARITY_NONE,
+                                        stopbits = serial.STOPBITS_ONE,
+                                        bytesize = serial.EIGHTBITS,
+                                        timeout  = .1)
             self.successConnect = True
         except serial.SerialException as e:
             print("Uarm.connectToRobot(): Could not open ", port)
             self.serial = None
             self.successConnect = False
+        sleep(3)
 
+    def __handshake(self):
+        return True
 
-    def send(self, cmnd):
+    def __send(self, cmnd):
         if not self.connected(): return None
-        print("Sending command: ", cmnd)
         cmndString = bytes("[" + cmnd + "]>", encoding='ascii')
-
         self.serial.write(cmndString)
-        print(self.read())
+        response = self.__read()
+        return response
 
-
-
-    def read(self):
+    def __read(self):
         message = ""
         while True:
             message += str(self.serial.read(), 'ascii')
             if "\n" in message:
                 message = message[:-1]
                 break
-        return message
+
+        if "ERROR" in message:
+            printf("Uarm.read(): ERROR: Recieved error from robot: ", message)
+
+        message = message.replace("[", "")
+        message = message.replace("]", "")
+        return message.lower()
+
+    def __parseArgs(self, message, command, arguments):
+        responseDict = {n: 0 for n in arguments}  #Fill the dictionary with zero's
+        if command not in message: return responseDict
+        message = message.replace(command, "")
+
+        for i, arg in enumerate(arguments):
+            if i < len(arguments) - 1:
+                responseDict[arg] = message[message.find(arg) + 1: message.find(arguments[i + 1])]
+            else:
+                responseDict[arg] = message[message.find(arg) + 1:]
+
+            responseDict[arg] = float(responseDict[arg])
+
+        return responseDict
+
+
+
+
+
+
+
+
 
 
 

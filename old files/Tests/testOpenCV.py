@@ -6,7 +6,7 @@ cap = cv2.VideoCapture(0)
 
 while True:
     # Capture frame-by-frame
-    ret, frame = cap.read()
+    ret, frame = cap.__read()
     cv2.waitKey(100)
     if not ret:
         print "Frame empty, trying again..."

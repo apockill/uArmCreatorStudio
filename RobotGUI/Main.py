@@ -1,8 +1,5 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 import sys
-import webbrowser           #Used soley to open the uFactory forum
+import webbrowser
 import pickle
 from RobotGUI        import Robot, Video, ControlPanel, Icons, Global
 from RobotGUI.Global import printf
@@ -25,12 +22,12 @@ class CalibrateView(QtWidgets.QWidget):
 
         self.newSettings    = {"motionCalibrations": {"stationaryMovement": None, "activeMovement": None}}
 
-        #These buttons are connected in Main.MainWindow.__init__()
+        # These buttons are connected in Main.MainWindow.__init__()
         self.cancelBtn = QtWidgets.QPushButton("Cancel")
         self.applyBtn  = QtWidgets.QPushButton("Apply")
         self.vision = vision
         self.robot = robot
-        #May be changed in updateLabels()
+        # May be changed in updateLabels()
         self.motionLbl = QtWidgets.QLabel("No information for this calibration")
 
         self.initUI()
@@ -83,15 +80,15 @@ class CalibrateView(QtWidgets.QWidget):
                                    "     Active Movement: " + str(movCalib["activeMovement"]))
 
     def calibrateMotion(self):
-        if not  self.robot.connected():
+        if not self.robot.connected():
             printf("CalibrateView.calibrateMotion(): No uArm connected!")
             return
 
-        #Make sure VideoStream is collecting new frames
+        # Make sure VideoStream is collecting new frames
         self.vision.vStream.setPaused(False)
 
 
-        #Get movement while nothing is happening
+        # Get movement while nothing is happening
         totalMotion = 0.0
         samples     = 50
         for i in range(0, samples):
@@ -100,24 +97,24 @@ class CalibrateView(QtWidgets.QWidget):
         noMovement = totalMotion / samples
 
 
-        #Get movement while robot is moving
+        # Get movement while robot is moving
         totalMotion = 0.0
-        samples     = 5
+        moves       = 10
+        samples     = 0
+        direction   = 1  #If the robot is going right or left
         self.robot.setPos( x=-15, y=-15, z=20)   #Start position
         self.robot.refresh()
-        for i in range(0, samples):
-            #Shake the robot while getting new frames
-            self.vision.vStream.waitForNewFrame()
-            self.robot.setPos(x=30, y=0, z=0, relative=True)   #end position
-            self.robot.refresh(instant=True)
-            self.vision.vStream.waitForNewFrame()
-            totalMotion += self.vision.getMotion()
-
-            self.vision.vStream.waitForNewFrame()
-            self.robot.setPos(x=-30, y=0, z=0, relative=True)   #end position
-            self.robot.refresh(instant=True)
-            totalMotion += self.vision.getMotion()
-        highMovement = totalMotion / (samples * 2)  #Since two samples are gotten from each loop
+        for move in range(0, moves):
+            # Move robot left and right while getting new frames
+            self.robot.setPos(x=30 * direction, y=0, z=0, relative=True)   #end position
+            self.robot.refresh(speed=30)
+            while self.robot.getMoving():
+                self.vision.vStream.waitForNewFrame()
+                totalMotion += self.vision.getMotion()
+                samples += 1
+            direction *= -1
+        print("Amount of samples: ", samples)
+        highMovement = totalMotion / samples  #Since two samples are gotten from each loop
 
 
         self.newSettings["motionCalibrations"]["stationaryMovement"] = round(  noMovement, 1)
@@ -464,15 +461,15 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.setVideo("pause")
 
     def setScript(self, state):
-        #Run/pause the main script
-
-        printf("MainWindow.setScript(): Setting script to ", state)
+        # Run/pause the main script
 
         if state == "play":  #self.controlPanel.running:
+            printf("MainWindow.setScript(): Setting script to ", state)
             self.controlPanel.startThread()
             self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.pause_script))
 
         if state == "pause":
+            printf("MainWindow.setScript(): Setting script to ", state)
             self.controlPanel.endThread()
             self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.run_script))
            # self.controlPanel.running or setState == "play":
@@ -548,14 +545,15 @@ class MainWindow(QtWidgets.QMainWindow):
     def saveTask(self, promptSave):
         printf("MainWindow.saveTask(): Saving project")
 
-        #If there is no filename, ask for one
+        # If there is no filename, ask for one
         if promptSave or self.fileName is None:
             filename, filetype = QtWidgets.QFileDialog.getSaveFileName(self, "Save Task", "MyTask", ".task")
 
             if filename == "": return  #If user hit cancel
             self.fileName = filename + filetype
 
-        #Update the save file
+
+        # Update the save file
         saveData = self.controlPanel.getSaveData()
         print(self.fileName)
         pickle.dump(saveData, open(self.fileName, "wb"))
@@ -617,7 +615,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.controlPanel.close()
 
 
-#Application subclass, to record keypresses
+#  Application subclass, to record keypresses
 class Application(QtWidgets.QApplication):
     """
         I modified the QtGui.QApplication class slightly in order to intercept keypress events
@@ -645,7 +643,6 @@ class Application(QtWidgets.QApplication):
 
 
 if __name__ == '__main__':
-
     Global.init()
 
     app = Application(sys.argv)

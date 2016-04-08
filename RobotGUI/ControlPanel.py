@@ -122,10 +122,9 @@ class ControlPanel(QtWidgets.QWidget):
             return
 
         # Add and display the correct widget
-        print("SelectedEvent: ", selectedEvent)
-        print("cmmndlist: ", selectedEvent.commandList)
         self.commandListStack.addWidget(selectedEvent.commandList)
         self.commandListStack.setCurrentWidget(selectedEvent.commandList)
+
 
     def startThread(self):
         # Start the program thread
@@ -151,9 +150,9 @@ class ControlPanel(QtWidgets.QWidget):
                 self.mainThread = None
 
     def programThread(self):
-        # while self.running: pass
-        # This is where the script will be run
         printf("ControlPanel.programThread(): #################### STARTING PROGRAM THREAD! ######################")
+        self.robot.setServos(servo1=True, servo2=True, servo3=True, servo4=True)
+        self.robot.refresh()
 
         # Deepcopy all of the events, so that every time you run the script it runs with no modified variables
         events = copy.copy(self.eventList.getEventsOrdered())
@@ -163,7 +162,7 @@ class ControlPanel(QtWidgets.QWidget):
         # eventItem   = self.eventList.getItemsOrdered()
         # setColor    = lambda item, isColored: item.setBackground((transparent, color)[isColored])
 
-        timer = FpsTimer(fps=1)
+        timer = FpsTimer(fps=10)
         # Reset all events to default state
         for event in events: event.reset()
 
@@ -223,9 +222,6 @@ class ControlPanel(QtWidgets.QWidget):
             command = commandsOrdered[index]
             ret = command.run(self.shared)
 
-            # If the command is an evaluation command, test it
-            print("Index: ", index, "\tindent: ", command.indent, "\tret", ret, "cmnd: ", type(command), "next: ")
-
             # if ret is None: continue
 
             if ret is not None and not ret:
@@ -242,6 +238,7 @@ class ControlPanel(QtWidgets.QWidget):
                         break
 
             index += 1
+
 
     def addCommand(self, type):
         # When the addCommand button is pressed
@@ -267,11 +264,13 @@ class ControlPanel(QtWidgets.QWidget):
     def replaceEvent(self):
         self.eventList.replaceEvent()
 
+
     def getSaveData(self):
         return self.eventList.getSaveData()
 
     def loadData(self, data):
         self.eventList.loadData(data, self.shared)
+
 
     def closeEvent(self, event):
         # Do things here like closing threads and such

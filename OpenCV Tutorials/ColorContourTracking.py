@@ -49,7 +49,7 @@ print "goal: ", goalHSV, "tolerance: ", tolerance
 #Track this color
 while True:
     # read the frames
-    ret, frame = cap.read()
+    ret, frame = cap.__read()
     if not ret: print "ERROR capturing frame!"
 
 

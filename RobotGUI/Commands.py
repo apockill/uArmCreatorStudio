@@ -266,9 +266,10 @@ class MoveXYZCommand(Command):
             self.parameters = kwargs["parameters"]
         else:
             currentXYZ = shared.getRobot().getCurrentCoord()
-            self.parameters = {'x': round(currentXYZ[1], 1),
-                               'y': round(currentXYZ[2], 1),
-                               'z': round(currentXYZ[3], 1),
+            print("Current xyz: ", currentXYZ)
+            self.parameters = {'x': round(currentXYZ['x'], 1),
+                               'y': round(currentXYZ['y'], 1),
+                               'z': round(currentXYZ['z'], 1),
                                'rel': False,
                                'ref': True}
 
@@ -340,7 +341,10 @@ class MoveXYZCommand(Command):
                             '   Relative: ' + str(      self.parameters['rel'])
 
     def run(self, shared):
-        printf("MoveXYZCommand.run(): Moving robot to ", self.parameters['x'], self.parameters['y'], self.parameters['z'])
+        printf("MoveXYZCommand.run(): Moving robot to ",
+               self.parameters['x'], " ",
+               self.parameters['y'], " ",
+               self.parameters['z'], " ")
         shared.getRobot().setPos(x=self.parameters['x'],
                                  y=self.parameters['y'],
                                  z=self.parameters['z'],
@@ -777,7 +781,6 @@ class ColorTrackCommand(Command):
 
 
         shared.getRobot().setPos(x=modDirection[0] / 3, y=modDirection[1] / 3, relative=True)
-
 
 
 class TestVariable(Command):

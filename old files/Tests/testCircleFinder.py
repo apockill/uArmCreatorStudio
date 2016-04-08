@@ -7,7 +7,7 @@ cap = cv2.VideoCapture(1)
 
 while True:
     # Capture frame-by-frame
-    ret, frame = cap.read()
+    ret, frame = cap.__read()
     frame = cv2.imread("F:\Google Drive\Projects\Git Repositories\RobotStorage\RobotArm\stitched.png")
 
     gray = cv2.cvtColor(frame.copy(), cv2.COLOR_BGR2GRAY)

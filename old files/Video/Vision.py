@@ -82,7 +82,7 @@ class Video:  #Handles basic video functions
         numberOfFrames = kwargs.get('readXFrames', 1)  #Read multiple frames in one go. These all get recorded on the previousFrames list
         if not self.paused:
             for i in range(numberOfFrames):
-                ret, newFrame = self.cap.read()
+                ret, newFrame = self.cap.__read()
 
                 if ret:  #If there was no frame captured
                     try:  #CHECK IF CAP SENT AN IMAGE BACK. If not, this will throw an error, and the "frame" image will not be replaced

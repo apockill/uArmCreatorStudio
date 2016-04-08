@@ -7,11 +7,11 @@ from matplotlib import pyplot as plt
 
 while True:
     capL = cv2.VideoCapture(1)
-    retL, frameL = capL.read()
+    retL, frameL = capL.__read()
     capL.release()
 
     capR = cv2.VideoCapture(2)
-    retR, frameR = capR.read()
+    retR, frameR = capR.__read()
     capR.release()
 
     frameL = cv2.cvtColor(frameL, cv2.COLOR_BGR2GRAY)

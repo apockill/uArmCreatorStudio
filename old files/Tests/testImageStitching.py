@@ -257,8 +257,8 @@ cap = cv2.VideoCapture(1)
 
 # GET FRAMES TO STITCH TOGETHER
 sleep(1)
-_, _= cap.read()  #Wait for camera to adjust to lighting. Toss this frame (camera bufer)
-ret, base_img_rgb = cap.read()
+_, _= cap.__read()  #Wait for camera to adjust to lighting. Toss this frame (camera bufer)
+ret, base_img_rgb = cap.__read()
 cv2.imshow('window', base_img_rgb)
 print "Base image taken!"
 images_array = []
@@ -271,8 +271,8 @@ for i in range(2):
     cv2.waitKey(1000)
     print "1"
     cv2.waitKey(1000)
-    _, _= cap.read()  #Throw away this frame. Fixes oddities with the cameras buffering.
-    _, img = cap.read()
+    _, _= cap.__read()  #Throw away this frame. Fixes oddities with the cameras buffering.
+    _, img = cap.__read()
     cv2.imshow('window', img)
     cv2.waitKey(10)
     images_array.append(img)

@@ -26,7 +26,7 @@ cap = cv2.VideoCapture(1)
 cap.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH,  2000)
 cap.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, 2000)
 
-_, throwaway = cap.read()  #Wait for camera to adjust to lighting. Toss this frame (camera buffer)
+_, throwaway = cap.__read()  #Wait for camera to adjust to lighting. Toss this frame (camera buffer)
 cv2.imshow('main', throwaway)
 cv2.waitKey(1000)
 
@@ -36,8 +36,8 @@ for index, position in enumerate(picturePositions):
     Robot.moveTo(relative = False, **position)
     cv2.waitKey(750)
     print "Taking image ", index
-    _, _= cap.read()  #Throw away this frame. Fixes oddities with the cameras buffering.
-    _, img = cap.read()
+    _, _= cap.__read()  #Throw away this frame. Fixes oddities with the cameras buffering.
+    _, img = cap.__read()
     cv2.imshow('main', img)
     cv2.waitKey(10)
     images_array.append(img)

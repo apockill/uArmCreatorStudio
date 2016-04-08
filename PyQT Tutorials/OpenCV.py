@@ -36,7 +36,7 @@ class QtCapture(QtGui.QWidget):
         self.fps = fps
 
     def nextFrameSlot(self):
-        ret, frame = self.cap.read()
+        ret, frame = self.cap.__read()
         # My webcam yields frames in BGR format
 
         frame = cv2.cvtColor(frame, cv2.cv.CV_BGR2RGB)

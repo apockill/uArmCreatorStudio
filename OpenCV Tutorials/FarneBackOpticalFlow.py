@@ -3,7 +3,7 @@ import numpy as np
 from time import time
 cap = cv2.VideoCapture(1)
 
-ret, frame1 = cap.read()
+ret, frame1 = cap.__read()
 prvs = cv2.cvtColor(frame1,cv2.COLOR_BGR2GRAY)
 hsv = np.zeros_like(frame1)
 hsv[...,1] = 255
@@ -11,7 +11,7 @@ avg = [0, 0]
 
 while True:
 
-    ret, frame2 = cap.read()
+    ret, frame2 = cap.__read()
     copyFrame = frame2.copy()
     if not ret: print "ERROR! No frame grabbed"
 
