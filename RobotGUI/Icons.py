@@ -6,19 +6,19 @@ This is for storing any static directories
 
 img_file = "Icons/"
 
-#Other
+# Other
 cancel             = img_file + "cancel.png"
 delete             = img_file + "delete.png"
 
 
-#"File" Menu
+# "File" Menu
 taskbar            = img_file + "taskbar"
 new_file           = img_file + "new_file.png"
 save_file          = img_file + "save_file.png"
 load_file          = img_file + "load_file.png"
 
 
-#Toolbar
+# Toolbar
 run_script         = img_file + "run_script.png"
 pause_script       = img_file + "pause_script.png"
 pause_video        = img_file + "pause_video.png"
@@ -27,7 +27,7 @@ settings           = img_file + "settings.png"
 calibrate          = img_file + "calibrate.png"
 
 
-#Events
+# Events
 creation_event     = img_file + "creation_event.png"
 destroy_event      = img_file + "destroy_event.png"
 step_event         = img_file + "step_event.png"
@@ -37,7 +37,7 @@ tip_event          = img_file + "tip_event.png"
 motion_event       = img_file + "motion_event.png"
 
 
-#Commands
+# Commands
 xyz_command        = img_file + "xyz_command.png"
 detach_command     = img_file + "detach_command.png"
 attach_command     = img_file + "attach_command.png"

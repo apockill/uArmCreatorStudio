@@ -59,7 +59,6 @@ class Robot:
             printf("Robot.currentCoord(): Robot not found or setupThread is running, returning 0 for all coordinates..")
             return {"x": 0, "y": 0, "z": 0}
         else:
-            print("getting uarm coord")
             return self.uArm.currentCoord()
 
     def getBaseAngle(self):
@@ -155,7 +154,6 @@ class Robot:
 
 
         if self.wristChanged:
-            print(self.servoStatus)
             self.uArm.wrist(self.wrist)
             self.wristChanged = False
 

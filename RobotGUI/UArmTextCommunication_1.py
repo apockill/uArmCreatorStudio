@@ -31,7 +31,6 @@ class Uarm:
         angle = str(round(angle, 3))
         cmnd = "handV" + angle
         response = self.__send(cmnd)
-        print("uarm response: ", response)
 
     def pumpOn(self):
         printf("Uarm.pumpOn(): Activating uArm Pump")
@@ -61,8 +60,6 @@ class Uarm:
         parsedArgs = self.__parseArgs(response, "coords", ["x", "y", "z"])
         return parsedArgs
 
-    def readAngle(self, servo_number):
-        printf("Uarm.readAngle(): Error: This function should not be run")
 
     def isMoving(self):
         response  = self.__send("gmoving")
@@ -81,7 +78,7 @@ class Uarm:
                                         timeout  = .1)
             self.successConnect = True
         except serial.SerialException as e:
-            print("Uarm.connectToRobot(): Could not open ", port)
+            printf("Uarm.connectToRobot(): Could not connect to robot on port ", port)
             self.serial = None
             self.successConnect = False
         sleep(3)

@@ -2,27 +2,40 @@ DONT FORGET TO GIVE thenounproject.com CREDIT FOR THE ICONS
 
 
 
-######   SHORT TERM GOALS    #####
--Prompts for save sometimes when it shouldn't
-
--Console output only when script is running
-
--Add click/drag to the commandDashboard
-
--Add font support
-
--Impliment a thread stopper while a wait command is active
-
+######   SHORT TERM GOALS   #####
+- Impliment a thread stopper while a wait command is active
+- Console output only when script is running
 - Have some sort of indication when the robot is done connecting, either succesfully or not.
+- Switch to JSON saving instead of Pickling
+- Get rid of QStackedWidget() usage on the MainWindow, and just make SettingsView and CalibrateView spawn child windows
+- Experiment with changing window/button styles
+
+######   LONG TERM GOALS    #####
+- Add click/drag to the commandDashboard
+- Add font support
+- Rearrangeable dashboard within GUI with modules that can be dropped in and out (like console output)
+-
+
+
+######   SHORT TERM BUGS    #####
 
 
 
-###### LONG TERM GOALS #####
--Stop the what-the-hell random crashes
+######   LONG TERM BUGS     #####
 
+
+
+######   Tests to perform   #####
+- Can a settings file be loaded, then another one loaded after, with everything slightly changed?
+
+
+
+
+######   WISHLIST           #####
 -Command line support for running .task files
-
 -Plugin support to make custom commands
+
+
 
 
 

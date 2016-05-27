@@ -130,10 +130,9 @@ class ControlPanel(QtWidgets.QWidget):
         # Start the program thread
         if self.mainThread is None:
             self.running = True
-
             self.mainThread = Thread(target=self.programThread)
-
             self.mainThread.start()
+
         else:
             printf("ControlPanel.startThread(): ERROR: Tried to run programthread, but there was one already running!")
 

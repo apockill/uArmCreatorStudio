@@ -29,7 +29,6 @@ class Uarm:
 
         cmnd = "G01 X" + x + "Y" + y + "Z" + z
         response = self.__send(cmnd)
-        print('sentmovecommand moveToWithTime')
 
     def wrist(self, angle):
         angle = str(round(angle, 3))
@@ -67,9 +66,6 @@ class Uarm:
 
         # Return some dummy code since uArm 2.0 doesn't have a get coord functionality
         return {'x': 0, 'y': 0, 'z': 0}
-
-    def readAngle(self, servo_number):
-        printf("Uarm.readAngle(): Error: This function should not be run")
 
     def isMoving(self):
         # response  = self.__send("gmoving")
