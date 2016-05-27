@@ -40,9 +40,11 @@ class VideoStream:
 
     def setPaused(self, value):
         # Tells the main frunction to grab more frames
-        if value is False:  # If you want to play video
+
+        if value is False:  # If you want to play video, make sure everything set for that to occur
             if self.cap is None:
                 self.setNewCamera(self.cameraID)
+
             if self.mainThread is None:
                 self.startThread()
 
@@ -61,7 +63,7 @@ class VideoStream:
 
         while not self.running:
             fpsTimer.wait()
-            if not fpsTimer.ready(): continue
+            if not fpsTimer.ready() or self.paused: continue
 
             # Get a new frame
             ret, newFrame = self.cap.read()
@@ -118,12 +120,17 @@ class VideoStream:
     def setNewCamera(self, cameraID):
         # Set or change the current camera to a new one
         printf("VideoStream.setNewCamera(): Setting camera to cameraID ", cameraID)
-        previousState = self.paused  # When the function is over it will set the camera to its previous state
 
-        self.setPaused(True)  # Make sure cap won't be called in the main thread while releasing the cap
+        # When the function is over it will set the camera to its previous state (playing or paused)
+        previousState = self.paused
 
-        if self.cap is not None: self.cap.release()  # Gracefully close the current capture
+        # Make sure cap won't be called in the main thread while releasing the cap
+        self.setPaused(True)
 
+        # Gracefully close the current capture if it exists
+        if self.cap is not None: self.cap.release()
+
+        # Set the new cameraID and open the capture
         self.cameraID = cameraID
         self.cap = cv2.VideoCapture(self.cameraID)
 

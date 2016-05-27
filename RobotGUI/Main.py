@@ -438,6 +438,8 @@ class MainWindow(QtWidgets.QMainWindow):
                   self.settings["cameraID"], "to", newSettings["cameraID"])
 
             self.settings["cameraID"] = newSettings["cameraID"]
+
+            # Set the new camera in the VideoStream object
             success = self.vStream.setNewCamera(self.settings["cameraID"])
             if success:
                 self.setVideo("play")
