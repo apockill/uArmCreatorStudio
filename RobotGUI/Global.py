@@ -40,7 +40,7 @@ def printf(*args):
 class FpsTimer:
     def __init__(self, fps):
         self.stepDelay = (1 / float(fps))
-        #self.readyForNext = lambda lastTime: time() - lastTime >= self.stepDelay
+        # self.readyForNext = lambda lastTime: time() - lastTime >= self.stepDelay
         self.lastTime = time()
 
     def wait(self):

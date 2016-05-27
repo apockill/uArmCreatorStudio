@@ -596,7 +596,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Update the save file
         saveData = self.controlPanel.getSaveData()
-        print(self.fileName)
         pickle.dump(saveData, open(self.fileName, "wb"))
         self.loadData = deepcopy(saveData)  #Update what the latest saved changes are
 

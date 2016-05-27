@@ -21,22 +21,22 @@ class Shared:
 
     def __init__(self, robot, vision, settings):
         # Used in any movement related task
-        self.robotObj = robot
+        self.__robotObj = robot
 
         # Used in the motion detection event, ColorTrackCommand, etc
-        self.visionObj = vision
+        self.__visionObj = vision
 
         # Used in the motion detection event to get the motionCalibration settings
-        self.settingsObj = settings
+        self.__settingsObj = settings
 
     def getRobot(self):
-        return self.robotObj
+        return self.__robotObj
 
     def getVision(self):
-        return self.visionObj
+        return self.__visionObj
 
     def getSettings(self):
-        return self.settingsObj
+        return self.__settingsObj
 
 
 class ControlPanel(QtWidgets.QWidget):
@@ -45,25 +45,28 @@ class ControlPanel(QtWidgets.QWidget):
 
     Purpose: A nice clean widget that has both the EventList and CommandList displayed, and the "AddEvent" and
             "AddCommand" buttons. It is a higher level of abstraction for the purpose of handling the running of the
-            robot program, instead of the nitty gritty details of the commandList and eventList
+            robot program, instead of the nitty gritty details of the commandList and eventList.
+
+            It's my attempt at seperating the Logic and GUI sides of things a tiny bit. It was a failed attempt, but I
+            think it's still helpful for organization.
     """
 
     def __init__(self, robot, vision, settings, parent):
         super(ControlPanel, self).__init__(parent)
 
         # Set up Globals
-        self.shared = Shared(robot, vision, settings)
-        self.robot = robot  # Used in programThread() to 'refresh' the robot
-        self.eventList = EventList(self.refresh, parent=self)
-        self.running = False  # Whether or not the main thread should be running or not
-        self.mainThread = None  # This holds the 'Thread' object of the main thread.
+        self.shared     = Shared(robot, vision, settings)
+        self.running    = False  # Whether or not the main thread should be running or not
+        self.mainThread = None   # This holds the 'Thread' object of the main thread.
+        self.eventList  = EventList(self.refresh, parent=self)
+
         self.addCommandWidget = CommandMenuWidget(self.addCommand, parent=self)
         self.commandListStack = QtWidgets.QStackedWidget()
 
         self.initUI()
 
     def initUI(self):
-        # Set Up Buttons
+        # Set Up Buttons and their text
         addEventBtn = QtWidgets.QPushButton()
         deleteEventBtn = QtWidgets.QPushButton()
         changeEventBtn = QtWidgets.QPushButton()
@@ -72,28 +75,34 @@ class ControlPanel(QtWidgets.QWidget):
         deleteEventBtn.setText("Delete")
         changeEventBtn.setText("Change")
 
+
         # Connect Button Events
         addEventBtn.clicked.connect(self.addEvent)
         deleteEventBtn.clicked.connect(self.deleteEvent)
         changeEventBtn.clicked.connect(self.replaceEvent)
 
-        eventVLayout = QtWidgets.QVBoxLayout()
-        eventVLayout.addWidget(addEventBtn)
+        # Create the button horizontal layout for the 'delete' and 'change' buttons
         btnRowHLayout = QtWidgets.QHBoxLayout()
         btnRowHLayout.addWidget(deleteEventBtn)
         btnRowHLayout.addWidget(changeEventBtn)
+
+        # Create a vertical layout for the buttons (top) and the eventList (bottom)
+        eventVLayout = QtWidgets.QVBoxLayout()
+        eventVLayout.addWidget(addEventBtn)
         eventVLayout.addLayout(btnRowHLayout)
         eventVLayout.addWidget(self.eventList)
 
+        # Create a layout to hold the 'addCommand' button and the 'commandList'
         commandVLayout = QtWidgets.QVBoxLayout()
         commandVLayout.addWidget(self.commandListStack)
-
         addCmndVLayout = QtWidgets.QVBoxLayout()
+
+        # Add the addCommand button and a placeholder commandLIst
         addCmndVLayout.addWidget(self.addCommandWidget)
         addCmndVLayout.addStretch(1)
+        self.commandListStack.addWidget(CommandList(parent=self))
 
-        self.commandListStack.addWidget(CommandList(parent=self))  # Add a placeholder commandList
-
+        # Put the eventLIst layout and the commandLayout next to eachother
         mainHLayout = QtWidgets.QHBoxLayout()
         mainHLayout.addLayout(eventVLayout)
         mainHLayout.addLayout(commandVLayout)
@@ -103,7 +112,10 @@ class ControlPanel(QtWidgets.QWidget):
         self.show()
 
     def refresh(self):
-        # Refresh which commandList is currently being displayed to the one the user has highlighted
+        """
+        Refresh which commandList is currently being displayed to the one the user has highlighted. It basically just
+        goes over certain things and makes sure that everything that should be displaying, is displaying.
+        """
 
         # Get the currently selected event on the eventList
         selectedEvent = self.eventList.getSelectedEvent()
@@ -126,6 +138,37 @@ class ControlPanel(QtWidgets.QWidget):
         self.commandListStack.setCurrentWidget(selectedEvent.commandList)
 
 
+    def addCommand(self, type):
+        # When the addCommand button is pressed, add that command to the currently present commandList
+
+        printf("ControlPanel.addCommand(): Add Command button clicked. Adding command!")
+
+        selectedEvent = self.eventList.getSelectedEvent()
+        if selectedEvent is None:
+            # This occurs when there are no events on the table. Display warning to user in this case.
+            printf("ControlPanel.addCommand(): ERROR: Selected event does not have a commandList! Displaying error")
+            QtWidgets.QMessageBox.question(self, 'Error', 'You need to select an event or add an event before you can '
+                                                          'add commands', QtWidgets.QMessageBox.Ok)
+            return
+
+        selectedEvent.commandList.addCommand(type, shared=self.shared)
+
+    def addEvent(self):
+        self.eventList.promptUser()
+
+    def deleteEvent(self):
+        self.eventList.deleteEvent()
+
+    def replaceEvent(self):
+        self.eventList.replaceEvent()
+
+
+    def closeEvent(self, event):
+        # Do things here like closing threads and such
+        self.endThread()
+
+
+    # LOGIC
     def startThread(self):
         # Start the program thread
         if self.mainThread is None:
@@ -138,7 +181,9 @@ class ControlPanel(QtWidgets.QWidget):
 
     def endThread(self):
         # Close the program thread and wrap up loose ends
+
         printf("ControlPanel.endThread(): Closing program thread.")
+
         self.running = False
 
         if self.mainThread is not None:
@@ -149,9 +194,11 @@ class ControlPanel(QtWidgets.QWidget):
                 self.mainThread = None
 
     def programThread(self):
+        # This is where the script you create actually gets run. This is run on a seperate thread, self.mainThread
+
         printf("ControlPanel.programThread(): #################### STARTING PROGRAM THREAD! ######################")
-        self.robot.setServos(servo1=True, servo2=True, servo3=True, servo4=True)
-        self.robot.refresh()
+        self.getRobot().setServos(servo1=True, servo2=True, servo3=True, servo4=True)
+        self.getRobot().refresh()
 
         # Deepcopy all of the events, so that every time you run the script it runs with no modified variables
         events = copy.copy(self.eventList.getEventsOrdered())
@@ -162,6 +209,7 @@ class ControlPanel(QtWidgets.QWidget):
         # setColor    = lambda item, isColored: item.setBackground((transparent, color)[isColored])
 
         timer = FpsTimer(fps=10)
+
         # Reset all events to default state
         for event in events: event.reset()
 
@@ -185,7 +233,7 @@ class ControlPanel(QtWidgets.QWidget):
                     # eventItem[index].setBackground(QtGui.QColor(QtCore.Qt.transparent))
 
             # Only "Render" the robots movement once per step
-            self.robot.refresh()
+            self.getRobot().refresh()
 
         # #Turn each list item transparent once more
         # for item in eventItem:
@@ -198,8 +246,8 @@ class ControlPanel(QtWidgets.QWidget):
         destroyEvent = list(filter(lambda event: type(event) == DestroyEvent, events))
         if len(destroyEvent): self.interpretCommands(destroyEvent[0].commandList)
 
-        self.robot.setGripper(False)
-        self.robot.refresh()
+        self.getRobot().setGripper(False)
+        self.getRobot().refresh()
 
     def interpretCommands(self, commandList):
         """
@@ -215,13 +263,10 @@ class ControlPanel(QtWidgets.QWidget):
 
         commandsOrdered = commandList.getCommandsOrdered()
         index = 0
-        # indent = 0
 
         while index < len(commandsOrdered):
             command = commandsOrdered[index]
             ret = command.run(self.shared)
-
-            # if ret is None: continue
 
             if ret is not None and not ret:
                 skipToIndent = command.indent
@@ -239,31 +284,6 @@ class ControlPanel(QtWidgets.QWidget):
             index += 1
 
 
-    def addCommand(self, type):
-        # When the addCommand button is pressed
-        printf("ControlPanel.addCommand(): Add Command button clicked. Adding command!")
-
-        selectedEvent = self.eventList.getSelectedEvent()
-        if selectedEvent is None:
-            # This occurs when there are no events on the table. Display warning to user in this case.
-            printf("ControlPanel.addCommand(): ERROR: Selected event does not have a commandList! Displaying error")
-            QtWidgets.QMessageBox.question(self, 'Error', 'You need to select an event or add '
-                                                          'an event before you can add commands',
-                                           QtWidgets.QMessageBox.Ok)
-            return
-
-        selectedEvent.commandList.addCommand(type, shared=self.shared)
-
-    def addEvent(self):
-        self.eventList.promptUser()
-
-    def deleteEvent(self):
-        self.eventList.deleteEvent()
-
-    def replaceEvent(self):
-        self.eventList.replaceEvent()
-
-
     def getSaveData(self):
         return self.eventList.getSaveData()
 
@@ -271,15 +291,12 @@ class ControlPanel(QtWidgets.QWidget):
         self.eventList.loadData(data, self.shared)
 
 
-    def closeEvent(self, event):
-        # Do things here like closing threads and such
-        self.endThread()
-
 
 class EventList(QtWidgets.QListWidget):
     def __init__(self, refresh, parent):
 
         super(EventList, self).__init__()
+
         # GLOBALS
         self.refreshControlPanel = refresh
         self.events = {}  # A hash map of the current events in the list. The listWidget leads to the event object
@@ -290,7 +307,8 @@ class EventList(QtWidgets.QListWidget):
 
         # The following is a function that returns a dictionary of the events, in the correct order
         self.getEventsOrdered = lambda: [self.getEvent(self.item(index)) for index in range(self.count())]
-        # self.getItemsOrdered  = lambda: [self.item(index) for index in range(self.count())]
+        self.getItemsOrdered  = lambda: [self.item(index) for index in range(self.count())]
+
         self.initUI()
 
     def initUI(self):
@@ -302,13 +320,19 @@ class EventList(QtWidgets.QListWidget):
         This is used for displaying the correct commandList, or adding a command
         to the correct event.
         """
+
         selectedItem = self.getSelectedEventItem()
         if selectedItem is None:
             printf("EventList.getSelected(): ERROR: 0 events selected")
             return None
+
         return self.getEvent(selectedItem)
 
     def getSelectedEventItem(self):
+        """
+        This gets the "widget" for the currently selected event item, not the Event() object
+        """
+
         selectedItems = self.selectedItems()
         if len(selectedItems) == 0 or len(selectedItems) > 1:
             printf("EventList.getSelectedEventItem(): ERROR: ", len(selectedItems), " events selected")
@@ -322,10 +346,13 @@ class EventList(QtWidgets.QListWidget):
         return selectedItem
 
     def getEvent(self, listWidgetItem):
+        # Get the Event() object for any events listWidgetItem
+
         return self.events[self.itemWidget(listWidgetItem)]
 
     def promptUser(self):
         # Open the eventPromptWindow to ask the user what event they wish to create
+
         eventPrompt = EventPromptWindow(self)
         if eventPrompt.accepted:
             self.addEvent(eventPrompt.chosenEvent, parameters=eventPrompt.chosenParameters)
@@ -333,6 +360,15 @@ class EventList(QtWidgets.QListWidget):
             printf("EventList.promptUser():User rejected the prompt.")
 
     def addEvent(self, eventType, **kwargs):
+        """
+
+        :param eventType:
+        :param kwargs:
+            'parameters' for an event, to fill it in automatically, for loading a file
+            'commandList' for an event, if you already have a command list to feed into it, for loading a file
+        :return: Nothing
+        """
+
         params = kwargs.get("parameters", None)
 
         # Check if the event being added already exists in the self.events dictionary
@@ -364,6 +400,7 @@ class EventList(QtWidgets.QListWidget):
 
     def deleteEvent(self):
         printf("EventList.deleteEvent(): Removing selected event")
+
         # Get the current item it's corresponding event
         selectedItem = self.getSelectedEventItem()
         if selectedItem is None:
@@ -387,6 +424,8 @@ class EventList(QtWidgets.QListWidget):
         self.takeItem(self.currentRow())
 
     def replaceEvent(self):
+        # Replace one event with another, while keeping the same commandList
+
         printf("EventList.replaceEvent(): Changing selected event")
 
         # Get the current item it's corresponding event
@@ -396,7 +435,7 @@ class EventList(QtWidgets.QListWidget):
                                            QtWidgets.QMessageBox.Ok)
             return
 
-        # Get the replacement event from the user
+        # Get the type of event you will be replacing the selected event with
         eventPrompt = EventPromptWindow(parent=self)
         if not eventPrompt.accepted:
             printf("EventList.replaceEvent():User rejected the prompt.")
@@ -422,6 +461,15 @@ class EventList(QtWidgets.QListWidget):
         self.events[self.itemWidget(selectedItem)] = newEvent
 
     def getSaveData(self):
+        """
+        Save looks like
+            [
+            {"type": eventType, "parameters" {event parameters}, "commandList" [commandList]},
+            {"type": eventType, "parameters" {event parameters}, "commandList" [commandList]},
+            {"type": eventType, "parameters" {event parameters}, "commandList" [commandList]},
+            ]
+        :return:
+        """
         eventList = []
         eventsOrdered = self.getEventsOrdered()
 

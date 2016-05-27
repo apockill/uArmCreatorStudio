@@ -14,7 +14,7 @@ DONT FORGET TO GIVE thenounproject.com CREDIT FOR THE ICONS
 - Add click/drag to the commandDashboard
 - Add font support
 - Rearrangeable dashboard within GUI with modules that can be dropped in and out (like console output)
--
+- Get Boolean Logic to work properly, with variable creation and variable modification and simple variable math b
 
 
 ######   SHORT TERM BUGS    #####
