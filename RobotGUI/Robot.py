@@ -1,10 +1,10 @@
 import serial
 import serial.tools.list_ports
 import math
-from RobotGUI.UArmTextCommunication import Uarm
-from RobotGUI.Global                import printf
-from threading                      import Thread
-from time import sleep  #Only use in refresh() command after attaching servos
+from RobotGUI.UArmTextCommunication_1 import Uarm
+from RobotGUI.Global                  import printf
+from threading                        import Thread
+# from time import sleep  #Only use in refresh() command after attaching servos
 
 
 
@@ -45,8 +45,6 @@ class Robot:
         self.gripperChanged  = False  #This should only be used in Robot.refresh() to activate the gripper
         self.servoAttached   = False  #If True, refresh() will move the robot previous pos before it attached the servo
         self.running         = False  #Wether or not the setupThread is running
-
-
 
 
     def getMoving(self):

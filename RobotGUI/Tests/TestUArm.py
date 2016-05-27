@@ -1,4 +1,4 @@
-from RobotGUI import UArmTextCommunication
+from RobotGUI import UArmTextCommunication_1
 import math
 from time import sleep
 
@@ -17,7 +17,7 @@ from time import sleep
 
 
 
-uarm = UArmTextCommunication.Uarm("COM5")
+uarm = UArmTextCommunication_1.Uarm("COM5")
 
 while True:
     uarm.moveToWithTime(int(input("x")), int(input("y")), 20, 1.5)

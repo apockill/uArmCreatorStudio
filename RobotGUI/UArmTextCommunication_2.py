@@ -2,6 +2,8 @@ import serial
 from time            import sleep
 from RobotGUI.Global import printf
 
+# This library is for uArms with the uServo, that have a different communication protocol than Alex's custom protocol
+
 
 class Uarm:
 
@@ -13,18 +15,21 @@ class Uarm:
     def connected(self):
         if self.serial is None:     return False
         if not self.successConnect: return False
-        if not self.__handshake():    return False
+        if not self.__handshake():  return False
         return True
 
 
     # Action commands
     def moveToWithTime(self, x, y, z, timeSpend):
-        x = str(round(x, 3))
+        # timeSpend is a throwaway variable, only used in the 1.0 uArm libary
+        offset = -21.5
+        x = str(round(x + offset, 3))
         y = str(round(y, 3))
         z = str(round(z, 3))
-        t = str(round(timeSpend, 3))
-        cmnd = "moveX" + x + "Y" + y + "Z" + z + "T" + t
+
+        cmnd = "G01 X" + x + "Y" + y + "Z" + z
         response = self.__send(cmnd)
+        print('sentmovecommand moveToWithTime')
 
     def wrist(self, angle):
         angle = str(round(angle, 3))
@@ -57,27 +62,34 @@ class Uarm:
     def currentCoord(self):
         # printf("Uarm.currentCoord(): Getting current coordinates of robot")
         response  = self.__send("gcoords")
-        parsedArgs = self.__parseArgs(response, "coords", ["x", "y", "z"])
-        return parsedArgs
+        # parsedArgs = self.__parseArgs(response, "coords", ["x", "y", "z"])
+        #return parsedArgs
+
+        # Return some dummy code since uArm 2.0 doesn't have a get coord functionality
+        return {'x': 0, 'y': 0, 'z': 0}
 
     def readAngle(self, servo_number):
         printf("Uarm.readAngle(): Error: This function should not be run")
 
     def isMoving(self):
-        response  = self.__send("gmoving")
-        parsedArgs = self.__parseArgs(response, "moving", ["m"])
-        return parsedArgs['m']
+        # response  = self.__send("gmoving")
+        # parsedArgs = self.__parseArgs(response, "moving", ["m"])
+        # Dummy code, since 2.0 doesn't support getting if the robot is currently moving
+        return False
 
 
     # Not to be used outside of library
     def __connectToRobot(self, port):
         try:
             self.serial = serial.Serial(port     = port,
-                                        baudrate = 115200,
-                                        parity   = serial.PARITY_NONE,
-                                        stopbits = serial.STOPBITS_ONE,
-                                        bytesize = serial.EIGHTBITS,
-                                        timeout  = .1)
+                                        baudrate = 115200)
+                                        # parity   = serial.PARITY_NONE,
+                                        # stopbits = serial.STOPBITS_ONE,
+                                        # bytesize = serial.EIGHTBITS,
+                                        # timeout  = .1)
+            sleep(1)
+            self.__send("M105")
+            sleep(1)
             self.successConnect = True
         except serial.SerialException as e:
             print("Uarm.connectToRobot(): Could not open ", port)
@@ -90,12 +102,16 @@ class Uarm:
 
     def __send(self, cmnd):
         if not self.connected(): return None
-        cmndString = bytes("[" + cmnd + "]>", encoding='ascii')
+        cmndString = bytes(cmnd + "\n", encoding='ascii')
         self.serial.write(cmndString)
-        response = self.__read()
-        return response
+        print("Response! ", self.serial.read())
+        return "Response not read"
+
+        # response = self.__read()
+        # return response
 
     def __read(self):
+        printf("Uarm.__read(): Reading message")
         message = ""
         while True:
             message += str(self.serial.read(), 'ascii')
@@ -104,26 +120,27 @@ class Uarm:
                 break
 
         if "ERROR" in message:
-            printf("Uarm.read(): ERROR: Recieved error from robot: ", message)
+            printf("Uarm.__read(): ERROR: Received error from robot: ", message)
 
-        message = message.replace("[", "")
-        message = message.replace("]", "")
         return message.lower()
 
     def __parseArgs(self, message, command, arguments):
-        responseDict = {n: 0 for n in arguments}  #Fill the dictionary with zero's
-        if command not in message: return responseDict
-        message = message.replace(command, "")
+        pass
+        # This is made for the uArm 1.0
 
-        for i, arg in enumerate(arguments):
-            if i < len(arguments) - 1:
-                responseDict[arg] = message[message.find(arg) + 1: message.find(arguments[i + 1])]
-            else:
-                responseDict[arg] = message[message.find(arg) + 1:]
-
-            responseDict[arg] = float(responseDict[arg])
-
-        return responseDict
+        # responseDict = {n: 0 for n in arguments}  #Fill the dictionary with zero's
+        # if command not in message: return responseDict
+        # message = message.replace(command, "")
+        #
+        # for i, arg in enumerate(arguments):
+        #     if i < len(arguments) - 1:
+        #         responseDict[arg] = message[message.find(arg) + 1: message.find(arguments[i + 1])]
+        #     else:
+        #         responseDict[arg] = message[message.find(arg) + 1:]
+        #
+        #     responseDict[arg] = float(responseDict[arg])
+        #
+        # return responseDict
 
 
 
