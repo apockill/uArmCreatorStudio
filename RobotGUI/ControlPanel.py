@@ -470,6 +470,7 @@ class EventList(QtWidgets.QListWidget):
             ]
         :return:
         """
+
         eventList = []
         eventsOrdered = self.getEventsOrdered()
 
@@ -500,6 +501,7 @@ class EventList(QtWidgets.QListWidget):
 class CommandList(QtWidgets.QListWidget):
     def __init__(self, parent):  # Todo: make commandList have a parent
         super(CommandList, self).__init__()
+
         # GLOBALS
         self.commands = {}  # Dictionary of commands. Ex: {QListItem: MoveXYZCommand, QListItem: PickupCommand}
         self.setDragDropMode(QtWidgets.QAbstractItemView.DragDrop)
@@ -518,12 +520,14 @@ class CommandList(QtWidgets.QListWidget):
         self.setMinimumWidth(250)
 
     def deleteSelected(self):
+        # Delete all highlighted commands
+
         for item in self.selectedItems():
             del self.commands[self.itemWidget(item)]
             self.takeItem(self.row(item))
 
     def refresh(self):
-        # commandsOrdered = self.getCommandsOrdered()
+
         zeroAndAbove = lambda i: (i < 0) * 0 + (i >= 0) * i
         indent = 0
 
@@ -625,9 +629,7 @@ class CommandList(QtWidgets.QListWidget):
         commandsOrdered = self.getCommandsOrdered()
 
         for command in commandsOrdered:
-            commandSave = {}
-            commandSave["type"] = type(command)
-            commandSave["parameters"] = command.parameters
+            commandSave = {"type": type(command), "parameters": command.parameters}
             commandList.append(commandSave)
 
         return commandList
