@@ -8,13 +8,20 @@ from time            import sleep  #Should only be used in the WaitCommand
 class CommandWidget(QtWidgets.QWidget):
     def __init__(self, parent, onDeleteFunction):
         super(CommandWidget, self).__init__(parent)
+
+        # Set up Globals
+        self.indent       = 0
+
+        # Set up UI Globals
         self.title        = QtWidgets.QLabel()
         self.description  = QtWidgets.QLabel()
         self.icon         = QtWidgets.QLabel("No Icon Found")
         self.deleteBtn    = QtWidgets.QPushButton("")
-        self.indent       = 0
+
 
         self.initUI()
+
+        # Connect the delete button with a function in the CommandList widget that will delete selected commands
         self.deleteBtn.clicked.connect(onDeleteFunction)
 
     def initUI(self):

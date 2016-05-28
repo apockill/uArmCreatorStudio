@@ -605,6 +605,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowTitle('uArm Creator Dashboard       ' + self.fileName)
         self.saveSettings()
 
+        print("testthing", saveData)
+
     def loadTask(self,  **kwargs):
         # Load a save file
 
