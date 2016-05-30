@@ -4,7 +4,7 @@ from PyQt5           import QtGui, QtCore, QtWidgets
 from time            import sleep  #Should only be used in the WaitCommand
 
 
-
+# This should only be used once, in CommandList.addCommand
 class CommandWidget(QtWidgets.QWidget):
     def __init__(self, parent, onDeleteFunction):
         super(CommandWidget, self).__init__(parent)
@@ -57,7 +57,7 @@ class CommandWidget(QtWidgets.QWidget):
         self.setLayout(mainHLayout)
 
     def setFocused(self, isFocused):
-        #Determines whether or not the delete button is visible. Should only be visible when widget is clicked
+        # Determines whether or not the delete button is visible. Should only be visible when widget is clicked
         if isFocused:
             self.deleteBtn.setVisible(True)
         else:
@@ -202,82 +202,78 @@ class CommandMenuWidget(QtWidgets.QWidget):
             return
 
 
-class Command(QtWidgets.QDialog):
+class Command:
     tooltip = ''
     icon    = ''
     title   = ''
 
     def __init__(self, parent):
-        super(Command, self).__init__(parent)
+        # super(Command, self).__init__(parent)
         self.parent = parent
         self.description = ""
         self.parameters = {}  #For commands with no parameters, this should stay empty
         self.accepted    = False
-        self.mainVLayout = QtWidgets.QVBoxLayout()
-        self.initBaseUI()
-        self.indent = 0    #Updated in CommandList.refresh()
 
-    def initBaseUI(self):
-        #Create and connect buttons
+        # self.initBaseUI()
+        self.indent = 0    #Updated in CommandList.refresh()`
+
+
+    def openView(self):  #Open window
+        ##### Create the base window #####
+        def applyClicked(prompt):
+            prompt.accepted = True
+            prompt.close()
+
+        prompt = QtWidgets.QDialog()
+
         applyBtn  = QtWidgets.QPushButton('Apply')
         cancelBtn = QtWidgets.QPushButton('Cancel')
+
         applyBtn.setMaximumWidth(100)
         cancelBtn.setMaximumWidth(100)
-        applyBtn.clicked.connect(self.applyClicked)
-        cancelBtn.clicked.connect(self.cancelClicked)
 
-        #Create layout
+        applyBtn.clicked.connect(lambda: applyClicked(prompt))
+        cancelBtn.clicked.connect(lambda: prompt.close())
+
+        prompt.mainVLayout = QtWidgets.QVBoxLayout()
+
         grid = QtWidgets.QGridLayout()
-
         grid.setSpacing(10)
-
-        grid.addLayout( self.mainVLayout, 0, 1, QtCore.Qt.AlignCenter)
+        grid.addLayout( prompt.mainVLayout, 0, 1, QtCore.Qt.AlignCenter)
         grid.addWidget( applyBtn, 1, 2, QtCore.Qt.AlignRight)
         grid.addWidget(cancelBtn, 1, 0, QtCore.Qt.AlignLeft)
 
-        self.setMaximumWidth(450)
-        self.setLayout(grid)
-        self.setWindowTitle(self.title)
+        prompt.setMaximumWidth(450)
+        prompt.setLayout(grid)
+        prompt.setWindowTitle(self.title)
 
+        # Dress the base window
+        prompt = self.dressWindow(prompt)
 
-    def applyClicked(self):
-        self.accepted = True
-        self.close()
-
-    def cancelClicked(self):
-        self.close()
-
-
-    def openView(self):  #Open window\
-        #Run the info window and prevent other windows from being clicked while open:
-
+        # Run the info window and prevent other windows from being clicked while open:
+        # Create and connect buttons
 
         if len(self.parameters):  #If this object has a window object, then execute
-            #printf("Command.openView(): About to execute self...", self, super(Command, self), self.parent)
-            self.exec_()
-
+            # printf("Command.openView(): About to execute self...", self, super(Command, self), self.parent)
+            prompt.exec_()
 
         else:
-            self.accepted = True
+            prompt.accepted = True
             return
 
         printf("Command.openView(): Finished executing self...")
 
 
-        #See if the user pressed Ok or if he cancelled/exited out
-        if self.accepted:
-            #Get information that the user input
-            newParameters = self.getInfo().copy()
-
-            #  Add the new parameters to the dictionary, and update changed values
-            self.parameters.update(newParameters)
-
-            self.updateDescription()
-
+        # Get information that the user input
+        if prompt.accepted:
+            # Get information that the user input
+            self.updateInfo(prompt)
             printf('CommandWindow.openView(): New parameters: ', self.parameters)
 
         else:
             printf('CommandWindow.openView(): User Canceled.')
+
+        return prompt.accepted
 
     def dressWidget(self, newWidget):
         self.updateDescription()
@@ -294,7 +290,7 @@ class Command(QtWidgets.QDialog):
         If it is, return the float within the textbox. If not, it will set the textbox to the fallback value
         while also setting the textbox back to the fallback value.
         """
-        #Sanitize input from the user
+        # Sanitize input from the user
         try:
             intInput = float(str(inputTextbox.text()))
         except:
@@ -305,10 +301,10 @@ class Command(QtWidgets.QDialog):
 
 # The following commands should be empty, and only are there so that subclasses without them don't cause errors
 
-    def getInfo(self):
-        #In case there is a command that does not have info, if it is called then
-        #There will be no error. For example, "start block of code" "refresh" or
-        #"activate/deactivate gripper" do not have info to give
+    def updateInfo(self, prompt):
+        # In case there is a command that does not have info, if it is called then this ensures
+        # there will be no error. For example, "start block of code" "refresh" or
+        # "activate/deactivate gripper" do not have info to give
         pass
 
     def run(self, shared):
@@ -333,12 +329,12 @@ class MoveXYZCommand(Command):
     def __init__(self, parent, shared, **kwargs):
         super(MoveXYZCommand, self).__init__(parent)
 
-        #Set default parameters that will show up on the window
+        # Set default parameters that will show up on the window
         if 'parameters' in kwargs:
             self.parameters = kwargs["parameters"]
         else:
             currentXYZ = shared.getRobot().getCurrentCoord()
-            print("Current xyz: ", currentXYZ)
+
             self.parameters = {'x': round(currentXYZ['x'], 1),
                                'y': round(currentXYZ['y'], 1),
                                'z': round(currentXYZ['z'], 1),
@@ -347,29 +343,32 @@ class MoveXYZCommand(Command):
 
 
 
-        self.rotEdit     = QtWidgets.QLineEdit()  #  Rotation textbox
-        self.strEdit     = QtWidgets.QLineEdit()  #  Stretch textbox
-        self.hgtEdit     = QtWidgets.QLineEdit()  #  Height textbox
-        self.relCheck    = QtWidgets.QCheckBox()  #  "relative" CheckBox
-        self.refCheck    = QtWidgets.QCheckBox()  #  "refresh" CheckBox
 
-        self.initUI()
-        self.setWindowIcon(QtGui.QIcon(self.icon))
 
-    def initUI(self):
-        #Set up all the labels for the inputs
+        # self.initUI()
+
+
+    def dressWindow(self, prompt):
+        # Input: the base window with the cancel and apply buttons, and the layouts set up and connected
+        prompt.rotEdit     = QtWidgets.QLineEdit()  #  Rotation textbox
+        prompt.strEdit     = QtWidgets.QLineEdit()  #  Stretch textbox
+        prompt.hgtEdit     = QtWidgets.QLineEdit()  #  Height textbox
+        prompt.relCheck    = QtWidgets.QCheckBox()  #  "relative" CheckBox
+        prompt.refCheck    = QtWidgets.QCheckBox()  #  "refresh" CheckBox
+
+        # Set up all the labels for the inputs
         rotLabel = QtWidgets.QLabel('X:')
         strLabel = QtWidgets.QLabel('Y:')
         hgtLabel = QtWidgets.QLabel('Z:')
         relLabel = QtWidgets.QLabel('Relative')
         refLabel = QtWidgets.QLabel('Refresh')
 
-        #Fill the textboxes with the default parameters
-        self.rotEdit.setText(str(self.parameters['x']))
-        self.strEdit.setText(str(self.parameters['y']))
-        self.hgtEdit.setText(str(self.parameters['z']))
-        self.relCheck.setChecked(self.parameters['rel'])
-        self.refCheck.setChecked(self.parameters['ref'])
+        # Fill the textboxes with the default parameters
+        prompt.rotEdit.setText(str(self.parameters['x']))
+        prompt.strEdit.setText(str(self.parameters['y']))
+        prompt.hgtEdit.setText(str(self.parameters['z']))
+        prompt.relCheck.setChecked(self.parameters['rel'])
+        prompt.refCheck.setChecked(self.parameters['ref'])
 
         row1 = QtWidgets.QHBoxLayout()
         row2 = QtWidgets.QHBoxLayout()
@@ -378,39 +377,47 @@ class MoveXYZCommand(Command):
         row5 = QtWidgets.QHBoxLayout()
 
         row1.addWidget(rotLabel, QtCore.Qt.AlignRight)
-        row1.addWidget(self.rotEdit, QtCore.Qt.AlignJustify)
+        row1.addWidget(prompt.rotEdit, QtCore.Qt.AlignJustify)
 
         row2.addWidget(strLabel, QtCore.Qt.AlignRight)
-        row2.addWidget(self.strEdit, QtCore.Qt.AlignJustify)
+        row2.addWidget(prompt.strEdit, QtCore.Qt.AlignJustify)
 
         row3.addWidget(hgtLabel, QtCore.Qt.AlignRight)
-        row3.addWidget(self.hgtEdit, QtCore.Qt.AlignJustify)
+        row3.addWidget(prompt.hgtEdit, QtCore.Qt.AlignJustify)
 
         row4.addWidget(relLabel, QtCore.Qt.AlignRight)
-        row4.addWidget(self.relCheck, QtCore.Qt.AlignJustify)
+        row4.addWidget(prompt.relCheck, QtCore.Qt.AlignJustify)
 
         row5.addWidget(refLabel, QtCore.Qt.AlignRight)
-        row5.addWidget(self.refCheck, QtCore.Qt.AlignJustify)
+        row5.addWidget(prompt.refCheck, QtCore.Qt.AlignJustify)
 
-        self.mainVLayout.addLayout(row1)
-        self.mainVLayout.addLayout(row2)
-        self.mainVLayout.addLayout(row3)
-        self.mainVLayout.addLayout(row4)
-        self.mainVLayout.addLayout(row5)
+        prompt.mainVLayout.addLayout(row1)
+        prompt.mainVLayout.addLayout(row2)
+        prompt.mainVLayout.addLayout(row3)
+        prompt.mainVLayout.addLayout(row4)
+        prompt.mainVLayout.addLayout(row5)
 
-    def getInfo(self):
-        newParameters = {'x': self.sanitizeFloat(self.rotEdit, self.parameters["x"]),
-                         'y': self.sanitizeFloat(self.strEdit, self.parameters["y"]),
-                         'z': self.sanitizeFloat(self.hgtEdit, self.parameters["z"]),
-                         'rel': self.relCheck.isChecked()}
+        # self.setWindowIcon(QtGui.QIcon(self.icon))
+        return prompt
 
-        return newParameters
+    def updateInfo(self, prompt):
+        # Update the parameters and the description
 
-    def updateDescription(self):
+        newParameters = {'x': self.sanitizeFloat(prompt.rotEdit, self.parameters["x"]),
+                         'y': self.sanitizeFloat(prompt.strEdit, self.parameters["y"]),
+                         'z': self.sanitizeFloat(prompt.hgtEdit, self.parameters["z"]),
+                         'rel': prompt.relCheck.isChecked()}
+
+
+        self.parameters.update(newParameters)
+
+        # Update the description
         self.description =     'X: '        + str(round(self.parameters['x'], 1))  +  \
                             '   Y: '        + str(round(self.parameters['y'], 1))  +  \
                             '   Z: '        + str(round(self.parameters['z'], 1))  +  \
                             '   Relative: ' + str(      self.parameters['rel'])
+        return newParameters
+
 
     def run(self, shared):
         printf("MoveXYZCommand.run(): Moving robot to ",
@@ -422,7 +429,7 @@ class MoveXYZCommand(Command):
                                  z=self.parameters['z'],
                                  relative=self.parameters['rel'])
 
-        if self.refCheck.isChecked():  shared.getRobot().refresh()
+        # if self.refCheck.isChecked():  shared.getRobot().refresh()
 
 
 class DetachCommand(Command):

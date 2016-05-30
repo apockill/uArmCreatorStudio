@@ -78,9 +78,9 @@ class ControlPanel(QtWidgets.QWidget):
 
 
         # Connect Button Events
-        addEventBtn.clicked.connect(self.addEvent)
-        deleteEventBtn.clicked.connect(self.deleteEvent)
-        changeEventBtn.clicked.connect(self.replaceEvent)
+        addEventBtn.clicked.connect(self.eventList.promptUser)
+        deleteEventBtn.clicked.connect(self.eventList.deleteEvent)
+        changeEventBtn.clicked.connect(self.eventList.replaceEvent)
 
         # Create the button horizontal layout for the 'delete' and 'change' buttons
         btnRowHLayout = QtWidgets.QHBoxLayout()
@@ -138,14 +138,6 @@ class ControlPanel(QtWidgets.QWidget):
         self.commandListStack.addWidget(selectedEvent.commandList)
         self.commandListStack.setCurrentWidget(selectedEvent.commandList)
 
-    def addEvent(self):
-        self.eventList.promptUser()
-
-    def deleteEvent(self):
-        self.eventList.deleteEvent()
-
-    def replaceEvent(self):
-        self.eventList.replaceEvent()
 
 
     def closeEvent(self, event):
@@ -364,7 +356,7 @@ class EventList(QtWidgets.QListWidget):
 
         selectedEvent.commandList.addCommand(type)
 
-    def addEvent(self, eventType, shared, **kwargs):
+    def addEvent(self, eventType, **kwargs):
         """
 
         :param eventType:
@@ -377,7 +369,9 @@ class EventList(QtWidgets.QListWidget):
         params = kwargs.get("parameters", None)
 
         # Check if the event being added already exists in the self.events dictionary
-        for item in self.events.items():
+
+        for _, item in self.events.items():
+
             if isinstance(item, eventType) and (item.parameters == params or params is None):
                 printf("EventList.addEvent(): Event already exists, disregarding user input.")
                 return
@@ -385,8 +379,9 @@ class EventList(QtWidgets.QListWidget):
         newEvent        = eventType(params)
         commandListSave = kwargs.get("commandListSave", [])
         newCommandList = CommandList(self.shared, parent=self)
-        newCommandList.loadData(commandListSave, shared)
+        newCommandList.loadData(commandListSave, self.shared)
         newEvent.commandList =  newCommandList
+
         # newEvent.commandList = kwargs.get("commandListData", CommandList(self.shared, parent=self))
 
         # Create the widget item to visualize the event
@@ -502,7 +497,8 @@ class EventList(QtWidgets.QListWidget):
             # commandList = CommandList(parent=self)
             # commandList.loadData(eventSave['commandList'], shared)
 
-            self.addEvent(eventSave['type'], shared, commandListSave=eventSave['commandList'], parameters=eventSave["parameters"])
+            self.addEvent(eventSave['type'], commandListSave=eventSave['commandList'],
+                          parameters=eventSave["parameters"])
 
         # Select the first event for viewing
         if self.count() > 0: self.setCurrentRow(0)
@@ -514,7 +510,7 @@ class CommandList(QtWidgets.QListWidget):
         super(CommandList, self).__init__()
 
         self.shared = shared  # Should just be used in addCommand
-        
+
         # GLOBALS
         self.commands = {}  # Dictionary of commands. Ex: {QListItem: MoveXYZCommand, QListItem: PickupCommand}
 
@@ -580,8 +576,8 @@ class CommandList(QtWidgets.QListWidget):
 
         # Fill command with information either by opening window or loading it in
         if parameters is None:  # If none, then this is being added by the user and not the system loading a file
-            newCommand.openView()  # Get information from user
-            if not newCommand.accepted:
+            accepted = newCommand.openView()  # Get information from user
+            if not accepted:
                 printf("CommandList.addCommand(): User rejected prompt")
                 return
         else:
@@ -589,7 +585,7 @@ class CommandList(QtWidgets.QListWidget):
 
         # Create the widget to be placed inside the listWidgetItem
         newWidget = CommandWidget(self, self.deleteSelected)
-        newWidget = newCommand.dressWidget(newWidget)  # Dress up the widget
+        newWidget = newCommand.dressWidget(newWidget)     # Dress up the widget
 
         # Create the list widget item
         listWidgetItem = QtWidgets.QListWidgetItem(self)
@@ -629,7 +625,6 @@ class CommandList(QtWidgets.QListWidget):
 
     def dropEvent(self, event):
         if event.mimeData().hasText():
-            print("Command list receieved drop of", event)
             event.setDropAction(QtCore.Qt.CopyAction)
             event.accept()
 
@@ -646,9 +641,6 @@ class CommandList(QtWidgets.QListWidget):
 
         command = self.getCommand(clickedItem)
         command.openView()
-
-        # Update the widget to match the new parameters
-        command.getInfo()
 
         # Update the current itemWidget to match the new parameters
         currentWidget = self.itemWidget(clickedItem)  # Get the current itemWidget
