@@ -1,12 +1,12 @@
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtWidgets, QtWidgets, QtCore
 import sys, os
 
-class ThumbListWidget(QtGui.QListWidget):
+class ThumbListWidget(QtWidgets.QListWidget):
     def __init__(self, type, parent=None):
         super(ThumbListWidget, self).__init__(parent)
         self.setIconSize(QtCore.QSize(124, 124))
-        self.setDragDropMode(QtGui.QAbstractItemView.DragDrop)
-        self.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
+        self.setDragDropMode(QtWidgets.QAbstractItemView.DragDrop)
+        self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.setAcceptDrops(True)
 
     def dragEnterEvent(self, event):
@@ -23,7 +23,7 @@ class ThumbListWidget(QtGui.QListWidget):
             super(ThumbListWidget, self).dragMoveEvent(event)
 
     def dropEvent(self, event):
-        print 'dropEvent', event
+        print('dropEvent', event)
         if event.mimeData().hasUrls():
             event.setDropAction(QtCore.Qt.CopyAction)
             event.accept()
@@ -36,45 +36,38 @@ class ThumbListWidget(QtGui.QListWidget):
             super(ThumbListWidget, self).dropEvent(event)
 
 
-class Dialog_01(QtGui.QMainWindow):
+class Dialog_01(QtWidgets.QMainWindow):
     def __init__(self):
-        super(QtGui.QMainWindow,self).__init__()
+        super(QtWidgets.QMainWindow, self).__init__()
+        self.listItems = {}
 
-        myQWidget = QtGui.QWidget()
-        myBoxLayout = QtGui.QVBoxLayout()
+        myQWidget = QtWidgets.QWidget()
+        myBoxLayout = QtWidgets.QVBoxLayout()
         myQWidget.setLayout(myBoxLayout)
         self.setCentralWidget(myQWidget)
 
         self.listWidgetA = ThumbListWidget(self)
-        self.listWidgetB = ThumbListWidget(self)
-        self.listWidgetC = ThumbListWidget(self)
-
-        #Throw data on the list
-        for i in range(12): 
-            QtGui.QListWidgetItem( 'Item '+str(i), self.listWidgetA )
-        for i in range(100,105):
-            QtGui.QListWidgetItem( 'Item '+str(i), self.listWidgetC )
-        
-        self.connect(self.listWidgetA, QtCore.SIGNAL("dropped"), self.items_dropped)
-        self.connect(self.listWidgetB, QtCore.SIGNAL("dropped"), self.items_dropped)
-        self.connect(self.listWidgetC, QtCore.SIGNAL("dropped"), self.items_dropped)
-
-        self.listWidgetA.currentItemChanged.connect(self.item_clicked)
-        self.listWidgetB.currentItemChanged.connect(self.item_clicked)
-        self.listWidgetC.currentItemChanged.connect(self.item_clicked)
-
+        for i in range(12):
+            QtWidgets.QListWidgetItem( 'Item ' + str(i), self.listWidgetA)
         myBoxLayout.addWidget(self.listWidgetA)
+
+        self.listWidgetB = ThumbListWidget(self)
         myBoxLayout.addWidget(self.listWidgetB)
-        myBoxLayout.addWidget(self.listWidgetC)
+
+        self.connect(self.listWidgetA, QtCore.SIGNAL("dropped"), self.items_dropped)
+        self.listWidgetA.currentItemChanged.connect(self.item_clicked)
+
+        self.connect(self.listWidgetB, QtCore.SIGNAL("dropped"), self.items_dropped)
+        self.listWidgetB.currentItemChanged.connect(self.item_clicked)
 
     def items_dropped(self, arg):
-        print 'items_dropped', arg
+        print('items_dropped', arg)
 
     def item_clicked(self, arg):
-        print arg
+        print(arg)
 
 if __name__ == '__main__':
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     dialog_1 = Dialog_01()
     dialog_1.show()
     dialog_1.resize(480,320)

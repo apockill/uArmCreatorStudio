@@ -1,12 +1,12 @@
 import sys
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtWidgets, QtCore, QtGui
 
-class CommandList(QtGui.QListWidget):
+class CommandList(QtWidgets.QListWidget):
     def __init__(self, type, parent=None):
         super(CommandList, self).__init__(parent)
         #self.setIconSize(QtCore.QSize(124, 124))
-        self.setDragDropMode(QtGui.QAbstractItemView.DragDrop)
-        self.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
+        self.setDragDropMode(QtWidgets.QAbstractItemView.DragDrop)
+        self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.setAcceptDrops(True)
 
 
@@ -21,7 +21,7 @@ class CommandList(QtGui.QListWidget):
         command.setTextUp(num)
         command.setTextDown(name)
         command.setIcon("lolkek.png")
-        listWidgetItem = QtGui.QListWidgetItem(self)
+        listWidgetItem = QtWidgets.QListWidgetItem(self)
         listWidgetItem.setSizeHint(command.sizeHint())
         self.addItem(listWidgetItem)
         self.setItemWidget(listWidgetItem, command)
@@ -40,7 +40,7 @@ class CommandList(QtGui.QListWidget):
             super(CommandList, self).dragMoveEvent(event)
 
     def dropEvent(self, event):
-        print 'dropEvent', event
+        #print 'dropEvent', event
         # if event.mimeData().hasUrls():
         #     event.setDropAction(QtCore.Qt.CopyAction)
         #     event.accept()
@@ -53,17 +53,17 @@ class CommandList(QtGui.QListWidget):
         super(CommandList, self).dropEvent(event)
 
 
-class CommandItem(QtGui.QWidget):
+class CommandItem(QtWidgets.QWidget):
     def __init__ (self, parent = None):
-        print "Command initiated"
+        #print "Command initiated"
         super(CommandItem, self).__init__(parent)
-        self.textQVBoxLayout = QtGui.QVBoxLayout()
-        self.textUpQLabel    = QtGui.QLabel()
-        self.textDownQLabel  = QtGui.QLabel()
+        self.textQVBoxLayout = QtWidgets.QVBoxLayout()
+        self.textUpQLabel    = QtWidgets.QLabel()
+        self.textDownQLabel  = QtWidgets.QLabel()
         self.textQVBoxLayout.addWidget(self.textUpQLabel)
         self.textQVBoxLayout.addWidget(self.textDownQLabel)
-        self.allQHBoxLayout  = QtGui.QHBoxLayout()
-        self.iconQLabel      = QtGui.QLabel()
+        self.allQHBoxLayout  = QtWidgets.QHBoxLayout()
+        self.iconQLabel      = QtWidgets.QLabel()
         self.allQHBoxLayout.addWidget(self.iconQLabel, 0)
         self.allQHBoxLayout.addLayout(self.textQVBoxLayout, 1)
         self.setLayout(self.allQHBoxLayout)
@@ -84,13 +84,13 @@ class CommandItem(QtGui.QWidget):
     def setIcon (self, imagePath):
         self.iconQLabel.setPixmap(QtGui.QPixmap(imagePath))
 
-class MainWindow (QtGui.QMainWindow):
+class MainWindow (QtWidgets.QMainWindow):
     def __init__ (self):
         super(MainWindow, self).__init__()
 
 
-        myBoxLayout = QtGui.QVBoxLayout()
-        mainWidget = QtGui.QWidget()
+        myBoxLayout = QtWidgets.QVBoxLayout()
+        mainWidget = QtWidgets.QWidget()
         mainWidget.setLayout(myBoxLayout)
         self.setCentralWidget(mainWidget)
         self.commandList = CommandList(self)
@@ -107,7 +107,7 @@ class MainWindow (QtGui.QMainWindow):
 
 
 
-app = QtGui.QApplication([])
+app = QtWidgets.QApplication([])
 window = MainWindow()
 window.show()
 sys.exit(app.exec_())

@@ -3,7 +3,7 @@ from RobotGUI.Events   import *
 from RobotGUI.Commands import *
 from RobotGUI.Global   import printf, FpsTimer
 from threading         import Thread
-from PyQt5             import QtGui, QtCore, QtWidgets
+from PyQt5             import QtCore, QtWidgets
 
 
 
@@ -197,8 +197,8 @@ class ControlPanel(QtWidgets.QWidget):
         # This is where the script you create actually gets run. This is run on a seperate thread, self.mainThread
 
         printf("ControlPanel.programThread(): #################### STARTING PROGRAM THREAD! ######################")
-        self.getRobot().setServos(servo1=True, servo2=True, servo3=True, servo4=True)
-        self.getRobot().refresh()
+        self.shared.getRobot().setServos(servo1=True, servo2=True, servo3=True, servo4=True)
+        self.shared.getRobot().refresh()
 
         # Deepcopy all of the events, so that every time you run the script it runs with no modified variables
         events = copy.copy(self.eventList.getEventsOrdered())
@@ -233,7 +233,7 @@ class ControlPanel(QtWidgets.QWidget):
                     # eventItem[index].setBackground(QtGui.QColor(QtCore.Qt.transparent))
 
             # Only "Render" the robots movement once per step
-            self.getRobot().refresh()
+            self.shared.getRobot().refresh()
 
         # #Turn each list item transparent once more
         # for item in eventItem:
@@ -246,8 +246,8 @@ class ControlPanel(QtWidgets.QWidget):
         destroyEvent = list(filter(lambda event: type(event) == DestroyEvent, events))
         if len(destroyEvent): self.interpretCommands(destroyEvent[0].commandList)
 
-        self.getRobot().setGripper(False)
-        self.getRobot().refresh()
+        self.shared.getRobot().setGripper(False)
+        self.shared.getRobot().refresh()
 
     def interpretCommands(self, commandList):
         """
@@ -291,11 +291,10 @@ class ControlPanel(QtWidgets.QWidget):
         self.eventList.loadData(data, self.shared)
 
 
-
 class EventList(QtWidgets.QListWidget):
     def __init__(self, refresh, parent):
 
-        super(EventList, self).__init__()
+        super(EventList, self).__init__(parent)
 
         # GLOBALS
         self.refreshControlPanel = refresh
@@ -313,6 +312,7 @@ class EventList(QtWidgets.QListWidget):
 
     def initUI(self):
         self.setFixedWidth(200)
+
 
     def getSelectedEvent(self):
         """
@@ -350,6 +350,7 @@ class EventList(QtWidgets.QListWidget):
 
         return self.events[self.itemWidget(listWidgetItem)]
 
+
     def promptUser(self):
         # Open the eventPromptWindow to ask the user what event they wish to create
 
@@ -358,6 +359,7 @@ class EventList(QtWidgets.QListWidget):
             self.addEvent(eventPrompt.chosenEvent, parameters=eventPrompt.chosenParameters)
         else:
             printf("EventList.promptUser():User rejected the prompt.")
+
 
     def addEvent(self, eventType, **kwargs):
         """
@@ -460,6 +462,7 @@ class EventList(QtWidgets.QListWidget):
         # Update the self.events dictionary with the new event
         self.events[self.itemWidget(selectedItem)] = newEvent
 
+
     def getSaveData(self):
         """
         Save looks like
@@ -500,10 +503,13 @@ class EventList(QtWidgets.QListWidget):
 
 class CommandList(QtWidgets.QListWidget):
     def __init__(self, parent):  # Todo: make commandList have a parent
-        super(CommandList, self).__init__()
+        super(CommandList, self).__init__(parent)
 
         # GLOBALS
+        self.parent   = parent
         self.commands = {}  # Dictionary of commands. Ex: {QListItem: MoveXYZCommand, QListItem: PickupCommand}
+
+        # Set up the drag/drop parameters (both for dragging within the commandList, and dragging from outside
         self.setDragDropMode(QtWidgets.QAbstractItemView.DragDrop)
         self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.setAcceptDrops(True)
@@ -549,6 +555,7 @@ class CommandList(QtWidgets.QListWidget):
         if self.sizeHintForColumn(0) + 10 < 1300:
             self.setMinimumWidth(self.sizeHintForColumn(0) + 10)
 
+
     def getCommand(self, listWidgetItem):
         return self.commands[self.itemWidget(listWidgetItem)]
 
@@ -587,17 +594,38 @@ class CommandList(QtWidgets.QListWidget):
         # Update the width of the commandList to the widest element within it
         self.refresh()
 
+
     def keyPressEvent(self, event):
         # Delete selected items when delete key is pressed
         if event.key() == QtCore.Qt.Key_Delete:
             self.deleteSelected()
 
-    def dropEvent(self, event):
-        self.refresh()
-        event.setDropAction(QtCore.Qt.MoveAction)
 
-        super(CommandList, self).dropEvent(event)
+    # For clicking and dragging Command Buttons into the list
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasText():
+            event.accept()
+        else:
+            super(CommandList, self).dragEnterEvent(event)
+
+
+    def dragMoveEvent(self, event):
+        if event.mimeData().hasText():
+            event.setDropAction(QtCore.Qt.CopyAction)
+            event.accept()
+        else:
+            super(CommandList, self).dragMoveEvent(event)
+
+    def dropEvent(self, event):
+        if event.mimeData().hasText():
+            print("Command list receieved drop of", event)
+            event.setDropAction(QtCore.Qt.CopyAction)
+            event.accept()
+        else:
+            event.setDropAction(QtCore.Qt.MoveAction)
+            super(CommandList, self).dropEvent(event)
         self.refresh()
+
         # lst = [i.text() for i in self.findItems('', QtCore.Qt.MatchContains)]
 
     def doubleClickEvent(self, clickedItem):
@@ -623,6 +651,7 @@ class CommandList(QtWidgets.QListWidget):
 
         self.itemWidget(clickedItem).setFocused(True)
         self.refresh()
+
 
     def getSaveData(self):
         commandList = []

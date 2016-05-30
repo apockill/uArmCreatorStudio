@@ -56,7 +56,6 @@ class CommandWidget(QtWidgets.QWidget):
 
         self.setLayout(mainHLayout)
 
-
     def setFocused(self, isFocused):
         #Determines whether or not the delete button is visible. Should only be visible when widget is clicked
         if isFocused:
@@ -66,7 +65,7 @@ class CommandWidget(QtWidgets.QWidget):
 
     def setIndent(self, indent):
         if self.indent == indent: return
-        print("set Indent", indent)
+
         self.indent = indent
         if indent >= 0:
             self.layout().setContentsMargins(25 * indent, 0, 0, 0)
@@ -74,8 +73,7 @@ class CommandWidget(QtWidgets.QWidget):
             self.layout().setContentsMargins(0, 0, 0, 0)
 
 
-
-    #The following are accessed only by Command.dressWidget()
+    # The following are accessed only by Command.dressWidget()
     def setTitle(self, text):
         self.title.setText(text)
 
@@ -93,7 +91,7 @@ class CommandMenuWidget(QtWidgets.QWidget):
     def __init__(self, addCmndFunc, parent):
         super(CommandMenuWidget, self).__init__(parent)
 
-        #addCmndFunc is a function passed from ControlPanel to be able to hook buttons to that function
+        # addCmndFunc is a function passed from ControlPanel to be able to hook buttons to that function
         self.addCmndFunc = addCmndFunc
         self.initUI()
 
@@ -127,13 +125,81 @@ class CommandMenuWidget(QtWidgets.QWidget):
 
         self.setLayout(grid)
 
-    def getButton(self, type):
-        newButton = QtWidgets.QPushButton()
-        newButton.setIcon(QtGui.QIcon(type.icon))
+
+    def getButton(self, commandType):
+        newButton = self.DraggableButton(str(commandType), self)
+
+        newButton.setIcon(QtGui.QIcon(commandType.icon))
         newButton.setIconSize(QtCore.QSize(32, 32))
-        newButton.setToolTip(type.tooltip)
-        newButton.clicked.connect(lambda: self.addCmndFunc(type))
+        newButton.setToolTip(commandType.tooltip)
+        newButton.clicked.connect(lambda: self.addCmndFunc(commandType))
         return newButton
+
+
+    class DraggableButton(QtWidgets.QPushButton):
+        def __init__(self, dragData, parent):
+            super().__init__(parent)
+
+            self.dragData   = dragData         # The information that will be transfered upon drag
+
+            self.mouse_down = False            # Has a left-click happened yet?
+            self.mouse_posn = QtCore.QPoint()  # If so, this is where...
+            self.mouse_time = QtCore.QTime()   # ... and this is when
+
+
+        def mousePressEvent(self,event):
+            if event.button() == QtCore.Qt.LeftButton:
+                self.mouse_down = True          # we are left-clicked-upon
+                self.mouse_posn = event.pos()   # here and...
+                self.mouse_time.start()         # ...now
+
+            event.ignore()
+            super().mousePressEvent(event)      # pass it on up
+
+        def mouseMoveEvent(self,event):
+            if self.mouse_down:
+                # Mouse left-clicked and is now moving. Is this the start of a
+                # drag? Note time since the click and approximate distance moved
+                # since the click and test against the app's standard.
+                t = self.mouse_time.elapsed()
+                d = (event.pos() - self.mouse_posn).manhattanLength()
+
+                if t >= QtWidgets.QApplication.startDragTime() or d >= QtWidgets.QApplication.startDragDistance():
+                    # Yes, a proper drag is indicated. Commence dragging.
+                    self.dragEvent(QtCore.Qt.CopyAction | QtCore.Qt.MoveAction)
+                    event.accept()
+                    return
+
+            # Move does not (yet) constitute a drag, ignore it.
+            event.ignore()
+            super().mouseMoveEvent(event)
+
+        def dragEvent(self, actions):
+            # Taken straight from Qt documentation
+
+            # Create the QDrag object
+            dragster = QtGui.QDrag(self)
+
+            # Make a scaled pixmap of our widget to put under the cursor.
+            thumb = self.grab().scaledToHeight(50)
+            dragster.setPixmap(thumb)
+            dragster.setHotSpot(QtCore.QPoint(thumb.width()/2,thumb.height()/2))
+
+            # Create some data to be dragged and load it in the dragster.
+            md = QtCore.QMimeData()
+            md.setText(self.dragData)
+            dragster.setMimeData(md)
+
+            # Initiate the drag, which really is a form of modal dialog.
+            # Result is supposed to be the action performed at the drop.
+            act = dragster.exec_(actions)
+            defact = dragster.defaultAction()
+
+            # Display the results of the drag.
+            targ = dragster.target()    # s.b. the widget that received the drop
+            src = dragster.source()     # s.b. this very widget
+
+            return
 
 
 class Command(QtWidgets.QDialog):
@@ -222,7 +288,6 @@ class Command(QtWidgets.QDialog):
         newWidget.setDescription(self.description)
         return newWidget
 
-
     def sanitizeFloat(self, inputTextbox, fallback):
         """
         Sent it a textbox, and it will check the text in the textbox to make sure it is valid.
@@ -238,7 +303,7 @@ class Command(QtWidgets.QDialog):
         return intInput
 
 
-#The following commands should be empty, and only are there so that subclasses without them don't cause errors
+# The following commands should be empty, and only are there so that subclasses without them don't cause errors
 
     def getInfo(self):
         #In case there is a command that does not have info, if it is called then

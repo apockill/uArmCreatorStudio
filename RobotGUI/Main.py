@@ -331,9 +331,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # Set Global UI Variables
         self.centralWidget   = QtWidgets.QStackedWidget()
         self.controlPanel    = ControlPanel.ControlPanel(self.robot, self.vision, self.settings, parent=self)
-        self.cameraWidget    = Video.CameraWidget(self.vStream.getPixFrame)
+        cameraWidget    = Video.CameraWidget(self.vStream.getPixFrame)
 
-        self.dashboardView   = DashboardView(self.controlPanel, self.cameraWidget, parent=self)
+        self.dashboardView   = DashboardView(self.controlPanel, cameraWidget, parent=self)
         self.settingsView    = SettingsView(parent=self)  #'self' so that StackedWidget can be used
         self.calibrateView   = CalibrateView(self.vision, self.robot, parent=self)
 
@@ -605,7 +605,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowTitle('uArm Creator Dashboard       ' + self.fileName)
         self.saveSettings()
 
-        print("testthing", saveData)
+
 
     def loadTask(self,  **kwargs):
         # Load a save file
