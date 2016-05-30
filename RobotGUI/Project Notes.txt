@@ -10,8 +10,7 @@ DONT FORGET TO GIVE thenounproject.com CREDIT FOR THE ICONS
 - Get rid of QStackedWidget() usage on the MainWindow, and just make SettingsView and CalibrateView spawn child windows
 - Experiment with changing window/button styles
 - Get rid of camera pause/play controls, or move them next to the camera
-- Get rid of settings menu, make a "Robot Connection" and "Camera Connection" button on the dashboard?
--
+- Get rid of settings menu, make a "Robot Connection" and "Camera Connection" button on the dashboard
 
 
 ######   LONG TERM GOALS    #####

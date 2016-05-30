@@ -1,58 +1,32 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
 
-# Form implementation generated from reading ui file 'myGUI.ui'
-#
-# Created by: PyQt5 UI code generator 5.5.1
-#
-# WARNING! All changes made in this file will be lost!
-
-from PyQt5 import QtCore, QtGui, QtWidgets
-
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName("centralwidget")
-        self.horizontalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
-        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(280, 9, 351, 311))
-        self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
-        self.horizontalLayout = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.verticalLayout = QtWidgets.QVBoxLayout()
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.pushButton = QtWidgets.QPushButton(self.horizontalLayoutWidget)
-        self.pushButton.setObjectName("pushButton")
-        self.verticalLayout.addWidget(self.pushButton)
-        self.checkBox = QtWidgets.QCheckBox(self.horizontalLayoutWidget)
-        self.checkBox.setObjectName("checkBox")
-        self.verticalLayout.addWidget(self.checkBox)
-        self.horizontalLayout.addLayout(self.verticalLayout)
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
-        self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
-
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.pushButton.setText(_translate("MainWindow", "PushButton"))
-        self.checkBox.setText(_translate("MainWindow", "CheckBox"))
+from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 
 
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
+class PunchingBag(QObject):
+    ''' Represents a punching bag; when you punch it, it
+        emits a signal that indicates that it was punched. '''
+    punched = pyqtSignal()
 
+    def __init__(self):
+        # Initialize the PunchingBag as a QObject
+        QObject.__init__(self)
+
+    def punch(self):
+        ''' Punch the bag '''
+        self.punched.emit()
+
+
+@pyqtSlot()
+def say_punched():
+    ''' Give evidence that a bag was punched. '''
+    print('Bag was punched.')
+
+
+bag = PunchingBag()
+# Connect the bag's punched signal to the say_punched slot
+bag.punched.connect(say_punched)
+
+# Punch the bag 10 times
+for i in range(10):
+    bag.punch()

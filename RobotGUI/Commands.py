@@ -181,7 +181,7 @@ class CommandMenuWidget(QtWidgets.QWidget):
             dragster = QtGui.QDrag(self)
 
             # Make a scaled pixmap of our widget to put under the cursor.
-            thumb = self.grab().scaledToHeight(50)
+            thumb = self.grab() # .scaledToHeight(32)
             dragster.setPixmap(thumb)
             dragster.setHotSpot(QtCore.QPoint(thumb.width()/2,thumb.height()/2))
 

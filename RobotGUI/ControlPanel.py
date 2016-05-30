@@ -56,11 +56,12 @@ class ControlPanel(QtWidgets.QWidget):
 
         # Set up Globals
         self.shared     = Shared(robot, vision, settings)
+
         self.running    = False  # Whether or not the main thread should be running or not
         self.mainThread = None   # This holds the 'Thread' object of the main thread.
-        self.eventList  = EventList(self.refresh, parent=self)
+        self.eventList  = EventList(self.shared, self.refresh, parent=self)
 
-        self.addCommandWidget = CommandMenuWidget(self.addCommand, parent=self)
+        self.commandMenuWidget = CommandMenuWidget(self.eventList.addCommand, parent=self)
         self.commandListStack = QtWidgets.QStackedWidget()
 
         self.initUI()
@@ -98,9 +99,9 @@ class ControlPanel(QtWidgets.QWidget):
         addCmndVLayout = QtWidgets.QVBoxLayout()
 
         # Add the addCommand button and a placeholder commandLIst
-        addCmndVLayout.addWidget(self.addCommandWidget)
+        addCmndVLayout.addWidget(self.commandMenuWidget)
         addCmndVLayout.addStretch(1)
-        self.commandListStack.addWidget(CommandList(parent=self))
+        # self.commandListStack.addWidget(CommandList(parent=self))
 
         # Put the eventLIst layout and the commandLayout next to eachother
         mainHLayout = QtWidgets.QHBoxLayout()
@@ -128,30 +129,14 @@ class ControlPanel(QtWidgets.QWidget):
         # If user has no event selected, make a clear commandList to view
         if selectedEvent is None:
             printf("ControlPanel.refresh():ERROR: no event selected!")
-            clearList = CommandList(parent=self)
-            self.commandListStack.addWidget(clearList)
-            self.commandListStack.setCurrentWidget(clearList)
+            # clearList = CommandList(parent=self)
+            # self.commandListStack.addWidget(clearList)
+            # self.commandListStack.setCurrentWidget(clearList)
             return
 
         # Add and display the correct widget
         self.commandListStack.addWidget(selectedEvent.commandList)
         self.commandListStack.setCurrentWidget(selectedEvent.commandList)
-
-
-    def addCommand(self, type):
-        # When the addCommand button is pressed, add that command to the currently present commandList
-
-        printf("ControlPanel.addCommand(): Add Command button clicked. Adding command!")
-
-        selectedEvent = self.eventList.getSelectedEvent()
-        if selectedEvent is None:
-            # This occurs when there are no events on the table. Display warning to user in this case.
-            printf("ControlPanel.addCommand(): ERROR: Selected event does not have a commandList! Displaying error")
-            QtWidgets.QMessageBox.question(self, 'Error', 'You need to select an event or add an event before you can '
-                                                          'add commands', QtWidgets.QMessageBox.Ok)
-            return
-
-        selectedEvent.commandList.addCommand(type, shared=self.shared)
 
     def addEvent(self):
         self.eventList.promptUser()
@@ -292,12 +277,14 @@ class ControlPanel(QtWidgets.QWidget):
 
 
 class EventList(QtWidgets.QListWidget):
-    def __init__(self, refresh, parent):
+    def __init__(self, shared, refreshControlPanel, parent):
+
+        self.shared = shared # used in self.addCommand only
 
         super(EventList, self).__init__(parent)
 
         # GLOBALS
-        self.refreshControlPanel = refresh
+        self.refreshControlPanel = refreshControlPanel
         self.events = {}  # A hash map of the current events in the list. The listWidget leads to the event object
 
         # IMPORTANT This makes sure the ControlPanel refreshes whenever you click on an item in the list,
@@ -322,6 +309,7 @@ class EventList(QtWidgets.QListWidget):
         """
 
         selectedItem = self.getSelectedEventItem()
+
         if selectedItem is None:
             printf("EventList.getSelected(): ERROR: 0 events selected")
             return None
@@ -361,27 +349,45 @@ class EventList(QtWidgets.QListWidget):
             printf("EventList.promptUser():User rejected the prompt.")
 
 
-    def addEvent(self, eventType, **kwargs):
+    def addCommand(self, type):
+        # When the addCommand button is pressed, add that command to the currently selected
+
+        printf("ControlPanel.addCommand(): Add Command button clicked. Adding command!")
+
+        selectedEvent = self.getSelectedEvent()
+        if selectedEvent is None:
+            # This occurs when there are no events on the table. Display warning to user in this case.
+            printf("ControlPanel.addCommand(): ERROR: Selected event does not have a commandList! Displaying error")
+            QtWidgets.QMessageBox.question(self, 'Error', 'You need to select an event or add an event before you can '
+                                                          'add commands', QtWidgets.QMessageBox.Ok)
+            return
+
+        selectedEvent.commandList.addCommand(type)
+
+    def addEvent(self, eventType, shared, **kwargs):
         """
 
         :param eventType:
         :param kwargs:
             'parameters' for an event, to fill it in automatically, for loading a file
-            'commandList' for an event, if you already have a command list to feed into it, for loading a file
+            'commandListSave' for an event, if you have commandList save to load into it, then it will generate the list
         :return: Nothing
         """
 
         params = kwargs.get("parameters", None)
 
         # Check if the event being added already exists in the self.events dictionary
-        for x in self.events.items():
-            if isinstance(x, eventType) and (x.parameters == params or params is None):
+        for item in self.events.items():
+            if isinstance(item, eventType) and (item.parameters == params or params is None):
                 printf("EventList.addEvent(): Event already exists, disregarding user input.")
                 return
 
-        newEvent = eventType(params)
-
-        newEvent.commandList = kwargs.get("commandList", CommandList(parent=self))
+        newEvent        = eventType(params)
+        commandListSave = kwargs.get("commandListSave", [])
+        newCommandList = CommandList(self.shared, parent=self)
+        newCommandList.loadData(commandListSave, shared)
+        newEvent.commandList =  newCommandList
+        # newEvent.commandList = kwargs.get("commandListData", CommandList(self.shared, parent=self))
 
         # Create the widget item to visualize the event
         blankWidget = EventWidget(self)
@@ -493,20 +499,23 @@ class EventList(QtWidgets.QListWidget):
 
         # Fill event list with new data
         for index, eventSave in enumerate(data):
-            commandList = CommandList(parent=self)
-            commandList.loadData(eventSave['commandList'], shared)
-            self.addEvent(eventSave['type'], commandList=commandList, parameters=eventSave["parameters"])
+            # commandList = CommandList(parent=self)
+            # commandList.loadData(eventSave['commandList'], shared)
+
+            self.addEvent(eventSave['type'], shared, commandListSave=eventSave['commandList'], parameters=eventSave["parameters"])
 
         # Select the first event for viewing
         if self.count() > 0: self.setCurrentRow(0)
+        self.refreshControlPanel()
 
 
 class CommandList(QtWidgets.QListWidget):
-    def __init__(self, parent):  # Todo: make commandList have a parent
-        super(CommandList, self).__init__(parent)
+    def __init__(self, shared, parent):  # Todo: make commandList have a parent
+        super(CommandList, self).__init__()
 
+        self.shared = shared  # Should just be used in addCommand
+        
         # GLOBALS
-        self.parent   = parent
         self.commands = {}  # Dictionary of commands. Ex: {QListItem: MoveXYZCommand, QListItem: PickupCommand}
 
         # Set up the drag/drop parameters (both for dragging within the commandList, and dragging from outside
@@ -533,6 +542,7 @@ class CommandList(QtWidgets.QListWidget):
             self.takeItem(self.row(item))
 
     def refresh(self):
+        # Refreshes the order and indenting of the CommandList
 
         zeroAndAbove = lambda i: (i < 0) * 0 + (i >= 0) * i
         indent = 0
@@ -557,15 +567,16 @@ class CommandList(QtWidgets.QListWidget):
 
 
     def getCommand(self, listWidgetItem):
+        # Get the Command class for the given listWidgetItem
         return self.commands[self.itemWidget(listWidgetItem)]
 
-    def addCommand(self, commandType, shared, parameters=None):
+    def addCommand(self, commandType, parameters=None):
         # If adding a pre-filled command (used when loading a save)
 
         if parameters is None:
-            newCommand = commandType(self, shared)
+            newCommand = commandType(self, self.shared)
         else:
-            newCommand = commandType(self, shared, parameters=parameters)
+            newCommand = commandType(self, self.shared, parameters=parameters)
 
         # Fill command with information either by opening window or loading it in
         if parameters is None:  # If none, then this is being added by the user and not the system loading a file
@@ -595,19 +606,19 @@ class CommandList(QtWidgets.QListWidget):
         self.refresh()
 
 
+    # For deleting items
     def keyPressEvent(self, event):
         # Delete selected items when delete key is pressed
         if event.key() == QtCore.Qt.Key_Delete:
             self.deleteSelected()
 
 
-    # For clicking and dragging Command Buttons into the list
+    # For clicking and dragging Command Buttons into the list, and moving items within the list
     def dragEnterEvent(self, event):
         if event.mimeData().hasText():
             event.accept()
         else:
             super(CommandList, self).dragEnterEvent(event)
-
 
     def dragMoveEvent(self, event):
         if event.mimeData().hasText():
@@ -621,6 +632,7 @@ class CommandList(QtWidgets.QListWidget):
             print("Command list receieved drop of", event)
             event.setDropAction(QtCore.Qt.CopyAction)
             event.accept()
+
         else:
             event.setDropAction(QtCore.Qt.MoveAction)
             super(CommandList, self).dropEvent(event)
@@ -672,5 +684,5 @@ class CommandList(QtWidgets.QListWidget):
         for index, commandInfo in enumerate(data):
             type = commandInfo["type"]
             parameters = commandInfo["parameters"]
-            self.addCommand(type, shared, parameters=parameters)
+            self.addCommand(type, parameters=parameters)
         self.refresh()

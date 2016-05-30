@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets, QtWidgets, QtCore
+
 import sys, os
 
 class ThumbListWidget(QtWidgets.QListWidget):
@@ -70,5 +71,5 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     dialog_1 = Dialog_01()
     dialog_1.show()
-    dialog_1.resize(480,320)
+    dialog_1.resize(480, 320)
     sys.exit(app.exec_())

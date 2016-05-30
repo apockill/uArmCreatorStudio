@@ -55,7 +55,6 @@ class CommandList(QtWidgets.QListWidget):
 
 class CommandItem(QtWidgets.QWidget):
     def __init__ (self, parent = None):
-        #print "Command initiated"
         super(CommandItem, self).__init__(parent)
         self.textQVBoxLayout = QtWidgets.QVBoxLayout()
         self.textUpQLabel    = QtWidgets.QLabel()
@@ -83,6 +82,7 @@ class CommandItem(QtWidgets.QWidget):
 
     def setIcon (self, imagePath):
         self.iconQLabel.setPixmap(QtGui.QPixmap(imagePath))
+
 
 class MainWindow (QtWidgets.QMainWindow):
     def __init__ (self):
