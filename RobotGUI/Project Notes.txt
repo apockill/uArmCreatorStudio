@@ -14,20 +14,21 @@ DONT FORGET TO GIVE thenounproject.com CREDIT FOR THE ICONS
 
 
 ######   LONG TERM GOALS    #####
-- Add click/drag to the commandDashboard
 - Rearrangeable dashboard within GUI with modules that can be dropped in and out (like console output)
 - Get Boolean Logic to work properly, with variable creation and variable modification and simple variable math b
 - Have events "Light Up" as they are run, and if the commandList is selected, have the commandList "light up" the cmmnds
 - Add a "Robot Status" widget or a "Console" widget to put either on top of the camera feed.
 - Add font support
 
-
+---------------------------------------------------------------------------------------------------------------------
 ######   SHORT TERM BUGS    #####
 - Switching cameras or re-starting a camera after it crashes is broken right now
 
 
 ######   LONG TERM BUGS     #####
 
+
+---------------------------------------------------------------------------------------------------------------------
 
 ######   Tests to perform   #####
 - Can a settings file be loaded, then another one loaded after, with everything slightly changed?
@@ -38,7 +39,20 @@ DONT FORGET TO GIVE thenounproject.com CREDIT FOR THE ICONS
 -Plugin support to make custom commands
 
 
+---------------------------------------------------------------------------------------------------------------------
 
+
+######   FINISHED SHORT TERM GOALS   #####
+######   FINISHED LONG TERM GOALS    #####
+- Add click/drag to the commandDashboard
+
+---------------------------------------------------------------------------------------------------------------------
+Development Timeline:
+-1 month demo + bugtesting within the team
+-
+-
+-
+-
 
 
 ##### BRAINSTORMING #####
@@ -72,3 +86,14 @@ Command Ideas:
         Pick up object
         Move towards movement
         Focus on color
+
+NOTES:
+
+Technical goals
+    - Being written for the normal uArm (custom communication protocol)
+    - 1 week to rebuild the backend and rewrite the interpreter
+    - Computer vision menu w/ standardized memorization of objects (and seperate savefiles)
+    - 3 months from now:
+            - Working, bug free GUI
+            - Integrated computer vision (easy to use)
+            -

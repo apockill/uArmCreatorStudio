@@ -1,5 +1,5 @@
 
-from PyQt5 import QtGui
+from PyQt4 import QtGui
 import sys
 
 
@@ -14,10 +14,10 @@ class Main(QtGui.QMainWindow):
         self.setCentralWidget(pushbutton)
 
     def Action1(self):
-        print 'You selected Action 1'
+        print('You selected Action 1')
 
     def Action2(self):
-        print 'You selected Action 2'
+        print('You selected Action 2')
 
 
 if __name__ == '__main__':

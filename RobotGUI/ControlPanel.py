@@ -94,6 +94,7 @@ class ControlPanel(QtWidgets.QWidget):
         eventVLayout.addWidget(self.eventList)
 
         # Create a layout to hold the 'addCommand' button and the 'commandList'
+        self.commandListStack.setMinimumWidth(CommandList.minimumWidth)
         commandVLayout = QtWidgets.QVBoxLayout()
         commandVLayout.addWidget(self.commandListStack)
         addCmndVLayout = QtWidgets.QVBoxLayout()
@@ -101,14 +102,14 @@ class ControlPanel(QtWidgets.QWidget):
         # Add the addCommand button and a placeholder commandLIst
         addCmndVLayout.addWidget(self.commandMenuWidget)
         addCmndVLayout.addStretch(1)
-        # self.commandListStack.addWidget(CommandList(parent=self))
+        # self.commandListStack.addWidget(CommandList(self.shared, parent=self))
 
         # Put the eventLIst layout and the commandLayout next to eachother
         mainHLayout = QtWidgets.QHBoxLayout()
         mainHLayout.addLayout(eventVLayout)
         mainHLayout.addLayout(commandVLayout)
         mainHLayout.addLayout(addCmndVLayout)
-
+        # self.setMinimumWidth(500)
         self.setLayout(mainHLayout)
         self.show()
 
@@ -129,7 +130,7 @@ class ControlPanel(QtWidgets.QWidget):
         # If user has no event selected, make a clear commandList to view
         if selectedEvent is None:
             printf("ControlPanel.refresh():ERROR: no event selected!")
-            # clearList = CommandList(parent=self)
+            # clearList = CommandList(self.shared, parent=self)
             # self.commandListStack.addWidget(clearList)
             # self.commandListStack.setCurrentWidget(clearList)
             return
@@ -287,9 +288,6 @@ class EventList(QtWidgets.QListWidget):
         self.getEventsOrdered = lambda: [self.getEvent(self.item(index)) for index in range(self.count())]
         self.getItemsOrdered  = lambda: [self.item(index) for index in range(self.count())]
 
-        self.initUI()
-
-    def initUI(self):
         self.setFixedWidth(200)
 
 
@@ -479,10 +477,10 @@ class EventList(QtWidgets.QListWidget):
         eventsOrdered = self.getEventsOrdered()
 
         for event in eventsOrdered:
-            eventSave = {}
-            eventSave["type"] = type(event)
-            eventSave["parameters"] = event.parameters
-            eventSave["commandList"] = event.commandList.getSaveData()
+
+            eventSave = {       "type": event.__class__.__name__,
+                          "parameters": event.parameters,
+                         "commandList": event.commandList.getSaveData()}
 
             eventList.append(eventSave)
 
@@ -497,8 +495,9 @@ class EventList(QtWidgets.QListWidget):
             # commandList = CommandList(parent=self)
             # commandList.loadData(eventSave['commandList'], shared)
 
-            self.addEvent(eventSave['type'], commandListSave=eventSave['commandList'],
-                          parameters=eventSave["parameters"])
+            self.addEvent(globals()[eventSave['type']],  # This converts the string "EventClass" to an actual class
+                          commandListSave = eventSave['commandList'],
+                          parameters      = eventSave["parameters"])
 
         # Select the first event for viewing
         if self.count() > 0: self.setCurrentRow(0)
@@ -506,6 +505,9 @@ class EventList(QtWidgets.QListWidget):
 
 
 class CommandList(QtWidgets.QListWidget):
+    minimumWidth = 250
+    maximumWidth = 1300  # This isn't actually the max width. This is the most that it will adjust for content inside it
+
     def __init__(self, shared, parent):  # Todo: make commandList have a parent
         super(CommandList, self).__init__()
 
@@ -525,10 +527,7 @@ class CommandList(QtWidgets.QListWidget):
         # The following defines a function that returns a dictionary of the commands, in the correct order
         self.getCommandsOrdered = lambda: [self.getCommand(self.item(index)) for index in range(self.count())]
 
-        self.initUI()
-
-    def initUI(self):
-        self.setMinimumWidth(250)
+        # self.initUI()
 
     def deleteSelected(self):
         # Delete all highlighted commands
@@ -539,7 +538,7 @@ class CommandList(QtWidgets.QListWidget):
 
     def refresh(self):
         # Refreshes the order and indenting of the CommandList
-        print("refreshing")
+
         zeroAndAbove = lambda i: (i < 0) * 0 + (i >= 0) * i
         indent = 0
 
@@ -558,7 +557,7 @@ class CommandList(QtWidgets.QListWidget):
 
         # Update the width of the commandList to the widest element within it
         # This occurs whenever items are changed, or added, to the commandList
-        if self.sizeHintForColumn(0) + 10 < 1300:
+        if self.sizeHintForColumn(0) + 10 < self.maximumWidth:
             self.setMinimumWidth(self.sizeHintForColumn(0) + 10)
 
 
@@ -653,6 +652,7 @@ class CommandList(QtWidgets.QListWidget):
             newPoint = event.pos()
             newPoint.setY(newPoint.y() + self.rectForIndex(self.indexFromItem(self.item(0))).height() / 2)
             dropIndex = self.indexAt(newPoint).row()
+            if dropIndex == -1: dropIndex = self.count()  # If dropped at a index past the end of list, drop at end
 
             # Add the new dragged in widget to the index that was just found
             self.addCommand(MoveXYZCommand, index=dropIndex)
@@ -661,7 +661,7 @@ class CommandList(QtWidgets.QListWidget):
         else:
             event.setDropAction(QtCore.Qt.MoveAction)
             super(CommandList, self).dropEvent(event)
-        # self.refresh()
+        self.refresh()
 
         # lst = [i.text() for i in self.findItems('', QtCore.Qt.MatchContains)]
 
@@ -692,7 +692,8 @@ class CommandList(QtWidgets.QListWidget):
         commandsOrdered = self.getCommandsOrdered()
 
         for command in commandsOrdered:
-            commandSave = {"type": type(command), "parameters": command.parameters}
+            commandSave = {      "type": command.__class__.__name__,
+                           "parameters": command.parameters}
             commandList.append(commandSave)
 
         return commandList
@@ -704,7 +705,7 @@ class CommandList(QtWidgets.QListWidget):
 
         # Fill the list with new data
         for index, commandInfo in enumerate(data):
-            type = commandInfo["type"]
-            parameters = commandInfo["parameters"]
-            self.addCommand(type, parameters=parameters)
+
+            self.addCommand(globals()[commandInfo["type"]], # convert from string to an actual runnable "type"
+                            parameters=commandInfo["parameters"])
         self.refresh()

@@ -83,7 +83,7 @@ class EventPromptWindow(QtWidgets.QDialog):
 
     def initButtons(self):
         buttonWidth = 115
-        #Create the cancel button
+        # Create the cancel button
         self.cancelBtn    = QtWidgets.QPushButton('Cancel')
         self.cancelBtn    .setFixedWidth(buttonWidth * 1.5)
         self.cancelBtn    .setFixedHeight(25)

@@ -1,6 +1,7 @@
 import sys
 import webbrowser
 import pickle
+import json
 from RobotGUI        import Robot, Video, ControlPanel, Icons, Global
 from RobotGUI.Global import printf
 from copy            import deepcopy
@@ -420,8 +421,10 @@ class MainWindow(QtWidgets.QMainWindow):
         # Final touches
         self.setWindowTitle('uArm Creator Dashboard')
         self.setWindowIcon(QtGui.QIcon(Icons.taskbar))
-        self.show()
         QtWidgets.QApplication.setStyle(QtWidgets.QStyleFactory.create('Plastique'))  #TODO updgrade to pyQt5
+        self.setStyle(QtWidgets.QStyleFactory.create('Plastique'))
+        self.show()
+
 
 
 
@@ -596,7 +599,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Update the save file
         saveData = self.controlPanel.getSaveData()
-        pickle.dump(saveData, open(self.fileName, "wb"))
+        json.dump(saveData, open(self.fileName, 'w'), sort_keys=False, indent=3, separators=(',', ': '))
+
         self.loadData = deepcopy(saveData)  #Update what the latest saved changes are
 
 
@@ -604,8 +608,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.setWindowTitle('uArm Creator Dashboard       ' + self.fileName)
         self.saveSettings()
-
-
 
     def loadTask(self,  **kwargs):
         # Load a save file
@@ -620,7 +622,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if filename == "": return  #If user hit cancel
 
         try:
-            self.loadData = pickle.load( open( filename, "rb"))
+            self.loadData = json.load( open(filename))
         except IOError:
             printf("MainWindow.loadTask(): ERROR: Task file ", filename, "not found!")
             self.settings["lastOpenedFile"] = None
@@ -640,7 +642,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def saveSettings(self):
         printf("MainWindow.saveSettings(): Saving Settings")
         self.settings["lastOpenedFile"] = self.fileName
-        pickle.dump(self.settings, open("Settings.p", "wb"))
+        json.dump(self.settings, open("Settings.txt", 'w'), sort_keys=False, indent=3, separators=(',', ': '))
 
 
     def loadSettings(self):
@@ -648,13 +650,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
         printf("MainWindow.loadSettings(): Loading Settings")
         try:
-            newSettings = pickle.load(open( "Settings.p", "rb"))
+            newSettings = json.load(open( "Settings.txt", "w"))
             # printf("MainWindow.loadSettings(): Loading settings: ", newSettings, "...")
             self.setSettings(newSettings)
             return True
         except IOError:
             printf("MainWindow.loadSettings(): No settings file detected. Using default values.")
             return False
+
 
     def closeEvent(self, event):
         # When window is closed, prompt for save, close the video stream, and close the control panel (thus script)
