@@ -699,18 +699,21 @@ if __name__ == '__main__':
     # Install a global exception hook to catch pyQt errors that fall through (helps with debugging a ton)
     # TODO: Remove this when development is finished.
     sys.__excepthook = sys.excepthook
-    sys._excepthook = sys.excepthook
+    sys._excepthook  = sys.excepthook
+
     def exception_hook(exctype, value, traceback):
         sys._excepthook(exctype, value, traceback)
         sys.exit(1)
-    sys.excepthook = exception_hook
+
+    sys.excepthook   = exception_hook
 
     # Actually start the application
     app = Application(sys.argv)
     mainWindow = MainWindow()
     mainWindow.show()
-    #sys.exit(app.exec_())
-    app.exec_()
+    sys.exit(app.exec_())
+
+    #app.exec_()
 
 
 

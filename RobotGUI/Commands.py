@@ -267,7 +267,8 @@ class Command:
         # Get information that the user input
         if prompt.accepted:
             # Get information that the user input
-            self.updateInfo(prompt)
+            self.extractPromptInfo(prompt)
+            self.updateDescription()
             printf('CommandWindow.openView(): New parameters: ', self.parameters)
 
         else:
@@ -301,7 +302,7 @@ class Command:
 
 # The following commands should be empty, and only are there so that subclasses without them don't cause errors
 
-    def updateInfo(self, prompt):
+    def extractPromptInfo(self, prompt):
         # In case there is a command that does not have info, if it is called then this ensures
         # there will be no error. For example, "start block of code" "refresh" or
         # "activate/deactivate gripper" do not have info to give
@@ -313,7 +314,7 @@ class Command:
         pass
 
     def updateDescription(self):
-        #This is called in openView() and will update the decription to match the parameters
+        # This is called in openView() and will update the decription to match the parameters
         pass
 
 
@@ -400,7 +401,7 @@ class MoveXYZCommand(Command):
         # self.setWindowIcon(QtGui.QIcon(self.icon))
         return prompt
 
-    def updateInfo(self, prompt):
+    def extractPromptInfo(self, prompt):
         # Update the parameters and the description
 
         newParameters = {'x': self.sanitizeFloat(prompt.rotEdit, self.parameters["x"]),
@@ -410,14 +411,14 @@ class MoveXYZCommand(Command):
 
 
         self.parameters.update(newParameters)
+        return newParameters
 
-        # Update the description
+    def updateDescription(self):
+        # Update the description, for the dressWidget() and the openView() prompt
         self.description =     'X: '        + str(round(self.parameters['x'], 1))  +  \
                             '   Y: '        + str(round(self.parameters['y'], 1))  +  \
                             '   Z: '        + str(round(self.parameters['z'], 1))  +  \
                             '   Relative: ' + str(      self.parameters['rel'])
-        return newParameters
-
 
     def run(self, shared):
         printf("MoveXYZCommand.run(): Moving robot to ",

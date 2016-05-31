@@ -539,7 +539,7 @@ class CommandList(QtWidgets.QListWidget):
 
     def refresh(self):
         # Refreshes the order and indenting of the CommandList
-
+        print("refreshing")
         zeroAndAbove = lambda i: (i < 0) * 0 + (i >= 0) * i
         indent = 0
 
@@ -566,7 +566,15 @@ class CommandList(QtWidgets.QListWidget):
         # Get the Command class for the given listWidgetItem
         return self.commands[self.itemWidget(listWidgetItem)]
 
-    def addCommand(self, commandType, parameters=None):
+    def addCommand(self, commandType, parameters=None, index=None):
+        """
+
+        :param commandType: The command that will be generated
+        :param parameters: The parameters that get fed into the command (Only for loading a file)
+        :param index: Place the command at a particular index, instead of the end (Only for dropping item into list)
+        :return:
+        """
+
         # If adding a pre-filled command (used when loading a save)
 
         if parameters is None:
@@ -590,9 +598,23 @@ class CommandList(QtWidgets.QListWidget):
         # Create the list widget item
         listWidgetItem = QtWidgets.QListWidgetItem(self)
         listWidgetItem.setSizeHint(newWidget.sizeHint())  # Widget will not appear without this line
-        self.addItem(listWidgetItem)
+
+
 
         # Add list widget to commandList
+        self.addItem(listWidgetItem)
+
+        # If an index was specified, move the added widget to that index
+        if index is not None:
+            """
+                Because PyQt is stupid, I can't simply self.insertItem(index, listWidgetItem). I have to add it, get its
+                index, "self.takeItem" it, then "insertItem(newIndex, listWidgetItem) it. Whatever, it works, right?
+            """
+            lastRow = self.indexFromItem(listWidgetItem).row()
+            takenlistWidgetItem = self.takeItem(lastRow)
+            self.insertItem(index, takenlistWidgetItem)
+
+
         self.setItemWidget(listWidgetItem, newWidget)
 
         # Add the new command to the list of commands, linking it with its corresponding listWidgetItem
@@ -624,14 +646,22 @@ class CommandList(QtWidgets.QListWidget):
             super(CommandList, self).dragMoveEvent(event)
 
     def dropEvent(self, event):
-        if event.mimeData().hasText():
-            event.setDropAction(QtCore.Qt.CopyAction)
-            event.accept()
 
+
+        if event.mimeData().hasText():
+            # Get the mouse position, offset it by the width of the listWidgets, and get the index of that listWidget
+            newPoint = event.pos()
+            newPoint.setY(newPoint.y() + self.rectForIndex(self.indexFromItem(self.item(0))).height() / 2)
+            dropIndex = self.indexAt(newPoint).row()
+
+            # Add the new dragged in widget to the index that was just found
+            self.addCommand(MoveXYZCommand, index=dropIndex)
+
+            event.accept()
         else:
             event.setDropAction(QtCore.Qt.MoveAction)
             super(CommandList, self).dropEvent(event)
-        self.refresh()
+        # self.refresh()
 
         # lst = [i.text() for i in self.findItems('', QtCore.Qt.MatchContains)]
 
