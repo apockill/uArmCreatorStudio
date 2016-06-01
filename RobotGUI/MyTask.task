@@ -1,18 +1,82 @@
 [
    {
       "type": "InitEvent",
+      "parameters": {},
       "commandList": [
          {
             "type": "MoveXYZCommand",
             "parameters": {
-               "ref": true,
-               "z": 3.0,
+               "z": 11.2,
+               "y": -1.7,
                "rel": false,
-               "y": 2.0,
-               "x": 1.0
+               "ref": true,
+               "x": -24.4
+            }
+         },
+         {
+            "type": "MoveXYZCommand",
+            "parameters": {
+               "z": 11.1,
+               "y": -1.9,
+               "rel": false,
+               "ref": true,
+               "x": -24.4
+            }
+         },
+         {
+            "type": "MoveXYZCommand",
+            "parameters": {
+               "y": -1.9,
+               "z": 111111111.0,
+               "x": -24.5,
+               "rel": false,
+               "ref": true
             }
          }
-      ],
-      "parameters": {}
+      ]
+   },
+   {
+      "type": "KeypressEvent",
+      "parameters": {
+         "checkKey": "C"
+      },
+      "commandList": [
+         {
+            "type": "MoveXYZCommand",
+            "parameters": {
+               "z": 11.2,
+               "y": -1.9,
+               "rel": false,
+               "ref": true,
+               "x": -24.5
+            }
+         },
+         {
+            "type": "MoveXYZCommand",
+            "parameters": {
+               "z": 10.8,
+               "y": -1.9,
+               "rel": false,
+               "ref": true,
+               "x": -24.0
+            }
+         }
+      ]
+   },
+   {
+      "type": "DestroyEvent",
+      "parameters": {},
+      "commandList": [
+         {
+            "type": "MoveXYZCommand",
+            "parameters": {
+               "z": 10.7,
+               "y": -3.2,
+               "rel": false,
+               "ref": true,
+               "x": -23.8
+            }
+         }
+      ]
    }
 ]

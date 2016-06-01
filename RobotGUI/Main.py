@@ -1,7 +1,7 @@
 import sys
 import webbrowser
-import pickle
 import json
+import qdarkstyle
 from RobotGUI        import Robot, Video, ControlPanel, Icons, Global
 from RobotGUI.Global import printf
 from copy            import deepcopy
@@ -591,10 +591,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # If there is no filename, ask for one
         if promptSave or self.fileName is None:
-            filename, filetype = QtWidgets.QFileDialog.getSaveFileName(self, "Save Task", "MyTask", ".task")
-
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save Task", "MyTask", "Task (*.task)")
             if filename == "": return  #If user hit cancel
-            self.fileName = filename + filetype
+            self.fileName = filename
 
 
         # Update the save file
@@ -649,8 +648,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # Load the settings config and set them
 
         printf("MainWindow.loadSettings(): Loading Settings")
+        # newSettings = json.load(open( "Settings.txt"))
         try:
-            newSettings = json.load(open( "Settings.txt", "w"))
+            newSettings = json.load(open( "Settings.txt"))
             # printf("MainWindow.loadSettings(): Loading settings: ", newSettings, "...")
             self.setSettings(newSettings)
             return True
@@ -667,7 +667,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.controlPanel.close()
 
 
-#  Application subclass, to record keypresses
+#  Application subclass, to record key presses/releases
 class Application(QtWidgets.QApplication):
     """
         I modified the QtGui.QApplication class slightly in order to intercept keypress events
@@ -712,6 +712,17 @@ if __name__ == '__main__':
 
     # Actually start the application
     app = Application(sys.argv)
+
+    # DO THEMING STUFF NOW
+    # app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+
+    # Set Application Font
+    font = QtGui.QFont()
+    font.setFamily("Verdana")
+    font.setPixelSize(12)
+    app.setFont(font)
+
+
     mainWindow = MainWindow()
     mainWindow.show()
     sys.exit(app.exec_())

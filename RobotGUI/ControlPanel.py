@@ -94,14 +94,14 @@ class ControlPanel(QtWidgets.QWidget):
         eventVLayout.addWidget(self.eventList)
 
         # Create a layout to hold the 'addCommand' button and the 'commandList'
-        self.commandListStack.setMinimumWidth(CommandList.minimumWidth)
+        # Do not set a minimum size for the commandListStack. This will screw up automatic resizing for CommandList
         commandVLayout = QtWidgets.QVBoxLayout()
         commandVLayout.addWidget(self.commandListStack)
         addCmndVLayout = QtWidgets.QVBoxLayout()
 
         # Add the addCommand button and a placeholder commandLIst
         addCmndVLayout.addWidget(self.commandMenuWidget)
-        addCmndVLayout.addStretch(1)
+
         # self.commandListStack.addWidget(CommandList(self.shared, parent=self))
 
         # Put the eventLIst layout and the commandLayout next to eachother
@@ -109,6 +109,7 @@ class ControlPanel(QtWidgets.QWidget):
         mainHLayout.addLayout(eventVLayout)
         mainHLayout.addLayout(commandVLayout)
         mainHLayout.addLayout(addCmndVLayout)
+
         # self.setMinimumWidth(500)
         self.setLayout(mainHLayout)
         self.show()
@@ -118,7 +119,6 @@ class ControlPanel(QtWidgets.QWidget):
         Refresh which commandList is currently being displayed to the one the user has highlighted. It basically just
         goes over certain things and makes sure that everything that should be displaying, is displaying.
         """
-
         # Get the currently selected event on the eventList
         selectedEvent = self.eventList.getSelectedEvent()
 
@@ -505,7 +505,7 @@ class EventList(QtWidgets.QListWidget):
 
 
 class CommandList(QtWidgets.QListWidget):
-    minimumWidth = 250
+    # minimumWidth = 250
     maximumWidth = 1300  # This isn't actually the max width. This is the most that it will adjust for content inside it
 
     def __init__(self, shared, parent):  # Todo: make commandList have a parent
@@ -527,7 +527,6 @@ class CommandList(QtWidgets.QListWidget):
         # The following defines a function that returns a dictionary of the commands, in the correct order
         self.getCommandsOrdered = lambda: [self.getCommand(self.item(index)) for index in range(self.count())]
 
-        # self.initUI()
 
     def deleteSelected(self):
         # Delete all highlighted commands
@@ -538,7 +537,6 @@ class CommandList(QtWidgets.QListWidget):
 
     def refresh(self):
         # Refreshes the order and indenting of the CommandList
-
         zeroAndAbove = lambda i: (i < 0) * 0 + (i >= 0) * i
         indent = 0
 
@@ -558,7 +556,9 @@ class CommandList(QtWidgets.QListWidget):
         # Update the width of the commandList to the widest element within it
         # This occurs whenever items are changed, or added, to the commandList
         if self.sizeHintForColumn(0) + 10 < self.maximumWidth:
+            print("new width", self.sizeHintForColumn(0) + 10)
             self.setMinimumWidth(self.sizeHintForColumn(0) + 10)
+            print("CurrentMinimumWidth", self.minimumWidth)
 
 
     def getCommand(self, listWidgetItem):

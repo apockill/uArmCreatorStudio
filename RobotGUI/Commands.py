@@ -87,6 +87,7 @@ class CommandWidget(QtWidgets.QWidget):
         self.setToolTip(text)
 
 
+
 class CommandMenuWidget(QtWidgets.QWidget):
     def __init__(self, addCmndFunc, parent):
         super(CommandMenuWidget, self).__init__(parent)
