@@ -5,6 +5,7 @@
 - Experiment with changing window/button styles
 - Get rid of camera pause/play controls, or move them next to the camera
 - Get rid of settings menu, make a "Robot Connection" and "Camera Connection" button on the dashboard
+- Change mimeData to not send plaintext, or at least make it secure (don't run globals()['mimeText']
 
 
 ######   LONG TERM GOALS    #####

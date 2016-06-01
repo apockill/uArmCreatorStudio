@@ -1,0 +1,78 @@
+[
+   {
+      "type": "InitEventGUI",
+      "commandList": [
+         {
+            "type": "MoveXYZCommandGUI",
+            "parameters": {
+               "x": -24.4,
+               "y": -1.9,
+               "rel": false,
+               "ref": true,
+               "z": 11.1
+            }
+         },
+         {
+            "type": "MoveXYZCommandGUI",
+            "parameters": {
+               "x": 1.0,
+               "y": 2.0,
+               "rel": false,
+               "ref": true,
+               "z": 3.0
+            }
+         }
+      ],
+      "parameters": {}
+   },
+   {
+      "type": "StepEventGUI",
+      "commandList": [
+         {
+            "type": "MoveXYZCommandGUI",
+            "parameters": {
+               "x": 5.0,
+               "y": 8.0,
+               "rel": false,
+               "ref": true,
+               "z": 10.0
+            }
+         }
+      ],
+      "parameters": {}
+   },
+   {
+      "type": "DestroyEventGUI",
+      "commandList": [
+         {
+            "type": "MoveXYZCommandGUI",
+            "parameters": {
+               "x": 4.0,
+               "y": 3.0,
+               "rel": false,
+               "ref": true,
+               "z": 2.0
+            }
+         },
+         {
+            "type": "StartBlockCommandGUI",
+            "parameters": {}
+         },
+         {
+            "type": "MoveXYZCommandGUI",
+            "parameters": {
+               "x": 12.0,
+               "y": 34.0,
+               "rel": true,
+               "ref": true,
+               "z": 56.0
+            }
+         },
+         {
+            "type": "EndBlockCommandGUI",
+            "parameters": {}
+         }
+      ],
+      "parameters": {}
+   }
+]

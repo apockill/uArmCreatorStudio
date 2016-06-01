@@ -1,10 +1,8 @@
 import copy
-from threading         import Thread
-
-from PyQt5             import QtCore, QtWidgets
-
-from RobotGUI.Commands import *
-from RobotGUI.Events   import *
+from PyQt5                 import QtCore, QtWidgets
+from threading             import Thread
+from RobotGUI.CommandsGUI     import *
+from RobotGUI.EventsGUI       import *
 from RobotGUI.Logic.Global import printf, FpsTimer
 
 
@@ -56,11 +54,11 @@ class ControlPanel(QtWidgets.QWidget):
         super(ControlPanel, self).__init__(parent)
 
         # Set up Globals
-        self.shared     = Shared(robot, vision, settings)
+        self.__shared   = Shared(robot, vision, settings)
 
         self.running    = False  # Whether or not the main thread should be running or not
         self.mainThread = None   # This holds the 'Thread' object of the main thread.
-        self.eventList  = EventList(self.shared, self.refresh, parent=self)
+        self.eventList  = EventList(self.__shared, self.refresh, parent=self)
 
         self.commandMenuWidget = CommandMenuWidget(parent=self)
         self.commandListStack = QtWidgets.QStackedWidget()
@@ -103,7 +101,7 @@ class ControlPanel(QtWidgets.QWidget):
         # Add the addCommand button and a placeholder commandLIst
         addCmndVLayout.addWidget(self.commandMenuWidget)
 
-        # self.commandListStack.addWidget(CommandList(self.shared, parent=self))
+        # self.commandListStack.addWidget(CommandList(self.__shared, parent=self))
 
         # Put the eventLIst layout and the commandLayout next to eachother
         mainHLayout = QtWidgets.QHBoxLayout()
@@ -131,7 +129,7 @@ class ControlPanel(QtWidgets.QWidget):
         # If user has no event selected, make a clear commandList to view
         if selectedEvent is None:
             printf("ControlPanel.refresh():ERROR: no event selected!")
-            # clearList = CommandList(self.shared, parent=self)
+            # clearList = CommandList(self.__shared, parent=self)
             # self.commandListStack.addWidget(clearList)
             # self.commandListStack.setCurrentWidget(clearList)
             return
@@ -176,8 +174,8 @@ class ControlPanel(QtWidgets.QWidget):
         # This is where the script you create actually gets run. This is run on a seperate thread, self.mainThread
 
         printf("ControlPanel.programThread(): #################### STARTING PROGRAM THREAD! ######################")
-        self.shared.getRobot().setServos(servo1=True, servo2=True, servo3=True, servo4=True)
-        self.shared.getRobot().refresh()
+        self.__shared.getRobot().setServos(servo1=True, servo2=True, servo3=True, servo4=True)
+        self.__shared.getRobot().refresh()
 
         # Deepcopy all of the events, so that every time you run the script it runs with no modified variables
         events = copy.copy(self.eventList.getEventsOrdered())
@@ -199,7 +197,7 @@ class ControlPanel(QtWidgets.QWidget):
             # Check each event to see if it is active
             for index, event in enumerate(events):
 
-                if event.isActive(self.shared):
+                if event.isActive(self.__shared):
                     # setColor(eventItem[index], True)
                     # eventItem[index].setBackground(QtGui.QColor(150, 255, 150))  #Highlight event that running
 
@@ -212,7 +210,7 @@ class ControlPanel(QtWidgets.QWidget):
                     # eventItem[index].setBackground(QtGui.QColor(QtCore.Qt.transparent))
 
             # Only "Render" the robots movement once per step
-            self.shared.getRobot().refresh()
+            self.__shared.getRobot().refresh()
 
         # #Turn each list item transparent once more
         # for item in eventItem:
@@ -222,11 +220,11 @@ class ControlPanel(QtWidgets.QWidget):
 
 
         # Check if there is a DestroyEvent command. If so, run it
-        destroyEvent = list(filter(lambda event: type(event) == DestroyEvent, events))
+        destroyEvent = list(filter(lambda event: type(event) == DestroyEventGUIGUI, events))
         if len(destroyEvent): self.interpretCommands(destroyEvent[0].commandList)
 
-        self.shared.getRobot().setGripper(False)
-        self.shared.getRobot().refresh()
+        self.__shared.getRobot().setGripper(False)
+        self.__shared.getRobot().refresh()
 
     def interpretCommands(self, commandList):
         """
@@ -245,7 +243,7 @@ class ControlPanel(QtWidgets.QWidget):
 
         while index < len(commandsOrdered):
             command = commandsOrdered[index]
-            ret = command.run(self.shared)
+            ret = command.run(self.__shared)
 
             if ret is not None and not ret:
                 skipToIndent = command.indent
@@ -267,7 +265,7 @@ class ControlPanel(QtWidgets.QWidget):
         return self.eventList.getSaveData()
 
     def loadData(self, data):
-        self.eventList.loadData(data, self.shared)
+        self.eventList.loadData(data, self.__shared)
 
 
 class EventList(QtWidgets.QListWidget):
@@ -277,7 +275,7 @@ class EventList(QtWidgets.QListWidget):
 
         # GLOBALS
         self.refreshControlPanel = refreshControlPanel
-        self.shared = shared  # Used in self.addCommand only
+        self.__shared = shared  # Used in self.addCommand only
         self.events = {}  # A hash map of the current events in the list. The listWidget leads to the event object
 
         # IMPORTANT This makes sure the ControlPanel refreshes whenever you click on an item in the list,
@@ -375,11 +373,11 @@ class EventList(QtWidgets.QListWidget):
 
         newEvent        = eventType(params)
         commandListSave = kwargs.get("commandListSave", [])
-        newCommandList = CommandList(self.shared, parent=self)
-        newCommandList.loadData(commandListSave, self.shared)
+        newCommandList = CommandList(self.__shared, parent=self)
+        newCommandList.loadData(commandListSave, self.__shared)
         newEvent.commandList =  newCommandList
 
-        # newEvent.commandList = kwargs.get("commandListData", CommandList(self.shared, parent=self))
+        # newEvent.commandList = kwargs.get("commandListData", CommandList(self.__shared, parent=self))
 
         # Create the widget item to visualize the event
         blankWidget = EventWidget(self)
@@ -504,13 +502,13 @@ class EventList(QtWidgets.QListWidget):
 
 
 class CommandList(QtWidgets.QListWidget):
-    # minimumWidth = 250
+    minimumWidth = 250
     maximumWidth = 1300  # This isn't actually the max width. This is the most that it will adjust for content inside it
 
     def __init__(self, shared, parent):  # Todo: make commandList have a parent
         super(CommandList, self).__init__()
 
-        self.shared = shared  # Should just be used in addCommand
+        self.__shared = shared  # Should just be used in addCommand
 
         # GLOBALS
         self.commands = {}  # Dictionary of commands. Ex: {QListItem: MoveXYZCommand, QListItem: PickupCommand}
@@ -525,7 +523,7 @@ class CommandList(QtWidgets.QListWidget):
 
         # The following defines a function that returns a dictionary of the commands, in the correct order
         # self.getCommandsOrdered = lambda: [self.getCommand(self.item(index)) for index in range(self.count())]
-
+        self.setMinimumWidth(250)
 
     def deleteSelected(self):
         # Delete all highlighted commands
@@ -543,18 +541,18 @@ class CommandList(QtWidgets.QListWidget):
             command = self.getCommand(self.item(index))
             commandWidget = self.itemWidget(self.item(index))
 
-            if type(command) is StartBlockCommand:
+            if type(command) is StartBlockCommandGUI:
                 indent += 1
 
             commandWidget.setIndent(zeroAndAbove(indent))
             command.indent = zeroAndAbove(indent)
 
-            if type(command) is EndBlockCommand:
+            if type(command) is EndBlockCommandGUI:
                 indent -= 1
 
         # Update the width of the commandList to the widest element within it
         # This occurs whenever items are changed, or added, to the commandList
-        if self.sizeHintForColumn(0) + 10 < self.maximumWidth:
+        if self.minimumWidth < self.sizeHintForColumn(0) + 10 < self.maximumWidth:
             self.setMinimumWidth(self.sizeHintForColumn(0) + 10)
 
 
@@ -574,9 +572,9 @@ class CommandList(QtWidgets.QListWidget):
         # If adding a pre-filled command (used when loading a save)
 
         if parameters is None:
-            newCommand = commandType(self, self.shared)
+            newCommand = commandType(self.__shared)
         else:
-            newCommand = commandType(self, self.shared, parameters=parameters)
+            newCommand = commandType(self.__shared, parameters=parameters)
 
         # Fill command with information either by opening window or loading it in
         if parameters is None:  # If none, then this is being added by the user and not the system loading a file
@@ -650,7 +648,8 @@ class CommandList(QtWidgets.QListWidget):
             if dropIndex == -1: dropIndex = self.count()  # If dropped at a index past the end of list, drop at end
 
             # Add the new dragged in widget to the index that was just found
-            self.addCommand(MoveXYZCommand, index=dropIndex)
+            print("received", event.mimeData().text())
+            self.addCommand(globals()[event.mimeData().text()], index=dropIndex)
 
             event.accept()
         else:
@@ -700,6 +699,6 @@ class CommandList(QtWidgets.QListWidget):
         # Fill the list with new data
         for index, commandInfo in enumerate(data):
 
-            self.addCommand(globals()[commandInfo["type"]], # convert from string to an actual runnable "type"
+            self.addCommand(globals()[commandInfo["type"]],       # convert from string to an actual runnable "type"
                             parameters=commandInfo["parameters"])
         self.refresh()

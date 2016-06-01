@@ -2,10 +2,8 @@ import json
 import sys
 import webbrowser
 from copy                  import deepcopy
-
 from PyQt5                 import QtCore, QtWidgets, QtGui
-
-from RobotGUI              import Video, ControlPanel, Icons
+from RobotGUI              import Video, ControlPanelGUI, Icons
 from RobotGUI.Logic        import Global, Robot
 from RobotGUI.Logic.Global import printf
 
@@ -94,7 +92,7 @@ class CalibrateView(QtWidgets.QWidget):
         motionBtn = QtWidgets.QPushButton("Calibrate Motion")
 
 
-        maxWidth  = 100
+        maxWidth  = 130
         motionBtn.setFixedWidth(maxWidth)
         self.cancelBtn.setFixedWidth(maxWidth)
         self.applyBtn.setFixedWidth(maxWidth)
@@ -230,7 +228,7 @@ class SettingsView(QtWidgets.QWidget):
         cameraScanBtn = QtWidgets.QPushButton("Scan for Cameras")
 
         # Set max widths of buttons
-        maxWidth = 100
+        maxWidth = 130
         robotScanBtn.setFixedWidth(maxWidth)
         cameraScanBtn.setFixedWidth(maxWidth)
         self.applyBtn.setFixedWidth(maxWidth)
@@ -385,7 +383,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Set Global UI Variables
         self.centralWidget   = QtWidgets.QStackedWidget()
-        self.controlPanel    = ControlPanel.ControlPanel(self.robot, self.vision, self.settings, parent=self)
+        self.controlPanel    = ControlPanelGUI.ControlPanel(self.robot, self.vision, self.settings, parent=self)
         cameraWidget         = CameraWidget(self.vStream.getPixFrame)
 
         self.dashboardView   = DashboardView(self.controlPanel, cameraWidget, parent=self)
