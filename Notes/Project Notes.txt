@@ -1,0 +1,11 @@
+DONT FORGET TO GIVE thenounproject.com CREDIT FOR THE ICONS
+
+
+---------------------------------------------------------------------------------------------------------------------
+
+######   Tests to perform   #####
+- Can a settings file be loaded, then another one loaded after, with everything slightly changed?
+
+
+
+

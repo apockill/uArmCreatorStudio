@@ -1,7 +1,10 @@
-from RobotGUI        import Icons, Robot
-from RobotGUI.Global import printf
-from PyQt5           import QtGui, QtCore, QtWidgets
 from time            import sleep  #Should only be used in the WaitCommand
+
+from PyQt5           import QtGui, QtCore, QtWidgets
+
+from RobotGUI        import Icons
+from RobotGUI.Logic import Robot
+from RobotGUI.Logic.Global import printf
 
 
 # This should only be used once, in CommandList.addCommand
@@ -87,13 +90,11 @@ class CommandWidget(QtWidgets.QWidget):
         self.setToolTip(text)
 
 
-
 class CommandMenuWidget(QtWidgets.QWidget):
-    def __init__(self, addCmndFunc, parent):
+    def __init__(self, parent):
         super(CommandMenuWidget, self).__init__(parent)
 
         # addCmndFunc is a function passed from ControlPanel to be able to hook buttons to that function
-        self.addCmndFunc = addCmndFunc
         self.initUI()
 
     def initUI(self):
@@ -133,14 +134,14 @@ class CommandMenuWidget(QtWidgets.QWidget):
         newButton.setIcon(QtGui.QIcon(commandType.icon))
         newButton.setIconSize(QtCore.QSize(32, 32))
         newButton.setToolTip(commandType.tooltip)
-        newButton.clicked.connect(lambda: self.addCmndFunc(commandType))
+        # newButton.doubleClicked.connect(lambda: self.addCmndFunc(commandType))
+        newButton.customContextMenuRequested.connect(lambda: self.addCommandFunc(commandType))
         return newButton
 
 
     class DraggableButton(QtWidgets.QPushButton):
         def __init__(self, dragData, parent):
             super().__init__(parent)
-
             self.dragData   = dragData         # The information that will be transfered upon drag
 
             self.mouse_down = False            # Has a left-click happened yet?
@@ -335,6 +336,8 @@ class MoveXYZCommand(Command):
         if 'parameters' in kwargs:
             self.parameters = kwargs["parameters"]
         else:
+            # If no parameters were given, it's a new command. Thus, get the robots current position and fill it in.
+            # This helps with workflow so you can create MoveXYZ commands and move the robot around as you work with it
             currentXYZ = shared.getRobot().getCurrentCoord()
 
             self.parameters = {'x': round(currentXYZ['x'], 1),
@@ -344,13 +347,10 @@ class MoveXYZCommand(Command):
                                'ref': True}
 
 
-
-
-
-        # self.initUI()
-
-
     def dressWindow(self, prompt):
+        # Prompt is a QDialog type, this is simply a function to dress it up with the appropriate interface
+        # Then it's returned, and the Command.openView() function will open the window and perform appropriate actions
+
         # Input: the base window with the cancel and apply buttons, and the layouts set up and connected
         prompt.rotEdit     = QtWidgets.QLineEdit()  #  Rotation textbox
         prompt.strEdit     = QtWidgets.QLineEdit()  #  Stretch textbox

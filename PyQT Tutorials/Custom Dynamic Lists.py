@@ -10,8 +10,6 @@ class CommandList(QtWidgets.QListWidget):
         self.setAcceptDrops(True)
 
 
-
-
         #self.connect(self.listWidgetA, QtCore.SIGNAL("dropped"), self.items_dropped)
 
         #self.listWidgetA.currentItemChanged.connect(self.item_clicked)

@@ -1,0 +1,75 @@
+##### BRAINSTORMING #####
+--------------------------------------------------------------------------------------------------------------
+
+
+For video class:
+    - I want to be able to show a stream of all processed objects, with a filter around them, displaying the object.
+    - To do this, I need to know what filters to apply, how they will look, and apply them BEFORE the frame is turned
+        into a pixmap
+    - All logic commands will originate from one file, vision and more.
+    - All vision commands will at some point use a function from a vision library of some sort
+    - It's possible to have frames be constantly updating, and drawing over a rectangle from the last correct filter
+        - This would lead to some lag issues, but wouldn't lead to FPS lag that could be sort of jarring
+        - To do this, all drawing commands would have to be standardized in some way. (Drawing a rectangel, circle, etc)
+        - The VideoStream library could have a dictionary with "name" and "filtertype" and "location" and just apply
+               those filters to every frame.
+               - A function could be made that would vStream.setFilter(name, type, location) that would add new filters
+                   or just update ones that already exist
+               - All filters would have to be applied on the frame that will be going to the camera widget, and no logic
+
+
+For Interpreter Class:
+    - I could make  the interpreter class sort of be a throwaway sort of deal, where you start it up when "play" is
+        pressed, feed it the latest commands, initiate a thread to run it, all in one fell swoop, then close it when
+        the "stop" button is pressed.
+        - Pros/cons: Perhaps might lead to lag on bigger projects. How else would I make it seperate though?
+        - With big data items such as object recognition where entire photos are loaded, how might I handle it?
+               - Perhaps with an "environment" that has objects and such loaded, and is loaded once at the start of the
+                    program, and holds any memory objects that don't change often. Then the GUI could interact with this
+                    - The environment would have "add object" "delete object" "load object" "save object" variables
+                    - It could be the interface for the computer vision GUI module that will be made later
+                    - It would have an Interface thing in it, and this interface would be
+
+    - Things for computer vision could have hundreds of photos attached to objects, who knows.
+    - The interpreter has to:
+        - Take a saveFile of an EventList and it's correpsonding CommandLists and do useful things
+        - Be able to have small and large memory objects loaded in the GUI.
+        - Start and stop quickly.
+        - "Objects" could have a name associated to them. For example, the user names a poker card "Ace of Spades" and
+            this has multiple pictures, arrays, and variables associated with it. All that information is under some
+            kind of "Object" class that has a name on it.
+            - These objects would be held by some class, maybe the Interpreter class?
+            - These objects can be created by some tool seperate from the interpreter class
+            -
+
+--------------------------------------------------------------------------------------------------------------
+Event Ideas:
+    Basic:
+        Alarms
+
+    Vision:
+        Motion detected (waving)
+        Color detected
+
+    Other:
+        Robot tip is activated
+
+Command Ideas:
+    Basic:
+        Speed Option
+        Stop all movement
+        Save position to variable, or have an inherent variable for the robots position
+        Write letters/strings
+
+    Control
+        If/then
+        Else
+        Variable
+        Test variable
+
+
+    Vision:
+        Focus on object
+        Pick up object
+        Move towards movement
+        Focus on color

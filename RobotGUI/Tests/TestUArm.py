@@ -1,10 +1,4 @@
-from RobotGUI import UArmTextCommunication_1
-import math
-from time import sleep
-
-
-
-
+from RobotGUI.Logic import UArmTextCommunication_1
 
 #
 # def getActual(x1, y1, baseAngle):

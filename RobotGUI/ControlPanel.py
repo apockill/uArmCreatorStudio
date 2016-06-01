@@ -1,10 +1,11 @@
 import copy
-from RobotGUI.Events   import *
-from RobotGUI.Commands import *
-from RobotGUI.Global   import printf, FpsTimer
 from threading         import Thread
+
 from PyQt5             import QtCore, QtWidgets
 
+from RobotGUI.Commands import *
+from RobotGUI.Events   import *
+from RobotGUI.Logic.Global import printf, FpsTimer
 
 
 class Shared:
@@ -61,7 +62,7 @@ class ControlPanel(QtWidgets.QWidget):
         self.mainThread = None   # This holds the 'Thread' object of the main thread.
         self.eventList  = EventList(self.shared, self.refresh, parent=self)
 
-        self.commandMenuWidget = CommandMenuWidget(self.eventList.addCommand, parent=self)
+        self.commandMenuWidget = CommandMenuWidget(parent=self)
         self.commandListStack = QtWidgets.QStackedWidget()
 
         self.initUI()
@@ -272,12 +273,11 @@ class ControlPanel(QtWidgets.QWidget):
 class EventList(QtWidgets.QListWidget):
     def __init__(self, shared, refreshControlPanel, parent):
 
-        self.shared = shared # used in self.addCommand only
-
         super(EventList, self).__init__(parent)
 
         # GLOBALS
         self.refreshControlPanel = refreshControlPanel
+        self.shared = shared  # Used in self.addCommand only
         self.events = {}  # A hash map of the current events in the list. The listWidget leads to the event object
 
         # IMPORTANT This makes sure the ControlPanel refreshes whenever you click on an item in the list,
@@ -285,8 +285,8 @@ class EventList(QtWidgets.QListWidget):
         self.itemSelectionChanged.connect(self.refreshControlPanel)
 
         # The following is a function that returns a dictionary of the events, in the correct order
-        self.getEventsOrdered = lambda: [self.getEvent(self.item(index)) for index in range(self.count())]
-        self.getItemsOrdered  = lambda: [self.item(index) for index in range(self.count())]
+        # self.getEventsOrdered = lambda: [self.getEvent(self.item(index)) for index in range(self.count())]
+        # self.getItemsOrdered  = lambda: [self.item(index) for index in range(self.count())]
 
         self.setFixedWidth(200)
 
@@ -304,7 +304,7 @@ class EventList(QtWidgets.QListWidget):
             printf("EventList.getSelected(): ERROR: 0 events selected")
             return None
 
-        return self.getEvent(selectedItem)
+        return self.getEventFromItem(selectedItem)
 
     def getSelectedEventItem(self):
         """
@@ -323,9 +323,8 @@ class EventList(QtWidgets.QListWidget):
         selectedItem = selectedItems[0]
         return selectedItem
 
-    def getEvent(self, listWidgetItem):
+    def getEventFromItem(self, listWidgetItem):
         # Get the Event() object for any events listWidgetItem
-
         return self.events[self.itemWidget(listWidgetItem)]
 
 
@@ -339,20 +338,20 @@ class EventList(QtWidgets.QListWidget):
             printf("EventList.promptUser():User rejected the prompt.")
 
 
-    def addCommand(self, type):
-        # When the addCommand button is pressed, add that command to the currently selected
-
-        printf("ControlPanel.addCommand(): Add Command button clicked. Adding command!")
-
-        selectedEvent = self.getSelectedEvent()
-        if selectedEvent is None:
-            # This occurs when there are no events on the table. Display warning to user in this case.
-            printf("ControlPanel.addCommand(): ERROR: Selected event does not have a commandList! Displaying error")
-            QtWidgets.QMessageBox.question(self, 'Error', 'You need to select an event or add an event before you can '
-                                                          'add commands', QtWidgets.QMessageBox.Ok)
-            return
-
-        selectedEvent.commandList.addCommand(type)
+    # def addCommand(self, type):
+    #     # When the addCommand button is pressed, add that command to the currently selected
+    #     print("doing thing!")
+    #     printf("ControlPanel.addCommand(): Add Command button clicked. Adding command!")
+    #
+    #     selectedEvent = self.getSelectedEvent()
+    #     if selectedEvent is None:
+    #         # This occurs when there are no events on the table. Display warning to user in this case.
+    #         printf("ControlPanel.addCommand(): ERROR: Selected event does not have a commandList! Displaying error")
+    #         QtWidgets.QMessageBox.question(self, 'Error', 'You need to select an event or add an event before you can '
+    #                                                       'add commands', QtWidgets.QMessageBox.Ok)
+    #         return
+    #
+    #     selectedEvent.commandList.addCommand(type)
 
     def addEvent(self, eventType, **kwargs):
         """
@@ -452,7 +451,7 @@ class EventList(QtWidgets.QListWidget):
 
         # Actually change the event to the new type
         newEvent = eventType(params)
-        newEvent.commandList = self.getEvent(selectedItem).commandList  # self.events[selectedItem].commandList
+        newEvent.commandList = self.getEventFromItem(selectedItem).commandList  # self.events[selectedItem].commandList
 
         # Transfer the item widget and update the looks
         oldWidget = self.itemWidget(selectedItem)
@@ -474,7 +473,7 @@ class EventList(QtWidgets.QListWidget):
         """
 
         eventList = []
-        eventsOrdered = self.getEventsOrdered()
+        eventsOrdered = [self.getEventFromItem(self.item(index)) for index in range(self.count())]  # Gets every event, in order
 
         for event in eventsOrdered:
 
@@ -525,7 +524,7 @@ class CommandList(QtWidgets.QListWidget):
         self.itemClicked.connect(self.clickEvent)
 
         # The following defines a function that returns a dictionary of the commands, in the correct order
-        self.getCommandsOrdered = lambda: [self.getCommand(self.item(index)) for index in range(self.count())]
+        # self.getCommandsOrdered = lambda: [self.getCommand(self.item(index)) for index in range(self.count())]
 
 
     def deleteSelected(self):
@@ -556,9 +555,7 @@ class CommandList(QtWidgets.QListWidget):
         # Update the width of the commandList to the widest element within it
         # This occurs whenever items are changed, or added, to the commandList
         if self.sizeHintForColumn(0) + 10 < self.maximumWidth:
-            print("new width", self.sizeHintForColumn(0) + 10)
             self.setMinimumWidth(self.sizeHintForColumn(0) + 10)
-            print("CurrentMinimumWidth", self.minimumWidth)
 
 
     def getCommand(self, listWidgetItem):
@@ -645,8 +642,6 @@ class CommandList(QtWidgets.QListWidget):
             super(CommandList, self).dragMoveEvent(event)
 
     def dropEvent(self, event):
-
-
         if event.mimeData().hasText():
             # Get the mouse position, offset it by the width of the listWidgets, and get the index of that listWidget
             newPoint = event.pos()
@@ -663,7 +658,6 @@ class CommandList(QtWidgets.QListWidget):
             super(CommandList, self).dropEvent(event)
         self.refresh()
 
-        # lst = [i.text() for i in self.findItems('', QtCore.Qt.MatchContains)]
 
     def doubleClickEvent(self, clickedItem):
         # Open the command window for the command that was just double clicked
@@ -689,7 +683,7 @@ class CommandList(QtWidgets.QListWidget):
 
     def getSaveData(self):
         commandList = []
-        commandsOrdered = self.getCommandsOrdered()
+        commandsOrdered = [self.getCommand(self.item(index)) for index in range(self.count())]
 
         for command in commandsOrdered:
             commandSave = {      "type": command.__class__.__name__,

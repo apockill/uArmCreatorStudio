@@ -1,0 +1,55 @@
+
+################## GUI ################
+Main.Py
+    MainWindow
+    Application
+    CalibrateView
+    SettingsView
+    DashboardView
+
+ControlPanel.py
+    ControlPanel
+    EventList
+    CommandList
+    Shared
+
+Events.py
+    Event
+    EventWidget
+    EventPromptWindow
+    ...Events…
+
+Commands.py
+    Command
+    CommandWidget
+    CommandMenuWidget
+    ...Commands...
+
+################## LOGIC #################
+InterpreterAPI.py
+
+
+Global.py
+    FpsTimer
+    ...Some functions...
+
+Robot.py
+    Robot
+    ...Some kinematics math functions…
+
+UArmTextCommunication_1.py
+    Uarm
+
+################## OTHER #################
+Icons.py
+    A list of icon file names
+
+--------------------------------------------------------------------------------------------------------------------
+Each command requires:
+    ItemWidget
+    Parameters Window
+    Logic
+    Button to drag into the list
+    Icon
+    Tooltip
+    title “Move XYZ”

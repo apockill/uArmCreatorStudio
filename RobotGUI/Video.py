@@ -1,9 +1,10 @@
-import cv2
-import numpy as np
-from RobotGUI.Global import printf, FpsTimer
-from PyQt5           import QtGui, QtCore, QtWidgets
 from threading       import Thread
 
+import cv2
+import numpy as np
+from PyQt5.QtGui     import QImage, QPixmap  # Used once, in VideoStream class to preprocess some GUI stuff in a thread
+
+from RobotGUI.Logic.Global import printf, FpsTimer
 
 
 def getConnectedCameras():
@@ -21,14 +22,15 @@ def getConnectedCameras():
 
 
 class VideoStream:
-    def __init__(self, cameraID):
-        self.running = False
-        self.paused = True
+    def __init__(self, cameraID, fps=24):
+        self.running    = False
+        self.paused     = True
 
-        self.cameraID = cameraID
-        self.cap = None
+        self.cameraID   = cameraID
+        self.fps        = fps
+        self.cap        = None  # An OpenCV capture object
         self.dimensions = None  # Will be [x dimension, y dimension]
-        self.fps = 24
+
 
         self.frame = None
         self.pixFrame = None  # Holds a QLabel formatted frame. Is calculated in the thread, and returned in getPixFrame
@@ -82,8 +84,8 @@ class VideoStream:
                 # TODO: Research if running a QtGui process in a thread will cause crashes
                 pixFrame = cv2.cvtColor(newFrame.copy(), cv2.COLOR_BGR2RGB)
 
-                img = QtGui.QImage(pixFrame, pixFrame.shape[1], pixFrame.shape[0], QtGui.QImage.Format_RGB888)
-                pix = QtGui.QPixmap.fromImage(img)
+                img = QImage(pixFrame, pixFrame.shape[1], pixFrame.shape[0], QImage.Format_RGB888)
+                pix = QPixmap.fromImage(img)
                 self.pixFrame = pix
 
                 # Keep track of new frames by counting them. (100 is an arbitrary number)
@@ -326,55 +328,3 @@ class Vision:
         return True
 
 
-########## WIDGETS ##########
-class CameraWidget(QtWidgets.QWidget):
-    def __init__(self, getFrameFunction):
-        """
-        :param cameraID:
-        :param getFrameFunction: A function that when called will return a frame
-                that can be put in a QLabel. In this case the frame will come from
-                a VideoStream object's getFrame function.
-        :return:
-        """
-        super(CameraWidget, self).__init__()
-
-        # Set up globals
-        self.getFrame = getFrameFunction  # This function is given as a parameters, and returns a frame
-        self.fps = 24  # The maximum FPS the camera will
-        self.paused = True  # Keeps track of the video's state
-        self.timer = None
-
-        # Initialize the UI
-        self.initUI()
-
-        # Get one frame and display it, and wait for play to be pressed
-        self.nextFrameSlot()
-
-    def initUI(self):
-        # self.setMinimumWidth(640)
-        # self.setMinimumHeight(480)
-        self.video_frame = QtWidgets.QLabel("No camera data.")  # Temp label for the frame
-        self.vbox = QtWidgets.QVBoxLayout(self)
-        self.vbox.addWidget(self.video_frame)
-        self.setLayout(self.vbox)
-
-    def play(self):
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.nextFrameSlot)
-        self.timer.start(1000. / self.fps)
-
-        self.paused = False
-
-    def pause(self):
-        if self.timer is not None: self.timer.stop()
-        self.paused = True
-
-    def nextFrameSlot(self):
-
-        pixFrame = self.getFrame()
-
-        # If a frame was returned correctly
-        if pixFrame is None:
-            return
-
-        self.video_frame.setPixmap(pixFrame)

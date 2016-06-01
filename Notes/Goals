@@ -1,7 +1,3 @@
-DONT FORGET TO GIVE thenounproject.com CREDIT FOR THE ICONS
-
-
-
 ######   SHORT TERM GOALS   #####
 - Impliment a thread stopper while a wait command is active
 - Have some sort of indication when the robot is done connecting, either succesfully or not.
@@ -12,82 +8,32 @@ DONT FORGET TO GIVE thenounproject.com CREDIT FOR THE ICONS
 
 
 ######   LONG TERM GOALS    #####
+- Add a system for drawing filters on to frames without screwing with logic in vision processing
 - Get Boolean Logic to work properly, with variable creation and variable modification and simple variable math b
 - Have events "Light Up" as they are run, and if the commandList is selected, have the commandList "light up" the cmmnds
 - Add a "Robot Status" widget or a "Console" widget to put either on top of the camera feed.
 - Add font support
 - Console output only when script is running
+- Program the Robot.py to work in such a way that you can switch communication protocols inside of the GUI
 
 ---------------------------------------------------------------------------------------------------------------------
-######   SHORT TERM BUGS    #####
-- Switching cameras or re-starting a camera after it crashes is broken right now
-
-
-######   LONG TERM BUGS     #####
-
-
----------------------------------------------------------------------------------------------------------------------
-
-######   Tests to perform   #####
-- Can a settings file be loaded, then another one loaded after, with everything slightly changed?
-
-
-######   WISHLIST           #####
--Command line support for running .task files
--Plugin support to make custom commands
-- Rearrangeable dashboard within GUI with modules that can be dropped in and out (like console output)
-
----------------------------------------------------------------------------------------------------------------------
-
 
 ######   FINISHED SHORT TERM GOALS   #####
 - Switch to JSON saving instead of Pickling
+
 
 ######   FINISHED LONG TERM GOALS    #####
 - Add click/drag to the commandDashboard
 
 ---------------------------------------------------------------------------------------------------------------------
-Development Timeline:
--1 month demo + bugtesting within the team
--
--
--
--
+
+######   WISHLIST           #####
+- Command line support for running .task files
+- Plugin support to make custom commands
+- Rearrangeable dashboard within GUI with modules that can be dropped in and out (like console output)
 
 
-##### BRAINSTORMING #####
-Event Ideas:
-    Basic:
-        Alarms
-
-    Vision:
-        Motion detected (waving)
-        Color detected
-
-    Other:
-        Robot tip is activated
-
-Command Ideas:
-    Basic:
-        Speed Option
-        Stop all movement
-        Save position to variable, or have an inherent variable for the robots position
-        Write letters/strings
-
-    Control
-        If/then
-        Else
-        Variable
-        Test variable
-
-
-    Vision:
-        Focus on object
-        Pick up object
-        Move towards movement
-        Focus on color
-
-NOTES:
+---------------------------------------------------------------------------------------------------------------------
 
 Technical goals
     - Being written for the normal uArm (custom communication protocol)

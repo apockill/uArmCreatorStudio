@@ -1,6 +1,0 @@
-{
-   "cameraID": 1,
-   "motionCalibrations": null,
-   "robotID": "COM6",
-   "lastOpenedFile": "F:/Google Drive/Projects/Git Repositories/RobotGUIProgramming/RobotGUI/MyTask.task"
-}

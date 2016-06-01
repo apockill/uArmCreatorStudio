@@ -1,15 +1,12 @@
 from time import time, sleep
 
-
+# Initiate the keysPressed global variable
 def init():
-
     global keysPressed
     keysPressed    = []        #Used in keyboardEvent. Updated through Main.Application.notify()
 
 
-spaceFunc = lambda n: ''.join(' ' for _ in range(n))
-
-
+spaceFunc = lambda n: ''.join(' ' for _ in range(n)) # For printf
 def printf(*args):
     buildString = ""
 

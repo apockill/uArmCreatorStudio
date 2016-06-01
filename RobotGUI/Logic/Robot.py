@@ -1,9 +1,11 @@
+import math
 import serial
 import serial.tools.list_ports
-import math
-from RobotGUI.UArmTextCommunication_1 import Uarm
-from RobotGUI.Global                  import printf
-from threading                        import Thread
+from threading                              import Thread
+from RobotGUI.Logic.Global                  import printf
+from RobotGUI.Logic.UArmTextCommunication_1 import Uarm
+
+
 # from time import sleep  #Only use in refresh() command after attaching servos
 
 

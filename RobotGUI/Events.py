@@ -1,9 +1,8 @@
-from RobotGUI        import Icons, Global
-from RobotGUI.Global import printf
 from PyQt5           import QtGui, QtCore, QtWidgets
 
-
-
+from RobotGUI        import Icons
+from RobotGUI.Logic import Global
+from RobotGUI.Logic.Global import printf
 
 
 class EventWidget(QtWidgets.QWidget):
@@ -191,7 +190,7 @@ class EventPromptWindow(QtWidgets.QDialog):
         return newButton
 
 
-class Event(object):
+class Event:
     def __init__(self):
         """
         self.parameters is used for events like KeyPressEvent where one class can handle multiple types of events
@@ -217,6 +216,8 @@ class Event(object):
         """Used for events that modify variables in themselves in order to function.
         Things like InitEvent or AlarmEvent will use this to reset their var's"""
         pass
+
+
 
 ########## EVENTS ##########
 
