@@ -1,11 +1,15 @@
 import json
 import sys
 import webbrowser
-from copy                  import deepcopy
-from PyQt5                 import QtCore, QtWidgets, QtGui
-from RobotGUI              import Video, ControlPanelGUI, Icons
-from RobotGUI.Logic        import Global, Robot
-from RobotGUI.Logic.Global import printf
+# import qdarkstyle
+from copy                       import deepcopy
+from PyQt5                      import QtCore, QtWidgets, QtGui
+from RobotGUI                   import ControlPanelGUI, Icons
+from RobotGUI.Logic             import Global
+from RobotGUI.Logic.Environment import Environment
+from RobotGUI.Logic.Robot       import getConnectedRobots
+from RobotGUI.Logic.Video       import getConnectedCameras
+from RobotGUI.Logic.Global      import printf
 
 
 ########## WIDGETS ##########
@@ -70,16 +74,16 @@ class CalibrateView(QtWidgets.QWidget):
     visual servo-ing calibrations
     """
 
-    def __init__(self, vision, robot, parent):
+    def __init__(self, environment, parent):
         super(CalibrateView, self).__init__(parent)
 
+        self.env            = environment
         self.newSettings    = {"motionCalibrations": {"stationaryMovement": None, "activeMovement": None}}
 
         # These buttons are connected in Main.MainWindow.__init__()
         self.cancelBtn = QtWidgets.QPushButton("Cancel")
         self.applyBtn  = QtWidgets.QPushButton("Apply")
-        self.vision = vision
-        self.robot = robot
+
 
         # The label for the current known information for each calibration test. Label is changed in updateLabels()
         self.motionLbl = QtWidgets.QLabel("No information for this calibration")
@@ -137,26 +141,30 @@ class CalibrateView(QtWidgets.QWidget):
     def calibrateMotion(self):
         # Shake the robot left and right while getting frames to get a threshold for "high" movement between frames
 
+        vStream = self.env.getVStream()
+        vision  = self.env.getVision()
+        robot   = self.env.getRobot()
+
         # Check that there is a valid robot connected
-        if not self.robot.connected():
+        if not robot.connected():
             printf("CalibrateView.calibrateMotion(): No uArm connected!")
             return
 
         # Check that there is a valid camera connected
-        if not self.vision.cameraConnected():
+        if not vision.cameraConnected():
             printf("CalibrateVIew.calibrateMotion(): No Camera Connected!")
             return
 
         # Make sure VideoStream is collecting new frames
-        self.vision.vStream.setPaused(False)
+        vStream.setPaused(False)
 
 
         # Get movement while nothing is happening
         totalMotion = 0.0
         samples     = 50
         for i in range(0, samples):
-            self.vision.vStream.waitForNewFrame()
-            totalMotion += self.vision.getMotion()
+            vStream.waitForNewFrame()
+            totalMotion += vision.getMotion()
         noMovement = totalMotion / samples
 
 
@@ -167,17 +175,17 @@ class CalibrateView(QtWidgets.QWidget):
         direction   = 1  #If the robot is going right or left next
 
         # Start position
-        self.robot.setPos( x=-15, y=-15, z=20)
-        self.robot.refresh()
+        robot.setPos( x=-15, y=-15, z=20)
+        robot.refresh()
 
         # Move robot left and right while getting new frames for "moves" amount of samples
         for move in range(0, moves):
-            self.robot.setPos(x=30 * direction, y=0, z=0, relative=True)   #end position
-            self.robot.refresh(speed=30)
+            robot.setPos(x=30 * direction, y=0, z=0, relative=True)   #end position
+            robot.refresh(speed=30)
 
-            while self.robot.getMoving():
-                self.vision.vStream.waitForNewFrame()
-                totalMotion += self.vision.getMotion()
+            while robot.getMoving():
+                vStream.waitForNewFrame()
+                totalMotion += vision.getMotion()
                 samples += 1
 
             direction *= -1
@@ -190,7 +198,7 @@ class CalibrateView(QtWidgets.QWidget):
         self.newSettings["motionCalibrations"]["activeMovement"]     = round(highMovement, 1)
 
         # Return the vStream to paused
-        self.vision.vStream.setPaused(True)
+        vStream.setPaused(True)
         self.updateLabels()
         printf("CalibrateView.calibrateMotion(): Function complete! New motion settings: ", self.newSettings)
 
@@ -285,11 +293,11 @@ class SettingsView(QtWidgets.QWidget):
 
 
     def scanForRobotsClicked(self):
-        connectedDevices = Robot.getConnectedRobots()
+        connectedDevices = getConnectedRobots()  # From Robot.py
         printf("SettingsView.scanForRobots(): Connected Devices: ", connectedDevices)
         self.robotButtonGroup = QtWidgets.QButtonGroup()
 
-        #Update the list of found devices
+        # Update the list of found devices
         self.clearLayout(self.robVBox)  #  Clear robot list
         for i, port in enumerate(connectedDevices):
             newButton = QtWidgets.QRadioButton(port[0])
@@ -305,7 +313,7 @@ class SettingsView(QtWidgets.QWidget):
     def scanForCamerasClicked(self):
 
         # Get all of the cameras connected to the computer and list them
-        connectedCameras = Video.getConnectedCameras()
+        connectedCameras = getConnectedCameras()  # From the Video.py module
 
         self.cameraButtonGroup = QtWidgets.QButtonGroup()
 
@@ -375,20 +383,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.fileName    = None
         self.loadData    = None  #Set when file is loaded. Used to check if the user has changed anything and prompt
         self.keysPressed = None
-        self.vStream     = Video.VideoStream(None)
-        self.vision      = Video.Vision(self.vStream)
-        self.robot       = Robot.Robot(None)
-
+        self.env         = Environment(self.settings)
 
 
         # Set Global UI Variables
         self.centralWidget   = QtWidgets.QStackedWidget()
-        self.controlPanel    = ControlPanelGUI.ControlPanel(self.robot, self.vision, self.settings, parent=self)
-        cameraWidget         = CameraWidget(self.vStream.getPixFrame)
+        self.controlPanel    = ControlPanelGUI.ControlPanel(self.env, self.settings, parent=self)
+        cameraWidget         = CameraWidget(self.env.getVStream().getPixFrame)
 
         self.dashboardView   = DashboardView(self.controlPanel, cameraWidget, parent=self)
         self.settingsView    = SettingsView(parent=self)  #'self' so that StackedWidget can be used
-        self.calibrateView   = CalibrateView(self.vision, self.robot, parent=self)
+        self.calibrateView   = CalibrateView(self.env, parent=self)
 
         self.scriptToggleBtn = QtWidgets.QAction(QtGui.QIcon(Icons.run_script),
                                'Run/Pause the command script (Ctrl+R)', self)
@@ -473,10 +478,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Final touches
         self.setWindowTitle('uArm Creator Dashboard')
         self.setWindowIcon(QtGui.QIcon(Icons.taskbar))
-        QtWidgets.QApplication.setStyle(QtWidgets.QStyleFactory.create('Plastique'))  #TODO updgrade to pyQt5
-        self.setStyle(QtWidgets.QStyleFactory.create('Plastique'))
         self.show()
-
 
 
 
@@ -495,7 +497,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.settings["cameraID"] = newSettings["cameraID"]
 
             # Set the new camera in the VideoStream object
-            success = self.vStream.setNewCamera(self.settings["cameraID"])
+            success = self.env.getVStream().setNewCamera(self.settings["cameraID"])
             if success:
                 self.setVideo("play")
             else:
@@ -503,11 +505,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         # If a new robot has been set, or the robot has been changed
-        if isNew("robotID") or not self.robot.connected():  #If robot is not connected, try connecting
+        if isNew("robotID") or not self.env.getRobot().connected():  #If robot is not connected, try connecting
             printf("MainWindow.closeSettingsView(): Changing robotID from ",
                   self.settings["robotID"], "to", newSettings["robotID"])
             self.settings["robotID"] = newSettings["robotID"]
-            self.robot.setUArm(self.settings["robotID"])
+            self.env.getRobot().setUArm(self.settings["robotID"])
 
 
         # If a new file has been opened, change the Settings file to reflect that so next time GUI is opened, so is file
@@ -538,42 +540,52 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if state == "play":
             self.dashboardView.cameraWidget.play()
-            self.vStream.setPaused(False)
+            self.env.getVStream().setPaused(False)
             self.videoToggleBtn.setIcon(QtGui.QIcon(Icons.pause_video))
 
 
         if state == "pause":
             self.dashboardView.cameraWidget.pause()
-            self.vStream.setPaused(True)
+            self.env.getVStream().setPaused(True)
             self.videoToggleBtn.setIcon(QtGui.QIcon(Icons.play_video))
 
 
         if state == "toggle":
-            if self.vStream.paused:
+            if self.env.getVStream().paused:
                 self.setVideo("play")
             else:
                 self.setVideo("pause")
 
     def setScript(self, state):
         # Run/pause the main script
+        interpreter = self.env.getInterpreter()
 
         if state == "play":
-            printf("MainWindow.setScript(): Setting script to ", state)
-            self.controlPanel.startThread()
-            self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.pause_script))
+            if not interpreter.isRunning():
+                printf("MainWindow.setScript(): Interpreter is ready. Loading script and starting program")
+
+                interpreter.loadScript(self.controlPanel.getSaveData())
+                interpreter.startThread()
+
+                self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.pause_script))
+
+            else:
+                printf("MainWindow.setScript(): ERROR: Tried to start interpreter while it was already running.")
+
+            return
 
         if state == "pause":
-            printf("MainWindow.setScript(): Setting script to ", state)
-            self.controlPanel.endThread()
-            self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.run_script))
+            interpreter.endThread()
 
+            self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.run_script))
+            return
 
         if state == "toggle":
-            if self.controlPanel.running:
+            if interpreter.isRunning():
                 self.setScript("pause")
             else:
                 self.setScript("play")
-
+            return
 
 
     def setView(self, viewWidget):
@@ -695,7 +707,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.settings["lastOpenedFile"] = self.fileName
         json.dump(self.settings, open("Settings.txt", 'w'), sort_keys=False, indent=3, separators=(',', ': '))
 
-
     def loadSettings(self):
         # Load the settings config and set them
 
@@ -715,7 +726,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # When window is closed, prompt for save, close the video stream, and close the control panel (thus script)
         self.promptSave()
 
-        self.vStream.endThread()
+        self.env.close()
         self.controlPanel.close()
 
 
@@ -778,8 +789,6 @@ if __name__ == '__main__':
     mainWindow = MainWindow()
     mainWindow.show()
     sys.exit(app.exec_())
-
-    #app.exec_()
 
 
 

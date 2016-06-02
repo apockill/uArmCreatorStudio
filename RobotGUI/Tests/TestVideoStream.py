@@ -1,5 +1,6 @@
-from RobotGUI import Video
 import cv2
+
+from RobotGUI.Logic import Video
 
 if __name__ == '__main__':
     cameras = Video.getConnectedCameras()

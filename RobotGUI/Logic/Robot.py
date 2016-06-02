@@ -11,8 +11,8 @@ from RobotGUI.Logic.UArmTextCommunication_1 import Uarm
 
 
 def getConnectedRobots():
-    #Returns any arduino serial ports in a list [port, port, port]
-    #This is used to let the user choose the correct port that is their robot
+    # Returns any arduino serial ports in a list [port, port, port]
+    # This is used to let the user choose the correct port that is their robot
     ports = list(serial.tools.list_ports.comports())
     return ports
 

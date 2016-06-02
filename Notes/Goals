@@ -1,4 +1,6 @@
 ######   SHORT TERM GOALS   #####
+- Have the Environment be the only one with a connection to the robot, vStream, Vision, interpreter objets
+- Have vStream be instantiated and closed from within Environment
 - Impliment a thread stopper while a wait command is active
 - Have some sort of indication when the robot is done connecting, either succesfully or not.
 - Get rid of QStackedWidget() usage on the MainWindow, and just make SettingsView and CalibrateView spawn child windows
@@ -6,6 +8,7 @@
 - Get rid of camera pause/play controls, or move them next to the camera
 - Get rid of settings menu, make a "Robot Connection" and "Camera Connection" button on the dashboard
 - Change mimeData to not send plaintext, or at least make it secure (don't run globals()['mimeText']
+- When closing the program, the save thing will get prompted. If "X" is pressed, make the program cancel the close.
 
 
 ######   LONG TERM GOALS    #####

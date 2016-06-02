@@ -1,30 +1,46 @@
+from copy                  import deepcopy
 from threading             import Thread
 from RobotGUI.Logic.Global import printf, FpsTimer
+from RobotGUI.Logic.Robot  import Robot
+from RobotGUI.Logic        import Video
 
 class Environment:
-    def __init__(self, shared):
-        """
-        This will be a platform for storing "Heavy" objects that will be used in the program. ie, image recognition
-        files, anything that can't be stored in plaintext in the scriptfile that won't change during the program should
-        be here. It can load and save objects in a special uObject class that might have derivatives of types:
-            uVisionObject       Might contain pictures, image maps, huge arrays with keypoints, who knows.
-            uMotionPathObject   Might contain long lists of moves, speeds, or even mathematical functions for the bot to
-                                follow.
-            uScriptObject       Might contain a whole other script within it that would be able to run entirely within
-                                the program and spawn its own environment and interpreter.
+    """
+    Environment holds the following thing and handles their shutdown:
+        - vStream object
+        - Vision object
+        - Robot object
+        - Interpreter objects
 
-        All loading, adding replacing, and saving of objects should be done through this class.
-        All objects will have a "getSaveData" implimented.
+    This will also be a platform for storing "Heavy" objects that will be used in the program. ie, image recognition
+    files, anything that can't be stored in plaintext in the scriptfile that won't change during the program should
+    be here. It can load and save objects in a special uObject class that might have derivatives of types:
+        uVisionObject       Might contain pictures, image maps, huge arrays with keypoints, who knows.
+        uMotionPathObject   Might contain long lists of moves, speeds, or even mathematical functions for the bot to
+                            follow.
+        uScriptObject       Might contain a whole other script within it that would be able to run entirely within
+                            the program and spawn its own environment and interpreter.
 
-        :param file:
-        :return:
-        """
+    All loading, adding replacing, and saving of objects should be done through this class.
+    All objects will have a "getSaveData" implimented.
+    """
+
+    def __init__(self, settings):
+
+        # Set up environment objects
+        self.__vStream      = Video.VideoStream(None)       # Gets frames constantly
+        self.__robot        = Robot(None)
+        self.__settings     = settings
+        self.__vision       = Video.Vision(self.__vStream)  # Performs computer vision tasks, using images from vStream
+
+
+        self.__interpreter  = Interpreter(self)
 
         # This keeps track of objects that have been self.addObject()'d, so self.saveObjects() actually saves them.
         self.changedObjects = []
-        self.__shared       = shared
-        self.__interpreter  = Interpreter(self.__shared)
 
+
+    # Handling Vision Objects
     def saveObjects(self, filename):
         # Any objects that have been "changed" will be saved. All other objects won't be touched.
         # This should lead to faster save times, since the user will probably save on a whim.
@@ -48,20 +64,45 @@ class Environment:
         pass
 
 
-
-    def getInterpreter(self, scriptData):
+    def getInterpreter(self):
         # Returns an Interpreter() object with the script loaded and parsed.
-        return self.interpreter
+        return self.__interpreter
+
+    def getRobot(self):
+        return self.__robot
+
+    def getVStream(self):
+        return self.__vStream
+
+    def getVision(self):
+        return self.__vision
+
+    def getSettings(self):
+        return self.__settings
+
+
+    def close(self):
+        # This will shut down the vStream, any running interpreters, the robot, etc.
+        self.__interpreter.endThread()
+        self.__vStream.endThread()
+        pass
+
 
 
 class Interpreter:
-    def __init__(self, shared, script):
-        self.__shared   = shared
-        # self.script     = self.interpretScript(script)
+    def __init__(self, parent):
+        self.env        = parent
         self.mainThread = None
         self.running    = False
+        self.script     = None
 
 
+    # Functions for GUI to use
+    def loadScript(self, script):
+        self.script = deepcopy(script)
+
+
+    # Generic Functions for API and GUI to use
     def startThread(self):
         # Start the program thread
         if self.mainThread is None:
@@ -91,20 +132,20 @@ class Interpreter:
     def programThread(self):
         # This is where the script you create actually gets run.
 
-        self.__shared.getRobot().setServos(servo1=True, servo2=True, servo3=True, servo4=True)
-        self.__shared.getRobot().refresh()
+        self.env.getRobot().setServos(servo1=True, servo2=True, servo3=True, servo4=True)
+        self.env.getRobot().refresh()
 
         timer = FpsTimer(fps=10)
 
         while self.running:
             timer.wait()
             if not timer.ready(): continue
-
+            print("RUNNING INTERPRETER!")
 
         pass
 
 
-    def isReady(self):
+    def isRunning(self):
         """
         The interpreter will now check comprehensively every function you have, if it requires a camera, if it requires
         a robot, if it requires an object, and check if all of those things are ready (query the robot, check the
@@ -112,10 +153,10 @@ class Interpreter:
         running.
         :return:
         """
-
-        pass
+        return self.running is True or self.mainThread is not None
 
     def getStatus(self):
+        # Returns information about what event is being run, the index of the command being run, and the actual command.
         pass
 
 

@@ -1,10 +1,7 @@
-from time            import sleep  #Should only be used in the WaitCommand
-
-from PyQt5           import QtGui, QtCore, QtWidgets
-
-from RobotGUI        import Icons
-from RobotGUI.Logic import Robot
+from PyQt5                 import QtGui, QtCore, QtWidgets
+from RobotGUI              import Icons
 from RobotGUI.Logic.Global import printf
+
 
 
 # This should only be used once, in CommandList.addCommand
@@ -319,8 +316,6 @@ class CommandGUI:
 
 
 
-
-
 ########## COMMANDS ##########
 """
 Commands must:
@@ -349,6 +344,7 @@ class MoveXYZCommandGUI(CommandGUI):
     title      = "Move XYZ"
     tooltip    = "Set the robots position. The robot will move after all events are evaluated"
     icon       = Icons.xyz_command
+    logicPair  = 'MoveXYZCommand'
 
     def __init__(self, shared, parameters=None):
         super(MoveXYZCommandGUI, self).__init__()
@@ -364,9 +360,7 @@ class MoveXYZCommandGUI(CommandGUI):
             self.parameters = {'x': round(currentXYZ['x'], 1),
                                'y': round(currentXYZ['y'], 1),
                                'z': round(currentXYZ['z'], 1),
-                               'rel': False,
-                               'ref': True}
-
+                               'override': False}
 
 
     def dressWindow(self, prompt):
@@ -377,28 +371,26 @@ class MoveXYZCommandGUI(CommandGUI):
         prompt.rotEdit     = QtWidgets.QLineEdit()  #  Rotation textbox
         prompt.strEdit     = QtWidgets.QLineEdit()  #  Stretch textbox
         prompt.hgtEdit     = QtWidgets.QLineEdit()  #  Height textbox
-        prompt.relCheck    = QtWidgets.QCheckBox()  #  "relative" CheckBox
-        prompt.refCheck    = QtWidgets.QCheckBox()  #  "refresh" CheckBox
+        prompt.watCheck    = QtWidgets.QCheckBox()  #  "relative" CheckBox
+        # prompt.refCheck    = QtWidgets.QCheckBox()  #  "refresh" CheckBox
 
         # Set up all the labels for the inputs
         rotLabel = QtWidgets.QLabel('X:')
         strLabel = QtWidgets.QLabel('Y:')
         hgtLabel = QtWidgets.QLabel('Z:')
-        relLabel = QtWidgets.QLabel('Relative')
-        refLabel = QtWidgets.QLabel('Refresh')
+        watLabel = QtWidgets.QLabel('Override ongoing movement')
 
         # Fill the textboxes with the default parameters
         prompt.rotEdit.setText(str(self.parameters['x']))
         prompt.strEdit.setText(str(self.parameters['y']))
         prompt.hgtEdit.setText(str(self.parameters['z']))
-        prompt.relCheck.setChecked(self.parameters['rel'])
-        prompt.refCheck.setChecked(self.parameters['ref'])
+        print("is checked", self.parameters["override"])
+        prompt.watCheck.setChecked(self.parameters['override'])
 
         row1 = QtWidgets.QHBoxLayout()
         row2 = QtWidgets.QHBoxLayout()
         row3 = QtWidgets.QHBoxLayout()
         row4 = QtWidgets.QHBoxLayout()
-        row5 = QtWidgets.QHBoxLayout()
 
         row1.addWidget(rotLabel, QtCore.Qt.AlignRight)
         row1.addWidget(prompt.rotEdit, QtCore.Qt.AlignJustify)
@@ -409,17 +401,14 @@ class MoveXYZCommandGUI(CommandGUI):
         row3.addWidget(hgtLabel, QtCore.Qt.AlignRight)
         row3.addWidget(prompt.hgtEdit, QtCore.Qt.AlignJustify)
 
-        row4.addWidget(relLabel, QtCore.Qt.AlignRight)
-        row4.addWidget(prompt.relCheck, QtCore.Qt.AlignJustify)
-
-        row5.addWidget(refLabel, QtCore.Qt.AlignRight)
-        row5.addWidget(prompt.refCheck, QtCore.Qt.AlignJustify)
+        row4.addWidget(watLabel, QtCore.Qt.AlignRight)
+        row4.addWidget(prompt.watCheck, QtCore.Qt.AlignJustify)
 
         prompt.mainVLayout.addLayout(row1)
         prompt.mainVLayout.addLayout(row2)
         prompt.mainVLayout.addLayout(row3)
         prompt.mainVLayout.addLayout(row4)
-        prompt.mainVLayout.addLayout(row5)
+
 
         # self.setWindowIcon(QtGui.QIcon(self.icon))
         return prompt
@@ -429,7 +418,7 @@ class MoveXYZCommandGUI(CommandGUI):
         newParameters = {'x': self.sanitizeFloat(prompt.rotEdit, self.parameters["x"]),
                          'y': self.sanitizeFloat(prompt.strEdit, self.parameters["y"]),
                          'z': self.sanitizeFloat(prompt.hgtEdit, self.parameters["z"]),
-                         'rel': prompt.relCheck.isChecked()}
+                         'override': prompt.watCheck.isChecked()}
 
         self.parameters.update(newParameters)
         return newParameters
@@ -439,7 +428,33 @@ class MoveXYZCommandGUI(CommandGUI):
         self.description =     'X: '        + str(round(self.parameters['x'], 1))  +  \
                             '   Y: '        + str(round(self.parameters['y'], 1))  +  \
                             '   Z: '        + str(round(self.parameters['z'], 1))  +  \
-                            '   Relative: ' + str(      self.parameters['rel'])
+                            '   Override: ' + str(self.parameters['override'])
+
+
+class StartBlockCommandGUI(CommandGUI):
+    """
+    Start a block of code with this class
+    """
+
+    icon       = Icons.startblock_command
+    tooltip    = "This is the start of a block of commands that only run if a conditional statement is met."
+    logicPair  = 'StartBlockCommand'
+
+    def __init__(self, shared, parameters=None):
+        super(StartBlockCommandGUI, self).__init__()
+
+
+class EndBlockCommandGUI(CommandGUI):
+    """
+    End a block of code with this command
+    """
+
+    icon       = Icons.endblock_command
+    tooltip    = "This is the end of a block of commands."
+    logicPair  = 'EndBlockCommand'
+
+    def __init__(self, shared, parameters=None):
+        super(EndBlockCommandGUI, self).__init__()
 
 
 
@@ -947,31 +962,6 @@ class MoveXYZCommandGUI(CommandGUI):
 #         return self.notCheck.isChecked()
 #
 #
-class StartBlockCommandGUI(CommandGUI):
-    """
-    Start a block of code with this class
-    """
-
-    icon       = Icons.startblock_command
-    tooltip    = "This is the start of a block of commands that only run if a conditional statement is met."
-
-    def __init__(self, shared, parameters=None):
-        super(StartBlockCommandGUI, self).__init__()
-
-
-class EndBlockCommandGUI(CommandGUI):
-    """
-    End a block of code with this command
-    """
-
-    icon       = Icons.endblock_command
-    tooltip    = "This is the end of a block of commands."
-
-    def __init__(self, shared, parameters=None):
-        super(EndBlockCommandGUI, self).__init__()
-
-
-
 
 
 

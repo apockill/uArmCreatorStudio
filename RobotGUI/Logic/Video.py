@@ -1,9 +1,7 @@
-from threading       import Thread
-
 import cv2
 import numpy as np
-from PyQt5.QtGui     import QImage, QPixmap  # Used once, in VideoStream class to preprocess some GUI stuff in a thread
-
+from threading             import Thread
+from PyQt5.QtGui           import QImage, QPixmap  # Used once in VideoStream class to preprocess GUI stuff in thread
 from RobotGUI.Logic.Global import printf, FpsTimer
 
 
