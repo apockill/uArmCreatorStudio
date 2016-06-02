@@ -161,7 +161,7 @@ class CalibrateView(QtWidgets.QWidget):
 
         # Get movement while nothing is happening
         totalMotion = 0.0
-        samples     = 50
+        samples     = 75
         for i in range(0, samples):
             vStream.waitForNewFrame()
             totalMotion += vision.getMotion()

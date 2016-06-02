@@ -4,6 +4,11 @@ from RobotGUI.Logic.Global import printf
 class Event:
     def __init__(self):
         self.parameters = {}
+        self.commandList = []
+
+    def addCommand(self, command):
+        self.commandList.append(command)
+
 
 
 class InitEvent(Event):
@@ -11,7 +16,7 @@ class InitEvent(Event):
         super(InitEvent, self).__init__()
         self.hasBeenRun = False
 
-    def isActive(self, shared):
+    def isActive(self, env):
         # Returns true or false if this event should be activated
 
         if self.hasBeenRun:
@@ -25,7 +30,7 @@ class DestroyEvent(Event):
     def __init__(self, parameters):
         super(DestroyEvent, self).__init__()
 
-    def isActive(self, shared):
+    def isActive(self, env):
         # This event always returns false, because it is run DIRECTLY by the ControlPanel.programThread()
         # programThread() will check if the event exists. If it does, it will run all of its commands.
         # Otherwise, this event will never run while the program is running.
@@ -36,7 +41,7 @@ class StepEvent(Event):
     def __init__(self, parameters):
         super(StepEvent, self).__init__()
 
-    def isActive(self, shared):
+    def isActive(self, env):
         # Since this is a "step" event, it will run each time the events are checked
         return True
 
@@ -53,7 +58,7 @@ class KeypressEvent(Event):
         self.high = None
 
 
-    def isActive(self, shared):
+    def isActive(self, env):
         if ord(self.parameters["checkKey"]) in Global.keysPressed:
             return True
         else:
@@ -74,23 +79,25 @@ class MotionEvent(Event):
         self.med  = None
         self.high = None
 
-    def isActive(self, shared):
+    def isActive(self, env):
         if self.low is None:  # If this is the first time the event is being done, calculate the thresholds
-            calib      = shared.getSettings()["motionCalibrations"]
+            calib      = env.getSettings()["motionCalibrations"]
             if calib is None or not ("stationaryMovement" and "activeMovement") in calib:
                 printf("MotionEvent.isActive(): ERROR: No movementCalibrations found in order to check motion event")
                 return False
             stationary = calib["stationaryMovement"]
             active     = calib["activeMovement"]
 
-            diff  = (active - stationary) / 3
-            self.low  = diff
-            self.med  = diff * 2
-            self.high = diff * 3
+
+            diff      = (active - stationary)
+
+            self.low  = stationary + diff
+            self.med  = stationary + diff * 3
+            self.high = stationary + diff * 6
 
 
-        currentMotion = shared.getVision().getMotion()
-
+        currentMotion = env.getVision().getMotion()
+        print("Current motion is", currentMotion)
         active = True
 
         if self.parameters["low"] == "Low":
@@ -118,8 +125,8 @@ class TipEvent(Event):
     def __init__(self, parameters):
         super(TipEvent, self).__init__()
 
-    def isActive(self, shared):
-        return shared.getRobot().getTipSensor()
+    def isActive(self, env):
+        return env.getRobot().getTipSensor()
 
 
 

@@ -408,7 +408,7 @@ class EventList(QtWidgets.QListWidget):
             return
 
         # Get the type of event you will be replacing the selected event with
-        eventPrompt = EventPromptWindow(parent=self)
+        eventPrompt = EventsGUI.EventPromptWindow(parent=self)
         if not eventPrompt.accepted:
             printf('EventList.replaceEvent():User rejected the prompt.')
             return

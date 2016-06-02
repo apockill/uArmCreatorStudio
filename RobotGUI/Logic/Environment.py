@@ -2,7 +2,7 @@ from copy                  import deepcopy
 from threading             import Thread
 from RobotGUI.Logic.Global import printf, FpsTimer
 from RobotGUI.Logic.Robot  import Robot
-from RobotGUI.Logic        import Video
+from RobotGUI.Logic        import Video, Events, Commands
 
 class Environment:
     """
@@ -93,20 +93,32 @@ class Interpreter:
     def __init__(self, parent):
         self.env        = parent
         self.mainThread = None
-        self.running    = False
+        self.killApp    = True
         self.script     = None
 
+        self.events     = []    # A list of events, and their corresponding commands
 
     # Functions for GUI to use
     def loadScript(self, script):
+        # Creates each event, loads it with its appropriate commandList, and then adds that event to self.events
         self.script = deepcopy(script)
+
+        for _, eventSave in enumerate(script):
+            eventType = getattr(Events, eventSave['typeLogic'])
+            event = eventType(parameters=eventSave['parameters'])
+
+            for _, commandSave in enumerate(eventSave['commandList']):
+                commandType = getattr(Commands, commandSave['typeLogic'])
+                event.addCommand(commandType(commandSave['parameters']))
+
+            self.addEvent(event)
 
 
     # Generic Functions for API and GUI to use
     def startThread(self):
         # Start the program thread
         if self.mainThread is None:
-            self.running    = True
+            self.killApp    = False
             self.mainThread = Thread(target=self.programThread)
             self.mainThread.start()
         else:
@@ -117,7 +129,7 @@ class Interpreter:
 
         printf("Interpreter.startThread(): Closing program thread.")
 
-        self.running = False
+        self.killApp = True
 
         if self.mainThread is not None:
             self.mainThread.join(3000)
@@ -127,22 +139,35 @@ class Interpreter:
                 return False
             else:
                 self.mainThread = None
+                self.events = []
                 return True
+
+
 
     def programThread(self):
         # This is where the script you create actually gets run.
+        print("\n\n\n ##### STARTING PROGRAM #####\n")
 
         self.env.getRobot().setServos(servo1=True, servo2=True, servo3=True, servo4=True)
         self.env.getRobot().refresh()
 
         timer = FpsTimer(fps=10)
 
-        while self.running:
+        while not self.killApp:
             timer.wait()
             if not timer.ready(): continue
-            print("RUNNING INTERPRETER!")
+
+            for event in self.events:
+                if self.killApp: break
+
+                if event.isActive(self.env):
+                    print("Running event", event)
 
         pass
+
+
+    def addEvent(self, event):
+        self.events.append(event)
 
 
     def isRunning(self):
@@ -153,7 +178,7 @@ class Interpreter:
         running.
         :return:
         """
-        return self.running is True or self.mainThread is not None
+        return not self.killApp or self.mainThread is not None
 
     def getStatus(self):
         # Returns information about what event is being run, the index of the command being run, and the actual command.
