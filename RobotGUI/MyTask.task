@@ -1,234 +1,40 @@
 [
    {
-      "typeLogic": "InitEvent",
-      "commandList": [
-         {
-            "typeLogic": "MoveXYZCommand",
-            "typeGUI": "MoveXYZCommandGUI",
-            "parameters": {
-               "y": -2.0,
-               "x": -24.4,
-               "override": false,
-               "z": 10.9
-            }
-         },
-         {
-            "typeLogic": "MoveXYZCommand",
-            "typeGUI": "MoveXYZCommandGUI",
-            "parameters": {
-               "y": -14.1,
-               "x": 0.5,
-               "override": false,
-               "z": 14.8
-            }
-         },
-         {
-            "typeLogic": "StartBlockCommand",
-            "typeGUI": "StartBlockCommandGUI",
-            "parameters": {}
-         },
-         {
-            "typeLogic": "StartBlockCommand",
-            "typeGUI": "StartBlockCommandGUI",
-            "parameters": {}
-         },
-         {
-            "typeLogic": "StartBlockCommand",
-            "typeGUI": "StartBlockCommandGUI",
-            "parameters": {}
-         },
-         {
-            "typeLogic": "StartBlockCommand",
-            "typeGUI": "StartBlockCommandGUI",
-            "parameters": {}
-         },
-         {
-            "typeLogic": "EndBlockCommand",
-            "typeGUI": "EndBlockCommandGUI",
-            "parameters": {}
-         },
-         {
-            "typeLogic": "EndBlockCommand",
-            "typeGUI": "EndBlockCommandGUI",
-            "parameters": {}
-         },
-         {
-            "typeLogic": "EndBlockCommand",
-            "typeGUI": "EndBlockCommandGUI",
-            "parameters": {}
-         },
-         {
-            "typeLogic": "EndBlockCommand",
-            "typeGUI": "EndBlockCommandGUI",
-            "parameters": {}
-         },
-         {
-            "typeLogic": "MoveXYZCommand",
-            "typeGUI": "MoveXYZCommandGUI",
-            "parameters": {
-               "y": -14.4,
-               "x": 0.6,
-               "override": false,
-               "z": 14.9
-            }
-         },
-         {
-            "typeLogic": "StartBlockCommand",
-            "typeGUI": "StartBlockCommandGUI",
-            "parameters": {}
-         },
-         {
-            "typeLogic": "MoveXYZCommand",
-            "typeGUI": "MoveXYZCommandGUI",
-            "parameters": {
-               "y": 0.0,
-               "x": 0.0,
-               "override": false,
-               "z": 0.0
-            }
-         },
-         {
-            "typeLogic": "EndBlockCommand",
-            "typeGUI": "EndBlockCommandGUI",
-            "parameters": {}
-         },
-         {
-            "typeLogic": "EndBlockCommand",
-            "typeGUI": "EndBlockCommandGUI",
-            "parameters": {}
-         },
-         {
-            "typeLogic": "MoveXYZCommand",
-            "typeGUI": "MoveXYZCommandGUI",
-            "parameters": {
-               "y": -14.4,
-               "x": 0.6,
-               "override": false,
-               "z": 14.8
-            }
-         },
-         {
-            "typeLogic": "EndBlockCommand",
-            "typeGUI": "EndBlockCommandGUI",
-            "parameters": {}
-         },
-         {
-            "typeLogic": "EndBlockCommand",
-            "typeGUI": "EndBlockCommandGUI",
-            "parameters": {}
-         },
-         {
-            "typeLogic": "MoveXYZCommand",
-            "typeGUI": "MoveXYZCommandGUI",
-            "parameters": {
-               "y": -16.1,
-               "x": 0.7,
-               "override": false,
-               "z": 14.4
-            }
-         },
-         {
-            "typeLogic": "EndBlockCommand",
-            "typeGUI": "EndBlockCommandGUI",
-            "parameters": {}
-         }
-      ],
-      "typeGUI": "InitEventGUI",
-      "parameters": {}
-   },
-   {
-      "typeLogic": "DestroyEvent",
-      "commandList": [
-         {
-            "typeLogic": "StartBlockCommand",
-            "typeGUI": "StartBlockCommandGUI",
-            "parameters": {}
-         },
-         {
-            "typeLogic": "MoveXYZCommand",
-            "typeGUI": "MoveXYZCommandGUI",
-            "parameters": {
-               "y": 2.0,
-               "x": 1.0,
-               "override": false,
-               "z": 3.0
-            }
-         },
-         {
-            "typeLogic": "EndBlockCommand",
-            "typeGUI": "EndBlockCommandGUI",
-            "parameters": {}
-         }
-      ],
-      "typeGUI": "DestroyEventGUI",
-      "parameters": {}
-   },
-   {
-      "typeLogic": "KeypressEvent",
-      "commandList": [
-         {
-            "typeLogic": "MoveXYZCommand",
-            "typeGUI": "MoveXYZCommandGUI",
-            "parameters": {
-               "y": 0.0,
-               "x": 1234567890.0,
-               "override": true,
-               "z": 0.0
-            }
-         }
-      ],
       "typeGUI": "KeypressEventGUI",
+      "typeLogic": "KeypressEvent",
       "parameters": {
          "checkKey": "A"
-      }
-   },
-   {
-      "typeLogic": "KeypressEvent",
+      },
       "commandList": [
          {
-            "typeLogic": "StartBlockCommand",
-            "typeGUI": "StartBlockCommandGUI",
-            "parameters": {}
-         },
-         {
-            "typeLogic": "EndBlockCommand",
-            "typeGUI": "EndBlockCommandGUI",
-            "parameters": {}
-         },
-         {
-            "typeLogic": "MoveXYZCommand",
             "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand",
             "parameters": {
-               "y": 1234567890.0,
-               "x": 0.0,
-               "override": false,
-               "z": 0.0
+               "y": "-15",
+               "z": "15",
+               "x": "-10",
+               "override": false
             }
          }
-      ],
+      ]
+   },
+   {
       "typeGUI": "KeypressEventGUI",
+      "typeLogic": "KeypressEvent",
       "parameters": {
          "checkKey": "Z"
-      }
-   },
-   {
-      "typeLogic": "MotionEvent",
+      },
       "commandList": [
          {
-            "typeLogic": "MoveXYZCommand",
             "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand",
             "parameters": {
-               "y": 0.0,
-               "x": 0.0,
-               "override": true,
-               "z": 123456789.0
+               "y": "-15",
+               "z": "15",
+               "x": "10",
+               "override": false
             }
          }
-      ],
-      "typeGUI": "MotionEventGUI",
-      "parameters": {
-         "low": "Low",
-         "high": "Inf"
-      }
+      ]
    }
 ]

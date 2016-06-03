@@ -10,10 +10,10 @@
 - Change mimeData to not send plaintext, or at least make it secure (don't run globals()['mimeText']
 - When closing the program, the save thing will get prompted. If "X" is pressed, make the program cancel the close.
 
-
 ######   LONG TERM GOALS    #####
+- Have there be preloaded variables that can be used in expressions, AKA robot.x or robot.y would be in var namespace
 - Add a system for drawing filters on to frames without screwing with logic in vision processing
-- Get Boolean Logic to work properly, with variable creation and variable modification and simple variable math b
+
 - Have events "Light Up" as they are run, and if the commandList is selected, have the commandList "light up" the cmmnds
 - Add a "Robot Status" widget or a "Console" widget to put either on top of the camera feed.
 - Add font support
@@ -28,6 +28,7 @@
 
 ######   FINISHED LONG TERM GOALS    #####
 - Add click/drag to the commandDashboard
+- Get Boolean Logic to work properly, with variable creation and variable modification and simple variable math b
 
 ---------------------------------------------------------------------------------------------------------------------
 

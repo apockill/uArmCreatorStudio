@@ -1,3 +1,4 @@
+import ast  # To check if a statement is python parsible, for evals
 from PyQt5                 import QtGui, QtCore, QtWidgets
 from RobotGUI              import Icons
 from RobotGUI.Logic.Global import printf
@@ -11,7 +12,7 @@ class CommandWidget(QtWidgets.QWidget):
 
         # Set up Globals
         self.indent       = 0
-
+        self.margins      = None  # Is set after initUI creates it's first layout
         # Set up UI Globals
         self.title        = QtWidgets.QLabel()
         self.description  = QtWidgets.QLabel()
@@ -20,9 +21,11 @@ class CommandWidget(QtWidgets.QWidget):
 
 
         self.initUI()
-
+        self.margins      = self.layout().getContentsMargins()  # Has to be after initUI()
+        self.setIndent(0)
         # Connect the delete button with a function in the CommandList widget that will delete selected commands
         self.deleteBtn.clicked.connect(onDeleteFunction)
+
 
     def initUI(self):
         # Create the delete button
@@ -64,13 +67,21 @@ class CommandWidget(QtWidgets.QWidget):
             self.deleteBtn.setVisible(False)
 
     def setIndent(self, indent):
-        if self.indent == indent: return
+        if self.indent == indent: return  # If no indent change has been detected, ignore.
 
         self.indent = indent
         if indent >= 0:
-            self.layout().setContentsMargins(25 * indent, 0, 0, 0)
+            # Indent the margin on the left, to push the block of code and simulate an 'indent'
+            self.layout().setContentsMargins(self.margins[0] + 25 * indent,
+                                             self.margins[1],
+                                             self.margins[2],
+                                             self.margins[3])
         else:
-            self.layout().setContentsMargins(0, 0, 0, 0)
+            # Reset the margins to the default setting
+            self.layout().setContentsMargins(self.margins[0],
+                                             self.margins[1],
+                                             self.margins[2],
+                                             self.margins[3])
 
 
     # The following are accessed only by Command.dressWidget()
@@ -104,7 +115,8 @@ class CommandMenuWidget(QtWidgets.QWidget):
         # gripBtn     = self.getButton(GripCommand)
         # dropBtn     = self.getButton(DropCommand)
         # colorBtn    = self.getButton(ColorTrackCommand)
-        # testVarBtn  = self.getButton(TestVariable)
+        setVarBtn   = self.getButton(SetVariableCommandGUI)
+        testVarBtn  = self.getButton(TestVariableCommandGUI)
         startBlkBtn = self.getButton(StartBlockCommandGUI)
         endBlkBtn   = self.getButton(EndBlockCommandGUI)
 
@@ -118,7 +130,8 @@ class CommandMenuWidget(QtWidgets.QWidget):
         # grid.addWidget(    dropBtn,  5, 0, QtCore.Qt.AlignTop)
         # grid.addWidget(    gripBtn,  6, 0, QtCore.Qt.AlignTop)
         # grid.addWidget(   colorBtn,  7, 0, QtCore.Qt.AlignTop)
-        # grid.addWidget( testVarBtn,  8, 0, QtCore.Qt.AlignTop)
+        grid.addWidget(  setVarBtn,  7, 0, QtCore.Qt.AlignTop)
+        grid.addWidget( testVarBtn,  8, 0, QtCore.Qt.AlignTop)
         grid.addWidget(startBlkBtn,  9, 0, QtCore.Qt.AlignTop)
         grid.addWidget(  endBlkBtn, 10, 0, QtCore.Qt.AlignTop)
 
@@ -206,6 +219,8 @@ class CommandGUI:
     icon    = ''
     title   = ''
 
+    defaultTextBoxWidth = 130
+
     def __init__(self):
         self.description = ""
         self.parameters  = {}  #For commands with no parameters, this should stay empty
@@ -249,9 +264,11 @@ class CommandGUI:
         prompt.setMaximumWidth(450)
         prompt.setLayout(grid)
         prompt.setWindowTitle(self.title)
-
+        prompt.setWindowIcon(QtGui.QIcon(self.icon))
+        prompt.setWhatsThis(self.tooltip)   # This makes the "Question Mark" button on the window show the tooltip msg
         # Dress the base window
         prompt = self.dressWindow(prompt)
+
 
         # Run the info window and prevent other windows from being clicked while open:
         # Create and connect buttons
@@ -296,6 +313,30 @@ class CommandGUI:
             inputTextbox.setText(str(fallback))
         return intInput
 
+    def sanitizeEval(self, inputTextbox, fallback):
+        """
+        Checks if the eval statement is python-parsible. If it is not, it will return the "fallback" value.
+        """
+        # Sanitize input from the user
+        inputCode = inputTextbox.text()
+        inputCode = inputCode.replace('^', '**')
+
+        try:
+            ast.parse(inputCode)
+        except SyntaxError:
+            return fallback
+        return inputCode
+
+    def sanitizeVariable(self, inputTextbox, fallback):
+        # Sanitize input from the user
+        possibleNumber = str(inputTextbox.text())
+        possibleNumber.replace(".", "")  # For isnumeric() to work, there can't be a decimal point
+
+        if possibleNumber.isnumeric():
+            return fallback
+
+        return possibleNumber
+
 
 # The following commands should be empty, and only are there so that subclasses without them don't cause errors
 
@@ -331,6 +372,7 @@ Commands must have:
     - Variables
         - tooltip
         - icon
+        - logicPair (a string of the class name that is its logic counterpart, for interpreter use only)
         - title   (Except for certain functions, such as StartBlockCommand)
     - Functions
         - init(shared, parameters=None) function
@@ -338,7 +380,43 @@ Commands must have:
 
 Special Cases:
     -StartBlockCommand and EndBlockCommand are used directly in ControlPanelGUI.py to indent code blocks correctly
+
+Example of a fully filled out class:
+
+class NameCommandGUI(CommandGUI):
+    title = "Example Title"
+    tooltip = "This tool does X Y and Z"
+    icon = Icons.some_icon
+    logicPair = "NameCommand"
+
+    def __init__(self, env, parameters=None):
+        super(NameCommandGUI, self).__init__()
+        self.parameters = parameters
+
+        if self.parameters is None:
+            # Some code to set up default parameters
+            pass
+
+    def dressWindow(self, prompt):
+        # Do some GUI code setup
+        # Put all the objects into horizontal layouts called Rows
+
+        prompt.mainVLayout.addLayout(row1) # and so on for all of the rows
+
+        return prompt
+
+    def extractPromptInfo(self, prompt):
+        newParameters = {} # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
+
+        self.parameters.update(newParameters)
+
+        return self.parameters
+
+    def updateDescription(self):
+        self.description = ""  # Some string that uses your parameters to describe the object.
+
 """
+
 
 class MoveXYZCommandGUI(CommandGUI):
     title      = "Move XYZ"
@@ -346,7 +424,7 @@ class MoveXYZCommandGUI(CommandGUI):
     icon       = Icons.xyz_command
     logicPair  = 'MoveXYZCommand'
 
-    def __init__(self, shared, parameters=None):
+    def __init__(self, env, parameters=None):
         super(MoveXYZCommandGUI, self).__init__()
 
         # Set default parameters that will show up on the window
@@ -355,7 +433,7 @@ class MoveXYZCommandGUI(CommandGUI):
         if self.parameters is None:
             # If no parameters were given, it's a new command. Thus, get the robots current position and fill it in.
             # This helps with workflow so you can create MoveXYZ commands and move the robot around as you work with it
-            currentXYZ = shared.getRobot().getCurrentCoord()
+            currentXYZ = env.getRobot().getCurrentCoord()
 
             self.parameters = {'x': round(currentXYZ['x'], 1),
                                'y': round(currentXYZ['y'], 1),
@@ -408,26 +486,24 @@ class MoveXYZCommandGUI(CommandGUI):
         prompt.mainVLayout.addLayout(row2)
         prompt.mainVLayout.addLayout(row3)
         prompt.mainVLayout.addLayout(row4)
-
-
-        # self.setWindowIcon(QtGui.QIcon(self.icon))
         return prompt
 
     def extractPromptInfo(self, prompt):
         # Update the parameters and the description
-        newParameters = {'x': self.sanitizeFloat(prompt.rotEdit, self.parameters["x"]),
-                         'y': self.sanitizeFloat(prompt.strEdit, self.parameters["y"]),
-                         'z': self.sanitizeFloat(prompt.hgtEdit, self.parameters["z"]),
+        newParameters = {'x': self.sanitizeEval(prompt.rotEdit, self.parameters["x"]),
+                         'y': self.sanitizeEval(prompt.strEdit, self.parameters["y"]),
+                         'z': self.sanitizeEval(prompt.hgtEdit, self.parameters["z"]),
                          'override': prompt.watCheck.isChecked()}
 
         self.parameters.update(newParameters)
-        return newParameters
+
+        return self.parameters
 
     def updateDescription(self):
         # Update the description, for the dressWidget() and the openView() prompt
-        self.description =     'X: '        + str(round(self.parameters['x'], 1))  +  \
-                            '   Y: '        + str(round(self.parameters['y'], 1))  +  \
-                            '   Z: '        + str(round(self.parameters['z'], 1))  +  \
+        self.description =     'X: '        + str(self.parameters['x']       )  +  \
+                            '   Y: '        + str(self.parameters['y']       )  +  \
+                            '   Z: '        + str(self.parameters['z']       )  +  \
                             '   Override: ' + str(self.parameters['override'])
 
 
@@ -457,104 +533,265 @@ class EndBlockCommandGUI(CommandGUI):
         super(EndBlockCommandGUI, self).__init__()
 
 
+class SetVariableCommandGUI(CommandGUI):
+    title = "Set Variable"
+    tooltip = "This command can create a variable or set an existing variable to a value or an expression."
+    icon = Icons.set_var_command
+    logicPair = "SetVariableCommand"
+
+    def __init__(self, env, parameters=None):
+        super(SetVariableCommandGUI, self).__init__()
+        self.parameters = parameters
+
+        if self.parameters is None:
+            # Some code to set up default parameters
+            self.parameters = {   "variable": "",
+                                "expression": ""}
+
+
+    def dressWindow(self, prompt):
+        # Do some GUI code setup
+        # Put all the objects into horizontal layouts called Rows
+        prompt.namEdit   = QtWidgets.QLineEdit()   #  "Name" edit
+        prompt.valEdit   = QtWidgets.QLineEdit()   #  "value" edit
+
+        prompt.namEdit.setFixedWidth(self.defaultTextBoxWidth)
+        prompt.valEdit.setFixedWidth(self.defaultTextBoxWidth)
+
+
+        # Set up all the labels for the inputs
+        namLabel = QtWidgets.QLabel('Variable Name: ')
+        valLabel = QtWidgets.QLabel('Value or Expression: ')
+
+
+        # Fill the textboxes with the default parameters
+        prompt.namEdit.setText(str(self.parameters['variable']))
+        prompt.valEdit.setText(str(self.parameters['expression']))
+
+
+        row1 = QtWidgets.QHBoxLayout()
+        row2 = QtWidgets.QHBoxLayout()
+
+
+        row1.addWidget(      namLabel, QtCore.Qt.AlignRight)
+        row1.addWidget(prompt.namEdit, QtCore.Qt.AlignLeft)
+
+        row2.addWidget(      valLabel, QtCore.Qt.AlignRight)
+        row2.addWidget(prompt.valEdit, QtCore.Qt.AlignLeft)
+
+        prompt.mainVLayout.addLayout(row1)
+        prompt.mainVLayout.addLayout(row2)
+
+        return prompt
+
+    def extractPromptInfo(self, prompt):
+        # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
+
+        newParameters = {"variable": self.sanitizeVariable(prompt.namEdit, self.parameters["variable"]),
+                       "expression": prompt.valEdit.text()}
+
+        self.parameters.update(newParameters)
+
+        return self.parameters
+
+    def updateDescription(self):
+        # Some string that uses your parameters to describe the object.
+        self.description = "Set " + self.parameters["variable"] + " to " + self.parameters["expression"]
+
+
+class TestVariableCommandGUI(CommandGUI):
+    title      = "Test Variable"
+    tooltip    = "This will allow/disallow code to run that is in blocked brackets below it."
+    icon       = Icons.test_var_command
+    logicPair  = 'TestVariableCommand'
+
+    def __init__(self, env, parameters=None):
+        super(TestVariableCommandGUI, self).__init__()
+
+
+        self.parameters = parameters
+
+        if self.parameters is None:
+            self.parameters = {'variable':      '',
+                               'test':           0,
+                               'expression':    '',
+                               'not':        False}
+
+
+    def dressWindow(self, prompt):
+        prompt.varEdit   = QtWidgets.QLineEdit()   #  "Variable" edit
+        prompt.tstMenu   = QtWidgets.QComboBox()
+        prompt.valEdit   = QtWidgets.QLineEdit()
+        prompt.notCheck  = QtWidgets.QCheckBox()   #  "Not" CheckBox
+
+        prompt.varEdit.setFixedWidth(self.defaultTextBoxWidth)
+        prompt.tstMenu.setFixedWidth(self.defaultTextBoxWidth)
+        prompt.valEdit.setFixedWidth(self.defaultTextBoxWidth)
+
+        prompt.tstMenu.addItem('Equal To')
+        prompt.tstMenu.addItem('Greater Than')
+        prompt.tstMenu.addItem('Less Then')
+
+
+
+        # Set up all the labels for the inputs
+        varLabel = QtWidgets.QLabel('Variable: ')
+        tstLabel = QtWidgets.QLabel('Test: ')
+        valLabel = QtWidgets.QLabel('Value: ')
+        notLabel = QtWidgets.QLabel('Not')
+
+
+        # Fill the textboxes with the default parameters
+        prompt.varEdit.setText(    str(self.parameters['variable']))
+        prompt.tstMenu.setCurrentIndex(self.parameters['test'])
+        prompt.valEdit.setText(    str(self.parameters['expression']))
+        prompt.notCheck.setChecked(    self.parameters['not'])
+
+        row1 = QtWidgets.QHBoxLayout()
+        row2 = QtWidgets.QHBoxLayout()
+        row3 = QtWidgets.QHBoxLayout()
+        row4 = QtWidgets.QHBoxLayout()
+
+        row1.addWidget(      varLabel, QtCore.Qt.AlignRight)
+        row1.addWidget(prompt.varEdit, QtCore.Qt.AlignLeft)
+
+        row2.addWidget(      tstLabel, QtCore.Qt.AlignRight)
+        row2.addWidget(prompt.tstMenu, QtCore.Qt.AlignLeft)
+
+        row3.addWidget(      valLabel, QtCore.Qt.AlignRight)
+        row3.addWidget(prompt.valEdit, QtCore.Qt.AlignLeft)
+
+        row4.addStretch(1)
+        row4.addWidget(       notLabel)
+        row4.addWidget(prompt.notCheck)
+
+        prompt.mainVLayout.addLayout(row1)
+        prompt.mainVLayout.addLayout(row2)
+        prompt.mainVLayout.addLayout(row3)
+        prompt.mainVLayout.addLayout(row4)
+
+        return prompt
+
+    def extractPromptInfo(self, prompt):
+        newParameters = {'variable':      self.sanitizeVariable(prompt.varEdit, self.parameters['variable']),
+                         'test':       prompt.tstMenu.currentIndex(),
+                         'expression':    str(prompt.valEdit.text()),  # This can't be sanitized, unfortunately :/
+                         'not':          prompt.notCheck.isChecked()}
+
+        self.parameters.update(newParameters)
+        return self.parameters
+
+    def updateDescription(self):
+        operations = [' equal to', ' greater than', ' less than']
+        isOrIsnt   = ['', ' not']
+        self.description =  'If ' + str(self.parameters['variable']) + ' is' +  isOrIsnt[self.parameters['not']] + \
+                            operations[self.parameters['test']] + ' ' +  self.parameters['expression'] + ' then'
+
+
+
+
+
+
+
+
 
 
 
 
 # ########## NON-UPDATED COMMANDS ########
-# class DetachCommand(CommandGUI):
-#     """
-#     A command for detaching the servos of the robot
-#     """
-#     title       = "Detach Servos"
-#     tooltip    = "Disengage servos on the robot"
-#     icon       = Icons.detach_command
-#
-#     def __init__(self, parent, shared, **kwargs):
-#         super(DetachCommand, self).__init__(parent)
-#
-#
-#         #Set default parameters that will show up on the window
-#         self.parameters = kwargs.get("parameters",
-#                                      {'servo1': False,
-#                                       'servo2': False,
-#                                       'servo3': False,
-#                                       'servo4': False})
-#
-#         self.srvo1Box = QtWidgets.QCheckBox()  #  Rotation textbox
-#         self.srvo2Box = QtWidgets.QCheckBox()  #  Stretch textbox
-#         self.srvo3Box = QtWidgets.QCheckBox()  #  Height textbox
-#         self.srvo4Box = QtWidgets.QCheckBox()  #  "relative" CheckBox
-#         self.initUI()
-#         self.setWindowIcon(QtGui.QIcon(self.icon))
-#
-#     def initUI(self):
-#         #Set up all the labels for the inputs
-#         label1 = QtWidgets.QLabel('Rotation Servo:')
-#         label2 = QtWidgets.QLabel('Stretch Servo:')
-#         label3 = QtWidgets.QLabel('Height Servo:')
-#         label4 = QtWidgets.QLabel('Wrist Servo:')
-#
-#         #Fill the textboxes with the default parameters
-#         self.srvo1Box.setChecked(self.parameters['servo1'])
-#         self.srvo2Box.setChecked(self.parameters['servo2'])
-#         self.srvo3Box.setChecked(self.parameters['servo3'])
-#         self.srvo4Box.setChecked(self.parameters['servo4'])
-#
-#         row1 = QtWidgets.QHBoxLayout()
-#         row2 = QtWidgets.QHBoxLayout()
-#         row3 = QtWidgets.QHBoxLayout()
-#         row4 = QtWidgets.QHBoxLayout()
-#
-#         row1.addWidget(label1, QtCore.Qt.AlignRight)
-#         row1.addStretch(1)
-#         row1.addWidget(self.srvo1Box, QtCore.Qt.AlignLeft)
-#
-#         row2.addWidget(label2, QtCore.Qt.AlignRight)
-#         row2.addStretch(1)
-#         row2.addWidget(self.srvo2Box, QtCore.Qt.AlignLeft)
-#
-#         row3.addWidget(label3, QtCore.Qt.AlignRight)
-#         row3.addStretch(1)
-#         row3.addWidget(self.srvo3Box, QtCore.Qt.AlignLeft)
-#
-#         row4.addWidget(label4, QtCore.Qt.AlignRight)
-#         row4.addStretch(1)
-#         row4.addWidget(self.srvo4Box, QtCore.Qt.AlignLeft)
-#
-#         self.mainVLayout.addLayout(row1)
-#         self.mainVLayout.addLayout(row2)
-#         self.mainVLayout.addLayout(row3)
-#         self.mainVLayout.addLayout(row4)
-#
-#     def getInfo(self):
-#         newParameters = {'servo1': self.srvo1Box.isChecked(),
-#                          'servo2': self.srvo2Box.isChecked(),
-#                          'servo3': self.srvo3Box.isChecked(),
-#                          'servo4': self.srvo4Box.isChecked()}
-#
-#         return newParameters
-#
-#     def updateDescription(self):
-#         descriptionBuild = "Servos"
-#         if self.parameters["servo1"]: descriptionBuild += "  Rotation"
-#         if self.parameters["servo2"]: descriptionBuild += "  Stretch"
-#         if self.parameters["servo3"]: descriptionBuild += "  Height"
-#         if self.parameters["servo4"]: descriptionBuild += "  Wrist"
-#
-#         self.description = descriptionBuild
-#
-#     def run(self, shared):
-#         printf("DetachCommand.run(): Detaching servos ", self.parameters['servo1'], \
-#                                                          self.parameters['servo2'], \
-#                                                          self.parameters['servo3'], \
-#                                                          self.parameters['servo4'])
-#         if self.parameters['servo1']: shared.getRobot().setServos(servo1=False)
-#         if self.parameters['servo2']: shared.getRobot().setServos(servo2=False)
-#         if self.parameters['servo3']: shared.getRobot().setServos(servo3=False)
-#         if self.parameters['servo4']: shared.getRobot().setServos(servo4=False)
-#
-#
+class DetachCommand(CommandGUI):
+    """
+    A command for detaching the servos of the robot
+    """
+    title       = "Detach Servos"
+    tooltip    = "Disengage servos on the robot"
+    icon       = Icons.detach_command
+
+    def __init__(self, parent, env, **kwargs):
+        super(DetachCommand, self).__init__(parent)
+
+
+        # Set default parameters that will show up on the window
+        self.parameters = kwargs.get("parameters",
+                                     {'servo1': False,
+                                      'servo2': False,
+                                      'servo3': False,
+                                      'servo4': False})
+
+        self.srvo1Box = QtWidgets.QCheckBox()  #  Rotation textbox
+        self.srvo2Box = QtWidgets.QCheckBox()  #  Stretch textbox
+        self.srvo3Box = QtWidgets.QCheckBox()  #  Height textbox
+        self.srvo4Box = QtWidgets.QCheckBox()  #  "relative" CheckBox
+        self.initUI()
+        self.setWindowIcon(QtGui.QIcon(self.icon))
+
+    def initUI(self):
+        #Set up all the labels for the inputs
+        label1 = QtWidgets.QLabel('Rotation Servo:')
+        label2 = QtWidgets.QLabel('Stretch Servo:')
+        label3 = QtWidgets.QLabel('Height Servo:')
+        label4 = QtWidgets.QLabel('Wrist Servo:')
+
+        #Fill the textboxes with the default parameters
+        self.srvo1Box.setChecked(self.parameters['servo1'])
+        self.srvo2Box.setChecked(self.parameters['servo2'])
+        self.srvo3Box.setChecked(self.parameters['servo3'])
+        self.srvo4Box.setChecked(self.parameters['servo4'])
+
+        row1 = QtWidgets.QHBoxLayout()
+        row2 = QtWidgets.QHBoxLayout()
+        row3 = QtWidgets.QHBoxLayout()
+        row4 = QtWidgets.QHBoxLayout()
+
+        row1.addWidget(label1, QtCore.Qt.AlignRight)
+        row1.addStretch(1)
+        row1.addWidget(self.srvo1Box, QtCore.Qt.AlignLeft)
+
+        row2.addWidget(label2, QtCore.Qt.AlignRight)
+        row2.addStretch(1)
+        row2.addWidget(self.srvo2Box, QtCore.Qt.AlignLeft)
+
+        row3.addWidget(label3, QtCore.Qt.AlignRight)
+        row3.addStretch(1)
+        row3.addWidget(self.srvo3Box, QtCore.Qt.AlignLeft)
+
+        row4.addWidget(label4, QtCore.Qt.AlignRight)
+        row4.addStretch(1)
+        row4.addWidget(self.srvo4Box, QtCore.Qt.AlignLeft)
+
+        self.mainVLayout.addLayout(row1)
+        self.mainVLayout.addLayout(row2)
+        self.mainVLayout.addLayout(row3)
+        self.mainVLayout.addLayout(row4)
+
+    def getInfo(self):
+        newParameters = {'servo1': self.srvo1Box.isChecked(),
+                         'servo2': self.srvo2Box.isChecked(),
+                         'servo3': self.srvo3Box.isChecked(),
+                         'servo4': self.srvo4Box.isChecked()}
+
+        return newParameters
+
+    def updateDescription(self):
+        descriptionBuild = "Servos"
+        if self.parameters["servo1"]: descriptionBuild += "  Rotation"
+        if self.parameters["servo2"]: descriptionBuild += "  Stretch"
+        if self.parameters["servo3"]: descriptionBuild += "  Height"
+        if self.parameters["servo4"]: descriptionBuild += "  Wrist"
+
+        self.description = descriptionBuild
+
+    def run(self, env):
+        printf("DetachCommand.run(): Detaching servos ", self.parameters['servo1'], \
+                                                         self.parameters['servo2'], \
+                                                         self.parameters['servo3'], \
+                                                         self.parameters['servo4'])
+        if self.parameters['servo1']: env.getRobot().setServos(servo1=False)
+        if self.parameters['servo2']: env.getRobot().setServos(servo2=False)
+        if self.parameters['servo3']: env.getRobot().setServos(servo3=False)
+        if self.parameters['servo4']: env.getRobot().setServos(servo4=False)
+
+
 # class AttachCommand(CommandGUI):
 #     """
 #     A command for attaching the servos of the robot
@@ -564,7 +801,7 @@ class EndBlockCommandGUI(CommandGUI):
 #     icon       = Icons.attach_command
 #
 #
-#     def __init__(self, parent, shared, **kwargs):
+#     def __init__(self, parent, env, **kwargs):
 #         super(AttachCommand, self).__init__(parent)
 #
 #         self.parameters = kwargs.get("parameters",
@@ -636,16 +873,16 @@ class EndBlockCommandGUI(CommandGUI):
 #
 #         self.description = descriptionBuild
 #
-#     def run(self, shared):
+#     def run(self, env):
 #         printf("AttachCommand.run(): Attaching servos ", self.parameters['servo1'], \
 #                                                           self.parameters['servo2'], \
 #                                                           self.parameters['servo3'], \
 #                                                           self.parameters['servo4'])
 #
-#         if self.parameters['servo1']: shared.getRobot().setServos(servo1=True)
-#         if self.parameters['servo2']: shared.getRobot().setServos(servo2=True)
-#         if self.parameters['servo3']: shared.getRobot().setServos(servo3=True)
-#         if self.parameters['servo4']: shared.getRobot().setServos(servo4=True)
+#         if self.parameters['servo1']: env.getRobot().setServos(servo1=True)
+#         if self.parameters['servo2']: env.getRobot().setServos(servo2=True)
+#         if self.parameters['servo3']: env.getRobot().setServos(servo3=True)
+#         if self.parameters['servo4']: env.getRobot().setServos(servo4=True)
 #
 #
 # class WaitCommand(CommandGUI):
@@ -653,7 +890,7 @@ class EndBlockCommandGUI(CommandGUI):
 #     tooltip   = "Halts the program for a preset amount of time"
 #     icon      = Icons.wait_command
 #
-#     def __init__(self, parent, shared, **kwargs):
+#     def __init__(self, parent, env, **kwargs):
 #         super(WaitCommand, self).__init__(parent)
 #
 #
@@ -687,7 +924,7 @@ class EndBlockCommandGUI(CommandGUI):
 #     def updateDescription(self):
 #         self.description = str(round(self.parameters['time'], 1)) + " seconds"
 #
-#     def run(self, shared):
+#     def run(self, env):
 #         printf("WaitCommand.run(): Waiting for", self.parameters["time"], "seconds")
 #         sleep(self.parameters["time"])
 #
@@ -702,11 +939,11 @@ class EndBlockCommandGUI(CommandGUI):
 #     tooltip    = "Send any changed position information to the robot. This will stop event processing for a moment."
 #     icon       = Icons.refresh_command
 #
-#     def __init__(self, parent, shared, **kwargs):
+#     def __init__(self, parent, env, **kwargs):
 #         super(RefreshCommand, self).__init__(parent)
 #
-#     def run(self, shared):
-#         shared.getRobot().refresh()
+#     def run(self, env):
+#         env.getRobot().refresh()
 #
 #
 # class GripCommand(CommandGUI):
@@ -714,11 +951,11 @@ class EndBlockCommandGUI(CommandGUI):
 #     tooltip    = "Activate the robots gripper"
 #     icon       = Icons.grip_command
 #
-#     def __init__(self, parent, shared, **kwargs):
+#     def __init__(self, parent, env, **kwargs):
 #         super(GripCommand, self).__init__(parent)
 #
-#     def run(self, shared):
-#         shared.getRobot().setGripper(True)
+#     def run(self, env):
+#         env.getRobot().setGripper(True)
 #
 #
 # class DropCommand(CommandGUI):
@@ -726,12 +963,12 @@ class EndBlockCommandGUI(CommandGUI):
 #     tooltip    = "Deactivate the robots gripper"
 #     icon       = Icons.drop_command
 #
-#     def __init__(self, parent, shared,  **kwargs):
+#     def __init__(self, parent, env,  **kwargs):
 #         super(DropCommand, self).__init__(parent)
 #
 #
-#     def run(self, shared):
-#         shared.getRobot().setGripper(False)
+#     def run(self, env):
+#         env.getRobot().setGripper(False)
 #
 #
 # class ColorTrackCommand(CommandGUI):
@@ -739,7 +976,7 @@ class EndBlockCommandGUI(CommandGUI):
 #     tooltip    = "Tracks objects by looking for a certain color."
 #     icon       = Icons.colortrack_command
 #
-#     def __init__(self, parent, shared, **kwargs):
+#     def __init__(self, parent, env, **kwargs):
 #
 #         super(ColorTrackCommand, self).__init__(parent)
 #         self.parameters = kwargs.get("parameters",
@@ -760,10 +997,10 @@ class EndBlockCommandGUI(CommandGUI):
 #         self.lValEdit = QtWidgets.QLineEdit()
 #         self.hValEdit = QtWidgets.QLineEdit()
 #
-#         self.initUI(shared)
+#         self.initUI(env)
 #         self.setWindowIcon(QtGui.QIcon(self.icon))
 #
-#     def initUI(self, shared):
+#     def initUI(self, env):
 #         #Set up all the labels for the inputs
 #         hueLabel = QtWidgets.QLabel('Hue/Tolerance: ')
 #         satLabel = QtWidgets.QLabel('Saturation range: ')
@@ -789,7 +1026,7 @@ class EndBlockCommandGUI(CommandGUI):
 #         #Set up 'scanbutton' that will scan the camera and fill out the parameters for recommended settings
 #         scanLabel  = QtWidgets.QLabel("Press button to automatically fill out values:")
 #         scanButton = QtWidgets.QPushButton("Scan Colors")
-#         scanButton.clicked.connect(lambda: self.scanColors(shared))
+#         scanButton.clicked.connect(lambda: self.scanColors(env))
 #
 #
 #
@@ -824,15 +1061,15 @@ class EndBlockCommandGUI(CommandGUI):
 #         self.mainVLayout.addLayout(row4)
 #
 #
-#     def scanColors(self, shared):
+#     def scanColors(self, env):
 #         printf("ColorTrackCommand.scanColors(): Scanning colors!")
 #
-#         if shared is None:
-#             printf("ColorTrackCommand.scanColors(): ERROR: Tried to scan colors while shared was None! colors!")
+#         if env is None:
+#             printf("ColorTrackCommand.scanColors(): ERROR: Tried to scan colors while env was None! colors!")
 #
 #             return
 #
-#         avgColor = shared.getVision().bgr2hsv(shared.getVision().getColor())
+#         avgColor = env.getVision().bgr2hsv(env.getVision().getColor())
 #         percentTolerance = .3
 #
 #         printf("avgColor", avgColor)
@@ -857,15 +1094,15 @@ class EndBlockCommandGUI(CommandGUI):
 #     def updateDescription(self):
 #         self.description = 'Track objects with a hue of ' + str(self.parameters['cHue'])
 #
-#     def run(self, shared):
+#     def run(self, env):
 #         printf("ColorTrackCommand.run(): Tracking colored objects! ")
 #
-#         if not shared.getVision().cameraConnected():
+#         if not env.getVision().cameraConnected():
 #             printf("ColorTrackCommand.run(): ERROR: No camera detected")
 #             return
 #
 #         #Build a function that will return the objects position whenever it is called, using the self.parameters
-#         objPos = lambda: shared.getVision().findObjectColor(self.parameters['cHue'],
+#         objPos = lambda: env.getVision().findObjectColor(self.parameters['cHue'],
 #                                                             self.parameters['tHue'],
 #                                                             self.parameters['lSat'],
 #                                                             self.parameters['hSat'],
@@ -877,96 +1114,19 @@ class EndBlockCommandGUI(CommandGUI):
 #         #If no object was found
 #         if objCoords is None: return
 #
-#         move = Robot.getDirectionToTarget(objCoords, shared.getVision().vStream.dimensions, 10)
+#         move = Robot.getDirectionToTarget(objCoords, env.getVision().vStream.dimensions, 10)
 #
 #         #If the robot is already focused
 #         if move is None: return
 #
 #         #Convert the move to one on the base grid
-#         baseAngle = shared.getRobot().getBaseAngle()
+#         baseAngle = env.getRobot().getBaseAngle()
 #         modDirection = Robot.getRelative(move[0], move[1], baseAngle)
 #
 #         # if modDirection is None: return
 #
 #
-#         shared.getRobot().setPos(x=modDirection[0] / 3, y=modDirection[1] / 3, relative=True)
-#
-#
-# class TestVariable(CommandGUI):
-#     title      = "Test Variable"
-#     tooltip    = "This will allow/disallow code to run that is in blocked brackets below it."
-#     icon       = Icons.test_var_command
-#
-#     def __init__(self, parent, shared, **kwargs):
-#         super(TestVariable, self).__init__(parent)
-#
-#
-#         self.parameters = kwargs.get("parameters",
-#                                      {'variable': '',
-#                                       'not': False})  #Flip the result
-#
-#         self.varEdit   = QtWidgets.QLineEdit(self)   #  "Variable" edit
-#         self.tstMenu   = QtWidgets.QComboBox()       #  "test" menu
-#         self.notCheck  = QtWidgets.QCheckBox(self)   #  "Not" CheckBox
-#
-#         self.initUI()
-#         self.setWindowIcon(QtGui.QIcon(self.icon))
-#
-#     def initUI(self):
-#         self.varEdit.setFixedWidth(100)
-#         self.tstMenu.setFixedWidth(100)
-#
-#         self.tstMenu.addItem('Equal To')
-#         self.tstMenu.addItem('Greater Than')
-#         self.tstMenu.addItem('Less Then')
-#
-#
-#         #Set up all the labels for the inputs
-#         varLabel = QtWidgets.QLabel('Variable: ')
-#         tstLabel = QtWidgets.QLabel('Test: ')
-#         notLabel = QtWidgets.QLabel('Not')
-#
-#         #Fill the textboxes with the default parameters
-#         self.varEdit.setText(str(self.parameters['variable']))
-#         self.tstMenu.setCurrentIndex(2)
-#         self.notCheck.setChecked(self.parameters['not'])
-#
-#         row1 = QtWidgets.QHBoxLayout()
-#         row2 = QtWidgets.QHBoxLayout()
-#         row3 = QtWidgets.QHBoxLayout()
-#
-#         row1.addWidget(     varLabel, QtCore.Qt.AlignRight)
-#         row1.addWidget( self.varEdit, QtCore.Qt.AlignLeft)
-#
-#         row2.addWidget(tstLabel, QtCore.Qt.AlignRight)
-#         row2.addWidget(self.tstMenu, QtCore.Qt.AlignLeft)
-#
-#         row3.addStretch(1)
-#         row3.addWidget(     notLabel)
-#         row3.addWidget(self.notCheck)
-#
-#         self.mainVLayout.addLayout(row1)
-#         self.mainVLayout.addLayout(row2)
-#         self.mainVLayout.addLayout(row3)
-#
-#
-#     def getInfo(self):
-#         newParameters = {'variable': str(self.varEdit.text()),
-#                               'not': self.notCheck.isChecked()}
-#         return newParameters
-#
-#     def updateDescription(self):
-#         self.description =  'checked: ' + str(self.notCheck.isChecked())
-#
-#     def run(self, shared):
-#         return self.notCheck.isChecked()
-#
-#
-
-
-
-
-
+#         env.getRobot().setPos(x=modDirection[0] / 3, y=modDirection[1] / 3, relative=True)
 
 
 

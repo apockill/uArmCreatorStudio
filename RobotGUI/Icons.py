@@ -48,4 +48,6 @@ drop_command       = img_file + "drop_command.png"
 colortrack_command = img_file + "colortrack_command.png"
 startblock_command = img_file + "startblock_command.png"
 endblock_command   = img_file + "endblock_command.png"
+set_var_command    = img_file + "set_var_command.png"
 test_var_command   = img_file + "test_var_command.png"
+

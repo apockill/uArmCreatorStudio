@@ -91,13 +91,14 @@ class MotionEvent(Event):
 
             diff      = (active - stationary)
 
+            # Scale the movement thresholds and set a low, medium, and high threshold
             self.low  = stationary + diff
             self.med  = stationary + diff * 3
             self.high = stationary + diff * 6
 
 
         currentMotion = env.getVision().getMotion()
-        print("Current motion is", currentMotion)
+
         active = True
 
         if self.parameters["low"] == "Low":

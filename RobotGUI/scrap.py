@@ -1,4 +1,3 @@
+lol = []
 
-
-exec("a = 3\n"
-     "print(a)")
+print(lol[-1])

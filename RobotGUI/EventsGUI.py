@@ -43,39 +43,44 @@ class EventPromptWindow(QtWidgets.QDialog):
         self.accepted         = False
         self.chosenEvent      = None  #What event the user chose to add (changed in btnClicked() function)
         self.chosenParameters = None
+
+        self.initButtons()
+        self.initButtonMenus()
         self.initUI()
-        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)  # TODO: Investigate adding this to command windows
         self.exec_()  #Open self, and prevent anyone clicking on other windows
 
 
     def initUI(self):
-        self.initButtons()
-        self.initButtonMenus()
 
-        #Create grid layout
+
+        # Create grid layout
         grid = QtWidgets.QGridLayout()
-            #Left column
+
+        # Left column
         grid.addWidget(      self.initBtn, 0, 0, QtCore.Qt.AlignLeft)
         grid.addWidget(      self.stepBtn, 1, 0, QtCore.Qt.AlignLeft)
         grid.addWidget(   self.destroyBtn, 2, 0, QtCore.Qt.AlignLeft)
-            #Right column
+
+        # Right column
         grid.addWidget(  self.keyboardBtn, 0, 1, QtCore.Qt.AlignLeft)
-        grid.addWidget( self.intersectBtn, 1, 1, QtCore.Qt.AlignLeft)
-        grid.addWidget(       self.tipBtn, 2, 1, QtCore.Qt.AlignLeft)
+        # grid.addWidget( self.intersectBtn, 1, 1, QtCore.Qt.AlignLeft)
+        grid.addWidget(       self.tipBtn, 1, 1, QtCore.Qt.AlignLeft)
         grid.addWidget(    self.motionBtn, 2, 1, QtCore.Qt.AlignLeft)
 
-        #Set up Cancel button in it's own layout:
+        # Set up Cancel button in it's own layout:
         cancelLayout = QtWidgets.QHBoxLayout()
         cancelLayout.addWidget(self.cancelBtn)
 
 
-        #Create main layout
+        # Create main layout
         mainVLayout = QtWidgets.QVBoxLayout()
         mainVLayout.addLayout(grid)
         mainVLayout.addLayout(cancelLayout, QtCore.Qt.AlignHCenter)
 
 
-        #Finalize everything
+        # Finalize everything
         self.setLayout(mainVLayout)
         self.setFixedSize(self.sizeHint())  #Make the window a fixed size
         self.setWindowTitle('Add an Event')

@@ -2,10 +2,6 @@ import copy
 import RobotGUI.CommandsGUI as CommandsGUI
 import RobotGUI.EventsGUI   as EventsGUI
 from PyQt5                 import QtCore, QtWidgets
-from threading             import Thread
-
-# from RobotGUI.CommandsGUI     import *
-# from RobotGUI.EventsGUI       import *
 from RobotGUI.Logic.Global import printf, FpsTimer
 
 
@@ -216,7 +212,7 @@ class ControlPanel(QtWidgets.QWidget):
 
         while index < len(commandsOrdered):
             command = commandsOrdered[index]
-            ret = command.run(self.env)
+            ret     = command.run(self.env)
 
             if ret is not None and not ret:
                 skipToIndent = command.indent
@@ -226,6 +222,7 @@ class ControlPanel(QtWidgets.QWidget):
                     if commandsOrdered[i].indent == skipToIndent:
                         index = i - 1
                         break
+
                     # If there are no commands
                     if i == len(commandsOrdered) - 1:
                         index = i
@@ -239,7 +236,6 @@ class ControlPanel(QtWidgets.QWidget):
 
     def loadData(self, data):
         self.eventList.loadData(data, self.env)
-
 
 
 class EventList(QtWidgets.QListWidget):
@@ -507,6 +503,8 @@ class CommandList(QtWidgets.QListWidget):
         for item in self.selectedItems():
             del self.commands[self.itemWidget(item)]
             self.takeItem(self.row(item))
+
+        self.refresh()  # This will update indents, which can change when you delete a command
 
     def refresh(self):
         # Refreshes the order and indenting of the CommandList
