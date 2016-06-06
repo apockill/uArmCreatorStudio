@@ -170,10 +170,22 @@ class WaitCommand(Command):
 
         printf("WaitCommand.run(): Waiting for", waitTime, "seconds")
 
+        # Split the wait into incriments of 0.1 seconds each, and check if the thread has been stopped at each incriment
         if success:
-            sleep(waitTime)
+            timeWaited = 0.0
+            while timeWaited < waitTime - 0.1:
+                sleep(0.1)
+
+                if interpreter.killApp: break
+                timeWaited += 0.1
+
+            # Sleep the remained of time left (for extra accuracy, not really necessary)
+            if not interpreter.killApp:
+                sleep(waitTime - timeWaited)
+
         else:
             printf("WaitCommand.run(): ERROR: Expression failed to evaluate correctly!")
+        print("Done waiting")
 
 
 class GripCommand(Command):

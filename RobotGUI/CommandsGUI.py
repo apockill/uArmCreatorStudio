@@ -92,47 +92,88 @@ class CommandWidget(QtWidgets.QWidget):
         self.setToolTip(text)
 
 
-class CommandMenuWidget(QtWidgets.QWidget):
+class CommandMenuWidget(QtWidgets.QTabWidget):
     def __init__(self, parent):
         super(CommandMenuWidget, self).__init__(parent)
 
         # addCmndFunc is a function passed from ControlPanel to be able to hook buttons to that function
         self.initUI()
 
-    def initUI(self):
 
-        moveXYZBtn  = self.getButton(MoveXYZCommandGUI)
-        detachBtn   = self.getButton(DetachCommandGUI)
-        attachBtn   = self.getButton(AttachCommandGUI)
-        waitBtn     = self.getButton(WaitCommandGUI)
-        gripBtn     = self.getButton(GripCommandGUI)
-        dropBtn     = self.getButton(DropCommandGUI)
-        setVarBtn   = self.getButton(SetVariableCommandGUI)
-        testVarBtn  = self.getButton(TestVariableCommandGUI)
-        startBlkBtn = self.getButton(StartBlockCommandGUI)
-        endBlkBtn   = self.getButton(EndBlockCommandGUI)
-        # refreshBtn  = self.getButton(RefreshCommand)
+    def getMovementTab(self):
+        tabWidget = QtWidgets.QWidget()
+        vBox = QtWidgets.QVBoxLayout()
+        vBox.setAlignment(QtCore.Qt.AlignTop)
+        tabWidget.setLayout(vBox)
+        add  = lambda btnType: vBox.addWidget(self.getButton(btnType))
+
+        add(MoveXYZCommandGUI)
+        add(AttachCommandGUI)
+        add(DetachCommandGUI)
+        add(GripCommandGUI)
+        add(DropCommandGUI)
+        add(WaitCommandGUI)
+
+
+        return tabWidget
+
+    def getLogicTab(self):
+        tabWidget = QtWidgets.QWidget()
+        vBox = QtWidgets.QVBoxLayout()
+        vBox.setAlignment(QtCore.Qt.AlignTop)
+        tabWidget.setLayout(vBox)
+        add  = lambda btnType: vBox.addWidget(self.getButton(btnType))
+
+        add(SetVariableCommandGUI)
+        add(TestVariableCommandGUI)
+        add(StartBlockCommandGUI)
+        add(EndBlockCommandGUI)
+
+
+        return tabWidget
+
+
+    def initUI(self):
+        movementTab = self.getMovementTab()
+        logicTab    = self.getLogicTab()
+
+        self.addTab(movementTab, "Basic")
+        self.addTab(   logicTab, "Logic")
+        # moveXYZBtn  = self.getButton(MoveXYZCommandGUI)
+        # detachBtn   = self.getButton(DetachCommandGUI)
+        # attachBtn   = self.getButton(AttachCommandGUI)
+        # waitBtn     = self.getButton(WaitCommandGUI)
+        # gripBtn     = self.getButton(GripCommandGUI)
+        # dropBtn     = self.getButton(DropCommandGUI)
+
+        # setVarBtn   = self.getButton(SetVariableCommandGUI)
+        # testVarBtn  = self.getButton(TestVariableCommandGUI)
+        # startBlkBtn = self.getButton(StartBlockCommandGUI)
+        # endBlkBtn   = self.getButton(EndBlockCommandGUI)
+
         # colorBtn    = self.getButton(ColorTrackCommand)
 
-        grid = QtWidgets.QGridLayout()
-        grid.addWidget( moveXYZBtn,  0, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(  detachBtn,  1, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(  attachBtn,  2, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(    waitBtn,  3, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(    gripBtn,  4, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(    dropBtn,  5, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(  setVarBtn,  7, 0, QtCore.Qt.AlignTop)
-        grid.addWidget( testVarBtn,  8, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(startBlkBtn,  9, 0, QtCore.Qt.AlignTop)
-        grid.addWidget(  endBlkBtn, 10, 0, QtCore.Qt.AlignTop)
+        mainVLayout = QtWidgets.QVBoxLayout()
+        # mainVLayout.addWidget(moveXYZBtn)
+        # grid = QtWidgets.QGridLayout()
+        # grid.addWidget( moveXYZBtn,  0, 0, QtCore.Qt.AlignTop)
+        # grid.addWidget(  detachBtn,  1, 0, QtCore.Qt.AlignTop)
+        # grid.addWidget(  attachBtn,  2, 0, QtCore.Qt.AlignTop)
+        # grid.addWidget(    waitBtn,  3, 0, QtCore.Qt.AlignTop)
+        # grid.addWidget(    gripBtn,  4, 0, QtCore.Qt.AlignTop)
+        # grid.addWidget(    dropBtn,  5, 0, QtCore.Qt.AlignTop)
+        # grid.addWidget(  setVarBtn,  7, 0, QtCore.Qt.AlignTop)
+        # grid.addWidget( testVarBtn,  8, 0, QtCore.Qt.AlignTop)
+        # grid.addWidget(startBlkBtn,  9, 0, QtCore.Qt.AlignTop)
+        # grid.addWidget(  endBlkBtn, 10, 0, QtCore.Qt.AlignTop)
         # grid.addWidget( refreshBtn,  3, 0, QtCore.Qt.AlignTop)
         # grid.addWidget(   colorBtn,  6, 0, QtCore.Qt.AlignTop)
-
-        self.setLayout(grid)
+        self.setTabPosition(QtWidgets.QTabWidget.East)
+        self.setFixedWidth(85)
+        # self.setLayout(mainVLayout)
 
     def getButton(self, commandType):
         newButton = self.DraggableButton(str(commandType.__name__), self)
-
         newButton.setIcon(QtGui.QIcon(commandType.icon))
         newButton.setIconSize(QtCore.QSize(32, 32))
         newButton.setToolTip(commandType.tooltip)
@@ -343,6 +384,7 @@ class CommandGUI:
         pass
 
 
+
 ########## COMMANDS ##########
 """
 Commands must:
@@ -402,7 +444,6 @@ class NameCommandGUI(CommandGUI):
         self.description = ""  # Some string that uses your parameters to describe the object.
 
 """
-
 
 class MoveXYZCommandGUI(CommandGUI):
     title     = "Move XYZ"
@@ -541,7 +582,7 @@ class SetVariableCommandGUI(CommandGUI):
         if self.parameters is None:
             # Some code to set up default parameters
             self.parameters = {"variable": "",
-                               "expression": ""}
+                               "expression": "0.0"}
 
     def dressWindow(self, prompt):
         # Do some GUI code setup
@@ -915,177 +956,178 @@ class DropCommandGUI(CommandGUI):
 
 
 ########### NON-UPDATED COMMANDS ########
+'''
+class RefreshCommand(CommandGUI):
+    """
+    A command for refreshing the robots position by sending the robot information.
+    It activates the robot.refresh() command, which detects if any movement variables have been changed
+    and if they have sends that info over to the robot.
+    """
+    title      = "Refresh Robot"
+    tooltip    = "Send any changed position information to the robot. This will stop event processing for a moment."
+    icon       = Icons.refresh_command
 
-# class RefreshCommand(CommandGUI):
-#     """
-#     A command for refreshing the robots position by sending the robot information.
-#     It activates the robot.refresh() command, which detects if any movement variables have been changed
-#     and if they have sends that info over to the robot.
-#     """
-#     title      = "Refresh Robot"
-#     tooltip    = "Send any changed position information to the robot. This will stop event processing for a moment."
-#     icon       = Icons.refresh_command
-#
-#     def __init__(self, parent, env, **kwargs):
-#         super(RefreshCommand, self).__init__(parent)
-#
-#     def run(self, env):
-#         env.getRobot().refresh()
-#
-#
-# class ColorTrackCommand(CommandGUI):
-#     title      = "Move to Color"
-#     tooltip    = "Tracks objects by looking for a certain color."
-#     icon       = Icons.colortrack_command
-#
-#     def __init__(self, parent, env, **kwargs):
-#
-#         super(ColorTrackCommand, self).__init__(parent)
-#         self.parameters = kwargs.get("parameters",
-#                             {'cHue': 0,
-#                              'tHue': 0,
-#                              'lSat': 0,
-#                              'hSat': 0,
-#                              'lVal': 0,
-#                              'hVal': 0})
-#
-#
-#
-#
-#         self.cHueEdit = QtWidgets.QLineEdit()
-#         self.tHueEdit = QtWidgets.QLineEdit()
-#         self.lSatEdit = QtWidgets.QLineEdit()
-#         self.hSatEdit = QtWidgets.QLineEdit()
-#         self.lValEdit = QtWidgets.QLineEdit()
-#         self.hValEdit = QtWidgets.QLineEdit()
-#
-#         self.initUI(env)
-#         self.setWindowIcon(QtGui.QIcon(self.icon))
-#
-#     def initUI(self, env):
-#         #Set up all the labels for the inputs
-#         hueLabel = QtWidgets.QLabel('Hue/Tolerance: ')
-#         satLabel = QtWidgets.QLabel('Saturation range: ')
-#         valLabel = QtWidgets.QLabel('Value range:')
-#
-#
-#
-#         #Fill the textboxes with the default parameters
-#         self.cHueEdit.setText(str(self.parameters['cHue']))
-#         self.tHueEdit.setText(str(self.parameters['tHue']))
-#         self.lSatEdit.setText(str(self.parameters['lSat']))
-#         self.hSatEdit.setText(str(self.parameters['hSat']))
-#         self.lValEdit.setText(str(self.parameters['lVal']))
-#         self.hValEdit.setText(str(self.parameters['hVal']))
-#
-#         self.cHueEdit.setFixedWidth(75)
-#         self.tHueEdit.setFixedWidth(75)
-#         self.lSatEdit.setFixedWidth(75)
-#         self.hSatEdit.setFixedWidth(75)
-#         self.lValEdit.setFixedWidth(75)
-#         self.hValEdit.setFixedWidth(75)
-#
-#         #Set up 'scanbutton' that will scan the camera and fill out the parameters for recommended settings
-#         scanLabel  = QtWidgets.QLabel("Press button to automatically fill out values:")
-#         scanButton = QtWidgets.QPushButton("Scan Colors")
-#         scanButton.clicked.connect(lambda: self.scanColors(env))
-#
-#
-#
-#         row1 = QtWidgets.QHBoxLayout()
-#         row2 = QtWidgets.QHBoxLayout()
-#         row3 = QtWidgets.QHBoxLayout()
-#         row4 = QtWidgets.QHBoxLayout()
-#
-#         row1.addWidget(    scanLabel, QtCore.Qt.AlignLeft)
-#         row1.addWidget(   scanButton, QtCore.Qt.AlignRight)
-#
-#         row2.addWidget(     hueLabel, QtCore.Qt.AlignLeft)
-#         row2.addWidget(self.cHueEdit, QtCore.Qt.AlignRight)
-#         row2.addWidget(QtWidgets.QLabel("+-"))
-#         row2.addWidget(self.tHueEdit, QtCore.Qt.AlignRight)
-#
-#         row3.addWidget(     satLabel, QtCore.Qt.AlignLeft)
-#         row3.addWidget(self.lSatEdit, QtCore.Qt.AlignRight)
-#         row3.addWidget(QtWidgets.QLabel("to"))
-#         row3.addWidget(self.hSatEdit, QtCore.Qt.AlignRight)
-#
-#         row4.addWidget(     valLabel, QtCore.Qt.AlignLeft)
-#         row4.addWidget(self.lValEdit, QtCore.Qt.AlignRight)
-#         row4.addWidget(QtWidgets.QLabel("to"))
-#         row4.addWidget(self.hValEdit, QtCore.Qt.AlignRight)
-#
-#
-#
-#         self.mainVLayout.addLayout(row1)
-#         self.mainVLayout.addLayout(row2)
-#         self.mainVLayout.addLayout(row3)
-#         self.mainVLayout.addLayout(row4)
-#
-#
-#     def scanColors(self, env):
-#         printf("ColorTrackCommand.scanColors(): Scanning colors!")
-#
-#         if env is None:
-#             printf("ColorTrackCommand.scanColors(): ERROR: Tried to scan colors while env was None! colors!")
-#
-#             return
-#
-#         avgColor = env.getVision().bgr2hsv(env.getVision().getColor())
-#         percentTolerance = .3
-#
-#         printf("avgColor", avgColor)
-#         self.cHueEdit.setText(str(round(avgColor[0])))
-#         self.tHueEdit.setText(str(30))  #Recommended tolerance
-#         self.lSatEdit.setText(str(round(avgColor[1] - avgColor[1] * percentTolerance, 5)))
-#         self.hSatEdit.setText(str(round(avgColor[1] + avgColor[1] * percentTolerance, 5)))
-#         self.lValEdit.setText(str(round(avgColor[2] - avgColor[2] * percentTolerance, 5)))
-#         self.hValEdit.setText(str(round(avgColor[2] + avgColor[2] * percentTolerance, 5)))
-#
-#     def getInfo(self):
-#         #Build the info inputted into the window into a Json and return it. Used in parent class
-#
-#         newParameters = {'cHue': self.sanitizeFloat(self.cHueEdit, self.parameters['cHue']),
-#                          'tHue': self.sanitizeFloat(self.tHueEdit, self.parameters['tHue']),
-#                          'lSat': self.sanitizeFloat(self.lSatEdit, self.parameters['lSat']),
-#                          'hSat': self.sanitizeFloat(self.hSatEdit, self.parameters['hSat']),
-#                          'lVal': self.sanitizeFloat(self.lValEdit, self.parameters['lVal']),
-#                          'hVal': self.sanitizeFloat(self.hValEdit, self.parameters['hVal'])}
-#         return newParameters
-#
-#     def updateDescription(self):
-#         self.description = 'Track objects with a hue of ' + str(self.parameters['cHue'])
-#
-#     def run(self, env):
-#         printf("ColorTrackCommand.run(): Tracking colored objects! ")
-#
-#         if not env.getVision().cameraConnected():
-#             printf("ColorTrackCommand.run(): ERROR: No camera detected")
-#             return
-#
-#         #Build a function that will return the objects position whenever it is called, using the self.parameters
-#         objPos = lambda: env.getVision().findObjectColor(self.parameters['cHue'],
-#                                                             self.parameters['tHue'],
-#                                                             self.parameters['lSat'],
-#                                                             self.parameters['hSat'],
-#                                                             self.parameters['lVal'],
-#                                                             self.parameters['hVal'])
-#         objCoords = objPos()
-#
-#
-#         #If no object was found
-#         if objCoords is None: return
-#
-#         move = Robot.getDirectionToTarget(objCoords, env.getVision().vStream.dimensions, 10)
-#
-#         #If the robot is already focused
-#         if move is None: return
-#
-#         #Convert the move to one on the base grid
-#         baseAngle = env.getRobot().getBaseAngle()
-#         modDirection = Robot.getRelative(move[0], move[1], baseAngle)
-#
-#         # if modDirection is None: return
-#
-#
-#         env.getRobot().setPos(x=modDirection[0] / 3, y=modDirection[1] / 3, relative=True)
+    def __init__(self, parent, env, **kwargs):
+        super(RefreshCommand, self).__init__(parent)
+
+    def run(self, env):
+        env.getRobot().refresh()
+
+
+class ColorTrackCommand(CommandGUI):
+    title      = "Move to Color"
+    tooltip    = "Tracks objects by looking for a certain color."
+    icon       = Icons.colortrack_command
+
+    def __init__(self, parent, env, **kwargs):
+
+        super(ColorTrackCommand, self).__init__(parent)
+        self.parameters = kwargs.get("parameters",
+                            {'cHue': 0,
+                             'tHue': 0,
+                             'lSat': 0,
+                             'hSat': 0,
+                             'lVal': 0,
+                             'hVal': 0})
+
+
+
+
+        self.cHueEdit = QtWidgets.QLineEdit()
+        self.tHueEdit = QtWidgets.QLineEdit()
+        self.lSatEdit = QtWidgets.QLineEdit()
+        self.hSatEdit = QtWidgets.QLineEdit()
+        self.lValEdit = QtWidgets.QLineEdit()
+        self.hValEdit = QtWidgets.QLineEdit()
+
+        self.initUI(env)
+        self.setWindowIcon(QtGui.QIcon(self.icon))
+
+    def initUI(self, env):
+        #Set up all the labels for the inputs
+        hueLabel = QtWidgets.QLabel('Hue/Tolerance: ')
+        satLabel = QtWidgets.QLabel('Saturation range: ')
+        valLabel = QtWidgets.QLabel('Value range:')
+
+
+
+        #Fill the textboxes with the default parameters
+        self.cHueEdit.setText(str(self.parameters['cHue']))
+        self.tHueEdit.setText(str(self.parameters['tHue']))
+        self.lSatEdit.setText(str(self.parameters['lSat']))
+        self.hSatEdit.setText(str(self.parameters['hSat']))
+        self.lValEdit.setText(str(self.parameters['lVal']))
+        self.hValEdit.setText(str(self.parameters['hVal']))
+
+        self.cHueEdit.setFixedWidth(75)
+        self.tHueEdit.setFixedWidth(75)
+        self.lSatEdit.setFixedWidth(75)
+        self.hSatEdit.setFixedWidth(75)
+        self.lValEdit.setFixedWidth(75)
+        self.hValEdit.setFixedWidth(75)
+
+        #Set up 'scanbutton' that will scan the camera and fill out the parameters for recommended settings
+        scanLabel  = QtWidgets.QLabel("Press button to automatically fill out values:")
+        scanButton = QtWidgets.QPushButton("Scan Colors")
+        scanButton.clicked.connect(lambda: self.scanColors(env))
+
+
+
+        row1 = QtWidgets.QHBoxLayout()
+        row2 = QtWidgets.QHBoxLayout()
+        row3 = QtWidgets.QHBoxLayout()
+        row4 = QtWidgets.QHBoxLayout()
+
+        row1.addWidget(    scanLabel, QtCore.Qt.AlignLeft)
+        row1.addWidget(   scanButton, QtCore.Qt.AlignRight)
+
+        row2.addWidget(     hueLabel, QtCore.Qt.AlignLeft)
+        row2.addWidget(self.cHueEdit, QtCore.Qt.AlignRight)
+        row2.addWidget(QtWidgets.QLabel("+-"))
+        row2.addWidget(self.tHueEdit, QtCore.Qt.AlignRight)
+
+        row3.addWidget(     satLabel, QtCore.Qt.AlignLeft)
+        row3.addWidget(self.lSatEdit, QtCore.Qt.AlignRight)
+        row3.addWidget(QtWidgets.QLabel("to"))
+        row3.addWidget(self.hSatEdit, QtCore.Qt.AlignRight)
+
+        row4.addWidget(     valLabel, QtCore.Qt.AlignLeft)
+        row4.addWidget(self.lValEdit, QtCore.Qt.AlignRight)
+        row4.addWidget(QtWidgets.QLabel("to"))
+        row4.addWidget(self.hValEdit, QtCore.Qt.AlignRight)
+
+
+
+        self.mainVLayout.addLayout(row1)
+        self.mainVLayout.addLayout(row2)
+        self.mainVLayout.addLayout(row3)
+        self.mainVLayout.addLayout(row4)
+
+
+    def scanColors(self, env):
+        printf("ColorTrackCommand.scanColors(): Scanning colors!")
+
+        if env is None:
+            printf("ColorTrackCommand.scanColors(): ERROR: Tried to scan colors while env was None! colors!")
+
+            return
+
+        avgColor = env.getVision().bgr2hsv(env.getVision().getColor())
+        percentTolerance = .3
+
+        printf("avgColor", avgColor)
+        self.cHueEdit.setText(str(round(avgColor[0])))
+        self.tHueEdit.setText(str(30))  #Recommended tolerance
+        self.lSatEdit.setText(str(round(avgColor[1] - avgColor[1] * percentTolerance, 5)))
+        self.hSatEdit.setText(str(round(avgColor[1] + avgColor[1] * percentTolerance, 5)))
+        self.lValEdit.setText(str(round(avgColor[2] - avgColor[2] * percentTolerance, 5)))
+        self.hValEdit.setText(str(round(avgColor[2] + avgColor[2] * percentTolerance, 5)))
+
+    def getInfo(self):
+        #Build the info inputted into the window into a Json and return it. Used in parent class
+
+        newParameters = {'cHue': self.sanitizeFloat(self.cHueEdit, self.parameters['cHue']),
+                         'tHue': self.sanitizeFloat(self.tHueEdit, self.parameters['tHue']),
+                         'lSat': self.sanitizeFloat(self.lSatEdit, self.parameters['lSat']),
+                         'hSat': self.sanitizeFloat(self.hSatEdit, self.parameters['hSat']),
+                         'lVal': self.sanitizeFloat(self.lValEdit, self.parameters['lVal']),
+                         'hVal': self.sanitizeFloat(self.hValEdit, self.parameters['hVal'])}
+        return newParameters
+
+    def updateDescription(self):
+        self.description = 'Track objects with a hue of ' + str(self.parameters['cHue'])
+
+    def run(self, env):
+        printf("ColorTrackCommand.run(): Tracking colored objects! ")
+
+        if not env.getVision().cameraConnected():
+            printf("ColorTrackCommand.run(): ERROR: No camera detected")
+            return
+
+        #Build a function that will return the objects position whenever it is called, using the self.parameters
+        objPos = lambda: env.getVision().findObjectColor(self.parameters['cHue'],
+                                                            self.parameters['tHue'],
+                                                            self.parameters['lSat'],
+                                                            self.parameters['hSat'],
+                                                            self.parameters['lVal'],
+                                                            self.parameters['hVal'])
+        objCoords = objPos()
+
+
+        #If no object was found
+        if objCoords is None: return
+
+        move = Robot.getDirectionToTarget(objCoords, env.getVision().vStream.dimensions, 10)
+
+        #If the robot is already focused
+        if move is None: return
+
+        #Convert the move to one on the base grid
+        baseAngle = env.getRobot().getBaseAngle()
+        modDirection = Robot.getRelative(move[0], move[1], baseAngle)
+
+        # if modDirection is None: return
+
+
+        env.getRobot().setPos(x=modDirection[0] / 3, y=modDirection[1] / 3, relative=True)
+'''

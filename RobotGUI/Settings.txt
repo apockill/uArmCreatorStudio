@@ -1,9 +1,9 @@
 {
-   "cameraID": 1,
    "lastOpenedFile": "F:/Google Drive/Projects/Git Repositories/RobotGUIProgramming/RobotGUI/MyTask2.task",
-   "robotID": "COM6",
+   "robotID": null,
    "motionCalibrations": {
       "stationaryMovement": 2.8,
       "activeMovement": 14.5
-   }
+   },
+   "cameraID": 0
 }

@@ -103,12 +103,14 @@ class Environment:
 class Interpreter:
     def __init__(self, parent):
         self.env          = parent
-        self.mainThread   = None
-        self.killApp      = True
-        self.script       = None
-
-
+        self.mainThread   = None    # The thread on which the script runs on. Is None while thread is not running.
+        self.killApp      = True    # When True, the script thread will attempt to close ASAP
+        self.scriptFPS    = 10      # Speed at which events are checked
         self.events       = []      # A list of events, and their corresponding commands
+
+        # For self.getStatus()
+        self.currEvent    = []      # Index of the event that is currently being run
+        self.currCmmnd    = []      # Index of the command that is currently being run
 
         # Should only be interacted with through self.setVariable()
         self.__variables  = {}
@@ -117,7 +119,7 @@ class Interpreter:
     # Functions for GUI to use
     def loadScript(self, script):
         # Creates each event, loads it with its appropriate commandList, and then adds that event to self.events
-        self.script = deepcopy(script)
+        script = deepcopy(script)
         for _, eventSave in enumerate(script):
             eventType = getattr(Events, eventSave['typeLogic'])
             event = eventType(parameters=eventSave['parameters'])
@@ -185,8 +187,13 @@ class Interpreter:
         return not self.killApp or self.mainThread is not None
 
     def getStatus(self):
-        # Returns information about what event is being run, the index of the command being run, and the actual command.
-        pass
+        # Returns an index of the (event, command) that is currently being run
+
+        # Ensure that this event is threadsafe by building the result in an atomic way
+        currEvent = self.currEvent
+        currCmmnd = self.currCmmnd
+
+        return currEvent, currCmmnd
 
 
     # The following functions should never be called by user - only for Commands/Events to interact with Interpreter
@@ -244,7 +251,7 @@ class Interpreter:
         self.env.getRobot().setServos(servo1=True, servo2=True, servo3=True, servo4=True)
         self.env.getRobot().refresh()
 
-        timer = FpsTimer(fps=10)
+        timer = FpsTimer(fps=self.scriptFPS)
 
         while not self.killApp:
             timer.wait()
@@ -252,12 +259,15 @@ class Interpreter:
 
 
             # Check every event, in order of the list
-            for event in self.events:
+            eventsRun = []  # Keep track of what events were run, for self.getStatus() purposes
+            self.currCmmnd = []
+            for index, event in enumerate(self.events):
                 if self.killApp: break
                 if not event.isActive(self.env): continue
 
+                eventsRun.append(index)
                 self.__interpretEvent(event)
-
+            self.currEvent = eventsRun
 
         # Check if a DestroyEvent exists, if so, run it's commandList
         destroyEvent = list(filter(lambda event: type(event) == Events.DestroyEvent, self.events))
@@ -267,9 +277,9 @@ class Interpreter:
         # This will run through every command in an events commandList, and account for Conditionals and code blocks.
 
         commandList   = event.commandList
-        index         = 0  # The current command that is being considered for running
-        currentIndent = 0  # The 'bracket' level of code
-
+        index         = 0                   # The current command that is being considered for running
+        currentIndent = 0                   # The 'bracket' level of code
+        commandsRun   = []                  # Keep track of what commands were run, for self.getStatus() purposes
         # Check each command, run the ones that should be run
         while index < len(event.commandList):
             if self.killApp and not overrideKillApp: break  # THis might be overrun for things like DestroyEvent
@@ -277,8 +287,9 @@ class Interpreter:
             command    = commandList[index]
 
             # Run command. If command is a boolean, it will return a True or False
-            evaluation = command.run(self.env)
 
+            evaluation = command.run(self.env)
+            commandsRun.append(index)
             # If its false, skip to the next indent of the same indentation
             if evaluation is False:
 
@@ -296,3 +307,5 @@ class Interpreter:
                         index = i
                         break
             index += 1
+
+        self.currCmmnd.append(commandsRun)

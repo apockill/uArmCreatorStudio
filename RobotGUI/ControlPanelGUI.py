@@ -1,7 +1,7 @@
 import copy
 import RobotGUI.CommandsGUI as CommandsGUI
 import RobotGUI.EventsGUI   as EventsGUI
-from PyQt5                 import QtCore, QtWidgets
+from PyQt5                 import QtCore, QtWidgets, QtGui
 from RobotGUI.Logic.Global import printf, FpsTimer
 
 
@@ -53,41 +53,44 @@ class ControlPanel(QtWidgets.QWidget):
         super(ControlPanel, self).__init__(parent)
 
         # Set up Globals
-        self.env        = environment
+        self.env               = environment
+        self.scriptTimer       = None       # Used to light up events/commands as they are run when the script is active
 
-        self.running    = False  # Whether or not the main thread should be running or not
-        self.mainThread = None   # This holds the 'Thread' object of the main thread.
-        self.eventList  = EventList(self.env, self.refresh, parent=self)
-
+        # Set up GUI Globals
+        self.eventList         = EventList(environment, self.refresh, parent=self)
         self.commandMenuWidget = CommandsGUI.CommandMenuWidget(parent=self)
-        self.commandListStack = QtWidgets.QStackedWidget()
+        self.commandListStack  = QtWidgets.QStackedWidget()
+        self.addEventBtn       = QtWidgets.QPushButton()
+        self.deleteEventBtn    = QtWidgets.QPushButton()
+        self.changeEventBtn    = QtWidgets.QPushButton()
+
+        # Set up resources for self.refreshScript()
+        self.color             = QtGui.QColor(150, 255, 150)
+        self.transparent       = QtGui.QColor(QtCore.Qt.transparent)
+        self.setColor          = lambda item, isColored: item.setBackground((self.transparent, self.color)[isColored])
+
 
         self.initUI()
 
     def initUI(self):
         # Set Up Buttons and their text
-        addEventBtn = QtWidgets.QPushButton()
-        deleteEventBtn = QtWidgets.QPushButton()
-        changeEventBtn = QtWidgets.QPushButton()
-
-        addEventBtn.setText('Add Event')
-        deleteEventBtn.setText('Delete')
-        changeEventBtn.setText('Change')
-
+        self.addEventBtn.setText('Add Event')
+        self.deleteEventBtn.setText('Delete')
+        self.changeEventBtn.setText('Change')
 
         # Connect Button Events
-        addEventBtn.clicked.connect(self.eventList.promptUser)
-        deleteEventBtn.clicked.connect(self.eventList.deleteEvent)
-        changeEventBtn.clicked.connect(self.eventList.replaceEvent)
+        self.addEventBtn.clicked.connect(self.eventList.promptUser)
+        self.deleteEventBtn.clicked.connect(self.eventList.deleteEvent)
+        self.changeEventBtn.clicked.connect(self.eventList.replaceEvent)
 
         # Create the button horizontal layout for the 'delete' and 'change' buttons
         btnRowHLayout = QtWidgets.QHBoxLayout()
-        btnRowHLayout.addWidget(deleteEventBtn)
-        btnRowHLayout.addWidget(changeEventBtn)
+        btnRowHLayout.addWidget(self.deleteEventBtn)
+        btnRowHLayout.addWidget(self.changeEventBtn)
 
         # Create a vertical layout for the buttons (top) and the eventList (bottom)
         eventVLayout = QtWidgets.QVBoxLayout()
-        eventVLayout.addWidget(addEventBtn)
+        eventVLayout.addWidget(self.addEventBtn)
         eventVLayout.addLayout(btnRowHLayout)
         eventVLayout.addWidget(self.eventList)
 
@@ -138,97 +141,53 @@ class ControlPanel(QtWidgets.QWidget):
         self.commandListStack.setCurrentWidget(selectedEvent.commandList)
 
 
-    # LOGIC
-    def programThread(self):
-        # This is where the script you create actually gets run. This is run on a seperate thread, self.mainThread
+    def setScriptMode(self, bool):
+        """
+        When the script is running:
+            - Add/Delete/Change event buttons will be disabled
+            - All CommandMenuWidget buttons will be disabled
+            - CommandList will not allow deleting of widgets
+            - CommandList will not allow rearranging of widgets
+        """
 
-        printf('ControlPanel.programThread(): #################### STARTING PROGRAM THREAD! ######################')
-        self.env.getRobot().setServos(servo1=True, servo2=True, servo3=True, servo4=True)
-        self.env.getRobot().refresh()
-
-        # Deepcopy all of the events, so that every time you run the script it runs with no modified variables
-        events = copy.copy(self.eventList.getEventsOrdered())
-
-        # color = QtGui.QColor(150, 255, 150)
-        # transparent = QtGui.QColor(QtCore.Qt.transparent)
-        # eventItem   = self.eventList.getItemsOrdered()
-        # setColor    = lambda item, isColored: item.setBackground((transparent, color)[isColored])
-
-        timer = FpsTimer(fps=10)
-
-        # Reset all events to default state
-        for event in events: event.reset()
-
-        while self.running:
-            timer.wait()
-            if not timer.ready(): continue
-
-            # Check each event to see if it is active
-            for index, event in enumerate(events):
-
-                if event.isActive(self.env):
-                    # setColor(eventItem[index], True)
-                    # eventItem[index].setBackground(QtGui.QColor(150, 255, 150))  #Highlight event that running
-
-                    # Run all commands in the active event
-                    self.interpretCommands(event.commandList)
-
-                else:
-                    pass
-                    # setColor(eventItem[index], False)
-                    # eventItem[index].setBackground(QtGui.QColor(QtCore.Qt.transparent))
-
-            # Only 'Render' the robots movement once per step
-            self.env.getRobot().refresh()
-
-        # #Turn each list item transparent once more
-        # for item in eventItem:
-        #     pass
-        #     #setColor(item, False)
-        #     #item.setBackground(QtGui.QColor(QtCore.Qt.transparent))
+        # Enable or disable buttons according to whether or not the script is starting or stopping
+        self.addEventBtn.setEnabled(not bool)
+        self.deleteEventBtn.setEnabled(not bool)
+        self.changeEventBtn.setEnabled(not bool)
+        self.eventList.setLocked(bool)
 
 
-        # Check if there is a DestroyEvent command. If so, run it
-        destroyEvent = list(filter(lambda event: type(event) == EventsGUI.DestroyEventGUI, events))
-        if len(destroyEvent): self.interpretCommands(destroyEvent[0].commandList)
+        if bool:    # If script is starting up
+            interpreter = self.env.getInterpreter()
 
-        self.env.getRobot().setGripper(False)
-        self.env.getRobot().refresh()
+            self.scriptTimer = QtCore.QTimer()
+            self.scriptTimer.timeout.connect(lambda: self.refreshScript(interpreter))
+            self.scriptTimer.start(1000.0 / interpreter.scriptFPS)  # Update at same rate as the script checks events
 
-    def interpretCommands(self, commandList):
-        '''
-        This is only used in programThread(). It parses through and runs all commands in a commandList,
-        correctly accounting for all the indenting and such. The idea is that you can pass a commandList
-        from an event to this function, and all the commands will be evaluated and run.
+        else:       # If script is shutting down
+            self.scriptTimer.stop()
+            self.scriptTimer = None
 
-        Most commands (almost all) will not return anything. However, any commands that evaluate to
-        True or False will, in fact, return True or False. This determines whether or not code in blocks
-        will run.
-        :param commandList: This is the commandList that will be 'interpreted'
-        '''
+            # Decolor any event
+            for index in range(0, self.eventList.count()):
+                eventItem = self.eventList.item(index)
+                self.setColor(eventItem, False)
 
-        commandsOrdered = commandList.getCommandsOrdered()
-        index = 0
+    def refreshScript(self, interpreter):
+        currEvent, currCmmnd = interpreter.getStatus()
 
-        while index < len(commandsOrdered):
-            command = commandsOrdered[index]
-            ret     = command.run(self.env)
 
-            if ret is not None and not ret:
-                skipToIndent = command.indent
-                # print('skipping to next indent of', skipToIndent, 'starting at', index)
+        # Color any events that were active since last check, and de-color all other events
+        for index in range(0, self.eventList.count()):
+            eventItem = self.eventList.item(index)
 
-                for i in range(index + 1, len(commandsOrdered)):
-                    if commandsOrdered[i].indent == skipToIndent:
-                        index = i - 1
-                        break
+            # Color transparent if the event is active, decolor if event is not active
+            self.setColor(eventItem, (index in currEvent))
 
-                    # If there are no commands
-                    if i == len(commandsOrdered) - 1:
-                        index = i
-                        break
 
-            index += 1
+
+
+        print("Current Event: ", currEvent, "current cmmnd: ", currCmmnd)
 
 
     def getSaveData(self):
@@ -248,6 +207,9 @@ class EventList(QtWidgets.QListWidget):
         self.env                 = environment  # Used in self.addCommand only
         self.events = {}  # A hash map of the current events in the list. The listWidget leads to the event object
 
+        self.getEventFromItem = lambda listWidgetItem: self.events[self.itemWidget(listWidgetItem)]
+        self.getEventsOrdered = lambda: [self.getEventFromItem(self.item(index)) for index in range(self.count())]
+
         # IMPORTANT This makes sure the ControlPanel refreshes whenever you click on an item in the list,
         # in order to display the correct commandList for the event that was clicked on.
         self.itemSelectionChanged.connect(self.refreshControlPanel)
@@ -257,6 +219,13 @@ class EventList(QtWidgets.QListWidget):
         # self.getItemsOrdered  = lambda: [self.item(index) for index in range(self.count())]
 
         self.setFixedWidth(200)
+
+
+    def setLocked(self, bool):
+        # Used to lock the eventList and commandLists from changing anything while script is running
+        events = self.getEventsOrdered()
+        for event in events:
+            event.commandList.setEnabled(not bool)
 
 
     def getSelectedEvent(self):
@@ -291,10 +260,6 @@ class EventList(QtWidgets.QListWidget):
         selectedItem = selectedItems[0]
         return selectedItem
 
-    def getEventFromItem(self, listWidgetItem):
-        # Get the Event() object for any events listWidgetItem
-        return self.events[self.itemWidget(listWidgetItem)]
-
 
     def promptUser(self):
         # Open the eventPromptWindow to ask the user what event they wish to create
@@ -305,21 +270,6 @@ class EventList(QtWidgets.QListWidget):
         else:
             printf('EventList.promptUser():User rejected the prompt.')
 
-
-    # def addCommand(self, type):
-    #     # When the addCommand button is pressed, add that command to the currently selected
-    #     print('doing thing!')
-    #     printf('ControlPanel.addCommand(): Add Command button clicked. Adding command!')
-    #
-    #     selectedEvent = self.getSelectedEvent()
-    #     if selectedEvent is None:
-    #         # This occurs when there are no events on the table. Display warning to user in this case.
-    #         printf('ControlPanel.addCommand(): ERROR: Selected event does not have a commandList! Displaying error')
-    #         QtWidgets.QMessageBox.question(self, 'Error', 'You need to select an event or add an event before you can '
-    #                                                       'add commands', QtWidgets.QMessageBox.Ok)
-    #         return
-    #
-    #     selectedEvent.commandList.addCommand(type)
 
     def addEvent(self, eventType, **kwargs):
         '''
@@ -442,7 +392,7 @@ class EventList(QtWidgets.QListWidget):
         '''
 
         eventList = []
-        eventsOrdered = [self.getEventFromItem(self.item(index)) for index in range(self.count())]  # Gets every event, in order
+        eventsOrdered = self.getEventsOrdered()
 
         for event in eventsOrdered:
 
@@ -622,7 +572,6 @@ class CommandList(QtWidgets.QListWidget):
             if dropIndex == -1: dropIndex = self.count()  # If dropped at a index past the end of list, drop at end
 
             # Add the new dragged in widget to the index that was just found
-            print('received', event.mimeData().text())
             self.addCommand(getattr(CommandsGUI, event.mimeData().text()), index=dropIndex)
 
             event.accept()

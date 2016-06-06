@@ -16,6 +16,7 @@ class EventWidget(QtWidgets.QWidget):
         self.icon        = QtWidgets.QLabel("No icon found.")
         self.initUI()
 
+
     def initUI(self):
         font = QtGui.QFont()
         font.setBold(True)

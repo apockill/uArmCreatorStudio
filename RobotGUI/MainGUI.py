@@ -483,7 +483,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.show()
 
 
-
     def setSettings(self, newSettings):
         # Apply settings
 
@@ -567,16 +566,17 @@ class MainWindow(QtWidgets.QMainWindow):
                 printf("MainWindow.setScript(): Interpreter is ready. Loading script and starting program")
 
                 interpreter.loadScript(self.controlPanel.getSaveData())
+                self.controlPanel.setScriptMode(True)  # Stops you from moving stuff around while script is running
                 interpreter.startThread()
 
                 self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.pause_script))
 
             else:
                 printf("MainWindow.setScript(): ERROR: Tried to start interpreter while it was already running.")
-
             return
 
         if state == "pause":
+            self.controlPanel.setScriptMode(False)
             interpreter.endThread()
 
             self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.run_script))
