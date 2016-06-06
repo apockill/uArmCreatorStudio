@@ -1,5 +1,4 @@
 Plan for today:
-    - Add a wrist Command
     - Add a speed command
 
 ######   SHORT TERM GOALS   #####
@@ -29,6 +28,7 @@ Plan for today:
 - Have vStream be instantiated and closed from within Environment
 - Impliment a thread stopper while a wait command is active
 - Change mimeData to not send plaintext, or at least make it secure (don't run globals()['mimeText']
+- Add a wrist Command
 
 ######   FINISHED LONG TERM GOALS    #####
 - Have events and commands light up as they are activated

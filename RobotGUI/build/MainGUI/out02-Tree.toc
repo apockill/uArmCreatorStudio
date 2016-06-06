@@ -1,0 +1,9 @@
+('c:\\python27\\lib\\site-packages\\backports.ssl_match_hostname-3.4.0.2-py2.7.egg',
+ None,
+ set(['*.py', '*.pyc', '*.pyd', '*.pyo', '*.so', 'EGG-INFO']),
+ [('backports\\ssl_match_hostname\\LICENSE.txt',
+   'c:\\python27\\lib\\site-packages\\backports.ssl_match_hostname-3.4.0.2-py2.7.egg\\backports\\ssl_match_hostname\\LICENSE.txt',
+   'DATA'),
+  ('backports\\ssl_match_hostname\\README.txt',
+   'c:\\python27\\lib\\site-packages\\backports.ssl_match_hostname-3.4.0.2-py2.7.egg\\backports\\ssl_match_hostname\\README.txt',
+   'DATA')])

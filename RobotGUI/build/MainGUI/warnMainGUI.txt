@@ -1,0 +1,663 @@
+missing module named PyQt5.QtCore.QCoreApplication - imported by PyQt5.QtCore, c:\python27\lib\site-packages\PyInstaller\loader\rthooks\pyi_rth_qt5plugins.py
+missing module named os.chmod - imported by os, setuptools.command.easy_install
+missing module named os.open - imported by os, pkg_resources
+missing module named os.mkdir - imported by os, pkg_resources
+missing module named os.unlink - imported by os, pkg_resources
+missing module named os.rename - imported by os, pkg_resources
+missing module named os.utime - imported by os, pkg_resources
+missing module named subprocess.getstatusoutput - imported by subprocess, numpy.distutils.cpuinfo
+missing module named _subprocess.STD_OUTPUT_HANDLE - imported by _subprocess, subprocess
+missing module named _subprocess.CREATE_NEW_PROCESS_GROUP - imported by _subprocess, subprocess
+missing module named _subprocess.STD_INPUT_HANDLE - imported by _subprocess, subprocess
+missing module named _subprocess.STARTF_USESHOWWINDOW - imported by _subprocess, subprocess
+missing module named _subprocess.CREATE_NEW_CONSOLE - imported by _subprocess, subprocess
+missing module named _subprocess.STD_ERROR_HANDLE - imported by _subprocess, subprocess
+missing module named _subprocess.STARTF_USESTDHANDLES - imported by _subprocess, subprocess
+missing module named _subprocess.SW_HIDE - imported by _subprocess, subprocess
+missing module named collections.namedtuple - imported by collections, inspect, unittest.util, difflib, doctest, urlparse
+missing module named cPickle.loads - imported by cPickle, collections
+missing module named cPickle.dumps - imported by cPickle, collections
+missing module named cPickle.PicklingError - imported by cPickle, multiprocessing.managers
+missing module named thread.get_ident - imported by thread, collections
+missing module named thread._local - imported by thread, threading
+missing module named thread.stack_size - imported by thread, threading
+missing module named thread.allocate_lock - imported by thread, _strptime
+missing module named itertools.imap - imported by itertools, heapq, collections
+missing module named itertools.chain - imported by itertools, heapq, collections
+missing module named itertools.starmap - imported by itertools, collections
+missing module named itertools.repeat - imported by itertools, collections
+missing module named itertools.ifilterfalse - imported by itertools, sets
+missing module named itertools.ifilter - imported by itertools, sets
+missing module named itertools.tee - imported by itertools, heapq
+missing module named itertools.izip - imported by itertools, heapq
+missing module named itertools.count - imported by itertools, heapq
+missing module named itertools.islice - imported by itertools, repr, heapq
+missing module named collections.deque - imported by collections, shlex, threading, ast, pydoc, Queue
+missing module named collections.OrderedDict - imported by collections, unittest.util, ConfigParser
+missing module named operator.itemgetter - imported by operator, collections, heapq, numpy.lib.npyio
+missing module named operator.eq - imported by operator, collections
+missing module named operator.mul - imported by operator, numpy.lib.arrayterator
+missing module named operator.attrgetter - imported by operator, inspect, cgi
+missing module named _collections.deque - imported by _collections, collections
+missing module named _collections.defaultdict - imported by _collections, collections
+missing module named _weakref.ref - imported by _weakref, _weakrefset, weakref
+missing module named _weakref.ReferenceType - imported by _weakref, weakref
+missing module named _weakref.proxy - imported by _weakref, weakref
+missing module named _weakref.getweakrefs - imported by _weakref, weakref
+missing module named _weakref.getweakrefcount - imported by _weakref, weakref
+missing module named _weakref.ProxyType - imported by _weakref, weakref
+missing module named _weakref.CallableProxyType - imported by _weakref, weakref
+missing module named tempfile.TemporaryDirectory - imported by tempfile, setuptools.py31compat
+missing module named time.time - imported by time, threading, RobotGUI.Logic.Global, Queue, xmllib, multiprocessing.synchronize
+missing module named time.sleep - imported by time, threading, RobotGUI.Logic.Global, RobotGUI.Logic.UArmTextCommunication_1, RobotGUI.Logic.Robot, RobotGUI.Logic.Commands, multiprocessing.synchronize
+missing module named datetime.date - imported by datetime, _strptime
+missing module named re.escape - imported by re, _strptime
+missing module named re.IGNORECASE - imported by re, _strptime
+missing module named re.compile - imported by re, _strptime
+missing module named strop.whitespace - imported by strop, string
+missing module named strop.maketrans - imported by strop, string
+missing module named strop.lowercase - imported by strop, string
+missing module named strop.uppercase - imported by strop, string
+missing module named errno.ENOENT - imported by errno, gettext
+missing module named _functools.partial - imported by _functools, functools
+missing module named _functools.reduce - imported by _functools, functools
+missing module named exceptions.ReferenceError - imported by exceptions, weakref
+missing module named binascii.hexlify - imported by binascii, random
+missing module named math.sin - imported by math, random
+missing module named math.sqrt - imported by math, random
+missing module named math.cos - imported by math, random
+missing module named math.acos - imported by math, random
+missing module named math.ceil - imported by math, random
+missing module named math.exp - imported by math, random
+missing module named math.log - imported by math, random
+missing module named math.e - imported by math, random
+missing module named math.pi - imported by math, random
+missing module named warnings.warn - imported by warnings, random, contextlib, distutils.archive_util, cgi, plistlib, distutils.command.sdist
+missing module named _io.DEFAULT_BUFFER_SIZE - imported by _io, io
+missing module named _io.BytesIO - imported by _io, io
+missing module named _io.open - imported by _io, io
+missing module named _io.BufferedWriter - imported by _io, io
+missing module named _io.FileIO - imported by _io, io
+missing module named _io.BlockingIOError - imported by _io, io
+missing module named _io.IncrementalNewlineDecoder - imported by _io, io
+missing module named _io.BufferedReader - imported by _io, io
+missing module named _io.BufferedRandom - imported by _io, io
+missing module named _io.StringIO - imported by _io, io
+missing module named _io.BufferedRWPair - imported by _io, io
+missing module named _io.TextIOWrapper - imported by _io, io
+missing module named _io.UnsupportedOperation - imported by _io, io
+missing module named readline - imported by cmd, pdb
+missing module named imp.PKG_DIRECTORY - imported by imp, setuptools.depends
+missing module named imp.PY_COMPILED - imported by imp, setuptools.depends
+missing module named imp.PY_FROZEN - imported by imp, setuptools.depends
+missing module named imp.PY_SOURCE - imported by imp, setuptools.depends
+missing module named dis.HAVE_ARGUMENT - imported by dis, setuptools.depends
+missing module named dis.EXTENDED_ARG - imported by dis, setuptools.depends
+missing module named errno.EINVAL - imported by errno, StringIO
+missing module named cStringIO.StringIO - imported by cStringIO, gettext, pprint, shlex, tempfile, pickle, socket, tarfile, quopri, httplib, email.parser, email.message, email.generator, email.iterators, urllib, SocketServer, urllib2, cgi, SimpleHTTPServer, plistlib, xml.sax, encodings.uu_codec, encodings.quopri_codec
+missing module named binascii.a2b_uu - imported by binascii, encodings.uu_codec
+missing module named binascii.b2a_uu - imported by binascii, encodings.uu_codec
+missing module named binascii.b2a_base64 - imported by binascii, email.base64mime
+missing module named binascii.a2b_base64 - imported by binascii, email.base64mime
+missing module named binascii.b2a_qp - imported by binascii, quopri
+missing module named binascii.a2b_qp - imported by binascii, quopri
+missing module named 'org.python'.PyStringMap - imported by 'org.python', pickle
+missing module named 'org.python' - imported by pickle, setuptools.sandbox, xml.sax
+missing module named 'org.python'.imp - imported by 'org.python', xml.sax
+missing module named _sre.MAXREPEAT - imported by _sre, sre_constants, sre_parse, sre_compile
+missing module named array.array - imported by array, httplib, setuptools.depends
+missing module named re._compile - imported by re, sre
+missing module named re.__all__ - imported by re, sre
+missing module named struct.calcsize - imported by struct, ctypes
+missing module named _struct.__doc__ - imported by _struct, struct
+missing module named _struct._clearcache - imported by _struct, struct
+missing module named fcntl - imported by tempfile, subprocess, serial.serialposix
+missing module named threading.RLock - imported by threading, _threading_local, multiprocessing.dummy
+missing module named threading.current_thread - imported by threading, _threading_local
+missing module named os.urandom - imported by os, random
+missing module named _warnings.warn_explicit - imported by _warnings, warnings
+missing module named _warnings.filters - imported by _warnings, warnings
+missing module named _warnings.once_registry - imported by _warnings, warnings
+missing module named _warnings.default_action - imported by _warnings, warnings
+missing module named _warnings.warn - imported by _warnings, warnings
+missing module named riscosenviron._Environ - imported by riscosenviron, os
+missing module named riscosenviron - imported by os
+missing module named ntpath.exists - imported by ntpath, distutils.file_util
+missing module named ntpath.isfile - imported by ntpath, distutils.file_util
+missing module named riscospath - imported by os
+missing module named riscos._exit - imported by riscos, os
+missing module named riscos - imported by os
+missing module named ce._exit - imported by ce, os
+missing module named ce - imported by os
+missing module named _emx_link.link - imported by _emx_link, os
+missing module named _emx_link - imported by os
+missing module named os2._exit - imported by os2, os
+missing module named os2 - imported by os
+missing module named nt._isdir - imported by nt, ntpath
+missing module named nt._getfullpathname - imported by nt, ntpath
+missing module named nt._exit - imported by nt, os
+missing module named pwd - imported by posixpath, webbrowser, shutil, tarfile, getpass, distutils.util, distutils.archive_util
+missing module named pwd.getpwnam - imported by pwd, shutil, distutils.archive_util
+missing module named posix._exit - imported by posix, os
+missing module named posix - imported by os
+missing module named resource - imported by posix
+missing module named pyimod03_importers.FrozenImporter - imported by pyimod03_importers, c:\python27\lib\site-packages\PyInstaller\loader\rthooks\pyi_rth_pkgres.py
+missing module named pyimod03_importers - imported by c:\python27\lib\site-packages\PyInstaller\loader\rthooks\pyi_rth_pkgres.py
+missing module named _ast.__version__ - imported by _ast, ast
+missing module named __main__.__requires__ - imported by __main__, pkg_resources
+missing module named _sysconfigdata.build_time_vars - imported by _sysconfigdata, distutils.sysconfig, sysconfig
+missing module named _sysconfigdata - imported by distutils.sysconfig, sysconfig
+missing module named grp.getgrnam - imported by grp, shutil, distutils.archive_util
+missing module named grp - imported by shutil, tarfile, distutils.archive_util
+missing module named 'packaging.specifiers' - imported by pkg_resources
+missing module named packaging - imported by pkg_resources
+missing module named 'importlib.machinery' - imported by pkg_resources
+missing module named 'urllib.parse'.urlunparse - imported by 'urllib.parse', setuptools.compat, pkg_resources
+missing module named 'urllib.parse'.urlparse - imported by 'urllib.parse', numpy.lib._datasource, setuptools.compat, pkg_resources
+missing module named 'urllib.parse' - imported by numpy.lib._datasource, setuptools.compat, pkg_resources
+missing module named 'urllib.parse'.splittag - imported by 'urllib.parse', setuptools.compat
+missing module named 'urllib.parse'.splituser - imported by 'urllib.parse', setuptools.compat
+missing module named 'urllib.parse'.urlsplit - imported by 'urllib.parse', setuptools.compat
+missing module named 'urllib.parse'.urlunsplit - imported by 'urllib.parse', setuptools.compat
+missing module named 'urllib.parse'.urljoin - imported by 'urllib.parse', setuptools.compat
+missing module named 'urllib.parse'.unquote - imported by 'urllib.parse', setuptools.compat
+missing module named _imp - imported by pkg_resources
+missing module named _scproxy._get_proxy_settings - imported by _scproxy, urllib
+missing module named _scproxy._get_proxies - imported by _scproxy, urllib
+missing module named _scproxy - imported by urllib
+missing module named EasyDialogs.AskPassword - imported by EasyDialogs, getpass
+missing module named EasyDialogs - imported by getpass
+missing module named termios - imported by serial.serialposix, getpass, tty
+missing module named SOCKS - imported by ftplib
+missing module named _ssl.PROTOCOL_SSLv2 - imported by _ssl, ssl
+missing module named _ssl.PROTOCOL_TLSv1 - imported by _ssl, ssl
+missing module named _ssl.PROTOCOL_SSLv23 - imported by _ssl, ssl
+missing module named _ssl.PROTOCOL_SSLv3 - imported by _ssl, ssl
+missing module named _ssl.SSL_ERROR_EOF - imported by _ssl, ssl, socket
+missing module named _ssl.SSL_ERROR_WANT_WRITE - imported by _ssl, ssl, socket
+missing module named _ssl.SSL_ERROR_ZERO_RETURN - imported by _ssl, ssl, socket
+missing module named _ssl.SSL_ERROR_WANT_X509_LOOKUP - imported by _ssl, ssl, socket
+missing module named _ssl.SSL_ERROR_SSL - imported by _ssl, ssl, socket
+missing module named _ssl.SSL_ERROR_WANT_CONNECT - imported by _ssl, ssl, socket
+missing module named _ssl.SSL_ERROR_INVALID_ERROR_CODE - imported by _ssl, ssl, socket
+missing module named _ssl.SSL_ERROR_WANT_READ - imported by _ssl, ssl, socket
+missing module named _ssl.SSL_ERROR_SYSCALL - imported by _ssl, ssl, socket
+missing module named _ssl.RAND_status - imported by _ssl, ssl, socket
+missing module named _ssl.RAND_egd - imported by _ssl, ssl, socket
+missing module named _ssl.RAND_add - imported by _ssl, ssl, socket
+missing module named _ssl.CERT_REQUIRED - imported by _ssl, ssl
+missing module named _ssl.CERT_NONE - imported by _ssl, ssl
+missing module named _ssl.CERT_OPTIONAL - imported by _ssl, ssl
+missing module named _ssl.SSLError - imported by _ssl, ssl, socket
+missing module named _ssl.OPENSSL_VERSION_NUMBER - imported by _ssl, ssl
+missing module named _ssl.OPENSSL_VERSION_INFO - imported by _ssl, ssl
+missing module named _ssl.OPENSSL_VERSION - imported by _ssl, ssl
+missing module named sys.py3kwarning - imported by sys, httplib
+missing module named ssl.CertificateError - imported by ssl, setuptools.ssl_support
+missing module named ssl.match_hostname - imported by ssl, setuptools.ssl_support
+missing module named socket.getnameinfo - imported by socket, ssl
+missing module named socket.error - imported by socket, ssl
+missing module named socket.socket - imported by socket, ssl
+missing module named socket._delegate_methods - imported by socket, ssl
+missing module named socket._fileobject - imported by socket, ssl
+missing module named rourl2path.url2pathname - imported by rourl2path, urllib
+missing module named rourl2path.pathname2url - imported by rourl2path, urllib
+missing module named rourl2path - imported by urllib
+missing module named nturl2path.url2pathname - imported by nturl2path, urllib
+missing module named nturl2path.pathname2url - imported by nturl2path, urllib
+missing module named xml.parsers.expat.ParserCreate - imported by xml.parsers.expat, plistlib
+missing module named 'java.lang'.Exception - imported by 'java.lang', xml.sax._exceptions
+missing module named 'java.lang' - imported by platform, xml.sax._exceptions
+missing module named _xmlplus - imported by xml
+missing module named 'Carbon.Files'.fsRdWrPerm - imported by 'Carbon.Files', plistlib
+missing module named 'Carbon.File'.FSGetResourceForkName - imported by 'Carbon.File', plistlib
+missing module named 'Carbon.File'.FSRef - imported by 'Carbon.File', plistlib
+missing module named 'Carbon.File' - imported by plistlib
+missing module named Carbon.Res - imported by Carbon, plistlib
+missing module named 'Carbon.Files'.fsRdPerm - imported by 'Carbon.Files', plistlib
+missing module named 'Carbon.Files' - imported by plistlib
+missing module named Carbon.FSGetResourceForkName - imported by Carbon, plistlib
+missing module named Carbon.FSRef - imported by Carbon, plistlib
+missing module named Carbon - imported by plistlib
+missing module named vms_lib - imported by platform
+missing module named java.System - imported by java, platform
+missing module named java - imported by platform
+missing module named MacOS - imported by platform
+missing module named macresource - imported by MacOS
+missing module named gestalt.gestalt - imported by gestalt, platform
+missing module named gestalt - imported by platform
+missing module named win32con.VER_NT_WORKSTATION - imported by win32con, platform
+missing module named win32api.RegCloseKey - imported by win32api, platform
+missing module named win32api.GetVersionEx - imported by win32api, platform
+missing module named win32api.RegOpenKeyEx - imported by win32api, platform
+missing module named win32api.RegQueryValueEx - imported by win32api, platform
+missing module named zipimport.zipimporter - imported by zipimport, pkgutil
+missing module named sys.exc_info - imported by sys, win32com.server.dispatcher
+missing module named pywintypes.TimeType - imported by pywintypes, win32com.client.build
+missing module named pywintypes.IIDType - imported by pywintypes, win32com.client.dynamic
+missing module named win32com.client.Dispatch - imported by win32com.client, win32com.client.util, win32com.client.makepy
+missing module named win32com.client._get_good_object_ - imported by win32com.client, win32com.client.util
+missing module named pythoncom.DISPATCH_PROPERTYPUT - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPID_VALUE - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPID_COLLECT - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPID_UNKNOWN - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPATCH_PROPERTYGET - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPID_STARTENUM - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPID_PROPERTYPUT - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPID_EVALUATE - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPID_DESTRUCTOR - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPATCH_METHOD - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPID_CONSTRUCTOR - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPATCH_PROPERTYPUTREF - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPID_NEWENUM - imported by pythoncom, win32com.server.policy
+missing module named __builtin__.unicode - imported by __builtin__, numpy.core.numerictypes, numpy.lib._iotools, numpy
+missing module named __builtin__.bool - imported by __builtin__, numpy.core.numerictypes, numpy.lib._iotools, numpy
+missing module named __builtin__.complex - imported by __builtin__, numpy.core.numerictypes, numpy.lib._iotools, numpy
+missing module named __builtin__.float - imported by __builtin__, numpy.core.numerictypes, numpy.lib._iotools, numpy
+missing module named __builtin__.int - imported by __builtin__, numpy.core.numerictypes, numpy.lib._iotools, numpy
+missing module named __builtin__.str - imported by __builtin__, numpy.core.numerictypes, numpy.lib._iotools, numpy
+missing module named __builtin__.object - imported by __builtin__, numpy.core.numerictypes, numpy.lib._iotools, numpy
+missing module named unicodedata.ucd_3_2_0 - imported by unicodedata, stringprep, encodings.idna
+missing module named codecs.mbcs_encode - imported by codecs, encodings.mbcs
+missing module named codecs.mbcs_decode - imported by codecs, encodings.mbcs
+missing module named PyQt5.QtGui.QImage - imported by PyQt5.QtGui, RobotGUI.Logic.Video
+missing module named PyQt5.QtGui.QPixmap - imported by PyQt5.QtGui, RobotGUI.Logic.Video
+missing module named builtins.str - imported by builtins, numpy.core.numerictypes, numpy.lib._iotools, numpy
+missing module named builtins.bool - imported by builtins, numpy.core.numerictypes, numpy.lib._iotools, numpy
+missing module named builtins.complex - imported by builtins, numpy.core.numerictypes, numpy.lib._iotools, numpy
+missing module named builtins.float - imported by builtins, numpy.core.numerictypes, numpy.lib._iotools, numpy
+missing module named builtins.int - imported by builtins, numpy.core.numerictypes, numpy.lib._iotools, numpy
+missing module named builtins.object - imported by builtins, numpy.core.numerictypes, numpy.lib._iotools, numpy
+missing module named builtins - imported by numpy.core.numerictypes, scipy._lib.six, numpy.lib._iotools, setuptools.compat, numpy.distutils.misc_util, numpy
+missing module named numpy.compat.long - imported by numpy.compat, numpy.core.numerictypes, numpy.core.defchararray, numpy.core.records, numpy.core.memmap, numpy.lib.function_base, numpy.lib.format, numpy.ma.core, numpy.lib.arrayterator, numpy
+missing module named numpy.dual.pinv - imported by numpy.dual, numpy.matrixlib.defmatrix
+missing module named numpy.dual.inv - imported by numpy.dual, numpy.matrixlib.defmatrix
+missing module named numpy.lib.i0 - imported by numpy.lib, numpy.dual
+missing module named numpy.linalg.inv - imported by numpy.linalg, numpy.matrixlib.defmatrix, numpy.lib.polynomial
+missing module named numpy.core.numerictypes.number - imported by numpy.core.numerictypes, numpy.lib.function_base
+missing module named numpy.core.numerictypes.integer - imported by numpy.core.numerictypes, numpy.core.defchararray
+missing module named numpy.core.numerictypes.string_ - imported by numpy.core.numerictypes, numpy.core.defchararray
+missing module named numpy.core.numerictypes.character - imported by numpy.core.numerictypes, numpy.core.defchararray
+missing module named numpy.core.numerictypes.unicode_ - imported by numpy.core.numerictypes, numpy.core.defchararray
+missing module named numpy.core.numerictypes.int_ - imported by numpy.core.numerictypes, numpy.core.numeric
+missing module named numpy.core.numerictypes.float_ - imported by numpy.core.numerictypes, numpy.core.numeric
+missing module named numpy.core.numerictypes.complex_ - imported by numpy.core.numerictypes, numpy.core.numeric
+missing module named numpy.core.numerictypes.bool_ - imported by numpy.core.numerictypes, numpy.core.numeric, numpy.core.defchararray
+missing module named numpy.core.numerictypes.intc - imported by numpy.core.numerictypes, numpy.core.numeric
+missing module named numpy.core.numerictypes.longlong - imported by numpy.core.numerictypes, numpy.core.numeric
+missing module named numpy.core.numerictypes.object_ - imported by numpy.core.numerictypes, numpy.core._internal, numpy.core.defchararray
+missing module named numpy.core.multiarray.empty - imported by numpy.core.multiarray, numpy.core.numerictypes
+missing module named numpy.core.multiarray.datetime_as_string - imported by numpy.core.multiarray, numpy.core.numerictypes, numpy.core.arrayprint
+missing module named numpy.core.multiarray.array - imported by numpy.core.multiarray, numpy.core._internal, numpy.core.numerictypes, numpy.core.arrayprint
+missing module named numpy.core.multiarray.ndarray - imported by numpy.core.multiarray, numpy.core._internal, numpy.core.numerictypes
+missing module named numpy.core.multiarray.busday_offset - imported by numpy.core.multiarray, numpy.core.numerictypes
+missing module named numpy.core.multiarray.busday_count - imported by numpy.core.multiarray, numpy.core.numerictypes
+missing module named numpy.core.multiarray.dtype - imported by numpy.core.multiarray, numpy.core._internal, numpy.core.numerictypes
+missing module named numpy.core.multiarray.busdaycalendar - imported by numpy.core.multiarray, numpy.core.numerictypes
+missing module named numpy.core.multiarray.datetime_data - imported by numpy.core.multiarray, numpy.core.numerictypes, numpy.core.arrayprint
+missing module named numpy.core.multiarray.typeinfo - imported by numpy.core.multiarray, numpy.core.numerictypes
+missing module named numpy.core.multiarray.is_busday - imported by numpy.core.multiarray, numpy.core.numerictypes
+missing module named numpy.core.multiarray._flagdict - imported by numpy.core.multiarray, numpy.ctypeslib
+missing module named numpy.core.multiarray.flagsobj - imported by numpy.core.multiarray, numpy.ctypeslib
+missing module named numpy.core.multiarray.packbits - imported by numpy.core.multiarray, numpy.lib.npyio
+missing module named numpy.core.multiarray.unpackbits - imported by numpy.core.multiarray, numpy.lib.npyio
+missing module named numpy.core.multiarray.unravel_index - imported by numpy.core.multiarray, numpy.lib.index_tricks
+missing module named numpy.core.multiarray.ravel_multi_index - imported by numpy.core.multiarray, numpy.lib.index_tricks
+missing module named numpy.core.multiarray.digitize - imported by numpy.core.multiarray, numpy.lib.function_base
+missing module named numpy.core.multiarray.interp - imported by numpy.core.multiarray, numpy.lib.function_base
+missing module named numpy.core.multiarray.bincount - imported by numpy.core.multiarray, numpy.lib.function_base
+missing module named numpy.core.multiarray._insert - imported by numpy.core.multiarray, numpy.lib.function_base
+missing module named numpy.core.multiarray.add_docstring - imported by numpy.core.multiarray, numpy.lib.function_base
+missing module named numpy.core.multiarray._vec_string - imported by numpy.core.multiarray, numpy.core.defchararray
+missing module named numpy.core.multiarray.format_longfloat - imported by numpy.core.multiarray, numpy.core.arrayprint
+missing module named numpy.compat.bytes - imported by numpy.compat, numpy.core.numerictypes, numpy.core.records, numpy.lib._iotools, numpy.lib.npyio
+missing module named numpy.core.numeric.asanyarray - imported by numpy.core.numeric, numpy.core.fromnumeric, numpy.core._methods, numpy.core.shape_base, numpy.lib.type_check, numpy.lib.function_base, numpy.lib.twodim_base, numpy.matrixlib.defmatrix, numpy.lib.shape_base
+missing module named numpy.core.numeric.concatenate - imported by numpy.core.numeric, numpy.core.fromnumeric, numpy.lib.function_base, numpy.matrixlib.defmatrix, numpy.lib.shape_base
+missing module named numpy.core.numeric.int8 - imported by numpy.core.numeric, numpy.lib.twodim_base
+missing module named numpy.core.numeric.int64 - imported by numpy.core.numeric, numpy.lib.twodim_base
+missing module named numpy.core.numeric.multiply - imported by numpy.core.numeric, numpy.lib.twodim_base
+missing module named numpy.core.numeric.diagonal - imported by numpy.core.numeric, numpy.lib.twodim_base
+missing module named numpy.core.numeric.greater_equal - imported by numpy.core.numeric, numpy.lib.twodim_base
+missing module named numpy.core.numeric.int16 - imported by numpy.core.numeric, numpy.lib.twodim_base
+missing module named numpy.core.numeric.int32 - imported by numpy.core.numeric, numpy.lib.twodim_base
+missing module named numpy.core.numeric.take - imported by numpy.core.numeric, numpy.lib.function_base
+missing module named numpy.core.numeric.integer - imported by numpy.core.numeric, numpy.lib.function_base
+missing module named numpy.core.numeric.ceil - imported by numpy.core.numeric, numpy.lib.function_base
+missing module named numpy.core.numeric.intp - imported by numpy.core.numeric, numpy.lib.function_base
+missing module named numpy.core.numeric.floor - imported by numpy.core.numeric, numpy.lib.function_base
+missing module named numpy.core.numeric.around - imported by numpy.core.numeric, numpy.lib.function_base
+missing module named numpy.core.numeric.ScalarType - imported by numpy.core.numeric, numpy.lib.index_tricks
+missing module named numpy.core.numeric.alltrue - imported by numpy.core.numeric, numpy.lib.index_tricks
+missing module named numpy.core.numeric.cumprod - imported by numpy.core.numeric, numpy.lib.index_tricks
+missing module named numpy.core.numeric.obj2sctype - imported by numpy.core.numeric, numpy.lib.type_check
+missing module named numpy.core.numeric.isnan - imported by numpy.core.numeric, numpy.lib.type_check
+missing module named numpy.core.numeric.any - imported by numpy.core.numeric, numpy.lib.scimath
+missing module named numpy.core.numeric.absolute - imported by numpy.core.numeric, numpy.core
+missing module named numpy.core.numeric.uint8 - imported by numpy.core.numeric, numpy.core.memmap
+missing module named numpy.core.umath.absolute - imported by numpy.core.umath, numpy.core.arrayprint
+missing module named numpy.core.umath.isinf - imported by numpy.core.umath, numpy.core.arrayprint
+missing module named numpy.core.umath.minimum - imported by numpy.core.umath, numpy.core.arrayprint
+missing module named numpy.core.umath.maximum - imported by numpy.core.umath, numpy.core.arrayprint
+missing module named numpy.core.umath.not_equal - imported by numpy.core.umath, numpy.core.arrayprint
+missing module named numpy.core.umath.isnan - imported by numpy.core.umath, numpy.core.arrayprint
+missing module named numpy.core.numeric.array - imported by numpy.core.numeric, numpy.core.fromnumeric, numpy.core.defchararray, numpy.core.getlimits, numpy.lib.type_check, numpy.lib.index_tricks, numpy.lib.function_base, numpy.lib.shape_base
+missing module named numpy.core.numeric.asarray - imported by numpy.core.numeric, numpy.core.fromnumeric, numpy.core.arrayprint, numpy.lib.scimath, numpy.lib.type_check, numpy.lib.index_tricks, numpy.lib.function_base, numpy.lib.twodim_base, numpy.lib.shape_base
+missing module named numpy.core.umath.NAN - imported by numpy.core.umath, numpy.core.numeric
+missing module named numpy.core.umath.sin - imported by numpy.core.umath, numpy.core.numeric, numpy.lib.function_base
+missing module named numpy.core.umath.ERR_RAISE - imported by numpy.core.umath, numpy.core.numeric
+missing module named numpy.core.umath.ERR_DEFAULT - imported by numpy.core.umath, numpy.core.numeric
+missing module named numpy.core.umath.ERR_LOG - imported by numpy.core.umath, numpy.core.numeric
+missing module named numpy.core.umath.PINF - imported by numpy.core.umath, numpy.core.numeric
+missing module named numpy.core.umath.ERR_WARN - imported by numpy.core.umath, numpy.core.numeric
+missing module named numpy.core.umath.ERR_IGNORE - imported by numpy.core.umath, numpy.core.numeric
+missing module named numpy.core.umath.invert - imported by numpy.core.umath, numpy.core.numeric
+missing module named numpy.core.umath.UFUNC_BUFSIZE_DEFAULT - imported by numpy.core.umath, numpy.core.numeric
+missing module named numpy.core.umath.ERR_CALL - imported by numpy.core.umath, numpy.core.numeric
+missing module named numpy.core.umath.ERR_PRINT - imported by numpy.core.umath, numpy.core.numeric
+missing module named numpy.core.umath._add_newdoc_ufunc - imported by numpy.core.umath, numpy.lib.function_base
+missing module named numpy.core.umath.mod - imported by numpy.core.umath, numpy.lib.function_base
+missing module named numpy.core.umath.less_equal - imported by numpy.core.umath, numpy.lib.function_base
+missing module named numpy.core.umath.log10 - imported by numpy.core.umath, numpy.lib.function_base
+missing module named numpy.core.umath.pi - imported by numpy.core.umath, numpy.lib.function_base
+missing module named numpy.core.umath.multiply - imported by numpy.core.umath, numpy.lib.function_base
+missing module named numpy.core.umath.exp - imported by numpy.core.umath, numpy.lib.function_base
+missing module named numpy.core.umath.sqrt - imported by numpy.core.umath, numpy.lib.function_base
+missing module named numpy.core.umath.add - imported by numpy.core.umath, numpy.lib.function_base
+missing module named numpy.core.umath.frompyfunc - imported by numpy.core.umath, numpy.lib.function_base
+missing module named numpy.core.umath.arctan2 - imported by numpy.core.umath, numpy.lib.function_base
+missing module named numpy.core.umath.cos - imported by numpy.core.umath, numpy.lib.function_base
+missing module named numpy.ma.nomask - imported by numpy.ma, numpy.ma.mrecords
+missing module named numpy.ma.filled - imported by numpy.ma, numpy.ma.mrecords
+missing module named numpy.ma.masked_array - imported by numpy.ma, numpy.ma.mrecords
+missing module named numpy.ma.getdata - imported by numpy.ma, numpy.ma.mrecords
+missing module named numpy.ma.getmaskarray - imported by numpy.ma, numpy.ma.mrecords
+missing module named numpy.ma.masked - imported by numpy.ma, numpy.ma.mrecords
+missing module named numpy.ma.MAError - imported by numpy.ma, numpy.ma.mrecords
+missing module named numpy.ma.MaskedArray - imported by numpy.ma, numpy.lib.npyio, numpy.ma.mrecords
+missing module named numpy.ma.make_mask_descr - imported by numpy.ma, numpy.lib.npyio
+missing module named _ctypes._wstring_at_addr - imported by _ctypes, ctypes
+missing module named _ctypes._string_at_addr - imported by _ctypes, ctypes
+missing module named _ctypes._cast_addr - imported by _ctypes, ctypes
+missing module named _ctypes._memset_addr - imported by _ctypes, ctypes
+missing module named _ctypes._memmove_addr - imported by _ctypes, ctypes
+missing module named _ctypes.get_last_error - imported by _ctypes, ctypes
+missing module named _ctypes.set_last_error - imported by _ctypes, ctypes
+missing module named _ctypes._check_HRESULT - imported by _ctypes, ctypes
+missing module named _ctypes.set_conversion_mode - imported by _ctypes, ctypes
+missing module named _ctypes._pointer_type_cache - imported by _ctypes, ctypes
+missing module named _ctypes.POINTER - imported by _ctypes, ctypes
+missing module named _ctypes.pointer - imported by _ctypes, ctypes
+missing module named _ctypes._SimpleCData - imported by _ctypes, ctypes
+missing module named _ctypes.get_errno - imported by _ctypes, ctypes
+missing module named _ctypes.set_errno - imported by _ctypes, ctypes
+missing module named _ctypes.alignment - imported by _ctypes, ctypes
+missing module named _ctypes.addressof - imported by _ctypes, ctypes
+missing module named _ctypes.resize - imported by _ctypes, ctypes
+missing module named _ctypes.byref - imported by _ctypes, ctypes
+missing module named _ctypes.sizeof - imported by _ctypes, ctypes
+missing module named _ctypes.dlopen - imported by _ctypes, ctypes
+missing module named _ctypes.FUNCFLAG_STDCALL - imported by _ctypes, ctypes
+missing module named _ctypes.LoadLibrary - imported by _ctypes, ctypes
+missing module named _ctypes.FUNCFLAG_USE_ERRNO - imported by _ctypes, ctypes
+missing module named _ctypes.FUNCFLAG_USE_LASTERROR - imported by _ctypes, ctypes
+missing module named _ctypes.FUNCFLAG_PYTHONAPI - imported by _ctypes, ctypes
+missing module named _ctypes.FUNCFLAG_CDECL - imported by _ctypes, ctypes
+missing module named _ctypes.FormatError - imported by _ctypes, ctypes
+missing module named _ctypes.ArgumentError - imported by _ctypes, ctypes
+missing module named _ctypes.RTLD_LOCAL - imported by _ctypes, ctypes
+missing module named _ctypes.RTLD_GLOBAL - imported by _ctypes, ctypes
+missing module named _ctypes.__version__ - imported by _ctypes, ctypes
+missing module named _ctypes.CFuncPtr - imported by _ctypes, ctypes
+missing module named _ctypes._Pointer - imported by _ctypes, ctypes
+missing module named _ctypes.Structure - imported by _ctypes, ctypes
+missing module named _ctypes.Array - imported by _ctypes, ctypes
+missing module named _ctypes.Union - imported by _ctypes, ctypes
+missing module named dummy_threading.local - imported by dummy_threading, numpy.distutils.misc_util
+missing module named _dummy_threading.__all__ - imported by _dummy_threading, dummy_threading
+missing module named _dummy_threading - imported by dummy_threading
+missing module named sys.modules - imported by sys, dummy_threading, xmlrpclib
+missing module named numpy.core.ndarray - imported by numpy.core, numpy.lib.utils
+missing module named numpy.core.ufunc - imported by numpy.core, numpy.lib.utils
+missing module named numpy.core.asarray - imported by numpy.core, numpy.lib.utils, numpy.linalg.linalg
+missing module named numpy.core.iinfo - imported by numpy.core, numpy.lib.twodim_base
+missing module named numpy.core.atleast_2d - imported by numpy.core, numpy.lib.function_base, numpy.linalg.linalg
+missing module named numpy.core.linspace - imported by numpy.core, numpy.lib.function_base
+missing module named numpy.core.atleast_1d - imported by numpy.core, numpy.lib.function_base, numpy.lib.polynomial
+missing module named numpy.compat.unicode - imported by numpy.compat, numpy.lib.npyio, numpy.ma.core
+missing module named numpy.compat.basestring - imported by numpy.compat, numpy.core._internal, numpy.core.memmap, numpy.testing.nosetester, numpy.lib.format, numpy.lib._iotools, numpy.lib.npyio, numpy.ma.core, numpy.ma.mrecords, numpy.lib._version
+missing module named numpy.distutils.misc_util.get_shared_lib_extension - imported by numpy.distutils.misc_util, numpy.distutils.fcompiler, numpy.distutils.system_info, numpy.ctypeslib
+missing module named configparser.ConfigParser - imported by configparser, numpy.distutils.system_info, numpy.distutils.npy_pkg_config
+missing module named configparser.NoOptionError - imported by configparser, numpy.distutils.system_info, numpy.distutils.npy_pkg_config
+missing module named configparser.SafeConfigParser - imported by configparser, numpy.distutils.npy_pkg_config
+missing module named configparser - imported by setuptools.compat, numpy.distutils.system_info, numpy.distutils.npy_pkg_config
+missing module named distutils.dist.Distribution - imported by distutils.dist, distutils.cmd, distutils.core, numpy.distutils.environment, numpy.distutils.fcompiler, numpy.distutils.system_info
+missing module named distutils.core.gen_usage - imported by distutils.core, distutils.dist
+missing module named 'numpy_distutils.cpuinfo'.cpuinfo - imported by 'numpy_distutils.cpuinfo', numpy.f2py.diagnose
+missing module named 'numpy_distutils.cpuinfo' - imported by numpy.f2py.diagnose
+missing module named 'numpy_distutils.command'.cpuinfo - imported by 'numpy_distutils.command', numpy.f2py.diagnose
+missing module named 'numpy_distutils.fcompiler' - imported by numpy.f2py.diagnose
+missing module named numpy.distutils.command.config_compiler.config_fc - imported by numpy.distutils.command.config_compiler, numpy.distutils.fcompiler
+missing module named setuptools.Command - imported by setuptools, setuptools.command.easy_install, setuptools.command.setopt, setuptools.command.egg_info, setuptools.command.bdist_egg
+missing module named setuptools_svn.svn_utils - imported by setuptools_svn, setuptools.command.egg_info
+missing module named setuptools_svn - imported by setuptools.command.egg_info
+missing module named setuptools.extension.Library - imported by setuptools.extension, setuptools.command.bdist_egg
+missing module named setuptools.dist.Distribution - imported by setuptools.dist, setuptools.command.easy_install, setuptools
+missing module named setuptools.setup - imported by setuptools, setuptools.command.easy_install, numpy.distutils.core
+missing module named wincertstore.CertFile - imported by wincertstore, setuptools.ssl_support
+missing module named wincertstore - imported by setuptools.ssl_support
+missing module named 'urllib.request'.url2pathname - imported by 'urllib.request', setuptools.compat
+missing module named 'urllib.request'.pathname2url - imported by 'urllib.request', setuptools.compat
+missing module named 'urllib.request'.urlopen - imported by 'urllib.request', numpy.lib._datasource, setuptools.compat
+missing module named 'urllib.request' - imported by numpy.lib._datasource, setuptools.compat
+missing module named 'urllib.error'.URLError - imported by 'urllib.error', numpy.lib._datasource, setuptools.compat
+missing module named 'urllib.error'.HTTPError - imported by 'urllib.error', setuptools.compat
+missing module named 'urllib.error' - imported by numpy.lib._datasource, setuptools.compat
+missing module named 'http.server'.BaseHTTPRequestHandler - imported by 'http.server', setuptools.compat
+missing module named 'http.server'.SimpleHTTPRequestHandler - imported by 'http.server', setuptools.compat
+missing module named 'http.server'.HTTPServer - imported by 'http.server', setuptools.compat
+missing module named 'http.server' - imported by setuptools.compat
+missing module named http - imported by setuptools.compat
+missing module named html.name2codepoint - imported by html, setuptools.compat
+missing module named html - imported by setuptools.compat
+missing module named cookielib.join_header_words - imported by cookielib, _LWPCookieJar
+missing module named cookielib.time2isoz - imported by cookielib, _LWPCookieJar
+missing module named cookielib._warn_unhandled_exception - imported by cookielib, _LWPCookieJar, _MozillaCookieJar
+missing module named cookielib.Cookie - imported by cookielib, _LWPCookieJar, _MozillaCookieJar
+missing module named cookielib.split_header_words - imported by cookielib, _LWPCookieJar
+missing module named cookielib.LoadError - imported by cookielib, _LWPCookieJar, _MozillaCookieJar
+missing module named cookielib.MISSING_FILENAME_TEXT - imported by cookielib, _LWPCookieJar, _MozillaCookieJar
+missing module named cookielib.FileCookieJar - imported by cookielib, _LWPCookieJar, _MozillaCookieJar
+missing module named cookielib.iso2time - imported by cookielib, _LWPCookieJar
+missing module named setuptools.command.easy_install.samefile - imported by setuptools.command.easy_install, setuptools.package_index
+missing module named numpy.distutils.command.build_src.get_f2py_modulename - imported by numpy.distutils.command.build_src, numpy.f2py.f2py2e
+missing module named 'Pyrex.Compiler' - imported by numpy.distutils.command.build_src
+missing module named Pyrex - imported by numpy.distutils.command.build_src
+missing module named multiprocessing.pool.ThreadPool - imported by multiprocessing.pool, multiprocessing.dummy
+missing module named _multiprocessing.PipeConnection - imported by _multiprocessing, multiprocessing.forking
+missing module named _multiprocessing.Connection - imported by _multiprocessing, multiprocessing.forking
+missing module named _multiprocessing.win32 - imported by _multiprocessing, multiprocessing.forking, multiprocessing.connection, multiprocessing.reduction, multiprocessing.heap
+missing module named multiprocessing.process.active_children - imported by multiprocessing.process, multiprocessing.util, multiprocessing
+missing module named multiprocessing.process.current_process - imported by multiprocessing.process, multiprocessing.util, multiprocessing, multiprocessing.synchronize
+missing module named _multiprocessing.SemLock - imported by _multiprocessing, multiprocessing.synchronize
+missing module named multiprocessing.Pipe - imported by multiprocessing, multiprocessing.queues
+missing module named multiprocessing.TimeoutError - imported by multiprocessing, multiprocessing.pool, multiprocessing.dummy
+missing module named multiprocessing.cpu_count - imported by multiprocessing, multiprocessing.pool, multiprocessing.dummy
+missing module named multiprocessing.Process - imported by multiprocessing, multiprocessing.managers, multiprocessing.pool
+missing module named multiprocessing.RLock - imported by multiprocessing, multiprocessing.sharedctypes
+missing module named multiprocessing.Pool - imported by multiprocessing, multiprocessing.managers
+missing module named multiprocessing.active_children - imported by multiprocessing, multiprocessing.managers
+missing module named _xmlrpclib - imported by xmlrpclib
+missing module named multiprocessing.current_process - imported by multiprocessing, multiprocessing.connection, multiprocessing.managers, multiprocessing.reduction
+missing module named multiprocessing.AuthenticationError - imported by multiprocessing, multiprocessing.connection
+missing module named numpy.compat.open_latin1 - imported by numpy.compat, numpy.distutils.fcompiler, numpy.distutils.exec_command
+missing module named 'numpy_distutils.command' - imported by numpy.f2py.diagnose
+missing module named numpy_distutils - imported by numpy.f2py.diagnose
+missing module named numpy.core.number - imported by numpy.core, numpy.testing.utils
+missing module named numpy.lib.iscomplexobj - imported by numpy.lib, numpy.testing.utils
+missing module named numpy.lib.imag - imported by numpy.lib, numpy.testing.utils
+missing module named numpy.lib.real - imported by numpy.lib, numpy.testing.utils
+missing module named numpy.core.signbit - imported by numpy.core, numpy.testing.utils
+missing module named numpy.core.float64 - imported by numpy.core, numpy.testing.utils
+missing module named numpy.core.isinf - imported by numpy.core, numpy.testing.utils
+missing module named numpy.core.isfinite - imported by numpy.core, numpy.testing.utils, numpy.linalg.linalg
+missing module named numpy.core.isnan - imported by numpy.core, numpy.testing.utils
+missing module named numpy.core.float32 - imported by numpy.core, numpy.testing.utils
+missing module named numpy.testing.nosetester.import_nose - imported by numpy.testing.nosetester, numpy.testing.utils
+missing module named numpy.testing.noseclasses.NumpyTestProgram - imported by numpy.testing.noseclasses, numpy.testing.nosetester
+missing module named numpy.testing.noseclasses.Unplugger - imported by numpy.testing.noseclasses, numpy.testing.nosetester
+missing module named 'nose.plugins' - imported by numpy.testing.noseclasses, numpy.testing.nosetester
+missing module named 'nose.plugins'.Plugin - imported by 'nose.plugins', numpy.testing.noseclasses
+missing module named 'nose.plugins'.ErrorClassPlugin - imported by 'nose.plugins', numpy.testing.noseclasses
+missing module named 'nose.plugins'.ErrorClass - imported by 'nose.plugins', numpy.testing.noseclasses
+missing module named 'nose.plugins'.doctests - imported by 'nose.plugins', numpy.testing.noseclasses
+missing module named numpy.testing.noseclasses.NumpyDoctest - imported by numpy.testing.noseclasses, numpy.testing.nosetester
+missing module named numpy.lib.type_check.isreal - imported by numpy.lib.type_check, numpy.lib.scimath
+missing module named numpy.fft.ifft - imported by numpy.fft, scipy
+missing module named numpy.fft.fft - imported by numpy.fft, scipy
+missing module named numpy.random.randn - imported by numpy.random, scipy
+missing module named numpy.random.rand - imported by numpy.random, scipy
+missing module named numpy.testing.noseclasses.KnownFailure - imported by numpy.testing.noseclasses, numpy.testing.nosetester
+missing module named 'nose.util'.src - imported by 'nose.util', numpy.testing.noseclasses
+missing module named 'nose.util' - imported by numpy.testing.noseclasses
+missing module named nose - imported by numpy.testing.decorators, numpy.testing.noseclasses, numpy.testing.nosetester
+missing module named numpy.f2py.auxfuncs.issubroutine - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.func2subr
+missing module named numpy.f2py.auxfuncs.isintent_hide - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.common_rules
+missing module named numpy.f2py.auxfuncs.isstringfunction - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.isrequired - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.isintent_c - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.isintent_nothide - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.isoptional - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.iscomplex - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.isarray - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.isfunction - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.func2subr
+missing module named numpy.f2py.auxfuncs.getargs - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules
+missing module named numpy.f2py.auxfuncs.isintent_in - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.func2subr
+missing module named numpy.f2py.auxfuncs.applyrules - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.use_rules
+missing module named numpy.f2py.auxfuncs.throw_error - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules
+missing module named numpy.f2py.auxfuncs.isintent_inout - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.outmess - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.common_rules, numpy.f2py.func2subr, numpy.f2py.use_rules
+missing module named numpy.f2py.auxfuncs.errmess - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.isintent_out - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.func2subr
+missing module named numpy.f2py.auxfuncs.iscomplexfunction - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.isscalar - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.func2subr
+missing module named numpy.f2py.auxfuncs.l_and - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.stripcomma - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.iscomplexarray - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.debugcapi - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.replace - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.l_or - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.l_not - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.hasnote - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.common_rules, numpy.f2py.use_rules
+missing module named numpy.f2py.auxfuncs.isstring - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.dictappend - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.use_rules
+missing module named numpy.f2py.crackfortran.markoutercomma - imported by numpy.f2py.crackfortran, numpy.f2py.capi_maps
+missing module named __svn_version__.version - imported by __svn_version__, numpy.f2py.__version__
+missing module named __svn_version__ - imported by numpy.f2py.__version__
+missing module named numarray - imported by numpy.distutils.system_info
+missing module named Numeric - imported by numpy.distutils.system_info
+missing module named winreg - imported by numpy.distutils.cpuinfo
+missing module named _curses - imported by curses, curses.has_key
+missing module named numpy.distutils.core.get_distribution - imported by numpy.distutils.core, numpy.distutils.fcompiler, numpy.distutils.misc_util
+missing module named numpy.distutils.misc_util.msvc_version - imported by numpy.distutils.misc_util, numpy.distutils.command.build_ext
+missing module named numpy.distutils.misc_util.get_ext_source_files - imported by numpy.distutils.misc_util, numpy.distutils.command.build_ext
+missing module named numpy.distutils.misc_util.filter_sources - imported by numpy.distutils.misc_util, numpy.distutils.command.build_clib, numpy.distutils.command.build_ext
+missing module named numpy.distutils.misc_util.get_numpy_include_dirs - imported by numpy.distutils.misc_util, numpy.distutils.command.build_clib, numpy.distutils.command.build_ext
+missing module named numpy.distutils.misc_util.get_lib_source_files - imported by numpy.distutils.misc_util, numpy.distutils.command.build_clib
+missing module named numpy.distutils.misc_util.has_cxx_sources - imported by numpy.distutils.misc_util, numpy.distutils.command.build_clib, numpy.distutils.command.build_ext
+missing module named numpy.distutils.misc_util.has_f_sources - imported by numpy.distutils.misc_util, numpy.distutils.command.build_clib, numpy.distutils.command.build_ext
+missing module named numpy.distutils.misc_util.dict_append - imported by numpy.distutils.misc_util, numpy.f2py.f2py2e
+missing module named numpy.distutils.misc_util.get_build_architecture - imported by numpy.distutils.misc_util, numpy.distutils.mingw32ccompiler, numpy.distutils.command.build_ext
+missing module named numpy.distutils.misc_util.msvc_runtime_library - imported by numpy.distutils.misc_util, numpy.distutils.mingw32ccompiler
+missing module named numpy.distutils.misc_util.appendpath - imported by numpy.distutils.misc_util, numpy.distutils.command.build_src
+missing module named numpy.distutils.misc_util.fortran_ext_match - imported by numpy.distutils.misc_util, numpy.distutils.command.build_src
+missing module named numpy.distutils.misc_util.get_cmd - imported by numpy.distutils.misc_util, numpy.distutils.command.install_clib, numpy.distutils.command.build_src
+missing module named numpy.distutils.misc_util.all_strings - imported by numpy.distutils.misc_util, numpy.distutils.fcompiler, numpy.distutils.command.build_clib
+missing module named numpy.distutils.misc_util.is_sequence - imported by numpy.distutils.misc_util, numpy.distutils.fcompiler, numpy.distutils.exec_command, numpy.distutils.command.build_src, numpy.distutils.system_info, numpy.distutils.command.build_clib, numpy.distutils.command.build_ext, numpy.distutils.core, numpy.distutils.log, numpy.distutils.ccompiler
+missing module named numpy.distutils.misc_util.make_temp_file - imported by numpy.distutils.misc_util, numpy.distutils.fcompiler, numpy.distutils.exec_command
+missing module named numpy.distutils.misc_util.get_data_files - imported by numpy.distutils.misc_util, numpy.distutils.command.sdist, numpy.distutils.command.build_src, numpy.distutils.core
+missing module named numpy.distutils.misc_util.get_script_files - imported by numpy.distutils.misc_util, numpy.distutils.command.build_scripts
+missing module named numpy.distutils.misc_util.is_string - imported by numpy.distutils.misc_util, numpy.distutils.command.build_py, numpy.distutils.command.build_scripts, numpy.distutils.fcompiler, numpy.distutils.command.build_src, numpy.distutils.system_info, numpy.distutils.core, numpy.distutils.log
+missing module named numpy.compat.asbytes - imported by numpy.compat, numpy.core._internal, numpy.core.defchararray, numpy.linalg.linalg, numpy.lib.format, numpy.lib._iotools, numpy.lib.npyio
+missing module named numpy.intp - imported by numpy, numpy.ctypeslib
+missing module named numpy.deprecate - imported by numpy, numpy.ctypeslib
+missing module named numpy.integer - imported by numpy, numpy.ctypeslib
+missing module named numpy.core.integer - imported by numpy.core, numpy.fft.helper
+missing module named numpy.compat.integer_types - imported by numpy.compat, numpy.fft.helper
+missing module named numpy.core.conjugate - imported by numpy.core, numpy.fft.fftpack
+missing module named numpy.core.sqrt - imported by numpy.core, numpy.fft.fftpack, numpy.linalg.linalg
+missing module named numpy.linalg.lstsq - imported by numpy.linalg, numpy.lib.polynomial
+missing module named numpy.linalg.eigvals - imported by numpy.linalg, numpy.lib.polynomial
+missing module named numpy.lib.triu - imported by numpy.lib, numpy.linalg.linalg
+missing module named numpy.core.intp - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.dot - imported by numpy.core, numpy.linalg.linalg, numpy.lib.polynomial
+missing module named numpy.core.finfo - imported by numpy.core, numpy.linalg.linalg, numpy.lib.polynomial
+missing module named numpy.core.Inf - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.geterrobj - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.newaxis - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.maximum - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.double - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.amin - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.amax - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.complexfloating - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.multiply - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.asanyarray - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.broadcast - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.inexact - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.transpose - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.product - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.empty_like - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.empty - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.ravel - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.rollaxis - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.zeros - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.add - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.errstate - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.cdouble - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.sum - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.isscalar - imported by numpy.core, numpy.linalg.linalg, numpy.lib.polynomial
+missing module named numpy.core.size - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.array - imported by numpy.core, numpy.linalg.linalg, numpy.lib.polynomial
+missing module named numpy.core.single - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.fastCopyAndTranspose - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.longdouble - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.csingle - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.intc - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.all - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.lib.add_newdoc - imported by numpy.lib, numpy.add_newdocs
+missing module named numpy.compat.isfileobj - imported by numpy.compat, numpy.core.records, numpy.lib.format
+missing module named future_builtins.map - imported by future_builtins, numpy.lib.npyio
+missing module named numpy.compat.asbytes_nested - imported by numpy.compat, numpy.lib._iotools, numpy.lib.npyio
+missing module named numpy.compat.asstr - imported by numpy.compat, numpy.lib.format, numpy.lib.npyio
+missing module named numpy.core.hstack - imported by numpy.core, numpy.lib.polynomial
+missing module named numpy.core.ones - imported by numpy.core, numpy.lib.polynomial
+missing module named numpy.core.atleast_3d - imported by numpy.core, numpy.lib.shape_base
+missing module named numpy.core.vstack - imported by numpy.core, numpy.lib.shape_base
+missing module named copyreg - imported by numpy.core
+missing module named numpy.testing.Tester - imported by numpy.testing, numpy.random, numpy.fft, scipy._lib, scipy, numpy.core, numpy.matrixlib, numpy.linalg, numpy.ma, numpy.lib, numpy, numpy.polynomial, numpy.f2py, numpy.distutils
+missing module named numpy.recarray - imported by numpy, numpy.ma.mrecords
+missing module named numpy.dtype - imported by numpy, numpy.ma.mrecords, numpy.ctypeslib
+missing module named numpy.expand_dims - imported by numpy, numpy.ma.core
+missing module named numpy.array - imported by numpy, numpy.ma.core, numpy.ma.extras, numpy.ma.mrecords, numpy.ctypeslib
+missing module named numpy.ndarray - imported by numpy, numpy.ma.core, numpy.ma.extras, numpy.ma.mrecords, numpy.ctypeslib
+missing module named numpy.amax - imported by numpy, numpy.ma.core
+missing module named numpy.iscomplexobj - imported by numpy, numpy.ma.core
+missing module named numpy.bool_ - imported by numpy, numpy.ma.core, numpy.ma.mrecords
+missing module named numpy.amin - imported by numpy, numpy.ma.core
+missing module named numpy._NoValue - imported by numpy, numpy.ma.core
+missing module named numpy.histogramdd - imported by numpy, numpy.lib.twodim_base
+missing module named numpy.__version__ - imported by numpy, scipy, numpy.f2py.f2py2e
+missing module named numpy.show_config - imported by numpy, scipy
+missing module named numpy.eye - imported by numpy, numpy.core.numeric
+missing module named numpy.VisibleDeprecationWarning - imported by numpy, numpy.core.fromnumeric
+missing module named FCNTL - imported by serial.serialposix
+missing module named TERMIOS - imported by serial.serialposix
+missing module named 'System.IO' - imported by serial.serialcli
+missing module named System - imported by serial.serialcli
+missing module named clr - imported by serial.serialcli
+missing module named copy.deepcopy - imported by copy, weakref, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py, RobotGUI.Logic.Environment, numpy.ma.core, sets
+missing module named org.PyStringMap - imported by org, copy
+missing module named org - imported by copy
+missing module named _json.make_encoder - imported by _json, json.encoder
+missing module named _json.encode_basestring_ascii - imported by _json, json.encoder
+missing module named _json.scanstring - imported by _json, json.decoder
+missing module named _json.make_scanner - imported by _json, json.scanner

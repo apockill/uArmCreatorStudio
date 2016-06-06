@@ -564,7 +564,7 @@ class MoveWristCommandGUI(CommandGUI):
 
         prompt.wristEdit = QtWidgets.QLineEdit()
         prompt.wristEdit.setText(self.parameters["angle"])
-        wristLabel       = QtWidgets.QLabel('X:')
+        wristLabel       = QtWidgets.QLabel('Wrist Angle:')
 
         row1.addWidget(wristLabel)
         row1.addWidget(prompt.wristEdit)

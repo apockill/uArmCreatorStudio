@@ -1,0 +1,38 @@
+[
+   {
+      "commandList": [
+         {
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "z": "15",
+               "relative": false,
+               "x": "-10",
+               "override": false,
+               "y": "-15"
+            },
+            "typeGUI": "MoveXYZCommandGUI"
+         }
+      ],
+      "typeLogic": "InitEvent",
+      "parameters": {},
+      "typeGUI": "InitEventGUI"
+   },
+   {
+      "commandList": [
+         {
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "override": false,
+               "z": "15",
+               "y": "-15",
+               "x": "10",
+               "relative": false
+            },
+            "typeGUI": "MoveXYZCommandGUI"
+         }
+      ],
+      "typeLogic": "DestroyEvent",
+      "parameters": {},
+      "typeGUI": "DestroyEventGUI"
+   }
+]

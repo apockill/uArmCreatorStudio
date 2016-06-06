@@ -134,8 +134,7 @@ class Robot:
 
     def refresh(self, **kwargs):
         # Custom moveTime
-        speed        = kwargs.get("speed", 20)          # Desired speed (cm per second)
-        moveTime     = kwargs.get("time", -1)
+        speed        = kwargs.get("speed", 45)          # Desired speed (cm per second)
         overrideMove = kwargs.get("override", False)  # If robot is already moving, set a new path
 
 

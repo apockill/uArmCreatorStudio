@@ -169,10 +169,17 @@ class ControlPanel(QtWidgets.QWidget):
                 self.scriptTimer.stop()
                 self.scriptTimer = None
 
-            # Decolor any event
+            # Decolor every event
             for index in range(0, self.eventList.count()):
                 eventItem = self.eventList.item(index)
                 self.setColor(eventItem, False)
+
+                commandList = self.eventList.getEventFromItem(eventItem).commandList
+
+                # Decolor every command
+                for index in range(0, commandList.count()):
+                    commandItem = commandList.item(index)
+                    self.setColor(commandItem, False)
 
     def refreshScript(self, interpreter):
         currRunning = interpreter.getStatus()
