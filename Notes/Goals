@@ -1,5 +1,4 @@
 Plan for today:
-    - Have events and commands light up as they are activated
     - Add a wrist Command
     - Add a speed command
 
@@ -13,6 +12,7 @@ Plan for today:
 - When closing the program, the save thing will get prompted. If "X" is pressed, make the program cancel the close.
 
 ######   LONG TERM GOALS    #####
+- Have a unified way of naming the servos, instead of them just being "servo1" "servo2" etc. I don't want #'s in code.
 - Have there be preloaded variables that can be used in expressions, AKA robot.x or robot.y would be in var namespace
 - Add a system for drawing filters on to frames without screwing with logic in vision processing
 - Have events "Light Up" as they are run, and if the commandList is selected, have the commandList "light up" the cmmnds
@@ -31,6 +31,7 @@ Plan for today:
 - Change mimeData to not send plaintext, or at least make it secure (don't run globals()['mimeText']
 
 ######   FINISHED LONG TERM GOALS    #####
+- Have events and commands light up as they are activated
 - Add click/drag to the commandDashboard
 - Get Boolean Logic to work properly, with variable creation and variable modification and simple variable math b
 - Add font support

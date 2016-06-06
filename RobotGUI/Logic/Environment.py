@@ -109,8 +109,7 @@ class Interpreter:
         self.events       = []      # A list of events, and their corresponding commands
 
         # For self.getStatus()
-        self.currEvent    = []      # Index of the event that is currently being run
-        self.currCmmnd    = []      # Index of the command that is currently being run
+        self.currRunning  = []      # A dictionary of what has been run so far in the loop {eventIndex:[commandIndex's]}
 
         # Should only be interacted with through self.setVariable()
         self.__variables  = {}
@@ -135,8 +134,9 @@ class Interpreter:
     def startThread(self):
         # Start the program thread
         if self.mainThread is None:
-            self.killApp    = False
-            self.mainThread = Thread(target=self.__programThread)
+            self.killApp     = False
+            self.mainThread  = Thread(target=self.__programThread)
+            self.currRunning = {}
             self.mainThread.start()
         else:
             printf("Interpreter.startThread(): ERROR: Tried to run programThread, but there was already one running!")
@@ -190,10 +190,9 @@ class Interpreter:
         # Returns an index of the (event, command) that is currently being run
 
         # Ensure that this event is threadsafe by building the result in an atomic way
-        currEvent = self.currEvent
-        currCmmnd = self.currCmmnd
+        currRunning = deepcopy(self.currRunning)
 
-        return currEvent, currCmmnd
+        return currRunning
 
 
     # The following functions should never be called by user - only for Commands/Events to interact with Interpreter
@@ -259,27 +258,28 @@ class Interpreter:
 
 
             # Check every event, in order of the list
-            eventsRun = []  # Keep track of what events were run, for self.getStatus() purposes
-            self.currCmmnd = []
+            self.currRunning = {}
+
             for index, event in enumerate(self.events):
                 if self.killApp: break
                 if not event.isActive(self.env): continue
 
-                eventsRun.append(index)
                 self.__interpretEvent(event)
-            self.currEvent = eventsRun
+
 
         # Check if a DestroyEvent exists, if so, run it's commandList
         destroyEvent = list(filter(lambda event: type(event) == Events.DestroyEvent, self.events))
         if len(destroyEvent): self.__interpretEvent(destroyEvent[0], overrideKillApp=True)
 
-    def __interpretEvent(self, event, overrideKillApp=False):
+    def __interpretEvent(self, event, overrideKillApp=False,):
         # This will run through every command in an events commandList, and account for Conditionals and code blocks.
-
+        eventIndex    = self.events.index(event)
         commandList   = event.commandList
         index         = 0                   # The current command that is being considered for running
         currentIndent = 0                   # The 'bracket' level of code
-        commandsRun   = []                  # Keep track of what commands were run, for self.getStatus() purposes
+
+        self.currRunning[eventIndex] = []
+
         # Check each command, run the ones that should be run
         while index < len(event.commandList):
             if self.killApp and not overrideKillApp: break  # THis might be overrun for things like DestroyEvent
@@ -287,9 +287,10 @@ class Interpreter:
             command    = commandList[index]
 
             # Run command. If command is a boolean, it will return a True or False
-
+            self.currRunning[eventIndex].append(index)
             evaluation = command.run(self.env)
-            commandsRun.append(index)
+
+
             # If its false, skip to the next indent of the same indentation
             if evaluation is False:
 
@@ -307,5 +308,3 @@ class Interpreter:
                         index = i
                         break
             index += 1
-
-        self.currCmmnd.append(commandsRun)

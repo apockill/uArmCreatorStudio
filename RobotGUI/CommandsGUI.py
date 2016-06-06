@@ -1,6 +1,6 @@
 import ast  # To check if a statement is python parsible, for evals
-from PyQt5 import QtGui, QtCore, QtWidgets
-from RobotGUI import Icons
+from PyQt5                 import QtGui, QtCore, QtWidgets
+from RobotGUI              import Icons
 from RobotGUI.Logic.Global import printf
 
 
@@ -108,6 +108,7 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         add  = lambda btnType: vBox.addWidget(self.getButton(btnType))
 
         add(MoveXYZCommandGUI)
+        add(MoveWristCommandGUI)
         add(AttachCommandGUI)
         add(DetachCommandGUI)
         add(GripCommandGUI)
@@ -428,7 +429,7 @@ class NameCommandGUI(CommandGUI):
     def dressWindow(self, prompt):
         # Do some GUI code setup
         # Put all the objects into horizontal layouts called Rows
-
+        row1 = QtWidgets.QHBoxLayout()
         prompt.mainVLayout.addLayout(row1) # and so on for all of the rows
 
         return prompt
@@ -543,6 +544,46 @@ class MoveXYZCommandGUI(CommandGUI):
         if self.parameters['relative']: self.description += '   Relative'
 
 
+class MoveWristCommandGUI(CommandGUI):
+    title     = "Set Wrist Angle"
+    tooltip   = "This command sets the angle of the robots 4th axis, the wrist."
+    icon      = Icons.move_wrist_command
+    logicPair = "MoveWristCommand"
+
+    def __init__(self, env, parameters=None):
+        super(MoveWristCommandGUI, self).__init__()
+        self.parameters = parameters
+
+        if self.parameters is None:
+            currentWrist = env.getRobot().getServoAngle(4)
+            self.parameters = {"angle": str(currentWrist)}
+
+
+    def dressWindow(self, prompt):
+        row1 = QtWidgets.QHBoxLayout()
+
+        prompt.wristEdit = QtWidgets.QLineEdit()
+        prompt.wristEdit.setText(self.parameters["angle"])
+        wristLabel       = QtWidgets.QLabel('X:')
+
+        row1.addWidget(wristLabel)
+        row1.addWidget(prompt.wristEdit)
+
+        prompt.mainVLayout.addLayout(row1)
+
+        return prompt
+
+    def extractPromptInfo(self, prompt):
+        newParameters = {"angle": self.sanitizeEval(prompt.wristEdit, self.parameters["angle"])}
+
+        self.parameters.update(newParameters)
+
+        return self.parameters
+
+    def updateDescription(self):
+        self.description = "Set the wrist position to " + self.parameters["angle"] + " degrees"
+
+
 class StartBlockCommandGUI(CommandGUI):
     """
     Start a block of code with this class
@@ -582,7 +623,7 @@ class SetVariableCommandGUI(CommandGUI):
         if self.parameters is None:
             # Some code to set up default parameters
             self.parameters = {"variable": "",
-                               "expression": "0.0"}
+                               "expression": ""}
 
     def dressWindow(self, prompt):
         # Do some GUI code setup
@@ -950,6 +991,7 @@ class DropCommandGUI(CommandGUI):
 
     def __init__(self, env, parameters=None):
         super(DropCommandGUI, self).__init__()
+
 
 
 

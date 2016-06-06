@@ -576,8 +576,8 @@ class MainWindow(QtWidgets.QMainWindow):
             return
 
         if state == "pause":
-            self.controlPanel.setScriptMode(False)
             interpreter.endThread()
+            self.controlPanel.setScriptMode(False)
 
             self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.run_script))
             return
@@ -676,6 +676,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def loadTask(self,  **kwargs):
         # Load a save file
+        self.setScript("pause")  # Make sure a script isn't running while you try to load something
 
         printf("MainWindow.loadTask(): Loading project")
 

@@ -15,7 +15,7 @@ uarm = UArmTextCommunication_1.Uarm("COM5")
 
 while True:
     uarm.moveToWithTime(int(input("x")), int(input("y")), 20, 1.5)
-    print(uarm.currentCoord())
+    print(uarm.getCurrentCoord())
 #uarm.moveToWithTime(x0, y0, 15, 5)
 # x0 = 0
 # y0 = -15

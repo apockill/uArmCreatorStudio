@@ -102,7 +102,7 @@ class EventPromptWindow(QtWidgets.QDialog):
         self.stepBtn      = self.getNewButton(           'Step', StepEventGUI.icon)
         self.tipBtn       = self.getNewButton(     'Tip Sensor', TipEventGUI.icon)
         self.intersectBtn = self.getNewButton(      'Intersect', Icons.intersect_event)
-        self.motionBtn    = self.getNewButton('Motion Detected', MotionEventGUI.icon)
+        self.motionBtn    = self.getNewButton(         'Motion', MotionEventGUI.icon)
 
 
         # CONNECT BUTTONS THAT DON'T HAVE MENUS

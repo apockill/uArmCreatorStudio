@@ -39,6 +39,7 @@ motion_event       = img_file + "motion_event.png"
 
 # Commands
 xyz_command        = img_file + "xyz_command.png"
+move_wrist_command = img_file + "move_wrist_command.png"
 detach_command     = img_file + "detach_command.png"
 attach_command     = img_file + "attach_command.png"
 refresh_command    = img_file + "refresh_command.png"

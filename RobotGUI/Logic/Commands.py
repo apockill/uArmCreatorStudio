@@ -9,8 +9,8 @@ class NameCommand(Command):
         self.parameters = parameters
 
     def run(self, env):
-        # If the function ran incorrectly
-        return False
+        pass
+
 """
 
 
@@ -50,6 +50,25 @@ class MoveXYZCommand(Command):
             print("ERROR in parsing either X Y or Z: ", successX, successY, successZ)
 
         env.getRobot().refresh(override=self.parameters['override'])
+
+
+class MoveWristCommand(Command):
+
+    def __init__(self, parameters=None):
+        super(MoveWristCommand, self).__init__()
+        self.parameters = parameters
+
+    def run(self, env):
+        interpreter = env.getInterpreter()
+        robot       = env.getRobot()
+
+        newAngle, success = interpreter.evaluateExpression(self.parameters['angle'])
+
+        if success:
+            robot.setWrist(newAngle)
+            robot.refresh()
+        else:
+            print("MoveWristCommand.run(): ERROR in parsing new wrist angle. Expression: ", self.parameters['angle'])
 
 
 class StartBlockCommand(Command):
@@ -172,20 +191,9 @@ class WaitCommand(Command):
 
         # Split the wait into incriments of 0.1 seconds each, and check if the thread has been stopped at each incriment
         if success:
-            timeWaited = 0.0
-            while timeWaited < waitTime - 0.1:
-                sleep(0.1)
-
-                if interpreter.killApp: break
-                timeWaited += 0.1
-
-            # Sleep the remained of time left (for extra accuracy, not really necessary)
-            if not interpreter.killApp:
-                sleep(waitTime - timeWaited)
-
+            sleep(waitTime)
         else:
             printf("WaitCommand.run(): ERROR: Expression failed to evaluate correctly!")
-        print("Done waiting")
 
 
 class GripCommand(Command):

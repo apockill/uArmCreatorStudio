@@ -25,10 +25,10 @@ class Uarm:
         y = str(round(y, 3))
         z = str(round(z, 3))
         t = str(round(timeSpend, 3))
-        cmnd = "moveX" + x + "Y" + y + "Z" + z + "T" + t
+        cmnd = "moveX" + x + "Y" + y + "Z" + z + "S" + t
         response = self.__send(cmnd)
 
-    def wrist(self, angle):
+    def moveWrist(self, angle):
         angle = str(round(angle, 3))
         cmnd = "handV" + angle
         response = self.__send(cmnd)
@@ -55,18 +55,23 @@ class Uarm:
 
 
     # Get commands
-    def currentCoord(self):
+    def getCurrentCoord(self):
         # printf("Uarm.currentCoord(): Getting current coordinates of robot")
         response  = self.__send("gcoords")
         parsedArgs = self.__parseArgs(response, "coords", ["x", "y", "z"])
         return parsedArgs
 
-
-    def isMoving(self):
+    def getIsMoving(self):
         response  = self.__send("gmoving")
         parsedArgs = self.__parseArgs(response, "moving", ["m"])
         return parsedArgs['m']
 
+    def getServoAngle(self, servo_number):
+        cmnd = "gAngleS" + str(servo_number)
+        response = self.__send(cmnd)
+        parsedArgs = self.__parseArgs(response, "angle", ["a"])
+
+        return parsedArgs["a"]
 
     # Not to be used outside of library
     def __connectToRobot(self, port):

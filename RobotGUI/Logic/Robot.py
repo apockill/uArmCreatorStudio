@@ -4,9 +4,7 @@ import serial.tools.list_ports
 from threading                              import Thread
 from RobotGUI.Logic.Global                  import printf
 from RobotGUI.Logic.UArmTextCommunication_1 import Uarm
-
-
-# from time import sleep  #Only use in refresh() command after attaching servos
+from time import sleep  #Only use in refresh() command while querying robot if it's done moving
 
 
 
@@ -54,22 +52,29 @@ class Robot:
             printf("Robot.getMoving(): Robot not found or setupThread is running, returning False")
             return False
         else:
-            return self.uArm.isMoving()
+            return self.uArm.getIsMoving()
 
     def getCurrentCoord(self):
         if not self.connected():
-            printf("Robot.currentCoord(): Robot not found or setupThread is running, returning 0 for all coordinates..")
+            printf("Robot.getCurrentCoord(): Robot not found or setupThread is running, return 0 for all coordinates")
             return {"x": 0, "y": 0, "z": 0}
         else:
-            return self.uArm.currentCoord()
+            return self.uArm.getCurrentCoord()
 
-    def getBaseAngle(self):
+    def getServoAngle(self, servoNumber):
         if not self.connected():
-            printf("Robot.getBaseAngle(): Robot not found or setupThread is running, returning 90 for base angle...")
-            return 90
+            printf("Robot.getServoAngle(): Robot not found or setupThread is running, returning 0 for angle")
+            return 0
         else:
-            printf("Robot.getBaseAngle(): Getting base servo angle for robot... ERROR this is not implimented yet")
-            return self.uArm.readAngle(1)
+            return self.uArm.getServoAngle(servoNumber)
+
+    # def getBaseAngle(self):
+    #     if not self.connected():
+    #         printf("Robot.getBaseAngle(): Robot not found or setupThread is running, returning 90 for base angle...")
+    #         return 90
+    #     else:
+    #         printf("Robot.getBaseAngle(): Getting base servo angle for robot... ERROR this is not implimented yet")
+    #         return self.uArm.readAngle(1)
 
     def connected(self):
         if self.uArm is None:         return False
@@ -143,7 +148,7 @@ class Robot:
 
         # Wait for robot to be done moving before doing anything
         if not overrideMove:
-            while self.getMoving(): pass
+            while self.getMoving(): sleep(.1)
 
 
 
@@ -162,22 +167,22 @@ class Robot:
 
         # Handle any wrist position changes
         if self.wristChanged:
-            self.uArm.wrist(self.wrist)
+            self.uArm.moveWrist(self.wrist)
             self.wristChanged = False
 
         # Perform a moves in self.pos array
-        dist = lambda p1, p2: ((p2['x'] - p1['x']) ** 2 + (p2['y'] - p1['y']) ** 2 + (p2['z'] - p1['z']) ** 2) ** .5
+        # dist = lambda p1, p2: ((p2['x'] - p1['x']) ** 2 + (p2['y'] - p1['y']) ** 2 + (p2['z'] - p1['z']) ** 2) ** .5
         if self.positionChanged:
-            if moveTime == -1:
-                # Calculate the amount of time the move should take so as to reach an avg speed of cmps (cm per second)
-                currXYZ  = self.getCurrentCoord()
-                distance = dist(currXYZ, self.pos)
-                time     = distance / speed
-            else:
-                time = moveTime
+            # if moveTime == -1:
+            #     # Calculate the amount of time the move should take so as to reach an avg speed of cmps (cm per second)
+            #     currXYZ  = self.getCurrentCoord()
+            #     distance = dist(currXYZ, self.pos)
+            #     time     = distance / speed
+            # else:
+            #     time = moveTime
 
             try:
-                self.uArm.moveToWithTime(self.pos['x'], self.pos['y'], self.pos['z'], time)
+                self.uArm.moveToWithTime(self.pos['x'], self.pos['y'], self.pos['z'], speed)
             except ValueError:
                 printf("Robot.refresh(): ERROR: Robot out of bounds and the uarm_python library crashed!")
 
