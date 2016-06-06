@@ -142,19 +142,25 @@ class Robot:
 
 
         # Wait for robot to be done moving before doing anything
-        while not overrideMove and self.getMoving(): pass
+        if not overrideMove:
+            while self.getMoving(): pass
+
 
 
         # Attach/Detach servos and prevent weird snaps by setting position when attaching a servo
         if self.__newServoAttached():
             currXYZ  = self.getCurrentCoord()
+
         self.__updateServos()
+
+        # Move very quickly to the position you were in before servos were attached (reduces jerk)
         if self.servoAttached:
             self.servoAttached = False
             self.uArm.moveToWithTime(currXYZ['x'], currXYZ['y'], currXYZ['z'], 0)
             self.gripperChanged = False
 
 
+        # Handle any wrist position changes
         if self.wristChanged:
             self.uArm.wrist(self.wrist)
             self.wristChanged = False

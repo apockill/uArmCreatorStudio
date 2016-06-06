@@ -134,7 +134,7 @@ class Interpreter:
         # Start the program thread
         if self.mainThread is None:
             self.killApp    = False
-            self.mainThread = Thread(target=self.programThread)
+            self.mainThread = Thread(target=self.__programThread)
             self.mainThread.start()
         else:
             printf("Interpreter.startThread(): ERROR: Tried to run programThread, but there was already one running!")
@@ -171,62 +171,8 @@ class Interpreter:
 
                 return True
 
-    def programThread(self):
-        # This is where the script you create actually gets run.
-        print("\n\n\n ##### STARTING PROGRAM #####\n")
-
-        self.env.getRobot().setServos(servo1=True, servo2=True, servo3=True, servo4=True)
-        self.env.getRobot().refresh()
-
-        timer = FpsTimer(fps=10)
-
-        while not self.killApp:
-            timer.wait()
-            if not timer.ready(): continue
-
-
-            # Check every event, in order of the list
-            for event in self.events:
-                if self.killApp: break
-                if not event.isActive(self.env): continue
-
-
-                commandList   = event.commandList
-                index         = 0  # The current command that is being considered for running
-                currentIndent = 0  # The 'bracket' level of code
-
-                while index < len(event.commandList):  # Check each command, run the ones that should be run
-                    if self.killApp: break
-
-                    command    = commandList[index]
-
-                    # Run command. If command is a boolean, it will return a True or False
-                    evaluation = command.run(self.env)
-                    # If its false, skip to the next indent of the same indentation
-                    if evaluation is False:
-
-                        skipToIndent = currentIndent
-                        nextIndent   = currentIndent
-                        for i in range(index + 1, len(commandList)):
-                            if type(commandList[i]) is Commands.StartBlockCommand: nextIndent += 1
-                            if type(commandList[i]) is Commands.EndBlockCommand:   nextIndent -= 1
-                            if nextIndent == skipToIndent:
-                                index = i - 1
-                                break
-
-                            # If there are no commands
-                            if i == len(commandList) - 1:
-                                index = i
-                                break
-                    index += 1
-
-
-        pass
-
-
     def addEvent(self, event):
         self.events.append(event)
-
 
     def isRunning(self):
         """
@@ -262,8 +208,9 @@ class Interpreter:
 
         newValue, success = self.evaluateExpression(expression)
 
-        if success:
-            self.__variables[name] = round(newValue, 8)
+        self.__variables[name] = newValue
+        # if success:
+        #     self.__variables[name] = round(newValue, 8)
 
     def getVariable(self, name):
         # Gets the value of a variable. Returns "Value, Success". Success will be false if the variable did not exist
@@ -287,3 +234,65 @@ class Interpreter:
             return None, False
 
         return answer, True
+
+
+    # The following functions are *only* for interpreter to use within itself.
+    def __programThread(self):
+        # This is where the script you create actually gets run.
+        print("\n\n\n ##### STARTING PROGRAM #####\n")
+
+        self.env.getRobot().setServos(servo1=True, servo2=True, servo3=True, servo4=True)
+        self.env.getRobot().refresh()
+
+        timer = FpsTimer(fps=10)
+
+        while not self.killApp:
+            timer.wait()
+            if not timer.ready(): continue
+
+
+            # Check every event, in order of the list
+            for event in self.events:
+                if self.killApp: break
+                if not event.isActive(self.env): continue
+
+                self.__interpretEvent(event)
+
+
+        # Check if a DestroyEvent exists, if so, run it's commandList
+        destroyEvent = list(filter(lambda event: type(event) == Events.DestroyEvent, self.events))
+        if len(destroyEvent): self.__interpretEvent(destroyEvent[0], overrideKillApp=True)
+
+    def __interpretEvent(self, event, overrideKillApp=False):
+        # This will run through every command in an events commandList, and account for Conditionals and code blocks.
+
+        commandList   = event.commandList
+        index         = 0  # The current command that is being considered for running
+        currentIndent = 0  # The 'bracket' level of code
+
+        # Check each command, run the ones that should be run
+        while index < len(event.commandList):
+            if self.killApp and not overrideKillApp: break  # THis might be overrun for things like DestroyEvent
+
+            command    = commandList[index]
+
+            # Run command. If command is a boolean, it will return a True or False
+            evaluation = command.run(self.env)
+
+            # If its false, skip to the next indent of the same indentation
+            if evaluation is False:
+
+                skipToIndent = currentIndent
+                nextIndent   = currentIndent
+                for i in range(index + 1, len(commandList)):
+                    if type(commandList[i]) is Commands.StartBlockCommand: nextIndent += 1
+                    if type(commandList[i]) is Commands.EndBlockCommand:   nextIndent -= 1
+                    if nextIndent == skipToIndent:
+                        index = i - 1
+                        break
+
+                    # If there are no commands
+                    if i == len(commandList) - 1:
+                        index = i
+                        break
+            index += 1

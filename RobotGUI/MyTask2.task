@@ -1,0 +1,58 @@
+[
+   {
+      "typeGUI": "InitEventGUI",
+      "typeLogic": "InitEvent",
+      "parameters": {},
+      "commandList": [
+         {
+            "typeGUI": "AttachCommandGUI",
+            "typeLogic": "AttachCommand",
+            "parameters": {
+               "servo2": true,
+               "servo3": true,
+               "servo4": true,
+               "servo1": true
+            }
+         },
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "relative": false,
+               "y": "-15",
+               "z": "15",
+               "x": "-10.0",
+               "override": false
+            }
+         }
+      ]
+   },
+   {
+      "typeGUI": "DestroyEventGUI",
+      "typeLogic": "DestroyEvent",
+      "parameters": {},
+      "commandList": [
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "relative": false,
+               "override": false,
+               "z": "15",
+               "y": "-15",
+               "x": "0"
+            }
+         },
+         {
+            "typeGUI": "DetachCommandGUI",
+            "typeLogic": "DetachCommand",
+            "parameters": {
+               "servo2": true,
+               "servo3": true,
+               "servo4": true,
+               "servo1": true
+            }
+         }
+      ]
+   }
+]

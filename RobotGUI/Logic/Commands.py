@@ -1,5 +1,5 @@
 from RobotGUI.Logic.Global import printf
-
+from time import sleep  # For WaitCommand
 
 """
 class NameCommand(Command):
@@ -43,12 +43,13 @@ class MoveXYZCommand(Command):
         newY, successY = interpreter.evaluateExpression(self.parameters['y'])
         newZ, successZ = interpreter.evaluateExpression(self.parameters['z'])
 
-        if newX and newY and newZ:
-            env.getRobot().setPos(x=newX, y=newY, z=newZ, relative=self.parameters['override'])
+        if successX and successY and successZ:
+            env.getRobot().setPos(x=newX, y=newY, z=newZ,
+                                  relative=self.parameters['relative'])
         else:
-            print("ERROR LOL")
+            print("ERROR in parsing either X Y or Z: ", successX, successY, successZ)
 
-        env.getRobot().refresh()
+        env.getRobot().refresh(override=self.parameters['override'])
 
 
 class StartBlockCommand(Command):
@@ -101,11 +102,95 @@ class TestVariableCommand(Command):
 
         if not successExp: return False
 
-        operations = ['==', '>', '<']
+        operations = ['==', '!=', '>', '<']
 
         expressionString = str(variableValue) + operations[self.parameters['test']] + self.parameters["expression"]
         testResult, success = interpreter.evaluateExpression(expressionString)
 
-        print("Expression tested: ", expressionString, " output", testResult and success)
+        # print("Expression tested: ", expressionString, " output", testResult and success)
         return testResult and success
 
+
+class DetachCommand(Command):
+
+    def __init__(self, parameters=None):
+        super(DetachCommand, self).__init__()
+        self.parameters = parameters
+
+    def run(self, env):
+        printf("DetachCommand.run(): Detaching servos ",
+               self.parameters['servo1'],
+               self.parameters['servo2'],
+               self.parameters['servo3'],
+               self.parameters['servo4'])
+
+        robot = env.getRobot()
+
+        if self.parameters['servo1']: robot.setServos(servo1=False)
+        if self.parameters['servo2']: robot.setServos(servo2=False)
+        if self.parameters['servo3']: robot.setServos(servo3=False)
+        if self.parameters['servo4']: robot.setServos(servo4=False)
+
+        robot.refresh()
+
+
+class AttachCommand(Command):
+
+    def __init__(self, parameters=None):
+        super(AttachCommand, self).__init__()
+        self.parameters = parameters
+
+
+    def run(self, env):
+        printf("AttachCommand.run(): Attaching servos ", self.parameters['servo1'],
+                                                         self.parameters['servo2'],
+                                                         self.parameters['servo3'],
+                                                         self.parameters['servo4'])
+
+        robot = env.getRobot()
+
+        if self.parameters['servo1']: robot.setServos(servo1=True)
+        if self.parameters['servo2']: robot.setServos(servo2=True)
+        if self.parameters['servo3']: robot.setServos(servo3=True)
+        if self.parameters['servo4']: robot.setServos(servo4=True)
+
+        robot.refresh()
+
+
+class WaitCommand(Command):
+
+    def __init__(self, parameters=None):
+        super(WaitCommand, self).__init__()
+        self.parameters = parameters
+
+    def run(self, env):
+
+        interpreter       = env.getInterpreter()
+        waitTime, success = interpreter.evaluateExpression(self.parameters['time'])
+
+        printf("WaitCommand.run(): Waiting for", waitTime, "seconds")
+
+        if success:
+            sleep(waitTime)
+        else:
+            printf("WaitCommand.run(): ERROR: Expression failed to evaluate correctly!")
+
+
+class GripCommand(Command):
+
+    def __init__(self, parameters=None):
+        super(GripCommand, self).__init__()
+
+    def run(self, env):
+        robot = env.getRobot()
+        robot.setGripper(True)
+
+
+class DropCommand(Command):
+
+    def __init__(self, parameters=None):
+        super(DropCommand, self).__init__()
+
+    def run(self, env):
+        robot = env.getRobot()
+        robot.setGripper(False)

@@ -12,6 +12,7 @@ from RobotGUI.Logic.Video       import getConnectedCameras
 from RobotGUI.Logic.Global      import printf
 
 
+
 ########## WIDGETS ##########
 class CameraWidget(QtWidgets.QWidget):
     def __init__(self, getFrameFunction):
@@ -64,6 +65,7 @@ class CameraWidget(QtWidgets.QWidget):
             return
 
         self.video_frame.setPixmap(pixFrame)
+
 
 
 ########## VIEWS ##########
@@ -730,9 +732,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.controlPanel.close()
 
 
-#  Application subclass, to record key presses/releases
 class Application(QtWidgets.QApplication):
     """
+        Application subclass, to record key presses/releases
         I modified the QtGui.QApplication class slightly in order to intercept keypress events
         and write them in the Global.keysPressed list
     """

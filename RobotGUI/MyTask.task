@@ -1,40 +1,123 @@
 [
    {
-      "typeGUI": "KeypressEventGUI",
-      "typeLogic": "KeypressEvent",
-      "parameters": {
-         "checkKey": "A"
-      },
+      "typeLogic": "InitEvent",
       "commandList": [
          {
-            "typeGUI": "MoveXYZCommandGUI",
             "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI",
             "parameters": {
-               "y": "-15",
-               "z": "15",
-               "x": "-10",
-               "override": false
+               "x": "0.8",
+               "override": false,
+               "relative": false,
+               "y": "-14.4",
+               "z": "25"
             }
          }
-      ]
+      ],
+      "typeGUI": "InitEventGUI",
+      "parameters": {}
    },
    {
-      "typeGUI": "KeypressEventGUI",
       "typeLogic": "KeypressEvent",
-      "parameters": {
-         "checkKey": "Z"
-      },
       "commandList": [
          {
-            "typeGUI": "MoveXYZCommandGUI",
-            "typeLogic": "MoveXYZCommand",
+            "typeLogic": "SetVariableCommand",
+            "typeGUI": "SetVariableCommandGUI",
             "parameters": {
-               "y": "-15",
-               "z": "15",
-               "x": "10",
-               "override": false
+               "variable": "memes",
+               "expression": "1"
             }
          }
-      ]
+      ],
+      "typeGUI": "KeypressEventGUI",
+      "parameters": {
+         "checkKey": "A"
+      }
+   },
+   {
+      "typeLogic": "DestroyEvent",
+      "commandList": [
+         {
+            "typeLogic": "DropCommand",
+            "typeGUI": "DropCommandGUI",
+            "parameters": {}
+         }
+      ],
+      "typeGUI": "DestroyEventGUI",
+      "parameters": {}
+   },
+   {
+      "typeLogic": "StepEvent",
+      "commandList": [
+         {
+            "typeLogic": "TestVariableCommand",
+            "typeGUI": "TestVariableCommandGUI",
+            "parameters": {
+               "variable": "memes",
+               "expression": "0",
+               "test": 1
+            }
+         },
+         {
+            "typeLogic": "StartBlockCommand",
+            "typeGUI": "StartBlockCommandGUI",
+            "parameters": {}
+         },
+         {
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI",
+            "parameters": {
+               "relative": false,
+               "override": false,
+               "y": "-15",
+               "x": "-10",
+               "z": "15"
+            }
+         },
+         {
+            "typeLogic": "EndBlockCommand",
+            "typeGUI": "EndBlockCommandGUI",
+            "parameters": {}
+         }
+      ],
+      "typeGUI": "StepEventGUI",
+      "parameters": {}
+   },
+   {
+      "typeLogic": "KeypressEvent",
+      "commandList": [
+         {
+            "typeLogic": "SetVariableCommand",
+            "typeGUI": "SetVariableCommandGUI",
+            "parameters": {
+               "variable": "memes",
+               "expression": "0"
+            }
+         }
+      ],
+      "typeGUI": "KeypressEventGUI",
+      "parameters": {
+         "checkKey": "B"
+      }
+   },
+   {
+      "typeLogic": "KeypressEvent",
+      "commandList": [
+         {
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI",
+            "parameters": {
+               "relative": false,
+               "override": false,
+               "y": "-14.5",
+               "x": "0",
+               "z": "15.0"
+            }
+         }
+      ],
+      "typeGUI": "KeypressEventGUI",
+      "parameters": {
+         "checkKey": "C"
+      }
    }
 ]
