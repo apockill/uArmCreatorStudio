@@ -1,0 +1,20 @@
+[
+   {
+      "parameters": {},
+      "typeGUI": "InitEventGUI",
+      "typeLogic": "InitEvent",
+      "commandList": [
+         {
+            "parameters": {
+               "override": false,
+               "y": "-15",
+               "z": "15",
+               "x": "-10",
+               "relative": false
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         }
+      ]
+   }
+]

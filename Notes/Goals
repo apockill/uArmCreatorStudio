@@ -29,6 +29,7 @@ Plan for today:
 - Impliment a thread stopper while a wait command is active
 - Change mimeData to not send plaintext, or at least make it secure (don't run globals()['mimeText']
 - Add a wrist Command
+- Add a command to the Robot Arduino programming that lets me check whether or not the robot is plugged in, so GUI can know
 
 ######   FINISHED LONG TERM GOALS    #####
 - Have events and commands light up as they are activated
