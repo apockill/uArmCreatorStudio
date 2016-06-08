@@ -485,7 +485,7 @@ class MoveXYZCommandGUI(CommandGUI):
         strLabel = QtWidgets.QLabel('Y:')
         hgtLabel = QtWidgets.QLabel('Z:')
         ovrCheck = QtWidgets.QLabel('Override Ongoing Movement')
-        rltCheck = QtWidgets.QLabel('Relative to Current Position')
+        rltCheck = QtWidgets.QLabel('Relative: ')
 
         # Fill the textboxes with the default parameters
         prompt.rotEdit.setText(str(self.parameters['x']))
@@ -500,20 +500,20 @@ class MoveXYZCommandGUI(CommandGUI):
         row4 = QtWidgets.QHBoxLayout()
         row5 = QtWidgets.QHBoxLayout()
 
-        row1.addWidget(rotLabel, QtCore.Qt.AlignRight)
-        row1.addWidget(prompt.rotEdit, QtCore.Qt.AlignJustify)
+        row1.addWidget(rotLabel, QtCore.Qt.AlignLeft)
+        row1.addWidget(prompt.rotEdit, QtCore.Qt.AlignRight)
 
-        row2.addWidget(strLabel, QtCore.Qt.AlignRight)
-        row2.addWidget(prompt.strEdit, QtCore.Qt.AlignJustify)
+        row2.addWidget(strLabel, QtCore.Qt.AlignLeft)
+        row2.addWidget(prompt.strEdit, QtCore.Qt.AlignRight)
 
-        row3.addWidget(hgtLabel, QtCore.Qt.AlignRight)
-        row3.addWidget(prompt.hgtEdit, QtCore.Qt.AlignJustify)
+        row3.addWidget(hgtLabel, QtCore.Qt.AlignLeft)
+        row3.addWidget(prompt.hgtEdit, QtCore.Qt.AlignRight)
 
-        row4.addWidget(ovrCheck, QtCore.Qt.AlignRight)
-        row4.addWidget(prompt.ovrCheck, QtCore.Qt.AlignJustify)
+        row4.addWidget(ovrCheck, QtCore.Qt.AlignLeft)
+        row4.addWidget(prompt.ovrCheck, QtCore.Qt.AlignRight)
 
-        row5.addWidget(rltCheck, QtCore.Qt.AlignRight)
-        row5.addWidget(prompt.rltCheck, QtCore.Qt.AlignJustify)
+        row5.addWidget(rltCheck, QtCore.Qt.AlignLeft)
+        row5.addWidget(prompt.rltCheck, QtCore.Qt.AlignRight)
 
         prompt.mainVLayout.addLayout(row1)
         prompt.mainVLayout.addLayout(row2)
@@ -556,25 +556,41 @@ class MoveWristCommandGUI(CommandGUI):
 
         if self.parameters is None:
             currentWrist = env.getRobot().getServoAngle(4)
-            self.parameters = {"angle": str(currentWrist)}
+            self.parameters = {"angle": str(currentWrist),
+                               "relative": False}
 
 
     def dressWindow(self, prompt):
-        row1 = QtWidgets.QHBoxLayout()
 
+
+        # Create what the user will be interacting with
         prompt.wristEdit = QtWidgets.QLineEdit()
-        prompt.wristEdit.setText(self.parameters["angle"])
-        wristLabel       = QtWidgets.QLabel('Wrist Angle:')
+        prompt.rltCheck  = QtWidgets.QCheckBox()  # "relative" CheckBox
 
-        row1.addWidget(wristLabel)
-        row1.addWidget(prompt.wristEdit)
+        # Create the labels for the interactive stuff
+        wristLabel       = QtWidgets.QLabel('Wrist Angle:')
+        rltLabel         = QtWidgets.QLabel('Relative:')
+
+        # Set up everything so it matches the current parameters
+        prompt.wristEdit.setText(  self.parameters["angle"])
+        prompt.rltCheck.setChecked(self.parameters["relative"])
+
+        row1 = QtWidgets.QHBoxLayout()
+        row2 = QtWidgets.QHBoxLayout()
+
+        row1.addWidget(wristLabel, QtCore.Qt.AlignLeft)
+        row1.addWidget(prompt.wristEdit, QtCore.Qt.AlignJustify)
+
+        row2.addWidget(rltLabel, QtCore.Qt.AlignLeft)
+        row2.addWidget(prompt.rltCheck, QtCore.Qt.AlignRight)
 
         prompt.mainVLayout.addLayout(row1)
-
+        prompt.mainVLayout.addLayout(row2)
         return prompt
 
     def extractPromptInfo(self, prompt):
-        newParameters = {"angle": self.sanitizeEval(prompt.wristEdit, self.parameters["angle"])}
+        newParameters = {"angle":    self.sanitizeEval(prompt.wristEdit, self.parameters["angle"]),
+                         "relative": prompt.rltCheck.isChecked()}
 
         self.parameters.update(newParameters)
 
@@ -582,6 +598,8 @@ class MoveWristCommandGUI(CommandGUI):
 
     def updateDescription(self):
         self.description = "Set the wrist position to " + self.parameters["angle"] + " degrees"
+
+        if self.parameters['relative']: self.description += '   Relative'
 
 
 class StartBlockCommandGUI(CommandGUI):

@@ -18,7 +18,6 @@ def getConnectedCameras():
 
     return cameraList
 
-
 class VideoStream:
     def __init__(self, cameraID, fps=24):
         self.running    = False

@@ -161,7 +161,7 @@ class ControlPanel(QtWidgets.QWidget):
             interpreter = self.env.getInterpreter()
 
             self.scriptTimer = QtCore.QTimer()
-            self.scriptTimer.timeout.connect(lambda: self.refreshScript(interpreter))
+            self.scriptTimer.timeout.connect(lambda: self.refreshDrawScript(interpreter))
             self.scriptTimer.start(1000.0 / 50)  # Update at same rate as the script checks events
 
         else:       # If script is shutting down
@@ -181,7 +181,7 @@ class ControlPanel(QtWidgets.QWidget):
                     commandItem = commandList.item(index)
                     self.setColor(commandItem, False)
 
-    def refreshScript(self, interpreter):
+    def refreshDrawScript(self, interpreter):
         currRunning = interpreter.getStatus()
 
         selectedItem = self.eventList.getSelectedEventItem()
@@ -199,17 +199,27 @@ class ControlPanel(QtWidgets.QWidget):
             if selectedItem is not eventItem:   continue
 
 
+
             commandList = self.eventList.getEventFromItem(eventItem).commandList
-            if eventIndex not in currRunning:
-                for commandIndex in range(0, len(commandList)):
-                    commandItem = commandList.item(commandIndex)
+            for commandIndex in range(0, len(commandList)):
+                commandItem = commandList.item(commandIndex)
+
+                if eventIndex not in currRunning:
                     self.setColor(commandItem, False)
-            else:
-                # Since it has run command, color the commands that have been run
-                commandsRun = currRunning[eventIndex]
-                for commandIndex in commandsRun:
-                    commandItem = commandList.item(commandIndex)
-                    self.setColor(commandItem, (commandIndex in commandsRun))
+                else:
+
+                    self.setColor(commandItem, (commandIndex == currRunning[eventIndex][-1]))
+
+            #     for commandIndex in range(0, len(commandList)):
+            #         commandItem = commandList.item(commandIndex)
+            #         self.setColor(commandItem, False)
+            # else:
+            #     # Since it has run command, color the commands that have been run
+            #     commandsRun = currRunning[eventIndex]
+            #     for commandIndex in range(0, len(commandList)):
+            #         commandItem = commandList.item(commandIndex)
+            #         self.setColor(commandItem, (commandIndex in commandsRun))
+            #         print(commandsRun)
 
 
 

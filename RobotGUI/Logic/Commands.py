@@ -65,7 +65,7 @@ class MoveWristCommand(Command):
         newAngle, success = interpreter.evaluateExpression(self.parameters['angle'])
 
         if success:
-            robot.setWrist(newAngle)
+            robot.setWrist(newAngle, relative=self.parameters['relative'])
             robot.refresh()
         else:
             print("MoveWristCommand.run(): ERROR in parsing new wrist angle. Expression: ", self.parameters['angle'])

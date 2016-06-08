@@ -1,5 +1,41 @@
 ##### BRAINSTORMING #####
 --------------------------------------------------------------------------------------------------------------
+For object detection/recognition/tracking:
+    -Camshift:
+        -Color based tracker. Seems pretty robust, could impliment with low memory cost and high speed. Good option.
+
+    -mosse.py: MOSSE tracking sample:
+        -Handles multiple targets, even takes a live stream of the object itself while tracking which looks cool
+
+    -mouse_and_match:
+        -interact with the image using mouse
+
+    -opt_flow.py
+        - Could be useful for motion tracking objects, since it's purely motion based, and fast
+
+    -feature_homography:
+        - A demo where you click/drag mouse and it will draw corssesponding points between objects to an img on right
+        - Tracking demo
+
+    -find_obj.py
+        - Didn't get the chance to try it. FInds an object in a bigger picture w/ a smaller pic for reference.
+
+    -edge.py
+        - Clean, good looking contour detection
+
+    -houghcircles.py
+        - For hough circle detection
+
+    -peopledetect.py
+        - Might be useful? You never know
+
+    -planar_tracker.py AND plane_ar.py
+        -plane_ar.py is capable of figuring out the location of the object in 3D space... Sounds useful, no?
+        -plane_ar is VERY cool- capable of multitracking, for SURE WOOHOO!
+
+    -tst_scene_render.py
+        -Could be combined as a "remove object, take picture, place object, take picture, memorizes points"
+
 
 
 For video class:

@@ -1,0 +1,122 @@
+[
+   {
+      "typeLogic": "InitEvent",
+      "commandList": [
+         {
+            "typeLogic": "SetVariableCommand",
+            "parameters": {
+               "expression": "15",
+               "variable": "height"
+            },
+            "typeGUI": "SetVariableCommandGUI"
+         },
+         {
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "z": "15",
+               "x": "1",
+               "relative": false,
+               "y": "-20",
+               "override": false
+            },
+            "typeGUI": "MoveXYZCommandGUI"
+         },
+         {
+            "typeLogic": "SetVariableCommand",
+            "parameters": {
+               "expression": "False",
+               "variable": "stop"
+            },
+            "typeGUI": "SetVariableCommandGUI"
+         }
+      ],
+      "parameters": {},
+      "typeGUI": "InitEventGUI"
+   },
+   {
+      "typeLogic": "StepEvent",
+      "commandList": [
+         {
+            "typeLogic": "TestVariableCommand",
+            "parameters": {
+               "test": 1,
+               "expression": "True",
+               "variable": "stop"
+            },
+            "typeGUI": "TestVariableCommandGUI"
+         },
+         {
+            "typeLogic": "StartBlockCommand",
+            "parameters": {},
+            "typeGUI": "StartBlockCommandGUI"
+         },
+         {
+            "typeLogic": "SetVariableCommand",
+            "parameters": {
+               "expression": "height - 1",
+               "variable": "height"
+            },
+            "typeGUI": "SetVariableCommandGUI"
+         },
+         {
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "z": "-1",
+               "x": "0",
+               "relative": true,
+               "y": "0",
+               "override": false
+            },
+            "typeGUI": "MoveXYZCommandGUI"
+         },
+         {
+            "typeLogic": "WaitCommand",
+            "parameters": {
+               "time": "1.0"
+            },
+            "typeGUI": "WaitCommandGUI"
+         },
+         {
+            "typeLogic": "EndBlockCommand",
+            "parameters": {},
+            "typeGUI": "EndBlockCommandGUI"
+         }
+      ],
+      "parameters": {},
+      "typeGUI": "StepEventGUI"
+   },
+   {
+      "typeLogic": "TipEvent",
+      "commandList": [
+         {
+            "typeLogic": "SetVariableCommand",
+            "parameters": {
+               "expression": "True",
+               "variable": "stop"
+            },
+            "typeGUI": "SetVariableCommandGUI"
+         },
+         {
+            "typeLogic": "SetVariableCommand",
+            "parameters": {
+               "expression": "height+3",
+               "variable": "height"
+            },
+            "typeGUI": "SetVariableCommandGUI"
+         },
+         {
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "z": "height",
+               "x": "0",
+               "relative": false,
+               "y": "-20",
+               "override": false
+            },
+            "typeGUI": "MoveXYZCommandGUI"
+         }
+      ],
+      "parameters": {},
+      "typeGUI": "TipEventGUI"
+   }
+]

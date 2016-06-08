@@ -19,7 +19,7 @@ class Robot:
 
     def __init__(self, comPort):
         self.uArm = None
-        self.home = {"x": 0.0, "y": -15.0, "z": 15.0}
+
         self.pos =     {'x': 0.0, 'y': -15.0, 'z': 15.0}
 
         # Every time uArm is connected correctly, all servos are attached. Set the values to match this.
@@ -38,8 +38,8 @@ class Robot:
                                  4: True}
 
         # Handle the recording of the wrist position, and whether or not it has been changed
-        self.wrist = 180.0             #Angle from 0 to 180 of the robots wrist position
-        self.wristChanged = True      #Tracks whether or not the new wrist position has been sent to the robot or not
+        self.wrist           = 90.0             #Angle from 0 to 180 of the robots wrist position
+        self.wristChanged    = True      #Tracks whether or not the new wrist position has been sent to the robot or not
 
         self.positionChanged = True
         self.gripperChanged  = False  #This should only be used in Robot.refresh() to activate the gripper
@@ -53,6 +53,13 @@ class Robot:
             return False
         else:
             return self.uArm.getIsMoving()
+
+    def getTipSensor(self):
+        if not self.connected():
+            printf("Robot.getTipSensor(): Robot not found or setupThread is running, returning False")
+            return False
+        else:
+            return self.uArm.getTipSensor()
 
     def getCurrentCoord(self):
         if not self.connected():
@@ -68,13 +75,6 @@ class Robot:
         else:
             return self.uArm.getServoAngle(servoNumber)
 
-    # def getBaseAngle(self):
-    #     if not self.connected():
-    #         printf("Robot.getBaseAngle(): Robot not found or setupThread is running, returning 90 for base angle...")
-    #         return 90
-    #     else:
-    #         printf("Robot.getBaseAngle(): Getting base servo angle for robot... ERROR this is not implimented yet")
-    #         return self.uArm.readAngle(1)
 
     def connected(self):
         if self.uArm is None:         return False
@@ -99,9 +99,18 @@ class Robot:
         # If this command has changed the position, or if the position was changed earlier
         self.positionChanged = (not (posBefore == self.pos)) or self.positionChanged
 
-    def setWrist(self, wrist):
-        self.wrist = wrist
-        self.wristChanged = True
+    def setWrist(self, angle, relative=False):
+        newWrist = self.wrist
+        if relative:
+            newWrist += angle
+        else:
+            newWrist  = angle
+
+        if not self.wrist == newWrist:
+            self.wrist        = newWrist
+            self.wristChanged = True
+        else:
+            print("WRIST DIDNT CHANGE YO!!!")
 
     def setServos(self, **kwargs):
         # If anything changed, set the appropriate newServoStatus to reflect that
@@ -125,19 +134,8 @@ class Robot:
 
 
 
-    def getTipSensor(self):
-        # If the robots tip sensor is currently being pressed
-        # Currently buggy, so not implimented
-        return False
 
-
-
-    def refresh(self, **kwargs):
-        # Custom moveTime
-        speed        = kwargs.get("speed", 45)          # Desired speed (cm per second)
-        overrideMove = kwargs.get("override", False)  # If robot is already moving, set a new path
-
-
+    def refresh(self, speed=45, override=False):
 
         # Check that the robot is connected
         if not self.connected():
@@ -146,7 +144,7 @@ class Robot:
 
 
         # Wait for robot to be done moving before doing anything
-        if not overrideMove:
+        if not override:
             while self.getMoving(): sleep(.1)
 
 
@@ -210,6 +208,7 @@ class Robot:
 
     def __setupThread(self, com):
         printf("Robot.setupThread(): Thread Created")
+
         try:
             self.uArm = Uarm(com)
             printf("Robot.setupThread(): uArm successfully connected")
@@ -224,7 +223,7 @@ class Robot:
             setup = Thread(target=lambda: self.__setupThread(com))
             setup.start()
             #self.uArm    = Uarm(com)  #This will prevent the 'play script' button from activating
-        self.setPos(**self.home)
+
 
 
 

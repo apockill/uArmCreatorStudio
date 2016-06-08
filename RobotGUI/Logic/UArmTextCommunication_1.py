@@ -20,6 +20,7 @@ class Uarm:
 
 
     # Action commands
+
     def moveToWithTime(self, x, y, z, timeSpend):
         x = str(round(x, 3))
         y = str(round(y, 3))
@@ -73,6 +74,13 @@ class Uarm:
 
         return parsedArgs["a"]
 
+    def getTipSensor(self):
+        # Returns whether or not the tip sensor is currently activated
+        response  = self.__send("gtip")
+        parsedArgs = self.__parseArgs(response, "tip", ["v"])
+        print("Final", parsedArgs)
+        return (True, False)[int(parsedArgs['v'])]  # Flip the value and turn it into a boolean
+
     # Not to be used outside of library
     def __connectToRobot(self, port):
         try:
@@ -110,13 +118,20 @@ class Uarm:
         if "ERROR" in message:
             printf("Uarm.read(): ERROR: Recieved error from robot: ", message)
 
+        if not (message.count('[') == 1 and message.count(']') == 1):
+            print("Uarm.read(): ERROR: The message did not come with propper formatting!")
+
         message = message.replace("[", "")
         message = message.replace("]", "")
         return message.lower()
 
     def __parseArgs(self, message, command, arguments):
         responseDict = {n: 0 for n in arguments}  #Fill the dictionary with zero's
-        if command not in message: return responseDict
+
+        if command not in message:
+            printf("Uarm.read(): ERROR: The message did not come with the appropriate command!")
+            return responseDict
+
         message = message.replace(command, "")
 
         for i, arg in enumerate(arguments):
