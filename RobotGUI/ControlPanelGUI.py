@@ -536,7 +536,7 @@ class CommandList(QtWidgets.QListWidget):
 
         # Fill command with information either by opening window or loading it in
         if parameters is None:  # If none, then this is being added by the user and not the system loading a file
-            accepted = newCommand.openView()  # Get information from user
+            accepted = newCommand.openWindow()  # Get information from user
             if not accepted:
                 printf('CommandList.addCommand(): User rejected prompt')
                 return
@@ -620,7 +620,7 @@ class CommandList(QtWidgets.QListWidget):
         printf('CommandList.doubleClickEvent(): Opening double clicked command')
 
         command = self.getCommand(clickedItem)
-        command.openView()
+        command.openWindow()
 
         # Update the current itemWidget to match the new parameters
         currentWidget = self.itemWidget(clickedItem)  # Get the current itemWidget

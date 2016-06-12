@@ -1,26 +1,4 @@
-Plan for today:
-    - Add a speed command
-
-######   SHORT TERM GOALS   #####
-- Change the robots Arduino code so that when it initializes, it gets its current position, then LOCKS it (no more home pos)
-- Command: Set the wrist position, have a "relative" command for it
-- Command: Set Speed of robot. This will affect any movements except perhaps pre-recorded movements (maybe?)
-- Have some sort of indication when the robot is done connecting, either succesfully or not.
-- Experiment with changing window/button styles
-- Get rid of camera pause/play controls, or move them next to the camera
-- When closing the program, the save thing will get prompted. If "X" is pressed, make the program cancel the close.
-
-######   LONG TERM GOALS    #####
-- Have a unified way of naming the servos, instead of them just being "servo1" "servo2" etc. I don't want #'s in code.
-- Have there be preloaded variables that can be used in expressions, AKA robot.x or robot.y would be in var namespace
-- Add a system for drawing filters on to frames without screwing with logic in vision processing
-- Have events "Light Up" as they are run, and if the commandList is selected, have the commandList "light up" the cmmnds
-- Add a "Robot Status" widget or a "Console" widget to put either on top of the camera feed.
-- Program the Robot.py to work in such a way that you can switch communication protocols inside of the GUI
-- Get rid of QStackedWidget() usage on the MainWindow, and just make SettingsView and CalibrateView spawn child windows
-
 ---------------------------------------------------------------------------------------------------------------------
-
 ######   FINISHED SHORT TERM GOALS   #####
 - Add a way to organize commands
 - Switch to JSON saving instead of Pickling
@@ -28,7 +6,7 @@ Plan for today:
 - Have vStream be instantiated and closed from within Environment
 - Impliment a thread stopper while a wait command is active
 - Change mimeData to not send plaintext, or at least make it secure (don't run globals()['mimeText']
-- Add a wrist Command
+- Command: Set the wrist position, have a "relative" command for it
 - Add a command to the Robot Arduino programming that lets me check whether or not the robot is plugged in, so GUI can know
 
 ######   FINISHED LONG TERM GOALS    #####
@@ -36,22 +14,6 @@ Plan for today:
 - Add click/drag to the commandDashboard
 - Get Boolean Logic to work properly, with variable creation and variable modification and simple variable math b
 - Add font support
+- Have events "Light Up" as they are run, and if the commandList is selected, have the commandList "light up" the cmmnds
 
 ---------------------------------------------------------------------------------------------------------------------
-
-######   WISHLIST           #####
-- Command line support for running .task files
-- Plugin support to make custom commands
-- Rearrangeable dashboard within GUI with modules that can be dropped in and out (like console output)
-
-
----------------------------------------------------------------------------------------------------------------------
-
-Technical goals
-    - Being written for the normal uArm (custom communication protocol)
-    - 1 week to rebuild the backend and rewrite the interpreter
-    - Computer vision menu w/ standardized memorization of objects (and seperate savefiles)
-    - 3 months from now:
-            - Working, bug free GUI
-            - Integrated computer vision (easy to use)
-            -

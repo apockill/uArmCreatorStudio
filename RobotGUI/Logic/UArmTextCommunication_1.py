@@ -78,7 +78,7 @@ class Uarm:
         # Returns whether or not the tip sensor is currently activated
         response  = self.__send("gtip")
         parsedArgs = self.__parseArgs(response, "tip", ["v"])
-        print("Final", parsedArgs)
+
         return (True, False)[int(parsedArgs['v'])]  # Flip the value and turn it into a boolean
 
     # Not to be used outside of library

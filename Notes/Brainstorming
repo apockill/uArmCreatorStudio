@@ -34,8 +34,11 @@ For object detection/recognition/tracking:
         -plane_ar is VERY cool- capable of multitracking, for SURE WOOHOO!
 
     -tst_scene_render.py
+        - Removes background by having a background picture, and a foreground+background picture
         -Could be combined as a "remove object, take picture, place object, take picture, memorizes points"
 
+    - from pyimagesearch: Local Binary Pattern recognition
+        - Not really usefull for this use case, but seems pretty cool at identifying patterns
 
 
 For video class:

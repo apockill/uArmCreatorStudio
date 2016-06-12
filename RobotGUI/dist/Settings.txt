@@ -1,6 +1,0 @@
-{
-   "lastOpenedFile": null,
-   "cameraID": 0,
-   "motionCalibrations": null,
-   "robotID": null
-}

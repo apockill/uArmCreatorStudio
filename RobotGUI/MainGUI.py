@@ -2,6 +2,7 @@ import json
 import sys
 import webbrowser
 # import qdarkstyle
+from RobotGUI.ObjectManager     import ObjectManager
 from copy                       import deepcopy
 from PyQt5                      import QtCore, QtWidgets, QtGui
 from RobotGUI                   import ControlPanelGUI, Icons
@@ -69,7 +70,7 @@ class CameraWidget(QtWidgets.QWidget):
 
 
 ########## VIEWS ##########
-class CalibrateView(QtWidgets.QWidget):
+class CalibrateWindow(QtWidgets.QDialog):
     """
     This is the dashboard where the user can calibrate different aspects of their robot.
     Things like motion calibration for the camera, color calibration, focus calibration, and maybe even eventually
@@ -77,49 +78,52 @@ class CalibrateView(QtWidgets.QWidget):
     """
 
     def __init__(self, environment, parent):
-        super(CalibrateView, self).__init__(parent)
+        super(CalibrateWindow, self).__init__(parent)
 
         self.env            = environment
         self.newSettings    = {"motionCalibrations": {"stationaryMovement": None, "activeMovement": None}}
-
-        # These buttons are connected in Main.MainWindow.__init__()
-        self.cancelBtn = QtWidgets.QPushButton("Cancel")
-        self.applyBtn  = QtWidgets.QPushButton("Apply")
-
 
         # The label for the current known information for each calibration test. Label is changed in updateLabels()
         self.motionLbl = QtWidgets.QLabel("No information for this calibration")
 
         self.initUI()
 
+        self.updateLabels()
 
     def initUI(self):
 
         motionBtn = QtWidgets.QPushButton("Calibrate Motion")
+        cancelBtn = QtWidgets.QPushButton("Cancel")
+        applyBtn  = QtWidgets.QPushButton("Apply")
+
+
+        applyBtn.clicked.connect(self.accept)
+        cancelBtn.clicked.connect(self.reject)
 
 
         maxWidth  = 130
         motionBtn.setFixedWidth(maxWidth)
-        self.cancelBtn.setFixedWidth(maxWidth)
-        self.applyBtn.setFixedWidth(maxWidth)
-
+        cancelBtn.setFixedWidth(maxWidth)
+        applyBtn.setFixedWidth(maxWidth)
 
 
         row1 = QtWidgets.QHBoxLayout()
         row1.addWidget(     motionBtn, QtCore.Qt.AlignLeft)
         row1.addWidget(self.motionLbl, QtCore.Qt.AlignRight)
 
+
         middleVLayout = QtWidgets.QVBoxLayout()
         middleVLayout.addLayout(row1)
         middleVLayout.addStretch(1)
 
+
         # Set up Cancel and Apply buttons
         leftVLayout = QtWidgets.QVBoxLayout()
         leftVLayout.addStretch(1)
-        leftVLayout.addWidget(self.cancelBtn, QtCore.Qt.AlignRight)
+        leftVLayout.addWidget(cancelBtn, QtCore.Qt.AlignRight)
         rightVLayout = QtWidgets.QVBoxLayout()
         rightVLayout.addStretch(1)
-        rightVLayout.addWidget(self.applyBtn, QtCore.Qt.AlignLeft)
+        rightVLayout.addWidget(applyBtn, QtCore.Qt.AlignLeft)
 
 
         # Create the final layout with the leftVLayout, middleVLayout, and rightVLayout
@@ -130,15 +134,24 @@ class CalibrateView(QtWidgets.QWidget):
         mainHLayout.addLayout(rightVLayout)
         mainHLayout.addStretch(3)
 
+        self.setMinimumHeight(400)
         self.setLayout(mainHLayout)
+        self.setWindowTitle('Calibrations')
+        self.setWindowIcon(QtGui.QIcon(Icons.calibrate))
 
         motionBtn.clicked.connect(self.calibrateMotion)
 
     def updateLabels(self):
-        movCalib = self.newSettings["motionCalibrations"]
-        if movCalib["stationaryMovement"] is not None:
-            self.motionLbl.setText(" Stationary Movement: " + str(movCalib["stationaryMovement"]) +
-                                   "     Active Movement: " + str(movCalib["activeMovement"]))
+        settings = self.env.getSettings()
+
+        # Check if motionCalibrations exist in the settings dictionary
+        if "motionCalibrations" in settings:
+            movCalib = settings["motionCalibrations"]
+
+            # Check if the appropriate values exist within the motionCalibrations dictionary
+            if movCalib["stationaryMovement"] is not None:
+                self.motionLbl.setText(" Stationary Movement: " + str(movCalib["stationaryMovement"]) +
+                                       "     Active Movement: " + str(movCalib["activeMovement"]))
 
     def calibrateMotion(self):
         # Shake the robot left and right while getting frames to get a threshold for "high" movement between frames
@@ -208,41 +221,50 @@ class CalibrateView(QtWidgets.QWidget):
         return self.newSettings
 
 
-class SettingsView(QtWidgets.QWidget):
+class SettingsWindow(QtWidgets.QDialog):
     """
     Simple view that lets you select your robot and camera.
     The Apply/Cancel buttons are connected in the MainWindow class, which is why they are 'self' variables
     """
 
     def __init__(self, parent):
-        super(SettingsView, self).__init__(parent)
+        super(SettingsWindow, self).__init__(parent)
         self.settings  = {"robotID": None, "cameraID": None}
 
         # Init UI Globals
-        self.cameraButtonGroup = None
+        self.cameraButtonGroup = None  # Radio buttons require a "group"
         self.robotButtonGroup  = None
-        self.robVBox   = QtWidgets.QVBoxLayout()
-        self.camVBox   = QtWidgets.QVBoxLayout()
-        self.applyBtn  = QtWidgets.QPushButton("Apply")  #Gets connected with a method from MainWindow
-        self.cancelBtn = QtWidgets.QPushButton("Cancel")
+        self.robVBox           = QtWidgets.QVBoxLayout()
+        self.camVBox           = QtWidgets.QVBoxLayout()
 
         self.initUI()
 
     def initUI(self):
+
         # Create Text
         selectRobotTxt  = QtWidgets.QLabel('Please select the robot you will be using:')
         selectCameraTxt = QtWidgets.QLabel('Please select the camera you will be using:')
 
+
         # CREATE BUTTONS
         robotScanBtn  = QtWidgets.QPushButton("Scan for Robots")
         cameraScanBtn = QtWidgets.QPushButton("Scan for Cameras")
+        applyBtn      = QtWidgets.QPushButton("Apply")
+        cancelBtn     = QtWidgets.QPushButton("Cancel")
+
+        # Connect Buttons
+        robotScanBtn.clicked.connect(   self.scanForRobotsClicked)
+        cameraScanBtn.clicked.connect(  self.scanForCamerasClicked)
+        applyBtn.clicked.connect(       self.accept)
+        cancelBtn.clicked.connect(      self.reject)
+
 
         # Set max widths of buttons
         maxWidth = 130
         robotScanBtn.setFixedWidth(maxWidth)
         cameraScanBtn.setFixedWidth(maxWidth)
-        self.applyBtn.setFixedWidth(maxWidth)
-        self.cancelBtn.setFixedWidth(maxWidth)
+        applyBtn.setFixedWidth(maxWidth)
+        cancelBtn.setFixedWidth(maxWidth)
 
 
         # Create the rows and fill them up
@@ -252,7 +274,6 @@ class SettingsView(QtWidgets.QWidget):
 
         row2 = QtWidgets.QHBoxLayout()
         row2.addLayout(self.robVBox, QtCore.Qt.AlignLeft)
-
 
         row3 = QtWidgets.QHBoxLayout()
         row3.addWidget(selectCameraTxt, QtCore.Qt.AlignLeft)
@@ -274,10 +295,11 @@ class SettingsView(QtWidgets.QWidget):
         # Set up Cancel and Apply buttons
         leftVLayout  = QtWidgets.QVBoxLayout()
         leftVLayout.addStretch(1)
-        leftVLayout.addWidget(self.cancelBtn, QtCore.Qt.AlignRight)
+        leftVLayout.addWidget(cancelBtn, QtCore.Qt.AlignRight)
         rightVLayout = QtWidgets.QVBoxLayout()
         rightVLayout.addStretch(1)
-        rightVLayout.addWidget(self.applyBtn, QtCore.Qt.AlignLeft)
+        rightVLayout.addWidget(applyBtn, QtCore.Qt.AlignLeft)
+
 
         # Build the final layout
         mainHLayout = QtWidgets.QHBoxLayout()
@@ -288,10 +310,11 @@ class SettingsView(QtWidgets.QWidget):
         mainHLayout.addStretch(1)
 
         self.setLayout(mainHLayout)
+        self.setMinimumHeight(400)
+        self.setWindowTitle('Settings')
+        self.setWindowIcon(QtGui.QIcon(Icons.settings))
 
-        # Connect Buttons
-        robotScanBtn.clicked.connect(self.scanForRobotsClicked)
-        cameraScanBtn.clicked.connect(self.scanForCamerasClicked)
+
 
 
     def scanForRobotsClicked(self):
@@ -392,10 +415,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.centralWidget   = QtWidgets.QStackedWidget()
         self.controlPanel    = ControlPanelGUI.ControlPanel(self.env, self.settings, parent=self)
         cameraWidget         = CameraWidget(self.env.getVStream().getPixFrame)
-
         self.dashboardView   = DashboardView(self.controlPanel, cameraWidget, parent=self)
-        self.settingsView    = SettingsView(parent=self)  #'self' so that StackedWidget can be used
-        self.calibrateView   = CalibrateView(self.env, parent=self)
+
 
         self.scriptToggleBtn = QtWidgets.QAction(QtGui.QIcon(Icons.run_script),
                                'Run/Pause the command script (Ctrl+R)', self)
@@ -403,17 +424,11 @@ class MainWindow(QtWidgets.QMainWindow):
                                'Play/Pause the video stream (Ctrl+P)', self)
 
 
-        # Connect Cancel/Apply Buttons from various views
-        self.settingsView.applyBtn.clicked.connect(  lambda: self.closeSettingsView("Apply"))
-        self.settingsView.cancelBtn.clicked.connect( lambda: self.closeSettingsView("Cancel"))
-        self.calibrateView.applyBtn.clicked.connect( lambda: self.closeCalibrateView("Apply"))
-        self.calibrateView.cancelBtn.clicked.connect(lambda: self.closeCalibrateView("Cancel"))
-
 
         # Now that objects have been created, load the settings
         configExists = self.loadSettings()
-
         self.initUI()
+
 
         # If any file is specified in "lastOpenedFile" then load it.
         if self.settings["lastOpenedFile"] is not None:
@@ -421,8 +436,12 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.newTask()
 
+        # If there is no settings File, then open the settings window first thing
         if not configExists:
-            self.setView(self.settingsView)
+            self.openSettings()
+
+        self.setVideo("play")
+
 
     def initUI(self):
         # Create "File" Menu
@@ -435,11 +454,11 @@ class MainWindow(QtWidgets.QMainWindow):
         loadAction   = QtWidgets.QAction(QtGui.QIcon(Icons.load_file), "Load Task",    self)
         forumAction  = QtWidgets.QAction("Visit the forum!", self)
 
-        newAction.triggered.connect(self.newTask)
-        saveAction.triggered.connect(self.saveTask)
-        saveAsAction.triggered.connect(lambda: self.saveTask(True))
-        loadAction.triggered.connect(self.loadTask)
-        forumAction.triggered.connect(lambda: webbrowser.open("https://forum.ufactory.cc/", new=0, autoraise=True))
+        newAction.triggered.connect(    self.newTask)
+        saveAction.triggered.connect(   self.saveTask)
+        saveAsAction.triggered.connect( lambda: self.saveTask(True))
+        loadAction.triggered.connect(   self.loadTask)
+        forumAction.triggered.connect(  lambda: webbrowser.open("https://forum.ufactory.cc/", new=0, autoraise=True))
 
         fileMenu.addAction(newAction)
         fileMenu.addAction(saveAction)
@@ -456,13 +475,14 @@ class MainWindow(QtWidgets.QMainWindow):
         calibrateBtn = QtWidgets.QAction(QtGui.QIcon(Icons.calibrate), 'Open Robot and Camera Calibration Center', self)
 
         self.scriptToggleBtn.setShortcut('Ctrl+R')
-        self.videoToggleBtn.setShortcut('Ctrl+P')
+        self.videoToggleBtn.setShortcut( 'Ctrl+P')
         settingsBtn.setShortcut('Ctrl+S')
 
         self.scriptToggleBtn.triggered.connect( lambda: self.setScript("toggle"))
         self.videoToggleBtn.triggered.connect(  lambda: self.setVideo("toggle"))
-        settingsBtn.triggered.connect(          lambda: self.setView(self.settingsView))
-        calibrateBtn.triggered.connect(         lambda: self.setView(self.calibrateView))
+
+        settingsBtn.triggered.connect( self.openSettings)
+        calibrateBtn.triggered.connect(self.openCalibrations)
 
         toolbar.addAction(self.scriptToggleBtn)
         toolbar.addAction(self.videoToggleBtn)
@@ -471,10 +491,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         # Create the main layout
-        self.setCentralWidget(self.centralWidget)
-        self.centralWidget.addWidget(self.dashboardView)
-        self.centralWidget.addWidget(self.settingsView)
-        self.centralWidget.addWidget(self.calibrateView)
+        self.setCentralWidget(self.dashboardView)
 
 
         # Final touches
@@ -485,7 +502,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def setSettings(self, newSettings):
         # Apply settings
-
+        print("New Settings: ", newSettings)
         # Create a quick function that will check if a setting has been changed. If it has, an action will be taken.
         isNew = lambda key: (key in newSettings) and (newSettings[key] is not None) and \
                             (not self.settings[key] == newSettings[key])
@@ -497,16 +514,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
             self.settings["cameraID"] = newSettings["cameraID"]
 
-            # Set the new camera in the VideoStream object
-            success = self.env.getVStream().setNewCamera(self.settings["cameraID"])
-            if success:
-                self.setVideo("play")
-            else:
-                self.setVideo("pause")
 
-
-        # If a new robot has been set, or the robot has been changed
-        if isNew("robotID") or not self.env.getRobot().connected():  #If robot is not connected, try connecting
+        # If a new robot has been set, set it and reconnect to the new robot.
+        if isNew("robotID"):
             printf("MainWindow.closeSettingsView(): Changing robotID from ",
                   self.settings["robotID"], "to", newSettings["robotID"])
             self.settings["robotID"] = newSettings["robotID"]
@@ -523,39 +533,47 @@ class MainWindow(QtWidgets.QMainWindow):
         # If a calibration of type Motion has been changed, reflect this in the settings
         if isNew("motionCalibrations"):
             self.settings["motionCalibrations"] = newSettings["motionCalibrations"]
-            self.calibrateView.newSettings["motionCalibrations"] = self.settings["motionCalibrations"]
-            self.calibrateView.updateLabels()
 
 
         # Save settings to a config file
         self.saveSettings()
 
     def setVideo(self, state):
-        # Change the state of the videostream. The state can be play, pause, or simply "toggle"
-
+        # Change the state of the videostream. The state can be play, pause, or simply "toggle
         printf("MainWindow.setVideo(): Setting video to state: ", state)
 
         # Don't change anything if no camera ID has been added yet
         if self.settings["cameraID"] is None: return
 
 
-        if state == "play":
-            self.dashboardView.cameraWidget.play()
-            self.env.getVStream().setPaused(False)
-            self.videoToggleBtn.setIcon(QtGui.QIcon(Icons.pause_video))
-
-
-        if state == "pause":
-            self.dashboardView.cameraWidget.pause()
-            self.env.getVStream().setPaused(True)
-            self.videoToggleBtn.setIcon(QtGui.QIcon(Icons.play_video))
-
-
         if state == "toggle":
             if self.env.getVStream().paused:
                 self.setVideo("play")
+                return
             else:
                 self.setVideo("pause")
+                return
+
+
+        vStream = self.env.getVStream()
+        if state == "play":
+            # Make sure the videoStream object has a camera, or if the cameras changed, change it
+            if not vStream.connected() or not vStream.cameraID == self.settings["cameraID"]:
+                success = vStream.setNewCamera(self.settings["cameraID"])
+            # if not vStream.cameraID == self.settings["cameraID"]"
+
+
+            self.dashboardView.cameraWidget.play()
+            vStream.setPaused(False)
+            self.videoToggleBtn.setIcon(QtGui.QIcon(Icons.pause_video))
+
+        if state == "pause":
+            self.dashboardView.cameraWidget.pause()
+            vStream.setPaused(True)
+            self.videoToggleBtn.setIcon(QtGui.QIcon(Icons.play_video))
+
+
+
 
     def setScript(self, state):
         # Run/pause the main script
@@ -590,49 +608,55 @@ class MainWindow(QtWidgets.QMainWindow):
             return
 
 
-    def setView(self, viewWidget):
-        # Change between the main view, settings, and calibrations view.
+    def openSettings(self):
+        # This handles the opening and closing of the Settings menu.
+        printf("MainWindow.openSettings(): Opening Settings Window")
 
-        printf("MainWindow.openSettingsView(): Opening Settings!")
+        self.setScript("pause")
+        self.setVideo("pause")  # If you don't pause video, scanning for cameras may crash the program
+
+        settingsWindow = SettingsWindow(parent=self)
+        accepted       = settingsWindow.exec_()
+
+        if not accepted:
+            printf('MainWindow.closeSettings(): "Cancel" clicked, no settings applied.')
+            return
+
+        printf('MainWindow.closeSettings(): "Apply" clicked, applying settings...')
+        self.setSettings(settingsWindow.getSettings())
+
+        # if success:
+        #     self.setVideo("play")
+        # else:
+        #     self.setVideo("pause")
+
+
+        self.setVideo("play")
+
+    def openCalibrations(self):
+        # This handles the opening and closing of the Calibrations menu
+        printf("MainWindow.openCalibrations(): Opening Calibrations Window")
+
         self.setScript("pause")
         self.setVideo("pause")
-        self.centralWidget.setCurrentWidget(viewWidget)
 
-    def closeSettingsView(self, buttonClicked):
-        newSettings = self.settingsView.getSettings()
+        calibrationsWindow = CalibrateWindow(self.env, parent=self)
+        accepted           = calibrationsWindow.exec_()
 
-        if buttonClicked == "Apply":
-            printf('MainWindow.closeSettingsView(): "Apply" clicked, applying settings...')
-            self.setSettings(newSettings)
+        if accepted:
+            printf('MainWindow.openCalibrations(): "Apply" clicked, applying calibrations...')
+            self.setSettings(calibrationsWindow.getSettings())
+        else:
+            printf('MainWindow.openCalibrations(): "Cancel" clicked, no calibrations applied.')
 
-        if buttonClicked == "Cancel":
-            printf('MainWindow.closeSettingsView(): "Cancel" clicked, no settings applied.')
-
-        # Go back to dashboard
         self.setVideo("play")
-        self.centralWidget.setCurrentWidget(self.dashboardView)
 
-    def closeCalibrateView(self, buttonClicked):
-        self.centralWidget.setCurrentWidget(self.dashboardView)
 
-        newSettings = self.calibrateView.getSettings()
-        printf("new settings: ", newSettings)
-        if buttonClicked == "Apply":
-            printf('MainWindow.closeCalibrateView(): Apply" clicked, applying settings...')
-            self.setSettings(newSettings)
-
-        if buttonClicked == "Cancel":
-            printf('MainWindow.closeCalibrateView(): "Cancel" clicked, no calibrations applied...')
-
-        #Go back to dashboard
-        self.setVideo("play")
-        self.centralWidget.setCurrentWidget(self.dashboardView)
 
 
 
     def promptSave(self):
         # Prompts the user if they want to save, but only if they've changed something in the program
-
 
         if self.loadData is not None and not self.loadData == self.controlPanel.getSaveData():
             printf("MainWindow.promptSave(): Prompting user to save changes")
@@ -641,16 +665,15 @@ class MainWindow(QtWidgets.QMainWindow):
                                        QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.Yes)
             if reply == QtWidgets.QMessageBox.Yes:
                 printf("MainWindow.promptSave():Saving changes")
-
                 self.saveTask(False)
+
+
 
     def newTask(self):
         self.promptSave()
         self.dashboardView.controlPanel.loadData([])
         self.fileName = None
         self.loadData = deepcopy(self.controlPanel.getSaveData())
-
-
 
     def saveTask(self, promptSave):
         printf("MainWindow.saveTask(): Saving project")

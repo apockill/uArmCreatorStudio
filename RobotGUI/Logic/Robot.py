@@ -211,18 +211,28 @@ class Robot:
 
         try:
             self.uArm = Uarm(com)
-            printf("Robot.setupThread(): uArm successfully connected")
+
+            # Check if the uArm was able to connect successfully
+            if self.uArm.connected():
+                printf("Robot.setupThread(): uArm successfully connected")
+                self.refresh(override=True)
+            else:
+                printf("Robot.setupThread(): uArm was unable to connect!")
+                self.uArm = None
+
         except serial.SerialException:
             printf("Robot.setupThread(): ERROR SerialException while setting uArm to ", com)
+
         self.running = False
-        self.refresh(override=True)
 
     def setUArm(self, com):
         if com is not None and not self.running:
             printf("Robot.setUArm(): Setting uArm to ", com)
             setup = Thread(target=lambda: self.__setupThread(com))
             setup.start()
-            #self.uArm    = Uarm(com)  #This will prevent the 'play script' button from activating
+
+        else:
+            printf("Robot.setUArm(): ERROR: Tried setting uArm when it was already set!")
 
 
 

@@ -24,8 +24,7 @@ class TestSceneRender():
         if bgImg != None:
             self.sceneBg = bgImg.copy()
         else:
-
-            self.sceneBg = np.zeros((defaultSize, defaultSize), np.uint8)
+            self.sceneBg = np.zeros(defaultSize, defaultSize, np.uint8)
 
         self.w = self.sceneBg.shape[0]
         self.h = self.sceneBg.shape[1]

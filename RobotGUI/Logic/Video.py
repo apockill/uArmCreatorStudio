@@ -18,6 +18,7 @@ def getConnectedCameras():
 
     return cameraList
 
+
 class VideoStream:
     def __init__(self, cameraID, fps=24):
         self.running    = False
@@ -41,7 +42,7 @@ class VideoStream:
         # Tells the main frunction to grab more frames
 
         if value is False:  # If you want to play video, make sure everything set for that to occur
-            if self.cap is None:
+            if not self.connected:
                 self.setNewCamera(self.cameraID)
 
             if self.mainThread is None:
@@ -115,6 +116,12 @@ class VideoStream:
         if self.cap is not None:
             self.cap.release()
 
+
+    def connected(self):
+        # Returns True or False if there is a camera successfully connected
+        if self.cap is None:        return False
+        if not self.cap.isOpened(): return False
+        return True
 
     def setNewCamera(self, cameraID):
         # Set or change the current camera to a new one

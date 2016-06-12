@@ -257,7 +257,7 @@ class CommandGUI:
         self.description = ""
         self.parameters = {}  # For commands with no parameters, this should stay empty
 
-    def openView(self):  # Open window
+    def openWindow(self):  # Open window
 
         # If this object has no window object, then skip this process and return true (ei, StartBlockCommand)
         if len(self.parameters) == 0:
@@ -297,14 +297,12 @@ class CommandGUI:
         prompt.setWindowTitle(self.title)
         prompt.setWindowIcon(QtGui.QIcon(self.icon))
         prompt.setWhatsThis(self.tooltip)  # This makes the "Question Mark" button on the window show the tooltip msg
+
         # Dress the base window
         prompt = self.dressWindow(prompt)
 
         # Run the info window and prevent other windows from being clicked while open:
-        # Create and connect buttons
-
         printf("Command.openView(): Finished executing self...")
-
         prompt.exec_()
 
         # Get information that the user input
@@ -484,7 +482,7 @@ class MoveXYZCommandGUI(CommandGUI):
         rotLabel = QtWidgets.QLabel('X:')
         strLabel = QtWidgets.QLabel('Y:')
         hgtLabel = QtWidgets.QLabel('Z:')
-        ovrCheck = QtWidgets.QLabel('Override Ongoing Movement')
+        ovrCheck = QtWidgets.QLabel('Override Ongoing Movement:')
         rltCheck = QtWidgets.QLabel('Relative: ')
 
         # Fill the textboxes with the default parameters
@@ -500,20 +498,25 @@ class MoveXYZCommandGUI(CommandGUI):
         row4 = QtWidgets.QHBoxLayout()
         row5 = QtWidgets.QHBoxLayout()
 
-        row1.addWidget(rotLabel, QtCore.Qt.AlignLeft)
-        row1.addWidget(prompt.rotEdit, QtCore.Qt.AlignRight)
+        row1.addWidget(rotLabel)
+        row1.addStretch(1)
+        row1.addWidget(prompt.rotEdit)
 
-        row2.addWidget(strLabel, QtCore.Qt.AlignLeft)
-        row2.addWidget(prompt.strEdit, QtCore.Qt.AlignRight)
+        row2.addWidget(strLabel)
+        row2.addStretch(1)
+        row2.addWidget(prompt.strEdit)
 
-        row3.addWidget(hgtLabel, QtCore.Qt.AlignLeft)
-        row3.addWidget(prompt.hgtEdit, QtCore.Qt.AlignRight)
+        row3.addWidget(hgtLabel)
+        row3.addStretch(1)
+        row3.addWidget(prompt.hgtEdit)
 
-        row4.addWidget(ovrCheck, QtCore.Qt.AlignLeft)
-        row4.addWidget(prompt.ovrCheck, QtCore.Qt.AlignRight)
+        row4.addWidget(ovrCheck)
+        row4.addStretch(1)
+        row4.addWidget(prompt.ovrCheck)
 
-        row5.addWidget(rltCheck, QtCore.Qt.AlignLeft)
-        row5.addWidget(prompt.rltCheck, QtCore.Qt.AlignRight)
+        row5.addWidget(rltCheck)
+        row5.addStretch(1)
+        row5.addWidget(prompt.rltCheck)
 
         prompt.mainVLayout.addLayout(row1)
         prompt.mainVLayout.addLayout(row2)
@@ -578,11 +581,13 @@ class MoveWristCommandGUI(CommandGUI):
         row1 = QtWidgets.QHBoxLayout()
         row2 = QtWidgets.QHBoxLayout()
 
-        row1.addWidget(wristLabel, QtCore.Qt.AlignLeft)
-        row1.addWidget(prompt.wristEdit, QtCore.Qt.AlignJustify)
+        row1.addWidget(wristLabel)
+        row1.addStretch(1)
+        row1.addWidget(prompt.wristEdit)
 
-        row2.addWidget(rltLabel, QtCore.Qt.AlignLeft)
-        row2.addWidget(prompt.rltCheck, QtCore.Qt.AlignRight)
+        row2.addWidget(rltLabel)
+        row2.addStretch(1)
+        row2.addWidget(prompt.rltCheck)
 
         prompt.mainVLayout.addLayout(row1)
         prompt.mainVLayout.addLayout(row2)
@@ -663,11 +668,13 @@ class SetVariableCommandGUI(CommandGUI):
         row1 = QtWidgets.QHBoxLayout()
         row2 = QtWidgets.QHBoxLayout()
 
-        row1.addWidget(namLabel, QtCore.Qt.AlignRight)
-        row1.addWidget(prompt.namEdit, QtCore.Qt.AlignLeft)
+        row1.addWidget(namLabel)
+        row1.addStretch(1)
+        row1.addWidget(prompt.namEdit)
 
-        row2.addWidget(valLabel, QtCore.Qt.AlignRight)
-        row2.addWidget(prompt.valEdit, QtCore.Qt.AlignLeft)
+        row2.addWidget(valLabel)
+        row2.addStretch(1)
+        row2.addWidget(prompt.valEdit)
 
         prompt.mainVLayout.addLayout(row1)
         prompt.mainVLayout.addLayout(row2)
@@ -737,14 +744,17 @@ class TestVariableCommandGUI(CommandGUI):
         row3 = QtWidgets.QHBoxLayout()
         # row4 = QtWidgets.QHBoxLayout()
 
-        row1.addWidget(varLabel, QtCore.Qt.AlignRight)
-        row1.addWidget(prompt.varEdit, QtCore.Qt.AlignLeft)
+        row1.addWidget(varLabel)
+        row1.addStretch(1)
+        row1.addWidget(prompt.varEdit)
 
-        row2.addWidget(tstLabel, QtCore.Qt.AlignRight)
-        row2.addWidget(prompt.tstMenu, QtCore.Qt.AlignLeft)
+        row2.addWidget(tstLabel)
+        row2.addStretch(1)
+        row2.addWidget(prompt.tstMenu)
 
-        row3.addWidget(valLabel, QtCore.Qt.AlignRight)
-        row3.addWidget(prompt.valEdit, QtCore.Qt.AlignLeft)
+        row3.addWidget(valLabel)
+        row3.addStretch(1)
+        row3.addWidget(prompt.valEdit)
 
         # row4.addStretch(1)
         # row4.addWidget(notLabel)
@@ -813,21 +823,21 @@ class DetachCommandGUI(CommandGUI):
         row3 = QtWidgets.QHBoxLayout()
         row4 = QtWidgets.QHBoxLayout()
 
-        row1.addWidget(label1, QtCore.Qt.AlignRight)
+        row1.addWidget(label1)
         row1.addStretch(1)
-        row1.addWidget(prompt.srvo1Box, QtCore.Qt.AlignLeft)
+        row1.addWidget(prompt.srvo1Box)
 
-        row2.addWidget(label2, QtCore.Qt.AlignRight)
+        row2.addWidget(label2)
         row2.addStretch(1)
-        row2.addWidget(prompt.srvo2Box, QtCore.Qt.AlignLeft)
+        row2.addWidget(prompt.srvo2Box)
 
-        row3.addWidget(label3, QtCore.Qt.AlignRight)
+        row3.addWidget(label3)
         row3.addStretch(1)
-        row3.addWidget(prompt.srvo3Box, QtCore.Qt.AlignLeft)
+        row3.addWidget(prompt.srvo3Box)
 
-        row4.addWidget(label4, QtCore.Qt.AlignRight)
+        row4.addWidget(label4)
         row4.addStretch(1)
-        row4.addWidget(prompt.srvo4Box, QtCore.Qt.AlignLeft)
+        row4.addWidget(prompt.srvo4Box)
 
         prompt.mainVLayout.addLayout(row1)
         prompt.mainVLayout.addLayout(row2)
@@ -903,21 +913,21 @@ class AttachCommandGUI(CommandGUI):
         row3 = QtWidgets.QHBoxLayout()
         row4 = QtWidgets.QHBoxLayout()
 
-        row1.addWidget(label1, QtCore.Qt.AlignRight)
+        row1.addWidget(label1)
         row1.addStretch(1)
-        row1.addWidget(prompt.srvo1Box, QtCore.Qt.AlignLeft)
+        row1.addWidget(prompt.srvo1Box)
 
-        row2.addWidget(label2, QtCore.Qt.AlignRight)
+        row2.addWidget(label2)
         row2.addStretch(1)
-        row2.addWidget(prompt.srvo2Box, QtCore.Qt.AlignLeft)
+        row2.addWidget(prompt.srvo2Box)
 
-        row3.addWidget(label3, QtCore.Qt.AlignRight)
+        row3.addWidget(label3)
         row3.addStretch(1)
-        row3.addWidget(prompt.srvo3Box, QtCore.Qt.AlignLeft)
+        row3.addWidget(prompt.srvo3Box)
 
-        row4.addWidget(label4, QtCore.Qt.AlignRight)
+        row4.addWidget(label4)
         row4.addStretch(1)
-        row4.addWidget(prompt.srvo4Box, QtCore.Qt.AlignLeft)
+        row4.addWidget(prompt.srvo4Box)
 
         prompt.mainVLayout.addLayout(row1)
         prompt.mainVLayout.addLayout(row2)
@@ -973,8 +983,9 @@ class WaitCommandGUI(CommandGUI):
 
         row1 = QtWidgets.QHBoxLayout()
 
-        row1.addWidget(timeLabel, QtCore.Qt.AlignRight)
-        row1.addWidget(prompt.timeEdit, QtCore.Qt.AlignJustify)
+        row1.addWidget(timeLabel)
+        row1.addStretch(1)
+        row1.addWidget(prompt.timeEdit)
 
         prompt.mainVLayout.addLayout(row1)
 

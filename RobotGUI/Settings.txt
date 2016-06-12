@@ -1,9 +1,9 @@
 {
-   "cameraID": 0,
+   "robotID": "COM6",
    "motionCalibrations": {
-      "activeMovement": 11.3,
-      "stationaryMovement": 3.8
+      "stationaryMovement": 5.6,
+      "activeMovement": 6.0
    },
-   "lastOpenedFile": "F:/Google Drive/Projects/Git Repositories/RobotGUIProgramming/RobotGUI/FindGround.task",
-   "robotID": null
+   "cameraID": 1,
+   "lastOpenedFile": "F:/Google Drive/Projects/Git Repositories/RobotGUIProgramming/RobotGUI/FindGround.task"
 }

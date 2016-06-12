@@ -1,5 +1,4 @@
 from PyQt5           import QtGui, QtCore, QtWidgets
-
 from RobotGUI        import Icons
 from RobotGUI.Logic import Global
 from RobotGUI.Logic.Global import printf
@@ -45,6 +44,7 @@ class EventPromptWindow(QtWidgets.QDialog):
         self.chosenEvent      = None  #What event the user chose to add (changed in btnClicked() function)
         self.chosenParameters = None
 
+        self.buttonWidth = 130
         self.initButtons()
         self.initButtonMenus()
         self.initUI()
@@ -87,10 +87,10 @@ class EventPromptWindow(QtWidgets.QDialog):
         self.setWindowTitle('Add an Event')
 
     def initButtons(self):
-        buttonWidth = 115
+
         # Create the cancel button
         self.cancelBtn    = QtWidgets.QPushButton('Cancel')
-        self.cancelBtn    .setFixedWidth(buttonWidth * 1.5)
+        self.cancelBtn    .setFixedWidth(self.buttonWidth * 1.5)
         self.cancelBtn    .setFixedHeight(25)
         self.cancelBtn    .setIcon(QtGui.QIcon(Icons.cancel))
 
@@ -188,11 +188,10 @@ class EventPromptWindow(QtWidgets.QDialog):
 
 
     def getNewButton(self, buttonText, icon):
-        buttonWidth = 115
 
         newButton = QtWidgets.QPushButton(buttonText)
         newButton.setStyleSheet("Text-align:left")
-        newButton.setFixedWidth(buttonWidth)
+        newButton.setFixedWidth(self.buttonWidth)
         newButton.setIcon(QtGui.QIcon(icon))
         return newButton
 
