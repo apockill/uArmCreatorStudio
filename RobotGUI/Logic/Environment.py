@@ -247,8 +247,8 @@ class Interpreter:
         # This is where the script you create actually gets run.
         print("\n\n\n ##### STARTING PROGRAM #####\n")
 
-        self.env.getRobot().setServos(servo1=True, servo2=True, servo3=True, servo4=True)
-        self.env.getRobot().refresh()
+        # self.env.getRobot().setServos(servo1=True, servo2=True, servo3=True, servo4=True)
+        # self.env.getRobot().refresh()
 
         timer = FpsTimer(fps=self.scriptFPS)
 

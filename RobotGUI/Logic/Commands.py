@@ -2,6 +2,9 @@ from RobotGUI.Logic.Global import printf
 from time import sleep  # For WaitCommand
 
 """
+Example Class Structure
+
+
 class NameCommand(Command):
 
     def __init__(self, parameters=None):

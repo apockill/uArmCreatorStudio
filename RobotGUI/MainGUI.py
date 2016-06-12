@@ -2,7 +2,8 @@ import json
 import sys
 import webbrowser
 # import qdarkstyle
-from RobotGUI.ObjectManager     import ObjectManager
+from RobotGUI.CameraGUI         import CameraWidget
+from RobotGUI.ObjectManagerGUI     import ObjectManager
 from copy                       import deepcopy
 from PyQt5                      import QtCore, QtWidgets, QtGui
 from RobotGUI                   import ControlPanelGUI, Icons
@@ -11,61 +12,6 @@ from RobotGUI.Logic.Environment import Environment
 from RobotGUI.Logic.Robot       import getConnectedRobots
 from RobotGUI.Logic.Video       import getConnectedCameras
 from RobotGUI.Logic.Global      import printf
-
-
-
-########## WIDGETS ##########
-class CameraWidget(QtWidgets.QWidget):
-    def __init__(self, getFrameFunction):
-        """
-        :param cameraID:
-        :param getFrameFunction: A function that when called will return a frame
-                that can be put in a QLabel. In this case the frame will come from
-                a VideoStream object's getFrame function.
-        :return:
-        """
-        super(CameraWidget, self).__init__()
-
-        # Set up globals
-        self.getFrame = getFrameFunction  # This function is given as a parameters, and returns a frame
-        self.fps = 24  # The maximum FPS the camera will
-        self.paused = True  # Keeps track of the video's state
-        self.timer = None
-
-        # Initialize the UI
-        self.initUI()
-
-        # Get one frame and display it, and wait for play to be pressed
-        self.nextFrameSlot()
-
-    def initUI(self):
-        # self.setMinimumWidth(640)
-        # self.setMinimumHeight(480)
-        self.video_frame = QtWidgets.QLabel("No camera data.")  # Temp label for the frame
-        self.vbox = QtWidgets.QVBoxLayout(self)
-        self.vbox.addWidget(self.video_frame)
-        self.setLayout(self.vbox)
-
-    def play(self):
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.nextFrameSlot)
-        self.timer.start(1000. / self.fps)
-
-        self.paused = False
-
-    def pause(self):
-        if self.timer is not None: self.timer.stop()
-        self.paused = True
-
-    def nextFrameSlot(self):
-
-        pixFrame = self.getFrame()
-
-        # If a frame was returned correctly
-        if pixFrame is None:
-            return
-
-        self.video_frame.setPixmap(pixFrame)
 
 
 
@@ -96,6 +42,7 @@ class CalibrateWindow(QtWidgets.QDialog):
         cancelBtn = QtWidgets.QPushButton("Cancel")
         applyBtn  = QtWidgets.QPushButton("Apply")
 
+        motionBtn.clicked.connect(self.calibrateMotion)
 
         applyBtn.clicked.connect(self.accept)
         cancelBtn.clicked.connect(self.reject)
@@ -139,7 +86,7 @@ class CalibrateWindow(QtWidgets.QDialog):
         self.setWindowTitle('Calibrations')
         self.setWindowIcon(QtGui.QIcon(Icons.calibrate))
 
-        motionBtn.clicked.connect(self.calibrateMotion)
+
 
     def updateLabels(self):
         settings = self.env.getSettings()
@@ -328,7 +275,7 @@ class SettingsWindow(QtWidgets.QDialog):
             newButton = QtWidgets.QRadioButton(port[0])
             self.robVBox.addWidget(newButton)                        # Add the button to the button layout
             self.robotButtonGroup.addButton(newButton, i)            # Add the button to a group, with an ID of i
-            newButton.clicked.connect(self.robButtonClicked) # Connect each radio button to a method
+            newButton.clicked.connect(self.robButtonClicked)         # Connect each radio button to a method
 
 
         if len(connectedDevices) == 0:
@@ -401,6 +348,8 @@ class DashboardView(QtWidgets.QWidget):
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
+
+
         self.settings  = {"robotID": None, "cameraID": None, "lastOpenedFile": None,
                           "motionCalibrations": None}
 
@@ -414,8 +363,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # Set Global UI Variables
         self.centralWidget   = QtWidgets.QStackedWidget()
         self.controlPanel    = ControlPanelGUI.ControlPanel(self.env, self.settings, parent=self)
-        cameraWidget         = CameraWidget(self.env.getVStream().getPixFrame)
-        self.dashboardView   = DashboardView(self.controlPanel, cameraWidget, parent=self)
+        self.dashboardView   = DashboardView(self.controlPanel,
+                                             CameraWidget(self.env.getVStream().getPixFrame),
+                                             parent=self)
 
 
         self.scriptToggleBtn = QtWidgets.QAction(QtGui.QIcon(Icons.run_script),
@@ -427,6 +377,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Now that objects have been created, load the settings
         configExists = self.loadSettings()
+        self.setVideo("play")  # This has to be done before self.initUI() to avoid window opening up and seeming lag
         self.initUI()
 
 
@@ -440,8 +391,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if not configExists:
             self.openSettings()
 
-        self.setVideo("play")
 
+        self.openObjectManager()  # For debugging
 
     def initUI(self):
         # Create "File" Menu
@@ -471,24 +422,27 @@ class MainWindow(QtWidgets.QMainWindow):
         # Create Toolbar
         toolbar = self.addToolBar("MainToolbar")
 
-        settingsBtn  = QtWidgets.QAction(QtGui.QIcon(Icons.settings),  'Open Camera and Robot settings (Ctrl+T)', self)
+        settingsBtn  = QtWidgets.QAction( QtGui.QIcon(Icons.settings), 'Open Camera and Robot settings (Ctrl+T)', self)
         calibrateBtn = QtWidgets.QAction(QtGui.QIcon(Icons.calibrate), 'Open Robot and Camera Calibration Center', self)
+        objMngrBtn   = QtWidgets.QAction(QtGui.QIcon(Icons.objectManager), 'Open Computer Vision Object Manager', self)
 
         self.scriptToggleBtn.setShortcut('Ctrl+R')
         self.videoToggleBtn.setShortcut( 'Ctrl+P')
         settingsBtn.setShortcut('Ctrl+S')
+        calibrateBtn.setShortcut('Ctrl+C')
+        objMngrBtn.setShortcut('Ctrl+O')
 
         self.scriptToggleBtn.triggered.connect( lambda: self.setScript("toggle"))
         self.videoToggleBtn.triggered.connect(  lambda: self.setVideo("toggle"))
-
         settingsBtn.triggered.connect( self.openSettings)
         calibrateBtn.triggered.connect(self.openCalibrations)
+        objMngrBtn.triggered.connect(self.openObjectManager)
 
         toolbar.addAction(self.scriptToggleBtn)
         toolbar.addAction(self.videoToggleBtn)
         toolbar.addAction(settingsBtn)
         toolbar.addAction(calibrateBtn)
-
+        toolbar.addAction(objMngrBtn)
 
         # Create the main layout
         self.setCentralWidget(self.dashboardView)
@@ -572,9 +526,6 @@ class MainWindow(QtWidgets.QMainWindow):
             vStream.setPaused(True)
             self.videoToggleBtn.setIcon(QtGui.QIcon(Icons.play_video))
 
-
-
-
     def setScript(self, state):
         # Run/pause the main script
         interpreter = self.env.getInterpreter()
@@ -609,7 +560,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def openSettings(self):
-        # This handles the opening and closing of the Settings menu.
+        # This handles the opening and closing of the Settings window.
         printf("MainWindow.openSettings(): Opening Settings Window")
 
         self.setScript("pause")
@@ -634,7 +585,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setVideo("play")
 
     def openCalibrations(self):
-        # This handles the opening and closing of the Calibrations menu
+        # This handles the opening and closing of the Calibrations window
         printf("MainWindow.openCalibrations(): Opening Calibrations Window")
 
         self.setScript("pause")
@@ -651,22 +602,19 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.setVideo("play")
 
+    def openObjectManager(self):
+        # This handles the opening and closing of the ObjectManager window
+        printf("MainWindow.openCalibrations(): Opening ObjectManager Window")
 
+        self.setScript("pause")
 
+        # Make sure video thread is active and playing, but that the actual cameraWidget
+        self.setVideo("play")
+        self.dashboardView.cameraWidget.pause()
+        objMngrWindow = ObjectManager(self.env, parent=self)
+        accepted      = objMngrWindow.exec_()
 
-
-    def promptSave(self):
-        # Prompts the user if they want to save, but only if they've changed something in the program
-
-        if self.loadData is not None and not self.loadData == self.controlPanel.getSaveData():
-            printf("MainWindow.promptSave(): Prompting user to save changes")
-            reply = QtWidgets.QMessageBox.question(self, 'Warning',
-                                       "You have unsaved changes. Would you like to save before continuing?",
-                                       QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.Yes)
-            if reply == QtWidgets.QMessageBox.Yes:
-                printf("MainWindow.promptSave():Saving changes")
-                self.saveTask(False)
-
+        self.setVideo("play")
 
 
     def newTask(self):
@@ -748,12 +696,23 @@ class MainWindow(QtWidgets.QMainWindow):
             return False
 
 
+    def promptSave(self):
+        # Prompts the user if they want to save, but only if they've changed something in the program
+
+        if self.loadData is not None and not self.loadData == self.controlPanel.getSaveData():
+            printf("MainWindow.promptSave(): Prompting user to save changes")
+            reply = QtWidgets.QMessageBox.question(self, 'Warning',
+                                       "You have unsaved changes. Would you like to save before continuing?",
+                                       QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.Yes)
+            if reply == QtWidgets.QMessageBox.Yes:
+                printf("MainWindow.promptSave():Saving changes")
+                self.saveTask(False)
+
     def closeEvent(self, event):
         # When window is closed, prompt for save, close the video stream, and close the control panel (thus script)
         self.promptSave()
-
         self.env.close()
-        self.controlPanel.close()
+
 
 
 class Application(QtWidgets.QApplication):

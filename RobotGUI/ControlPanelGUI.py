@@ -5,38 +5,6 @@ from PyQt5                 import QtCore, QtWidgets, QtGui
 from RobotGUI.Logic.Global import printf, FpsTimer
 
 
-class Shared:
-    """
-    This is my slightly safer attempt at avoiding global variables.
-    This class will share variables between commands, such as the robot, the vision class, and
-    various calibration settings.
-
-    I mean, anything is better than globals right?
-
-    Also, having the getRobot, getVision, and getSettings will allow someday for threaded events,
-    if I ever choose to do such a thing.
-    """
-
-    def __init__(self, robot, vision, settings):
-        # Used in any movement related task
-        self.__robotObj = robot
-
-        # Used in the motion detection event, ColorTrackCommand, etc
-        self.__visionObj = vision
-
-        # Used in the motion detection event to get the motionCalibration settings
-        self.__settingsObj = settings
-
-    def getRobot(self):
-        return self.__robotObj
-
-    def getVision(self):
-        return self.__visionObj
-
-    def getSettings(self):
-        return self.__settingsObj
-
-
 class ControlPanel(QtWidgets.QWidget):
     """
     ControlPanel:

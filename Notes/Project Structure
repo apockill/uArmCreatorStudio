@@ -11,7 +11,6 @@ ControlPanel.py
     ControlPanel
     EventList
     CommandList
-    Shared
 
 Events.py
     Event

@@ -1,4 +1,3 @@
-__author__ = 'AlexThiel'
 """
 This is for storing any static directories
 """
@@ -12,7 +11,6 @@ delete             = img_file + "delete.png"
 
 
 # "File" Menu
-taskbar            = img_file + "window_icon"
 new_file           = img_file + "file_new.png"
 save_file          = img_file + "file_sav.png"
 load_file          = img_file + "file_load.png"
@@ -23,8 +21,10 @@ run_script         = img_file + "script_run.png"
 pause_script       = img_file + "script_pause.png"
 pause_video        = img_file + "video_pause.png"
 play_video         = img_file + "video_play.png"
-settings           = img_file + "settings.png"
-calibrate          = img_file + "calibrate.png"
+taskbar            = img_file + "window_icon"
+settings           = img_file + "window_settings.png"
+calibrate          = img_file + "window_calibrate.png"
+objectManager      = img_file + "window_object_manager.png"
 
 
 # Events
