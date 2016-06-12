@@ -8,7 +8,7 @@ from copy                       import deepcopy
 from PyQt5                      import QtCore, QtWidgets, QtGui
 from RobotGUI                   import ControlPanelGUI, Icons
 from RobotGUI.Logic             import Global
-from RobotGUI.Logic.Environment import Environment
+from RobotGUI.Logic.Environment import Environment, Interpreter
 from RobotGUI.Logic.Robot       import getConnectedRobots
 from RobotGUI.Logic.Video       import getConnectedCameras
 from RobotGUI.Logic.Global      import printf
@@ -358,7 +358,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.loadData    = None  #Set when file is loaded. Used to check if the user has changed anything and prompt
         self.keysPressed = None
         self.env         = Environment(self.settings)
-
+        self.interpreter = Interpreter()
 
         # Set Global UI Variables
         self.centralWidget   = QtWidgets.QStackedWidget()
@@ -392,7 +392,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.openSettings()
 
 
-        self.openObjectManager()  # For debugging
+        # self.openObjectManager()  # For debugging
 
     def initUI(self):
         # Create "File" Menu
@@ -528,15 +528,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def setScript(self, state):
         # Run/pause the main script
-        interpreter = self.env.getInterpreter()
 
         if state == "play":
-            if not interpreter.isRunning():
+            if not self.interpreter.isRunning():
                 printf("MainWindow.setScript(): Interpreter is ready. Loading script and starting program")
 
-                interpreter.loadScript(self.controlPanel.getSaveData())
-                self.controlPanel.setScriptMode(True)  # Stops you from moving stuff around while script is running
-                interpreter.startThread()
+                self.interpreter.loadScript(self.env, self.controlPanel.getSaveData())
+
+                # Stop you from moving stuff around while script is running, and activate the visual cmmnd highlighting
+                self.controlPanel.setScriptMode(True, self.interpreter.getStatus)
+                self.interpreter.startThread()
 
                 self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.pause_script))
 
@@ -545,14 +546,14 @@ class MainWindow(QtWidgets.QMainWindow):
             return
 
         if state == "pause":
-            interpreter.endThread()
-            self.controlPanel.setScriptMode(False)
+            self.interpreter.endThread()
+            self.controlPanel.setScriptMode(False, self.interpreter.getStatus)
 
             self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.run_script))
             return
 
         if state == "toggle":
-            if interpreter.isRunning():
+            if self.interpreter.isRunning():
                 self.setScript("pause")
             else:
                 self.setScript("play")
@@ -710,6 +711,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def closeEvent(self, event):
         # When window is closed, prompt for save, close the video stream, and close the control panel (thus script)
+        self.interpreter.endThread()
         self.promptSave()
         self.env.close()
 

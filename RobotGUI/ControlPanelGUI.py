@@ -109,7 +109,7 @@ class ControlPanel(QtWidgets.QWidget):
         self.commandListStack.setCurrentWidget(selectedEvent.commandList)
 
 
-    def setScriptMode(self, bool):
+    def setScriptMode(self, bool, interpreterStatusFunction):
         """
         When the script is running:
             - Add/Delete/Change event buttons will be disabled
@@ -126,10 +126,8 @@ class ControlPanel(QtWidgets.QWidget):
 
 
         if bool:    # If script is starting up
-            interpreter = self.env.getInterpreter()
-
             self.scriptTimer = QtCore.QTimer()
-            self.scriptTimer.timeout.connect(lambda: self.refreshDrawScript(interpreter))
+            self.scriptTimer.timeout.connect(lambda: self.refreshDrawScript(interpreterStatusFunction))
             self.scriptTimer.start(1000.0 / 50)  # Update at same rate as the script checks events
 
         else:       # If script is shutting down
@@ -149,8 +147,8 @@ class ControlPanel(QtWidgets.QWidget):
                     commandItem = commandList.item(index)
                     self.setColor(commandItem, False)
 
-    def refreshDrawScript(self, interpreter):
-        currRunning = interpreter.getStatus()
+    def refreshDrawScript(self, getStatusFunc):
+        currRunning = getStatusFunc()
 
         selectedItem = self.eventList.getSelectedEventItem()
         # Color any events that were active since last check, and de-color all other events

@@ -1,23 +1,16 @@
 [
    {
       "typeLogic": "InitEvent",
+      "typeGUI": "InitEventGUI",
       "commandList": [
          {
             "typeLogic": "AttachCommand",
             "typeGUI": "AttachCommandGUI",
             "parameters": {
-               "servo1": true,
                "servo4": true,
+               "servo1": true,
                "servo2": true,
                "servo3": true
-            }
-         },
-         {
-            "typeLogic": "MoveWristCommand",
-            "typeGUI": "MoveWristCommandGUI",
-            "parameters": {
-               "relative": false,
-               "angle": "60"
             }
          },
          {
@@ -32,6 +25,14 @@
             "typeLogic": "SetVariableCommand",
             "typeGUI": "SetVariableCommandGUI",
             "parameters": {
+               "expression": "120",
+               "variable": "wristConst"
+            }
+         },
+         {
+            "typeLogic": "SetVariableCommand",
+            "typeGUI": "SetVariableCommandGUI",
+            "parameters": {
                "expression": "0",
                "variable": "pump"
             }
@@ -40,26 +41,45 @@
             "typeLogic": "MoveXYZCommand",
             "typeGUI": "MoveXYZCommandGUI",
             "parameters": {
-               "y": "-15",
+               "z": "15",
                "override": false,
-               "x": "0",
-               "relative": false,
-               "z": "15"
+               "x": "10",
+               "y": "-15",
+               "relative": false
+            }
+         },
+         {
+            "typeLogic": "MoveWristCommand",
+            "typeGUI": "MoveWristCommandGUI",
+            "parameters": {
+               "angle": "60",
+               "relative": false
             }
          }
       ],
-      "typeGUI": "InitEventGUI",
       "parameters": {}
    },
    {
       "typeLogic": "StepEvent",
+      "typeGUI": "StepEventGUI",
       "commandList": [
+         {
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI",
+            "parameters": {
+               "override": false,
+               "x": "3.9",
+               "relative": false,
+               "z": "14.8",
+               "y": "-13.9"
+            }
+         },
          {
             "typeLogic": "TestVariableCommand",
             "typeGUI": "TestVariableCommandGUI",
             "parameters": {
-               "test": 2,
                "expression": "1",
+               "test": 2,
                "variable": "hello"
             }
          },
@@ -79,31 +99,31 @@
             "parameters": {}
          }
       ],
-      "typeGUI": "StepEventGUI",
       "parameters": {}
    },
    {
       "typeLogic": "KeypressEvent",
+      "typeGUI": "KeypressEventGUI",
       "commandList": [
          {
             "typeLogic": "MoveXYZCommand",
             "typeGUI": "MoveXYZCommandGUI",
             "parameters": {
-               "relative": false,
+               "z": "15",
                "override": false,
                "x": "distance",
-               "z": "15",
-               "y": "-15"
+               "y": "-15",
+               "relative": false
             }
          }
       ],
-      "typeGUI": "KeypressEventGUI",
       "parameters": {
          "checkKey": "A"
       }
    },
    {
       "typeLogic": "KeypressEvent",
+      "typeGUI": "KeypressEventGUI",
       "commandList": [
          {
             "typeLogic": "SetVariableCommand",
@@ -114,20 +134,20 @@
             }
          }
       ],
-      "typeGUI": "KeypressEventGUI",
       "parameters": {
          "checkKey": "S"
       }
    },
    {
       "typeLogic": "TipEvent",
+      "typeGUI": "TipEventGUI",
       "commandList": [
          {
             "typeLogic": "TestVariableCommand",
             "typeGUI": "TestVariableCommandGUI",
             "parameters": {
-               "test": 0,
                "expression": "1",
+               "test": 0,
                "variable": "pump"
             }
          },
@@ -150,8 +170,8 @@
             "typeLogic": "TestVariableCommand",
             "typeGUI": "TestVariableCommandGUI",
             "parameters": {
-               "test": 0,
                "expression": "0",
+               "test": 0,
                "variable": "pump"
             }
          },
@@ -186,18 +206,29 @@
             }
          }
       ],
-      "typeGUI": "TipEventGUI",
       "parameters": {}
    },
    {
       "typeLogic": "DestroyEvent",
+      "typeGUI": "DestroyEventGUI",
       "commandList": [
+         {
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI",
+            "parameters": {
+               "z": "15",
+               "override": false,
+               "x": "-10",
+               "y": "-20",
+               "relative": false
+            }
+         },
          {
             "typeLogic": "MoveWristCommand",
             "typeGUI": "MoveWristCommandGUI",
             "parameters": {
-               "relative": false,
-               "angle": "120"
+               "angle": "wristConst",
+               "relative": false
             }
          },
          {
@@ -209,54 +240,53 @@
             "typeLogic": "DetachCommand",
             "typeGUI": "DetachCommandGUI",
             "parameters": {
-               "servo1": true,
-               "servo3": true,
                "servo4": true,
-               "servo2": true
+               "servo1": true,
+               "servo2": true,
+               "servo3": true
             }
          }
       ],
-      "typeGUI": "DestroyEventGUI",
       "parameters": {}
    },
    {
       "typeLogic": "MotionEvent",
+      "typeGUI": "MotionEventGUI",
       "commandList": [
          {
             "typeLogic": "MoveXYZCommand",
             "typeGUI": "MoveXYZCommandGUI",
             "parameters": {
-               "relative": false,
+               "z": "15",
                "override": false,
                "x": "0",
-               "z": "15",
-               "y": "-15"
+               "y": "-15",
+               "relative": false
             }
          },
          {
             "typeLogic": "MoveXYZCommand",
             "typeGUI": "MoveXYZCommandGUI",
             "parameters": {
-               "relative": false,
+               "z": "15",
                "override": false,
                "x": "10",
-               "z": "15",
-               "y": "-15"
+               "y": "-15",
+               "relative": false
             }
          },
          {
             "typeLogic": "MoveXYZCommand",
             "typeGUI": "MoveXYZCommandGUI",
             "parameters": {
-               "relative": false,
+               "z": "15",
                "override": false,
                "x": "-15",
-               "z": "15",
-               "y": "-15"
+               "y": "-15",
+               "relative": false
             }
          }
       ],
-      "typeGUI": "MotionEventGUI",
       "parameters": {
          "low": "High",
          "high": "Inf"

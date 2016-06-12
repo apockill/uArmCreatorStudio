@@ -44,11 +44,8 @@ class Environment:
         self.__settings     = settings
         self.__vision       = Video.Vision(self.__vStream)  # Performs computer vision tasks, using images from vStream
 
-
-        self.__interpreter  = Interpreter(self)
-
         # This keeps track of objects that have been self.addObject()'d, so self.saveObjects() actually saves them.
-        self.changedObjects = []
+        # self.changedObjects = []
 
 
     # Handling Vision Objects
@@ -75,10 +72,6 @@ class Environment:
         pass
 
 
-    def getInterpreter(self):
-        # Returns an Interpreter() object with the script loaded and parsed.
-        return self.__interpreter
-
     def getRobot(self):
         return self.__robot
 
@@ -93,16 +86,13 @@ class Environment:
 
 
     def close(self):
-        # This will shut down the vStream, any running interpreters, the robot, etc.
-        self.__interpreter.endThread()
+        # This will try to safely shut down any objects that are capable of running threads.
         self.__vStream.endThread()
-        pass
 
 
 
 class Interpreter:
-    def __init__(self, parent):
-        self.env          = parent
+    def __init__(self):
         self.mainThread   = None    # The thread on which the script runs on. Is None while thread is not running.
         self.killApp      = True    # When True, the script thread will attempt to close ASAP
         self.scriptFPS    = 10      # Speed at which events are checked
@@ -116,18 +106,23 @@ class Interpreter:
 
 
     # Functions for GUI to use
-    def loadScript(self, script):
+    def loadScript(self, env, script):
         # Creates each event, loads it with its appropriate commandList, and then adds that event to self.events
         script = deepcopy(script)
+
+        # Create each event
         for _, eventSave in enumerate(script):
             eventType = getattr(Events, eventSave['typeLogic'])
-            event = eventType(parameters=eventSave['parameters'])
+            event     = eventType(env, self, parameters=eventSave['parameters'])
+            self.addEvent(event)
 
+            # Create the commandList for this event
             for _, commandSave in enumerate(eventSave['commandList']):
                 commandType = getattr(Commands, commandSave['typeLogic'])
-                event.addCommand(commandType(commandSave['parameters']))
+                command     = commandType(env, self, commandSave['parameters'])
+                event.addCommand(command)
 
-            self.addEvent(event)
+
 
 
     # Generic Functions for API and GUI to use
@@ -262,7 +257,7 @@ class Interpreter:
 
             for index, event in enumerate(self.events):
                 if self.killApp: break
-                if not event.isActive(self.env): continue
+                if not event.isActive(): continue
 
                 self.__interpretEvent(event)
 
@@ -288,7 +283,7 @@ class Interpreter:
 
             # Run command. If command is a boolean, it will return a True or False
             self.currRunning[eventIndex].append(index)
-            evaluation = command.run(self.env)
+            evaluation = command.run()
 
 
             # If its false, skip to the next indent of the same indentation
