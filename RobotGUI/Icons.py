@@ -25,7 +25,7 @@ taskbar            = img_file + "window_icon"
 settings           = img_file + "window_settings.png"
 calibrate          = img_file + "window_calibrate.png"
 objectManager      = img_file + "window_object_manager.png"
-
+objectWizard       = img_file + "window_wizard.png"
 
 # Events
 creation_event     = img_file + "event_creation.png"

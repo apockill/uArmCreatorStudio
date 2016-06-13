@@ -1,3 +1,10 @@
+- Add button binding events for the uArm buttons
+- uArm Buzzer
+- Speed Command
+- Control the LED light on the Arduino
+- Display message
+
+
 ---------------------------------------------------------------------------------------------------------------------
 ######   FINISHED SHORT TERM GOALS   #####
 - Add a way to organize commands

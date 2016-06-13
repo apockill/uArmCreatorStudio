@@ -1,11 +1,91 @@
 [
    {
-      "parameters": {
-         "high": "Inf",
-         "low": "High"
-      },
-      "commandList": [],
+      "typeLogic": "InitEvent",
+      "parameters": {},
+      "commandList": [
+         {
+            "typeLogic": "SetVariableCommand",
+            "parameters": {
+               "variable": "count",
+               "expression": "0"
+            },
+            "typeGUI": "SetVariableCommandGUI"
+         }
+      ],
+      "typeGUI": "InitEventGUI"
+   },
+   {
+      "typeLogic": "StepEvent",
+      "parameters": {},
+      "commandList": [
+         {
+            "typeLogic": "TestVariableCommand",
+            "parameters": {
+               "expression": "5",
+               "variable": "count",
+               "test": 2
+            },
+            "typeGUI": "TestVariableCommandGUI"
+         },
+         {
+            "typeLogic": "StartBlockCommand",
+            "parameters": {},
+            "typeGUI": "StartBlockCommandGUI"
+         },
+         {
+            "typeLogic": "GripCommand",
+            "parameters": {},
+            "typeGUI": "GripCommandGUI"
+         },
+         {
+            "typeLogic": "EndBlockCommand",
+            "parameters": {},
+            "typeGUI": "EndBlockCommandGUI"
+         }
+      ],
+      "typeGUI": "StepEventGUI"
+   },
+   {
       "typeLogic": "MotionEvent",
+      "parameters": {
+         "low": "High",
+         "high": "Inf"
+      },
+      "commandList": [
+         {
+            "typeLogic": "SetVariableCommand",
+            "parameters": {
+               "variable": "count",
+               "expression": "count + 1"
+            },
+            "typeGUI": "SetVariableCommandGUI"
+         }
+      ],
       "typeGUI": "MotionEventGUI"
+   },
+   {
+      "typeLogic": "DestroyEvent",
+      "parameters": {},
+      "commandList": [
+         {
+            "typeLogic": "DropCommand",
+            "parameters": {},
+            "typeGUI": "DropCommandGUI"
+         },
+         {
+            "typeLogic": "WaitCommand",
+            "parameters": {
+               "time": "1.0"
+            },
+            "typeGUI": "WaitCommandGUI"
+         }
+      ],
+      "typeGUI": "DestroyEventGUI"
+   },
+   {
+      "typeLogic": "TipEvent",
+      "parameters": {},
+      "commandList": [],
+      "typeGUI": "TipEventGUI"
    }
 ]

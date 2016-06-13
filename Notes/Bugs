@@ -1,7 +1,7 @@
 To fix weird openCV bug of "The data should normaly be NULL!" put "cv2.ocl.setUseOpenCL(False)" after import cv2
 
 ######   SHORT TERM BUGS    #####
-- Switching cameras or re-starting a camera after it crashes is broken right now
-
+- Make the ObjectManager request that you have a camera plugged in in order to work
+- Make the ObjectWizard request that you have a camera plugged in in order to work
 
 ######   LONG TERM BUGS     #####

@@ -3,7 +3,7 @@ import sys
 import webbrowser
 # import qdarkstyle
 from RobotGUI.CameraGUI         import CameraWidget
-from RobotGUI.ObjectManagerGUI     import ObjectManager
+from RobotGUI.ObjectManagerGUI  import ObjectManager
 from copy                       import deepcopy
 from PyQt5                      import QtCore, QtWidgets, QtGui
 from RobotGUI                   import ControlPanelGUI, Icons
@@ -366,7 +366,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.centralWidget   = QtWidgets.QStackedWidget()
         self.controlPanel    = ControlPanelGUI.ControlPanel(self.env, self.settings, parent=self)
         self.dashboardView   = DashboardView(self.controlPanel,
-                                             CameraWidget(self.env.getVStream().getPixFrame),
+                                             CameraWidget(self.env.getVStream().getPixFrame, parent=self),
                                              parent=self)
 
 
@@ -394,7 +394,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.openSettings()
 
 
-        # self.openObjectManager()  # For debugging
+        self.openObjectManager()  # For debugging
 
     def initUI(self):
         # Create "File" Menu
@@ -458,7 +458,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def setSettings(self, newSettings):
         # Apply settings
-        print("New Settings: ", newSettings)
+
         # Create a quick function that will check if a setting has been changed. If it has, an action will be taken.
         isNew = lambda key: (key in newSettings) and (newSettings[key] is not None) and \
                             (not self.settings[key] == newSettings[key])
@@ -558,7 +558,7 @@ class MainWindow(QtWidgets.QMainWindow):
                        ''.join(map(lambda err: '   -' + str(err) + '\n', errors)) + \
                        '\nWould you like to continue anyways? This may cause the program to behave erratically.'
 
-            # Ask the user 
+            # Ask the user
             reply = QtWidgets.QMessageBox.question(self, 'Warning', errorStr,
                                 QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.Cancel)
             if reply == QtWidgets.QMessageBox.Cancel:

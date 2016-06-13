@@ -2,61 +2,61 @@ missing module named PyQt5.QtCore.QCoreApplication - imported by PyQt5.QtCore, c
 missing module named 'win32com.gen_py' - imported by win32com, c:\python34\lib\site-packages\PyInstaller\loader\rthooks\pyi_rth_win32comgenpy.py
 missing module named sys.exc_info - imported by sys, win32com.server.dispatcher
 missing module named pywintypes.IIDType - imported by pywintypes, win32com.client.dynamic
-missing module named win32com.client.Dispatch - imported by win32com.client, win32com.client.util, win32com.client.makepy
 missing module named win32com.client._get_good_object_ - imported by win32com.client, win32com.client.util
+missing module named win32com.client.Dispatch - imported by win32com.client, win32com.client.util, win32com.client.makepy
 missing module named pywintypes.TimeType - imported by pywintypes, win32com.client.build
-missing module named pythoncom.DISPID_UNKNOWN - imported by pythoncom, win32com.server.policy
-missing module named pythoncom.DISPID_STARTENUM - imported by pythoncom, win32com.server.policy
-missing module named pythoncom.DISPID_COLLECT - imported by pythoncom, win32com.server.policy
-missing module named pythoncom.DISPID_NEWENUM - imported by pythoncom, win32com.server.policy
-missing module named pythoncom.DISPATCH_PROPERTYGET - imported by pythoncom, win32com.server.policy
-missing module named pythoncom.DISPID_PROPERTYPUT - imported by pythoncom, win32com.server.policy
-missing module named pythoncom.DISPATCH_PROPERTYPUT - imported by pythoncom, win32com.server.policy
-missing module named pythoncom.DISPATCH_PROPERTYPUTREF - imported by pythoncom, win32com.server.policy
-missing module named pythoncom.DISPID_EVALUATE - imported by pythoncom, win32com.server.policy
 missing module named pythoncom.DISPID_DESTRUCTOR - imported by pythoncom, win32com.server.policy
-missing module named pythoncom.DISPATCH_METHOD - imported by pythoncom, win32com.server.policy
-missing module named pythoncom.DISPID_VALUE - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPATCH_PROPERTYPUTREF - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPATCH_PROPERTYPUT - imported by pythoncom, win32com.server.policy
 missing module named pythoncom.DISPID_CONSTRUCTOR - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPID_STARTENUM - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPID_EVALUATE - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPID_UNKNOWN - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPATCH_METHOD - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPID_PROPERTYPUT - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPATCH_PROPERTYGET - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPID_NEWENUM - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPID_COLLECT - imported by pythoncom, win32com.server.policy
+missing module named pythoncom.DISPID_VALUE - imported by pythoncom, win32com.server.policy
 missing module named pyimod03_importers.FrozenImporter - imported by pyimod03_importers, c:\python34\lib\site-packages\PyInstaller\loader\rthooks\pyi_rth_pkgres.py
 missing module named pyimod03_importers - imported by c:\python34\lib\site-packages\PyInstaller\loader\rthooks\pyi_rth_pkgres.py
 missing module named StringIO - imported by numpy.testing.utils, numpy.lib.utils, numpy.lib.format, pkg_resources._vendor.six
 missing module named StringIO.StringIO - imported by StringIO, numpy.testing.utils, numpy.lib.utils, numpy.lib.format
 missing module named __main__.__requires__ - imported by __main__, pkg_resources
 missing module named __main__ - imported by pkg_resources
-missing module named distutils.util.convert_path - imported by distutils.util, distutils.filelist, setuptools, setuptools.command.easy_install, distutils.command.install, distutils.command.build_scripts, setuptools.command.setopt, setuptools.command.egg_info, distutils.command.sdist, distutils.command.build_py, distutils.command.install_data, setuptools.command.develop
+missing module named distutils.util.convert_path - imported by distutils.util, distutils.filelist, setuptools, setuptools.command.easy_install, distutils.command.install, distutils.command.build_scripts, setuptools.command.setopt, setuptools.command.egg_info, distutils.command.sdist, distutils.command.install_data, distutils.command.build_py, setuptools.command.develop
 missing module named ntpath.isfile - imported by ntpath, distutils.file_util
 missing module named ntpath.exists - imported by ntpath, distutils.file_util
-missing module named _multiprocessing.sem_unlink - imported by _multiprocessing, multiprocessing.synchronize
 missing module named _multiprocessing.SemLock - imported by _multiprocessing, multiprocessing.synchronize
-missing module named multiprocessing.set_start_method - imported by multiprocessing, multiprocessing.spawn
+missing module named _multiprocessing.sem_unlink - imported by _multiprocessing, multiprocessing.synchronize
 missing module named multiprocessing.get_start_method - imported by multiprocessing, multiprocessing.spawn
+missing module named multiprocessing.set_start_method - imported by multiprocessing, multiprocessing.spawn
 missing module named array.array - imported by array, setuptools.depends
 missing module named multiprocessing.pool.ThreadPool - imported by multiprocessing.pool, multiprocessing.dummy
 missing module named multiprocessing.get_context - imported by multiprocessing, multiprocessing.pool, multiprocessing.managers, multiprocessing.sharedctypes
 missing module named multiprocessing.TimeoutError - imported by multiprocessing, multiprocessing.pool
 missing module named _operator._compare_digest - imported by _operator, hmac
+missing module named _winapi.INFINITE - imported by _winapi, multiprocessing.connection
 missing module named _winapi.WAIT_ABANDONED_0 - imported by _winapi, multiprocessing.connection
 missing module named _winapi.WAIT_TIMEOUT - imported by _winapi, multiprocessing.connection
 missing module named _winapi.WAIT_OBJECT_0 - imported by _winapi, multiprocessing.connection
-missing module named _winapi.INFINITE - imported by _winapi, multiprocessing.connection
 missing module named multiprocessing.connection.Listener - imported by multiprocessing.connection, multiprocessing.resource_sharer
 missing module named multiprocessing.connection.Client - imported by multiprocessing.connection, multiprocessing.resource_sharer
 missing module named multiprocessing.AuthenticationError - imported by multiprocessing, multiprocessing.connection
 missing module named multiprocessing.BufferTooShort - imported by multiprocessing, multiprocessing.connection
-missing module named multiprocessing.context.get_spawning_popen - imported by multiprocessing.context, multiprocessing.process
 missing module named multiprocessing.context.assert_spawning - imported by multiprocessing.context, multiprocessing.sharedctypes
+missing module named multiprocessing.context.get_spawning_popen - imported by multiprocessing.context, multiprocessing.process
 missing module named _sysconfigdata.build_time_vars - imported by _sysconfigdata, sysconfig
 missing module named _sysconfigdata - imported by sysconfig
 missing module named pkg_resources.extern.packaging - imported by pkg_resources.extern, pkg_resources, setuptools.dist, setuptools.command.egg_info
 missing module named os.open - imported by os, pkg_resources
-missing module named os.unlink - imported by os, pkg_resources
-missing module named os.mkdir - imported by os, pkg_resources
 missing module named os.rename - imported by os, pkg_resources
+missing module named os.mkdir - imported by os, pkg_resources
+missing module named os.unlink - imported by os, pkg_resources
 missing module named os.utime - imported by os, pkg_resources
 missing module named 'pkg_resources.extern.six.moves'.filter - imported by 'pkg_resources.extern.six.moves', pkg_resources
-missing module named 'pkg_resources.extern.six.moves'.map - imported by 'pkg_resources.extern.six.moves', pkg_resources
 missing module named 'pkg_resources.extern.six.moves'.urllib - imported by 'pkg_resources.extern.six.moves', pkg_resources
+missing module named 'pkg_resources.extern.six.moves'.map - imported by 'pkg_resources.extern.six.moves', pkg_resources
 missing module named 'pkg_resources.extern.six.moves' - imported by pkg_resources
 missing module named pkg_resources.extern.six - imported by pkg_resources.extern, pkg_resources
 missing module named resource - imported by posix, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
@@ -64,61 +64,51 @@ missing module named posix - imported by os, F:\Google Drive\Projects\Git Reposi
 missing module named time.sleep - imported by time, RobotGUI.Logic.Global, RobotGUI.Logic.UArmTextCommunication_1, RobotGUI.Logic.Robot, RobotGUI.Logic.Commands
 missing module named _datetime.__doc__ - imported by _datetime, datetime, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _posixsubprocess - imported by subprocess, multiprocessing.util, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _io.open - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _io.BufferedRandom - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _io.StringIO - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _io.TextIOWrapper - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _io.BlockingIOError - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _io.DEFAULT_BUFFER_SIZE - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _io.BufferedReader - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _io.BufferedRWPair - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _io.BytesIO - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _io.UnsupportedOperation - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _io.BufferedWriter - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _io.IncrementalNewlineDecoder - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _io.FileIO - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _operator.__doc__ - imported by _operator, operator, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named unicodedata.ucd_3_2_0 - imported by unicodedata, stringprep, encodings.idna, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named 'org.python' - imported by pickle, setuptools.sandbox, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py, xml.sax
 missing module named 'org.python'.imp - imported by 'org.python', xml.sax
 missing module named 'org.python'.PyStringMap - imported by 'org.python', pickle, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _pickle.dump - imported by _pickle, pickle, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _pickle.Unpickler - imported by _pickle, pickle, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _pickle.load - imported by _pickle, pickle, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _pickle.loads - imported by _pickle, pickle, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _pickle.dumps - imported by _pickle, pickle, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _pickle.PicklingError - imported by _pickle, pickle, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _pickle.UnpicklingError - imported by _pickle, pickle, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _pickle.loads - imported by _pickle, pickle, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _pickle.PickleError - imported by _pickle, pickle, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _pickle.dumps - imported by _pickle, pickle, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _pickle.Pickler - imported by _pickle, pickle, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _pickle.Unpickler - imported by _pickle, pickle, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _pickle.dump - imported by _pickle, pickle, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named unicodedata.ucd_3_2_0 - imported by unicodedata, stringprep, encodings.idna, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _sre.MAXREPEAT - imported by _sre, sre_parse, sre_compile, sre_constants, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _weakref.ReferenceType - imported by _weakref, weakref, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _weakref.ref - imported by _weakref, weakref, _weakrefset, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _weakref.CallableProxyType - imported by _weakref, weakref, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _weakref.getweakrefs - imported by _weakref, weakref, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _weakref.getweakrefcount - imported by _weakref, weakref, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _weakref.proxy - imported by _weakref, weakref, collections, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _weakref.ProxyType - imported by _weakref, weakref, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _operator.__doc__ - imported by _operator, operator, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named itertools.starmap - imported by itertools, collections, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named itertools.islice - imported by itertools, threading, heapq, reprlib, pickle, lib2to3.fixer_util, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named itertools.count - imported by itertools, threading, heapq, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named itertools.chain - imported by itertools, tokenize, heapq, collections, lib2to3.refactor, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named itertools.tee - imported by itertools, heapq, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named posix._exit - imported by posix, os, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named posix._have_functions - imported by posix, os, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named ce - imported by os, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named ce._exit - imported by ce, os, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named ce._have_functions - imported by ce, os, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named os.chmod - imported by os, setuptools.command.easy_install
 missing module named _opcode.stack_effect - imported by _opcode, opcode, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named dis.EXTENDED_ARG - imported by dis, setuptools.depends
 missing module named dis.HAVE_ARGUMENT - imported by dis, setuptools.depends
 missing module named readline - imported by cmd, code, pdb, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _imp.is_frozen - imported by _imp, imp, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _imp.init_frozen - imported by _imp, imp, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _imp.is_frozen_package - imported by _imp, imp, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _imp.get_frozen_object - imported by _imp, imp, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _imp.lock_held - imported by _imp, imp, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _imp.release_lock - imported by _imp, imp, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _imp.is_builtin - imported by _imp, imp, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _imp.acquire_lock - imported by _imp, imp, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _imp.init_builtin - imported by _imp, imp, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _imp._fix_co_filename - imported by _imp, imp, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _imp.acquire_lock - imported by _imp, imp, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _imp.is_frozen_package - imported by _imp, imp, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _imp.is_frozen - imported by _imp, imp, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _imp.lock_held - imported by _imp, imp, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _imp.init_builtin - imported by _imp, imp, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _imp.init_frozen - imported by _imp, imp, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _imp.get_frozen_object - imported by _imp, imp, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _imp.load_dynamic - imported by _imp, imp, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 excluded module named _frozen_importlib - imported by importlib, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named zipimport.zipimporter - imported by zipimport, pkgutil, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _ctypes.Union - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes.Structure - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes.Array - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _ctypes.Union - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes._Pointer - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes.CFuncPtr - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes.__version__ - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
@@ -127,37 +117,37 @@ missing module named _ctypes.RTLD_GLOBAL - imported by _ctypes, ctypes, F:\Googl
 missing module named _ctypes.ArgumentError - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes.FormatError - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes.FUNCFLAG_PYTHONAPI - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _ctypes.FUNCFLAG_USE_ERRNO - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes.FUNCFLAG_USE_LASTERROR - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes.FUNCFLAG_CDECL - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _ctypes.FUNCFLAG_USE_ERRNO - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes.LoadLibrary - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes.FUNCFLAG_STDCALL - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes.dlopen - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _ctypes.byref - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes.alignment - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes.sizeof - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _ctypes.byref - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _ctypes.resize - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes.addressof - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _ctypes.get_errno - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _ctypes.resize - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes.set_errno - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _ctypes.get_errno - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes._SimpleCData - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _ctypes.POINTER - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes._pointer_type_cache - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _ctypes.POINTER - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes._check_HRESULT - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes.get_last_error - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes.set_last_error - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _ctypes._string_at_addr - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes._memset_addr - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes._memmove_addr - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _ctypes._string_at_addr - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes._cast_addr - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ctypes._wstring_at_addr - imported by _ctypes, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _winreg - imported by platform, numpy.distutils.cpuinfo, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _winreg.CloseKey - imported by _winreg, platform, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _winreg.QueryValueEx - imported by _winreg, platform, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _winreg.HKEY_LOCAL_MACHINE - imported by _winreg, platform, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _winreg.CloseKey - imported by _winreg, platform, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _winreg.OpenKeyEx - imported by _winreg, platform, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _scproxy._get_proxies - imported by _scproxy, urllib.request
+missing module named _winreg.HKEY_LOCAL_MACHINE - imported by _winreg, platform, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _scproxy._get_proxy_settings - imported by _scproxy, urllib.request
+missing module named _scproxy._get_proxies - imported by _scproxy, urllib.request
 missing module named _scproxy - imported by urllib.request
 missing module named 'java.lang'.Exception - imported by 'java.lang', xml.sax._exceptions
 missing module named xml.parsers.expat.ParserCreate - imported by xml.parsers.expat, plistlib, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
@@ -165,134 +155,114 @@ missing module named java - imported by platform, F:\Google Drive\Projects\Git R
 missing module named java.System - imported by java, platform, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named 'java.lang' - imported by platform, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py, xml.sax._exceptions
 missing module named vms_lib - imported by platform, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _winapi.STD_ERROR_HANDLE - imported by _winapi, subprocess, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _winapi.STD_INPUT_HANDLE - imported by _winapi, subprocess, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _winapi.CREATE_NEW_PROCESS_GROUP - imported by _winapi, subprocess, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _winapi.STARTF_USESHOWWINDOW - imported by _winapi, subprocess, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _winapi.SW_HIDE - imported by _winapi, subprocess, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _winapi.CREATE_NEW_CONSOLE - imported by _winapi, subprocess, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _winapi.STD_OUTPUT_HANDLE - imported by _winapi, subprocess, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _winapi.STARTF_USESTDHANDLES - imported by _winapi, subprocess, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named termios - imported by tty, serial.serialposix, getpass, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ssl.OPENSSL_VERSION_INFO - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ssl.OPENSSL_VERSION_NUMBER - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ssl.OPENSSL_VERSION - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ssl._SSLContext - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _ssl.SSLZeroReturnError - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _ssl.SSLWantReadError - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ssl.SSLWantWriteError - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _ssl.SSLSyscallError - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _ssl.SSLWantReadError - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ssl.SSLError - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ssl.SSLEOFError - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _ssl.SSLSyscallError - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _ssl.SSLZeroReturnError - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ssl.CERT_REQUIRED - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _ssl.CERT_OPTIONAL - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ssl.CERT_NONE - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _ssl.CERT_OPTIONAL - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ssl.nid2obj - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ssl.txt2obj - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ssl.RAND_status - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _ssl.RAND_add - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _ssl.RAND_pseudo_bytes - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ssl.RAND_bytes - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _ssl.RAND_pseudo_bytes - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _ssl.RAND_add - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ssl.RAND_egd - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ssl.HAS_ECDH - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ssl.HAS_NPN - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ssl.HAS_SNI - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ssl._OPENSSL_API_VERSION - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ssl.PROTOCOL_SSLv2 - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _ssl.PROTOCOL_TLSv1_2 - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ssl.PROTOCOL_TLSv1_1 - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _ssl.enum_crls - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _ssl.PROTOCOL_TLSv1_2 - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _ssl.enum_certificates - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named winreg.CloseKey - imported by winreg, platform, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _ssl.enum_crls - imported by _ssl, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named winreg.QueryValueEx - imported by winreg, platform, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named winreg.HKEY_LOCAL_MACHINE - imported by winreg, platform, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named winreg.CloseKey - imported by winreg, platform, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named winreg.OpenKeyEx - imported by winreg, platform, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named winreg.HKEY_LOCAL_MACHINE - imported by winreg, platform, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named math.log - imported by math, random, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named math.exp - imported by math, random, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named math.ceil - imported by math, random, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named math.e - imported by math, random, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named math.pi - imported by math, random, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named math.acos - imported by math, random, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named math.cos - imported by math, random, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named math.sin - imported by math, random, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named math.sqrt - imported by math, random, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named os.urandom - imported by os, random, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _hashlib.pbkdf2_hmac - imported by _hashlib, hashlib, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named hashlib.sha512 - imported by hashlib, random, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named urllib.splittag - imported by urllib, setuptools.py26compat
+missing module named _dummy_threading - imported by dummy_threading, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _dummy_threading.__all__ - imported by _dummy_threading, dummy_threading, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named dummy_threading.local - imported by dummy_threading, numpy.distutils.misc_util
+missing module named dummy_threading.RLock - imported by dummy_threading, bz2, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _bz2.BZ2Compressor - imported by _bz2, bz2, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _bz2.BZ2Decompressor - imported by _bz2, bz2, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named grp - imported by tarfile, shutil, distutils.archive_util, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named grp.getgrnam - imported by grp, shutil, distutils.archive_util, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named binascii.a2b_qp - imported by binascii, quopri, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named binascii.b2a_qp - imported by binascii, quopri, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named binascii.a2b_qp - imported by binascii, quopri, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named binascii.b2a_base64 - imported by binascii, email.base64mime, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named binascii.a2b_base64 - imported by binascii, email.base64mime, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _lzma._decode_filter_properties - imported by _lzma, lzma, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _lzma._encode_filter_properties - imported by _lzma, lzma, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named socket.SOCK_STREAM - imported by socket, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named socket.AF_INET - imported by socket, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named socket.SO_TYPE - imported by socket, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named socket.SOL_SOCKET - imported by socket, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named posix._exit - imported by posix, os, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named pwd.getpwnam - imported by pwd, shutil, distutils.archive_util, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named pwd - imported by posixpath, tarfile, shutil, http.server, webbrowser, getpass, distutils.util, distutils.archive_util, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named posix._have_functions - imported by posix, os, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named nt._exit - imported by nt, os, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named nt._getvolumepathname - imported by nt, ntpath, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named nt._getfullpathname - imported by nt, ntpath, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named nt._getfinalpathname - imported by nt, ntpath, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named nt._isdir - imported by nt, ntpath, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named nt._exit - imported by nt, os, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named nt._have_functions - imported by nt, os, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named ce - imported by os, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named ce._exit - imported by ce, os, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named ce._have_functions - imported by ce, os, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named ntpath.commonprefix - imported by ntpath, unittest.util, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _warnings._defaultaction - imported by _warnings, warnings, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _warnings._onceregistry - imported by _warnings, warnings, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _warnings.warn - imported by _warnings, warnings, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _warnings.filters - imported by _warnings, warnings, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _warnings.warn_explicit - imported by _warnings, warnings, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _warnings._filters_mutated - imported by _warnings, warnings, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named time.monotonic - imported by time, subprocess, threading, queue, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named time.time - imported by time, subprocess, threading, RobotGUI.Logic.Global, queue, multiprocessing.managers, multiprocessing.synchronize, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _collections.defaultdict - imported by _collections, collections, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _collections._count_elements - imported by _collections, collections, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _collections.deque - imported by _collections, collections, threading, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named threading.RLock - imported by threading, _threading_local, bz2, multiprocessing.dummy, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named threading.current_thread - imported by threading, _threading_local, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named math.exp - imported by math, random, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named math.e - imported by math, random, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named math.log - imported by math, random, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named math.pi - imported by math, random, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named math.ceil - imported by math, random, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named math.sqrt - imported by math, random, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named math.cos - imported by math, random, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named math.sin - imported by math, random, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named math.acos - imported by math, random, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _dummy_threading - imported by dummy_threading, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _dummy_threading.__all__ - imported by _dummy_threading, dummy_threading, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named dummy_threading.RLock - imported by dummy_threading, bz2, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named dummy_threading.local - imported by dummy_threading, numpy.distutils.misc_util
-missing module named _winapi.CREATE_NEW_CONSOLE - imported by _winapi, subprocess, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _winapi.STD_OUTPUT_HANDLE - imported by _winapi, subprocess, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _winapi.STD_ERROR_HANDLE - imported by _winapi, subprocess, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _winapi.CREATE_NEW_PROCESS_GROUP - imported by _winapi, subprocess, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _winapi.STD_INPUT_HANDLE - imported by _winapi, subprocess, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _winapi.SW_HIDE - imported by _winapi, subprocess, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _winapi.STARTF_USESTDHANDLES - imported by _winapi, subprocess, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named _winapi.STARTF_USESHOWWINDOW - imported by _winapi, subprocess, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named os.urandom - imported by os, random, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named os.chmod - imported by os, setuptools.command.easy_install
-missing module named builtins.abs - imported by builtins, operator, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named builtins.str - imported by builtins, locale, numpy.core.numerictypes, numpy.lib._iotools, numpy, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named builtins.float - imported by builtins, numpy.core.numerictypes, numpy.lib._iotools, numpy
-missing module named builtins.object - imported by builtins, numpy.core.numerictypes, numpy.lib._iotools, numpy
-missing module named builtins.bool - imported by builtins, numpy.core.numerictypes, numpy.lib._iotools, numpy
-missing module named builtins.complex - imported by builtins, numpy.core.numerictypes, numpy.lib._iotools, numpy
-missing module named builtins.int - imported by builtins, numpy.core.numerictypes, numpy.lib._iotools, numpy
-missing module named builtins.open - imported by builtins, tokenize, tarfile, bz2, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named itertools.islice - imported by itertools, threading, heapq, reprlib, pickle, lib2to3.fixer_util, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named itertools.count - imported by itertools, threading, heapq, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named itertools.tee - imported by itertools, heapq, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named itertools.starmap - imported by itertools, collections, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named itertools.chain - imported by itertools, tokenize, heapq, collections, lib2to3.refactor, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named itertools.repeat - imported by itertools, tokenize, collections, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named socket.AF_INET - imported by socket, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named socket.SOCK_STREAM - imported by socket, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named socket.SOL_SOCKET - imported by socket, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named socket.SO_TYPE - imported by socket, ssl, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named org - imported by copy, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named org.PyStringMap - imported by org, copy, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _struct._clearcache - imported by _struct, struct, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _struct.__doc__ - imported by _struct, struct, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named struct.calcsize - imported by struct, ctypes, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named struct.pack - imported by struct, pickle, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named struct.unpack - imported by struct, pickle, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named struct.pack - imported by struct, pickle, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named errno.ENOENT - imported by errno, gettext, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named gettext.ngettext - imported by gettext, argparse, optparse, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named itertools.repeat - imported by itertools, tokenize, collections, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named gettext.gettext - imported by gettext, argparse, optparse, getopt, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named sys.modules - imported by sys, dummy_threading, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named sys.getwindowsversion - imported by sys, platform, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named sys.maxsize - imported by sys, pickle, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named ntpath.commonprefix - imported by ntpath, unittest.util, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named time.monotonic - imported by time, subprocess, threading, queue, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named time.time - imported by time, subprocess, threading, RobotGUI.Logic.Global, queue, multiprocessing.managers, multiprocessing.synchronize, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _collections.defaultdict - imported by _collections, collections, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _collections._count_elements - imported by _collections, collections, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _collections.deque - imported by _collections, collections, threading, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named threading.current_thread - imported by threading, _threading_local, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named threading.RLock - imported by threading, _threading_local, bz2, multiprocessing.dummy, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named pwd.getpwnam - imported by pwd, shutil, distutils.archive_util, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named pwd - imported by posixpath, tarfile, shutil, http.server, webbrowser, getpass, distutils.util, distutils.archive_util, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named builtins.abs - imported by builtins, operator, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named builtins.str - imported by builtins, locale, numpy.core.numerictypes, numpy.lib._iotools, numpy, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named builtins.open - imported by builtins, tokenize, tarfile, bz2, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named builtins.bool - imported by builtins, numpy.core.numerictypes, numpy.lib._iotools, numpy
+missing module named builtins.int - imported by builtins, numpy.core.numerictypes, numpy.lib._iotools, numpy
+missing module named builtins.float - imported by builtins, numpy.core.numerictypes, numpy.lib._iotools, numpy
+missing module named builtins.object - imported by builtins, numpy.core.numerictypes, numpy.lib._iotools, numpy
+missing module named builtins.complex - imported by builtins, numpy.core.numerictypes, numpy.lib._iotools, numpy
 missing module named _functools.reduce - imported by _functools, functools, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _thread.allocate_lock - imported by _thread, _strptime, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _thread.stack_size - imported by _thread, threading, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
@@ -301,15 +271,45 @@ missing module named _thread.get_ident - imported by _thread, reprlib, F:\Google
 missing module named _thread.RLock - imported by _thread, functools, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _functools.cmp_to_key - imported by _functools, functools, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named _functools.partial - imported by _functools, functools, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
-missing module named PyQt5.QtGui.QPixmap - imported by PyQt5.QtGui, RobotGUI.Logic.Video
+missing module named _io.BytesIO - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _io.StringIO - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _io.TextIOWrapper - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _io.UnsupportedOperation - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _io.open - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _io.BufferedWriter - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _io.BufferedReader - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _io.BufferedRandom - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _io.BufferedRWPair - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _io.DEFAULT_BUFFER_SIZE - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _io.FileIO - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _io.IncrementalNewlineDecoder - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _io.BlockingIOError - imported by _io, io, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _sre.MAXREPEAT - imported by _sre, sre_parse, sre_compile, sre_constants, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _warnings._filters_mutated - imported by _warnings, warnings, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _warnings._defaultaction - imported by _warnings, warnings, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _warnings.filters - imported by _warnings, warnings, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _warnings.warn - imported by _warnings, warnings, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _warnings.warn_explicit - imported by _warnings, warnings, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _warnings._onceregistry - imported by _warnings, warnings, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _weakref.CallableProxyType - imported by _weakref, weakref, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _weakref.ReferenceType - imported by _weakref, weakref, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _weakref.getweakrefs - imported by _weakref, weakref, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _weakref.proxy - imported by _weakref, weakref, collections, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _weakref.ProxyType - imported by _weakref, weakref, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _weakref.getweakrefcount - imported by _weakref, weakref, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named _weakref.ref - imported by _weakref, weakref, _weakrefset, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named sys.modules - imported by sys, dummy_threading, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named sys.getwindowsversion - imported by sys, platform, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
+missing module named sys.maxsize - imported by sys, pickle, F:\Google Drive\Projects\Git Repositories\RobotGUIProgramming\RobotGUI\MainGUI.py
 missing module named PyQt5.QtGui.QImage - imported by PyQt5.QtGui, RobotGUI.Logic.Video
-missing module named __builtin__.float - imported by __builtin__, numpy.core.numerictypes, numpy.lib._iotools, numpy
+missing module named PyQt5.QtGui.QPixmap - imported by PyQt5.QtGui, RobotGUI.Logic.Video
 missing module named __builtin__.unicode - imported by __builtin__, numpy.core.numerictypes, numpy.lib._iotools, numpy
-missing module named __builtin__.object - imported by __builtin__, numpy.core.numerictypes, numpy.lib._iotools, numpy
-missing module named __builtin__.str - imported by __builtin__, numpy.core.numerictypes, numpy.lib._iotools, numpy
 missing module named __builtin__.bool - imported by __builtin__, numpy.core.numerictypes, numpy.lib._iotools, numpy
-missing module named __builtin__.complex - imported by __builtin__, numpy.core.numerictypes, numpy.lib._iotools, numpy
 missing module named __builtin__.int - imported by __builtin__, numpy.core.numerictypes, numpy.lib._iotools, numpy
+missing module named __builtin__.str - imported by __builtin__, numpy.core.numerictypes, numpy.lib._iotools, numpy
+missing module named __builtin__.float - imported by __builtin__, numpy.core.numerictypes, numpy.lib._iotools, numpy
+missing module named __builtin__.object - imported by __builtin__, numpy.core.numerictypes, numpy.lib._iotools, numpy
+missing module named __builtin__.complex - imported by __builtin__, numpy.core.numerictypes, numpy.lib._iotools, numpy
 missing module named __builtin__ - imported by numpy.core.numerictypes, numpy.lib._iotools, numpy.distutils.misc_util, numpy
 missing module named numpy.compat.long - imported by numpy.compat, numpy.core.numerictypes, numpy.core.defchararray, numpy.core.records, numpy.core.memmap, numpy.lib.function_base, numpy.lib.format, numpy.ma.core, numpy.lib.arrayterator, numpy
 missing module named numpy.dual.pinv - imported by numpy.dual, numpy.matrixlib.defmatrix
@@ -317,32 +317,32 @@ missing module named numpy.dual.inv - imported by numpy.dual, numpy.matrixlib.de
 missing module named numpy.lib.i0 - imported by numpy.lib, numpy.dual
 missing module named numpy.linalg.inv - imported by numpy.linalg, numpy.matrixlib.defmatrix, numpy.lib.polynomial
 missing module named numpy.core.numerictypes.number - imported by numpy.core.numerictypes, numpy.lib.function_base
+missing module named numpy.core.numerictypes.character - imported by numpy.core.numerictypes, numpy.core.defchararray
+missing module named numpy.core.numerictypes.unicode_ - imported by numpy.core.numerictypes, numpy.core.defchararray
 missing module named numpy.core.numerictypes.string_ - imported by numpy.core.numerictypes, numpy.core.defchararray
 missing module named numpy.core.numerictypes.integer - imported by numpy.core.numerictypes, numpy.core.defchararray
-missing module named numpy.core.numerictypes.unicode_ - imported by numpy.core.numerictypes, numpy.core.defchararray
-missing module named numpy.core.numerictypes.character - imported by numpy.core.numerictypes, numpy.core.defchararray
-missing module named numpy.core.numerictypes.float_ - imported by numpy.core.numerictypes, numpy.core.numeric
-missing module named numpy.core.numerictypes.int_ - imported by numpy.core.numerictypes, numpy.core.numeric
 missing module named numpy.core.numerictypes.longlong - imported by numpy.core.numerictypes, numpy.core.numeric
-missing module named numpy.core.numerictypes.intc - imported by numpy.core.numerictypes, numpy.core.numeric
-missing module named numpy.core.numerictypes.complex_ - imported by numpy.core.numerictypes, numpy.core.numeric
 missing module named numpy.core.numerictypes.bool_ - imported by numpy.core.numerictypes, numpy.core.numeric, numpy.core.defchararray
+missing module named numpy.core.numerictypes.int_ - imported by numpy.core.numerictypes, numpy.core.numeric
+missing module named numpy.core.numerictypes.complex_ - imported by numpy.core.numerictypes, numpy.core.numeric
+missing module named numpy.core.numerictypes.intc - imported by numpy.core.numerictypes, numpy.core.numeric
+missing module named numpy.core.numerictypes.float_ - imported by numpy.core.numerictypes, numpy.core.numeric
 missing module named numpy.core.numerictypes.object_ - imported by numpy.core.numerictypes, numpy.core._internal, numpy.core.defchararray
-missing module named numpy.core.multiarray.typeinfo - imported by numpy.core.multiarray, numpy.core.numerictypes
-missing module named numpy.core.multiarray.ndarray - imported by numpy.core.multiarray, numpy.core._internal, numpy.core.numerictypes
-missing module named numpy.core.multiarray.busdaycalendar - imported by numpy.core.multiarray, numpy.core.numerictypes
-missing module named numpy.core.multiarray.busday_count - imported by numpy.core.multiarray, numpy.core.numerictypes
-missing module named numpy.core.multiarray.datetime_data - imported by numpy.core.multiarray, numpy.core.numerictypes, numpy.core.arrayprint
 missing module named numpy.core.multiarray.empty - imported by numpy.core.multiarray, numpy.core.numerictypes
+missing module named numpy.core.multiarray.typeinfo - imported by numpy.core.multiarray, numpy.core.numerictypes
+missing module named numpy.core.multiarray.array - imported by numpy.core.multiarray, numpy.core._internal, numpy.core.numerictypes, numpy.core.arrayprint
 missing module named numpy.core.multiarray.dtype - imported by numpy.core.multiarray, numpy.core._internal, numpy.core.numerictypes
 missing module named numpy.core.multiarray.is_busday - imported by numpy.core.multiarray, numpy.core.numerictypes
 missing module named numpy.core.multiarray.datetime_as_string - imported by numpy.core.multiarray, numpy.core.numerictypes, numpy.core.arrayprint
+missing module named numpy.core.multiarray.datetime_data - imported by numpy.core.multiarray, numpy.core.numerictypes, numpy.core.arrayprint
+missing module named numpy.core.multiarray.ndarray - imported by numpy.core.multiarray, numpy.core._internal, numpy.core.numerictypes
 missing module named numpy.core.multiarray.busday_offset - imported by numpy.core.multiarray, numpy.core.numerictypes
-missing module named numpy.core.multiarray.array - imported by numpy.core.multiarray, numpy.core._internal, numpy.core.numerictypes, numpy.core.arrayprint
+missing module named numpy.core.multiarray.busdaycalendar - imported by numpy.core.multiarray, numpy.core.numerictypes
+missing module named numpy.core.multiarray.busday_count - imported by numpy.core.multiarray, numpy.core.numerictypes
 missing module named numpy.core.multiarray._flagdict - imported by numpy.core.multiarray, numpy.ctypeslib
 missing module named numpy.core.multiarray.flagsobj - imported by numpy.core.multiarray, numpy.ctypeslib
-missing module named numpy.core.multiarray.unpackbits - imported by numpy.core.multiarray, numpy.lib.npyio
 missing module named numpy.core.multiarray.packbits - imported by numpy.core.multiarray, numpy.lib.npyio
+missing module named numpy.core.multiarray.unpackbits - imported by numpy.core.multiarray, numpy.lib.npyio
 missing module named numpy.core.multiarray.ravel_multi_index - imported by numpy.core.multiarray, numpy.lib.index_tricks
 missing module named numpy.core.multiarray.unravel_index - imported by numpy.core.multiarray, numpy.lib.index_tricks
 missing module named numpy.core.multiarray.digitize - imported by numpy.core.multiarray, numpy.lib.function_base
@@ -353,96 +353,96 @@ missing module named numpy.core.multiarray._insert - imported by numpy.core.mult
 missing module named numpy.core.multiarray._vec_string - imported by numpy.core.multiarray, numpy.core.defchararray
 missing module named numpy.core.multiarray.format_longfloat - imported by numpy.core.multiarray, numpy.core.arrayprint
 missing module named numpy.compat.bytes - imported by numpy.compat, numpy.core.numerictypes, numpy.core.records, numpy.lib._iotools, numpy.lib.npyio
-missing module named numpy.core.numeric.asanyarray - imported by numpy.core.numeric, numpy.core.fromnumeric, numpy.core._methods, numpy.core.shape_base, numpy.lib.type_check, numpy.lib.function_base, numpy.lib.twodim_base, numpy.matrixlib.defmatrix, numpy.lib.shape_base
 missing module named numpy.core.numeric.concatenate - imported by numpy.core.numeric, numpy.core.fromnumeric, numpy.lib.function_base, numpy.matrixlib.defmatrix, numpy.lib.shape_base
+missing module named numpy.core.numeric.asanyarray - imported by numpy.core.numeric, numpy.core.fromnumeric, numpy.core._methods, numpy.core.shape_base, numpy.lib.type_check, numpy.lib.function_base, numpy.lib.twodim_base, numpy.matrixlib.defmatrix, numpy.lib.shape_base
 missing module named numpy.core.numeric.any - imported by numpy.core.numeric, numpy.lib.scimath
+missing module named numpy.core.numeric.int32 - imported by numpy.core.numeric, numpy.lib.twodim_base
 missing module named numpy.core.numeric.int16 - imported by numpy.core.numeric, numpy.lib.twodim_base
 missing module named numpy.core.numeric.int8 - imported by numpy.core.numeric, numpy.lib.twodim_base
-missing module named numpy.core.numeric.multiply - imported by numpy.core.numeric, numpy.lib.twodim_base
-missing module named numpy.core.numeric.int32 - imported by numpy.core.numeric, numpy.lib.twodim_base
 missing module named numpy.core.numeric.int64 - imported by numpy.core.numeric, numpy.lib.twodim_base
-missing module named numpy.core.numeric.greater_equal - imported by numpy.core.numeric, numpy.lib.twodim_base
+missing module named numpy.core.numeric.multiply - imported by numpy.core.numeric, numpy.lib.twodim_base
 missing module named numpy.core.numeric.diagonal - imported by numpy.core.numeric, numpy.lib.twodim_base
-missing module named numpy.core.numeric.take - imported by numpy.core.numeric, numpy.lib.function_base
-missing module named numpy.core.numeric.ceil - imported by numpy.core.numeric, numpy.lib.function_base
+missing module named numpy.core.numeric.greater_equal - imported by numpy.core.numeric, numpy.lib.twodim_base
 missing module named numpy.core.numeric.around - imported by numpy.core.numeric, numpy.lib.function_base
-missing module named numpy.core.numeric.intp - imported by numpy.core.numeric, numpy.lib.function_base
-missing module named numpy.core.numeric.integer - imported by numpy.core.numeric, numpy.lib.function_base
 missing module named numpy.core.numeric.floor - imported by numpy.core.numeric, numpy.lib.function_base
-missing module named numpy.core.numeric.ScalarType - imported by numpy.core.numeric, numpy.lib.index_tricks
+missing module named numpy.core.numeric.ceil - imported by numpy.core.numeric, numpy.lib.function_base
+missing module named numpy.core.numeric.take - imported by numpy.core.numeric, numpy.lib.function_base
+missing module named numpy.core.numeric.integer - imported by numpy.core.numeric, numpy.lib.function_base
+missing module named numpy.core.numeric.intp - imported by numpy.core.numeric, numpy.lib.function_base
 missing module named numpy.core.numeric.cumprod - imported by numpy.core.numeric, numpy.lib.index_tricks
 missing module named numpy.core.numeric.alltrue - imported by numpy.core.numeric, numpy.lib.index_tricks
+missing module named numpy.core.numeric.ScalarType - imported by numpy.core.numeric, numpy.lib.index_tricks
 missing module named numpy.core.numeric.obj2sctype - imported by numpy.core.numeric, numpy.lib.type_check
 missing module named numpy.core.numeric.isnan - imported by numpy.core.numeric, numpy.lib.type_check
 missing module named numpy.core.numeric.absolute - imported by numpy.core.numeric, numpy.core
 missing module named numpy.core.numeric.uint8 - imported by numpy.core.numeric, numpy.core.memmap
-missing module named numpy.core.umath.not_equal - imported by numpy.core.umath, numpy.core.arrayprint
-missing module named numpy.core.umath.minimum - imported by numpy.core.umath, numpy.core.arrayprint
 missing module named numpy.core.umath.absolute - imported by numpy.core.umath, numpy.core.arrayprint
-missing module named numpy.core.umath.isinf - imported by numpy.core.umath, numpy.core.arrayprint
 missing module named numpy.core.umath.isnan - imported by numpy.core.umath, numpy.core.arrayprint
+missing module named numpy.core.umath.isinf - imported by numpy.core.umath, numpy.core.arrayprint
+missing module named numpy.core.umath.not_equal - imported by numpy.core.umath, numpy.core.arrayprint
 missing module named numpy.core.umath.maximum - imported by numpy.core.umath, numpy.core.arrayprint
-missing module named numpy.core.numeric.array - imported by numpy.core.numeric, numpy.core.fromnumeric, numpy.core.defchararray, numpy.core.getlimits, numpy.lib.type_check, numpy.lib.index_tricks, numpy.lib.function_base, numpy.lib.shape_base
+missing module named numpy.core.umath.minimum - imported by numpy.core.umath, numpy.core.arrayprint
 missing module named numpy.core.numeric.asarray - imported by numpy.core.numeric, numpy.core.fromnumeric, numpy.core.arrayprint, numpy.lib.type_check, numpy.lib.index_tricks, numpy.lib.function_base, numpy.lib.twodim_base, numpy.lib.shape_base, numpy.lib.scimath
+missing module named numpy.core.numeric.array - imported by numpy.core.numeric, numpy.core.fromnumeric, numpy.core.defchararray, numpy.core.getlimits, numpy.lib.type_check, numpy.lib.index_tricks, numpy.lib.function_base, numpy.lib.shape_base
 missing module named cPickle - imported by numpy.core.numeric, numpy.lib.format, numpy.lib.npyio, numpy.ma.core
 missing module named cStringIO - imported by cPickle
 missing module named copy_reg - imported by cPickle, cStringIO, numpy.core
-missing module named numpy.core.umath.UFUNC_BUFSIZE_DEFAULT - imported by numpy.core.umath, numpy.core.numeric
-missing module named numpy.core.umath.PINF - imported by numpy.core.umath, numpy.core.numeric
-missing module named numpy.core.umath.ERR_DEFAULT - imported by numpy.core.umath, numpy.core.numeric
 missing module named numpy.core.umath.sin - imported by numpy.core.umath, numpy.core.numeric, numpy.lib.function_base
-missing module named numpy.core.umath.ERR_WARN - imported by numpy.core.umath, numpy.core.numeric
 missing module named numpy.core.umath.ERR_IGNORE - imported by numpy.core.umath, numpy.core.numeric
-missing module named numpy.core.umath.invert - imported by numpy.core.umath, numpy.core.numeric
-missing module named numpy.core.umath.ERR_LOG - imported by numpy.core.umath, numpy.core.numeric
+missing module named numpy.core.umath.ERR_DEFAULT - imported by numpy.core.umath, numpy.core.numeric
+missing module named numpy.core.umath.UFUNC_BUFSIZE_DEFAULT - imported by numpy.core.umath, numpy.core.numeric
 missing module named numpy.core.umath.ERR_PRINT - imported by numpy.core.umath, numpy.core.numeric
 missing module named numpy.core.umath.ERR_RAISE - imported by numpy.core.umath, numpy.core.numeric
-missing module named numpy.core.umath.NAN - imported by numpy.core.umath, numpy.core.numeric
 missing module named numpy.core.umath.ERR_CALL - imported by numpy.core.umath, numpy.core.numeric
+missing module named numpy.core.umath.invert - imported by numpy.core.umath, numpy.core.numeric
+missing module named numpy.core.umath.PINF - imported by numpy.core.umath, numpy.core.numeric
+missing module named numpy.core.umath.ERR_WARN - imported by numpy.core.umath, numpy.core.numeric
+missing module named numpy.core.umath.ERR_LOG - imported by numpy.core.umath, numpy.core.numeric
+missing module named numpy.core.umath.NAN - imported by numpy.core.umath, numpy.core.numeric
 missing module named numpy.core.umath._add_newdoc_ufunc - imported by numpy.core.umath, numpy.lib.function_base
-missing module named numpy.core.umath.arctan2 - imported by numpy.core.umath, numpy.lib.function_base
-missing module named numpy.core.umath.log10 - imported by numpy.core.umath, numpy.lib.function_base
-missing module named numpy.core.umath.less_equal - imported by numpy.core.umath, numpy.lib.function_base
-missing module named numpy.core.umath.multiply - imported by numpy.core.umath, numpy.lib.function_base
-missing module named numpy.core.umath.frompyfunc - imported by numpy.core.umath, numpy.lib.function_base
-missing module named numpy.core.umath.cos - imported by numpy.core.umath, numpy.lib.function_base
-missing module named numpy.core.umath.mod - imported by numpy.core.umath, numpy.lib.function_base
 missing module named numpy.core.umath.pi - imported by numpy.core.umath, numpy.lib.function_base
-missing module named numpy.core.umath.exp - imported by numpy.core.umath, numpy.lib.function_base
-missing module named numpy.core.umath.sqrt - imported by numpy.core.umath, numpy.lib.function_base
+missing module named numpy.core.umath.log10 - imported by numpy.core.umath, numpy.lib.function_base
+missing module named numpy.core.umath.cos - imported by numpy.core.umath, numpy.lib.function_base
+missing module named numpy.core.umath.arctan2 - imported by numpy.core.umath, numpy.lib.function_base
+missing module named numpy.core.umath.frompyfunc - imported by numpy.core.umath, numpy.lib.function_base
 missing module named numpy.core.umath.add - imported by numpy.core.umath, numpy.lib.function_base
-missing module named numpy.ma.filled - imported by numpy.ma, numpy.ma.mrecords
-missing module named numpy.ma.masked_array - imported by numpy.ma, numpy.ma.mrecords
-missing module named numpy.ma.nomask - imported by numpy.ma, numpy.ma.mrecords
+missing module named numpy.core.umath.multiply - imported by numpy.core.umath, numpy.lib.function_base
+missing module named numpy.core.umath.sqrt - imported by numpy.core.umath, numpy.lib.function_base
+missing module named numpy.core.umath.exp - imported by numpy.core.umath, numpy.lib.function_base
+missing module named numpy.core.umath.mod - imported by numpy.core.umath, numpy.lib.function_base
+missing module named numpy.core.umath.less_equal - imported by numpy.core.umath, numpy.lib.function_base
 missing module named numpy.ma.getmaskarray - imported by numpy.ma, numpy.ma.mrecords
-missing module named numpy.ma.MAError - imported by numpy.ma, numpy.ma.mrecords
-missing module named numpy.ma.getdata - imported by numpy.ma, numpy.ma.mrecords
+missing module named numpy.ma.nomask - imported by numpy.ma, numpy.ma.mrecords
+missing module named numpy.ma.masked_array - imported by numpy.ma, numpy.ma.mrecords
 missing module named numpy.ma.masked - imported by numpy.ma, numpy.ma.mrecords
+missing module named numpy.ma.getdata - imported by numpy.ma, numpy.ma.mrecords
+missing module named numpy.ma.filled - imported by numpy.ma, numpy.ma.mrecords
+missing module named numpy.ma.MAError - imported by numpy.ma, numpy.ma.mrecords
 missing module named numpy.ma.MaskedArray - imported by numpy.ma, numpy.lib.npyio, numpy.ma.mrecords
 missing module named numpy.ma.make_mask_descr - imported by numpy.ma, numpy.lib.npyio
 missing module named numpy.core.ufunc - imported by numpy.core, numpy.lib.utils
-missing module named numpy.core.ndarray - imported by numpy.core, numpy.lib.utils
 missing module named numpy.core.asarray - imported by numpy.core, numpy.lib.utils, numpy.linalg.linalg, numpy.fft.fftpack, numpy.fft.helper
+missing module named numpy.core.ndarray - imported by numpy.core, numpy.lib.utils
 missing module named numpy.core.iinfo - imported by numpy.core, numpy.lib.twodim_base
 missing module named numpy.core.atleast_1d - imported by numpy.core, numpy.lib.function_base, numpy.lib.polynomial
 missing module named numpy.core.atleast_2d - imported by numpy.core, numpy.lib.function_base, numpy.linalg.linalg
 missing module named numpy.core.linspace - imported by numpy.core, numpy.lib.function_base
-missing module named numpy.compat.unicode - imported by numpy.compat, numpy.lib.npyio, numpy.ma.core
 missing module named numpy.compat.basestring - imported by numpy.compat, numpy.core._internal, numpy.core.memmap, numpy.testing.nosetester, numpy.lib.format, numpy.lib._iotools, numpy.lib.npyio, numpy.ma.core, numpy.ma.mrecords, numpy.lib._version
-missing module named numpy.distutils.misc_util.get_shared_lib_extension - imported by numpy.distutils.misc_util, numpy.distutils.system_info, numpy.distutils.fcompiler, numpy.ctypeslib
+missing module named numpy.compat.unicode - imported by numpy.compat, numpy.lib.npyio, numpy.ma.core
+missing module named numpy.distutils.misc_util.get_shared_lib_extension - imported by numpy.distutils.misc_util, numpy.distutils.fcompiler, numpy.distutils.system_info, numpy.ctypeslib
 missing module named distutils.ccompiler.LinkError - imported by distutils.ccompiler, distutils.command.config, numpy.distutils.command.config
 missing module named distutils.ccompiler.CompileError - imported by distutils.ccompiler, distutils.command.config, numpy.distutils.command.config
-missing module named ConfigParser.NoOptionError - imported by ConfigParser, numpy.distutils.system_info, numpy.distutils.npy_pkg_config
 missing module named ConfigParser.SafeConfigParser - imported by ConfigParser, numpy.distutils.npy_pkg_config
+missing module named ConfigParser.NoOptionError - imported by ConfigParser, numpy.distutils.system_info, numpy.distutils.npy_pkg_config
 missing module named ConfigParser - imported by numpy.distutils.system_info, numpy.distutils.npy_pkg_config
 missing module named ConfigParser.ConfigParser - imported by ConfigParser, numpy.distutils.system_info
-missing module named distutils.dist.Distribution - imported by distutils.dist, distutils.cmd, distutils.core, numpy.distutils.system_info, numpy.distutils.environment, numpy.distutils.fcompiler
+missing module named distutils.dist.Distribution - imported by distutils.dist, distutils.cmd, distutils.core, numpy.distutils.environment, numpy.distutils.fcompiler, numpy.distutils.system_info
 missing module named distutils.core.gen_usage - imported by distutils.core, distutils.dist
-missing module named numpy.distutils.system_info.get_info - imported by numpy.distutils.system_info, numpy.f2py.f2py2e, numpy.distutils.misc_util
 missing module named 'numpy_distutils.cpuinfo'.cpuinfo - imported by 'numpy_distutils.cpuinfo', numpy.f2py.diagnose
 missing module named 'numpy_distutils.cpuinfo' - imported by numpy.f2py.diagnose
 missing module named 'numpy_distutils.command'.cpuinfo - imported by 'numpy_distutils.command', numpy.f2py.diagnose
 missing module named 'numpy_distutils.fcompiler' - imported by numpy.f2py.diagnose
+missing module named numpy.distutils.command.config_compiler.config_fc - imported by numpy.distutils.command.config_compiler, numpy.distutils.fcompiler
 missing module named setuptools_svn.svn_utils - imported by setuptools_svn, setuptools.command.egg_info
 missing module named setuptools_svn - imported by setuptools.command.egg_info
 missing module named setuptools.extension.Library - imported by setuptools.extension, setuptools.command.bdist_egg
@@ -468,18 +468,20 @@ missing module named setuptools.dist.Distribution - imported by setuptools.dist,
 missing module named 'setuptools.extern.six'.map - imported by 'setuptools.extern.six', setuptools, setuptools.extension
 missing module named 'setuptools.extern.six' - imported by setuptools, setuptools.extension
 missing module named 'setuptools.extern.six'.filterfalse - imported by 'setuptools.extern.six', setuptools
-missing module named setuptools.Command - imported by setuptools, setuptools.command.easy_install, setuptools.command.setopt, setuptools.command.bdist_egg, setuptools.command.egg_info
+missing module named setuptools.Command - imported by setuptools, setuptools.command.easy_install, setuptools.command.setopt, setuptools.command.egg_info, setuptools.command.bdist_egg
 missing module named 'setuptools.extern.six.moves'.map - imported by 'setuptools.extern.six.moves', setuptools.dist, setuptools.command.easy_install, setuptools.sandbox, setuptools.package_index, setuptools.ssl_support, setuptools.command.egg_info
 missing module named 'setuptools.extern.six.moves' - imported by setuptools.dist, setuptools.command.easy_install, setuptools.sandbox, setuptools.command.setopt, setuptools.package_index, setuptools.ssl_support, setuptools.command.egg_info
-missing module named setuptools.extern.six - imported by setuptools.extern, setuptools.dist, setuptools.depends, setuptools.command.easy_install, setuptools.sandbox, setuptools.package_index, setuptools.command.bdist_egg, setuptools.command.egg_info, setuptools.command.sdist, setuptools.unicode_utils, setuptools.command.develop
-missing module named numpy.distutils.fcompiler.show_fcompilers - imported by numpy.distutils.fcompiler, numpy.distutils.command.config_compiler
-missing module named numpy.compat.open_latin1 - imported by numpy.compat, numpy.distutils.exec_command, numpy.distutils.fcompiler
+missing module named setuptools.extern.six - imported by setuptools.extern, setuptools.dist, setuptools.depends, setuptools.command.easy_install, setuptools.sandbox, setuptools.package_index, setuptools.command.egg_info, setuptools.command.sdist, setuptools.command.bdist_egg, setuptools.unicode_utils, setuptools.command.develop
+missing module named numpy.distutils.command.build_src.get_f2py_modulename - imported by numpy.distutils.command.build_src, numpy.f2py.f2py2e
+missing module named 'Pyrex.Compiler' - imported by numpy.distutils.command.build_src
+missing module named Pyrex - imported by numpy.distutils.command.build_src
+missing module named numpy.compat.open_latin1 - imported by numpy.compat, numpy.distutils.fcompiler, numpy.distutils.exec_command
 missing module named 'numpy_distutils.command' - imported by numpy.f2py.diagnose
 missing module named numpy_distutils - imported by numpy.f2py.diagnose
 missing module named numpy.core.number - imported by numpy.core, numpy.testing.utils
 missing module named numpy.lib.imag - imported by numpy.lib, numpy.testing.utils
-missing module named numpy.lib.iscomplexobj - imported by numpy.lib, numpy.testing.utils
 missing module named numpy.lib.real - imported by numpy.lib, numpy.testing.utils
+missing module named numpy.lib.iscomplexobj - imported by numpy.lib, numpy.testing.utils
 missing module named numpy.core.signbit - imported by numpy.core, numpy.testing.utils
 missing module named numpy.core.float64 - imported by numpy.core, numpy.testing.utils
 missing module named numpy.core.isinf - imported by numpy.core, numpy.testing.utils
@@ -491,8 +493,8 @@ missing module named numpy.testing.noseclasses.NumpyTestProgram - imported by nu
 missing module named numpy.testing.noseclasses.Unplugger - imported by numpy.testing.noseclasses, numpy.testing.nosetester
 missing module named 'nose.plugins' - imported by numpy.testing.noseclasses, numpy.testing.nosetester
 missing module named 'nose.plugins'.Plugin - imported by 'nose.plugins', numpy.testing.noseclasses
-missing module named 'nose.plugins'.ErrorClass - imported by 'nose.plugins', numpy.testing.noseclasses
 missing module named 'nose.plugins'.ErrorClassPlugin - imported by 'nose.plugins', numpy.testing.noseclasses
+missing module named 'nose.plugins'.ErrorClass - imported by 'nose.plugins', numpy.testing.noseclasses
 missing module named 'nose.plugins'.doctests - imported by 'nose.plugins', numpy.testing.noseclasses
 missing module named numpy.testing.noseclasses.NumpyDoctest - imported by numpy.testing.noseclasses, numpy.testing.nosetester
 missing module named scipy - imported by numpy.testing.nosetester
@@ -500,142 +502,139 @@ missing module named numpy.testing.noseclasses.KnownFailure - imported by numpy.
 missing module named 'nose.util'.src - imported by 'nose.util', numpy.testing.noseclasses
 missing module named 'nose.util' - imported by numpy.testing.noseclasses
 missing module named nose - imported by numpy.testing.decorators, numpy.testing.noseclasses, numpy.testing.nosetester
-missing module named 'Pyrex.Compiler' - imported by numpy.distutils.command.build_src
-missing module named Pyrex - imported by numpy.distutils.command.build_src
-missing module named numpy.f2py.auxfuncs.applyrules - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.use_rules
 missing module named numpy.f2py.auxfuncs.issubroutine - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.func2subr
-missing module named numpy.f2py.auxfuncs.l_or - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
-missing module named numpy.f2py.auxfuncs.hasnote - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.common_rules, numpy.f2py.use_rules
-missing module named numpy.f2py.auxfuncs.isoptional - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
-missing module named numpy.f2py.auxfuncs.dictappend - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.use_rules
-missing module named numpy.f2py.auxfuncs.isrequired - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
-missing module named numpy.f2py.auxfuncs.isintent_in - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.func2subr
-missing module named numpy.f2py.auxfuncs.l_and - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
-missing module named numpy.f2py.auxfuncs.iscomplexarray - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
-missing module named numpy.f2py.auxfuncs.debugcapi - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
-missing module named numpy.f2py.auxfuncs.l_not - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
-missing module named numpy.f2py.auxfuncs.isintent_nothide - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
-missing module named numpy.f2py.auxfuncs.isintent_hide - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.common_rules
-missing module named numpy.f2py.auxfuncs.isintent_inout - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
-missing module named numpy.f2py.auxfuncs.isarray - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
-missing module named numpy.f2py.auxfuncs.replace - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
-missing module named numpy.f2py.auxfuncs.iscomplex - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
-missing module named numpy.f2py.auxfuncs.isintent_out - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.func2subr
-missing module named numpy.f2py.auxfuncs.iscomplexfunction - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
-missing module named numpy.f2py.auxfuncs.isscalar - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.func2subr
-missing module named numpy.f2py.auxfuncs.errmess - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
-missing module named numpy.f2py.auxfuncs.isstringfunction - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
-missing module named numpy.f2py.auxfuncs.throw_error - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules
-missing module named numpy.f2py.auxfuncs.outmess - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.common_rules, numpy.f2py.func2subr, numpy.f2py.use_rules
 missing module named numpy.f2py.auxfuncs.isstring - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.isintent_hide - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.common_rules
+missing module named numpy.f2py.auxfuncs.isintent_in - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.func2subr
+missing module named numpy.f2py.auxfuncs.iscomplexfunction - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.throw_error - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules
+missing module named numpy.f2py.auxfuncs.l_or - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.getargs - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules
+missing module named numpy.f2py.auxfuncs.applyrules - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.use_rules
+missing module named numpy.f2py.auxfuncs.errmess - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.l_not - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.isscalar - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.func2subr
 missing module named numpy.f2py.auxfuncs.isfunction - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.func2subr
 missing module named numpy.f2py.auxfuncs.stripcomma - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
-missing module named numpy.f2py.auxfuncs.getargs - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules
 missing module named numpy.f2py.auxfuncs.isintent_c - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.iscomplexarray - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.dictappend - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.use_rules
+missing module named numpy.f2py.auxfuncs.isintent_inout - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.isarray - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.l_and - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.iscomplex - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.isintent_nothide - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.debugcapi - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.isstringfunction - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.replace - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.isoptional - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.hasnote - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.common_rules, numpy.f2py.use_rules
+missing module named numpy.f2py.auxfuncs.isintent_out - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.func2subr
+missing module named numpy.f2py.auxfuncs.isrequired - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules
+missing module named numpy.f2py.auxfuncs.outmess - imported by numpy.f2py.auxfuncs, numpy.f2py.cb_rules, numpy.f2py.rules, numpy.f2py.common_rules, numpy.f2py.func2subr, numpy.f2py.use_rules
 missing module named numpy.f2py.crackfortran.markoutercomma - imported by numpy.f2py.crackfortran, numpy.f2py.capi_maps
 missing module named __svn_version__.version - imported by __svn_version__, numpy.f2py.__version__
 missing module named __svn_version__ - imported by numpy.f2py.__version__
-missing module named numpy.distutils.system_info.show_all - imported by numpy.distutils.system_info, numpy.f2py.f2py2e
 missing module named numarray - imported by numpy.distutils.system_info
 missing module named Numeric - imported by numpy.distutils.system_info
 missing module named commands.getstatusoutput - imported by commands, numpy.distutils.cpuinfo
 missing module named commands - imported by numpy.distutils.cpuinfo
 missing module named _curses - imported by curses, curses.has_key
 missing module named numpy.distutils.core.get_distribution - imported by numpy.distutils.core, numpy.distutils.fcompiler, numpy.distutils.misc_util
-missing module named numpy.distutils.misc_util.get_script_files - imported by numpy.distutils.misc_util, numpy.distutils.command.build_scripts
-missing module named numpy.distutils.misc_util.get_lib_source_files - imported by numpy.distutils.misc_util, numpy.distutils.command.build_clib
 missing module named numpy.distutils.misc_util.msvc_version - imported by numpy.distutils.misc_util, numpy.distutils.command.build_ext
-missing module named numpy.distutils.misc_util.get_numpy_include_dirs - imported by numpy.distutils.misc_util, numpy.distutils.command.build_ext, numpy.distutils.command.build_clib
 missing module named numpy.distutils.misc_util.get_ext_source_files - imported by numpy.distutils.misc_util, numpy.distutils.command.build_ext
-missing module named numpy.distutils.misc_util.filter_sources - imported by numpy.distutils.misc_util, numpy.distutils.command.build_ext, numpy.distutils.command.build_clib
-missing module named numpy.distutils.misc_util.has_f_sources - imported by numpy.distutils.misc_util, numpy.distutils.command.build_ext, numpy.distutils.command.build_clib
-missing module named numpy.distutils.misc_util.has_cxx_sources - imported by numpy.distutils.misc_util, numpy.distutils.command.build_ext, numpy.distutils.command.build_clib
+missing module named numpy.distutils.misc_util.get_numpy_include_dirs - imported by numpy.distutils.misc_util, numpy.distutils.command.build_clib, numpy.distutils.command.build_ext
+missing module named numpy.distutils.misc_util.has_cxx_sources - imported by numpy.distutils.misc_util, numpy.distutils.command.build_clib, numpy.distutils.command.build_ext
+missing module named numpy.distutils.misc_util.filter_sources - imported by numpy.distutils.misc_util, numpy.distutils.command.build_clib, numpy.distutils.command.build_ext
+missing module named numpy.distutils.misc_util.has_f_sources - imported by numpy.distutils.misc_util, numpy.distutils.command.build_clib, numpy.distutils.command.build_ext
+missing module named numpy.distutils.misc_util.get_lib_source_files - imported by numpy.distutils.misc_util, numpy.distutils.command.build_clib
+missing module named numpy.distutils.misc_util.get_script_files - imported by numpy.distutils.misc_util, numpy.distutils.command.build_scripts
 missing module named numpy.distutils.misc_util.dict_append - imported by numpy.distutils.misc_util, numpy.f2py.f2py2e
-missing module named numpy.distutils.misc_util.get_data_files - imported by numpy.distutils.misc_util, numpy.distutils.command.build_src, numpy.distutils.command.sdist, numpy.distutils.core
+missing module named numpy.distutils.misc_util.msvc_runtime_library - imported by numpy.distutils.misc_util, numpy.distutils.mingw32ccompiler
+missing module named numpy.distutils.misc_util.get_build_architecture - imported by numpy.distutils.misc_util, numpy.distutils.mingw32ccompiler, numpy.distutils.command.build_ext
 missing module named numpy.distutils.misc_util.appendpath - imported by numpy.distutils.misc_util, numpy.distutils.command.build_src
 missing module named numpy.distutils.misc_util.fortran_ext_match - imported by numpy.distutils.misc_util, numpy.distutils.command.build_src
 missing module named numpy.distutils.misc_util.get_cmd - imported by numpy.distutils.misc_util, numpy.distutils.command.build_src, numpy.distutils.command.install_clib
+missing module named numpy.distutils.misc_util.is_string - imported by numpy.distutils.misc_util, numpy.distutils.fcompiler, numpy.distutils.command.build_py, numpy.distutils.command.build_src, numpy.distutils.system_info, numpy.distutils.command.build_scripts, numpy.distutils.core, numpy.distutils.log
+missing module named numpy.distutils.misc_util.is_sequence - imported by numpy.distutils.misc_util, numpy.distutils.fcompiler, numpy.distutils.exec_command, numpy.distutils.command.build_src, numpy.distutils.system_info, numpy.distutils.command.build_clib, numpy.distutils.command.build_ext, numpy.distutils.core, numpy.distutils.log, numpy.distutils.ccompiler
 missing module named numpy.distutils.misc_util.all_strings - imported by numpy.distutils.misc_util, numpy.distutils.fcompiler, numpy.distutils.command.build_clib
-missing module named numpy.distutils.misc_util.get_build_architecture - imported by numpy.distutils.misc_util, numpy.distutils.mingw32ccompiler, numpy.distutils.command.build_ext
-missing module named numpy.distutils.misc_util.msvc_runtime_library - imported by numpy.distutils.misc_util, numpy.distutils.mingw32ccompiler
-missing module named numpy.distutils.misc_util.make_temp_file - imported by numpy.distutils.misc_util, numpy.distutils.exec_command, numpy.distutils.fcompiler
-missing module named numpy.distutils.misc_util.is_sequence - imported by numpy.distutils.misc_util, numpy.distutils.exec_command, numpy.distutils.system_info, numpy.distutils.fcompiler, numpy.distutils.command.build_src, numpy.distutils.command.build_ext, numpy.distutils.command.build_clib, numpy.distutils.core, numpy.distutils.log, numpy.distutils.ccompiler
-missing module named numpy.distutils.misc_util.is_string - imported by numpy.distutils.misc_util, numpy.distutils.command.build_py, numpy.distutils.system_info, numpy.distutils.fcompiler, numpy.distutils.command.build_src, numpy.distutils.command.build_scripts, numpy.distutils.core, numpy.distutils.log
+missing module named numpy.distutils.misc_util.make_temp_file - imported by numpy.distutils.misc_util, numpy.distutils.fcompiler, numpy.distutils.exec_command
+missing module named numpy.distutils.misc_util.get_data_files - imported by numpy.distutils.misc_util, numpy.distutils.command.sdist, numpy.distutils.command.build_src, numpy.distutils.core
 missing module named sets.Set - imported by sets, numpy.distutils.misc_util, numpy.distutils.fcompiler, numpy.distutils.command.build_ext
 missing module named sets - imported by numpy.distutils.misc_util, numpy.distutils.fcompiler, numpy.distutils.command.build_ext
 missing module named numpy.compat.asbytes - imported by numpy.compat, numpy.core._internal, numpy.core.defchararray, numpy.linalg.linalg, numpy.lib.format, numpy.lib._iotools, numpy.lib.npyio
 missing module named numpy.intp - imported by numpy, numpy.ctypeslib
-missing module named numpy.integer - imported by numpy, numpy.ctypeslib
 missing module named numpy.deprecate - imported by numpy, numpy.ctypeslib
-missing module named numpy.core.take - imported by numpy.core, numpy.fft.fftpack, numpy.fft.helper
-missing module named numpy.core.concatenate - imported by numpy.core, numpy.fft.helper
+missing module named numpy.integer - imported by numpy, numpy.ctypeslib
 missing module named numpy.core.empty - imported by numpy.core, numpy.linalg.linalg, numpy.fft.helper
-missing module named numpy.core.integer - imported by numpy.core, numpy.fft.helper
 missing module named numpy.core.arange - imported by numpy.core, numpy.fft.helper
+missing module named numpy.core.concatenate - imported by numpy.core, numpy.fft.helper
+missing module named numpy.core.take - imported by numpy.core, numpy.fft.fftpack, numpy.fft.helper
+missing module named numpy.core.integer - imported by numpy.core, numpy.fft.helper
 missing module named numpy.compat.integer_types - imported by numpy.compat, numpy.fft.helper
 missing module named numpy.core.swapaxes - imported by numpy.core, numpy.fft.fftpack
-missing module named numpy.core.zeros - imported by numpy.core, numpy.linalg.linalg, numpy.fft.fftpack
 missing module named numpy.core.shape - imported by numpy.core, numpy.fft.fftpack
-missing module named numpy.core.sqrt - imported by numpy.core, numpy.linalg.linalg, numpy.fft.fftpack
 missing module named numpy.core.array - imported by numpy.core, numpy.linalg.linalg, numpy.fft.fftpack, numpy.lib.polynomial
+missing module named numpy.core.zeros - imported by numpy.core, numpy.linalg.linalg, numpy.fft.fftpack
 missing module named numpy.core.conjugate - imported by numpy.core, numpy.fft.fftpack
+missing module named numpy.core.sqrt - imported by numpy.core, numpy.linalg.linalg, numpy.fft.fftpack
 missing module named numpy.linalg.lstsq - imported by numpy.linalg, numpy.lib.polynomial
 missing module named numpy.linalg.eigvals - imported by numpy.linalg, numpy.lib.polynomial
 missing module named numpy.lib.triu - imported by numpy.lib, numpy.linalg.linalg
+missing module named numpy.core.empty_like - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.product - imported by numpy.core, numpy.linalg.linalg
 missing module named numpy.core.geterrobj - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.amin - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.multiply - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.csingle - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.cdouble - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.intp - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.isscalar - imported by numpy.core, numpy.linalg.linalg, numpy.lib.polynomial
 missing module named numpy.core.ravel - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.double - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.broadcast - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.maximum - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.dot - imported by numpy.core, numpy.linalg.linalg, numpy.lib.polynomial
 missing module named numpy.core.newaxis - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.intc - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.sum - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.add - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.transpose - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.csingle - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.longdouble - imported by numpy.core, numpy.linalg.linalg
 missing module named numpy.core.rollaxis - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.size - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.amax - imported by numpy.core, numpy.linalg.linalg
 missing module named numpy.core.all - imported by numpy.core, numpy.linalg.linalg
 missing module named numpy.core.inexact - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.single - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.product - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.fastCopyAndTranspose - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.isscalar - imported by numpy.core, numpy.linalg.linalg, numpy.lib.polynomial
-missing module named numpy.core.complexfloating - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.cdouble - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.longdouble - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.finfo - imported by numpy.core, numpy.linalg.linalg, numpy.lib.polynomial
 missing module named numpy.core.Inf - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.intp - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.empty_like - imported by numpy.core, numpy.linalg.linalg
-missing module named numpy.core.errstate - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.size - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.maximum - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.finfo - imported by numpy.core, numpy.linalg.linalg, numpy.lib.polynomial
+missing module named numpy.core.amin - imported by numpy.core, numpy.linalg.linalg
 missing module named numpy.core.asanyarray - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.single - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.double - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.amax - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.intc - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.add - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.multiply - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.complexfloating - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.errstate - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.dot - imported by numpy.core, numpy.linalg.linalg, numpy.lib.polynomial
+missing module named numpy.core.sum - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.transpose - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.broadcast - imported by numpy.core, numpy.linalg.linalg
+missing module named numpy.core.fastCopyAndTranspose - imported by numpy.core, numpy.linalg.linalg
 missing module named numpy.lib.add_newdoc - imported by numpy.lib, numpy.add_newdocs
 missing module named numpy.compat.isfileobj - imported by numpy.compat, numpy.core.records, numpy.lib.format
 missing module named future_builtins.map - imported by future_builtins, numpy.lib.npyio
 missing module named future_builtins - imported by numpy.lib.npyio
-missing module named numpy.compat.asstr - imported by numpy.compat, numpy.lib.format, numpy.lib.npyio
 missing module named numpy.compat.asbytes_nested - imported by numpy.compat, numpy.lib._iotools, numpy.lib.npyio
+missing module named numpy.compat.asstr - imported by numpy.compat, numpy.lib.format, numpy.lib.npyio
 missing module named urlparse.urlparse - imported by urlparse, numpy.lib._datasource
 missing module named urlparse - imported by numpy.lib._datasource
 missing module named numpy.core.ones - imported by numpy.core, numpy.lib.polynomial
 missing module named numpy.core.hstack - imported by numpy.core, numpy.lib.polynomial
-missing module named numpy.core.vstack - imported by numpy.core, numpy.lib.shape_base
 missing module named numpy.core.atleast_3d - imported by numpy.core, numpy.lib.shape_base
+missing module named numpy.core.vstack - imported by numpy.core, numpy.lib.shape_base
 missing module named numpy.dtype - imported by numpy, numpy.ma.mrecords, numpy.ctypeslib
 missing module named numpy.recarray - imported by numpy, numpy.ma.mrecords
 missing module named numpy.expand_dims - imported by numpy, numpy.ma.core
 missing module named numpy.array - imported by numpy, numpy.ma.core, numpy.ma.extras, numpy.ma.mrecords, numpy.ctypeslib
-missing module named numpy.iscomplexobj - imported by numpy, numpy.ma.core
-missing module named numpy.ndarray - imported by numpy, numpy.ma.core, numpy.ma.extras, numpy.ma.mrecords, numpy.ctypeslib
-missing module named numpy.amax - imported by numpy, numpy.ma.core
-missing module named numpy.amin - imported by numpy, numpy.ma.core
-missing module named numpy._NoValue - imported by numpy, numpy.ma.core
 missing module named numpy.bool_ - imported by numpy, numpy.ma.core, numpy.ma.mrecords
+missing module named numpy._NoValue - imported by numpy, numpy.ma.core
+missing module named numpy.iscomplexobj - imported by numpy, numpy.ma.core
+missing module named numpy.amax - imported by numpy, numpy.ma.core
+missing module named numpy.ndarray - imported by numpy, numpy.ma.core, numpy.ma.extras, numpy.ma.mrecords, numpy.ctypeslib
+missing module named numpy.amin - imported by numpy, numpy.ma.core
 missing module named numpy.histogramdd - imported by numpy, numpy.lib.twodim_base
 missing module named numpy.eye - imported by numpy, numpy.core.numeric
 missing module named numpy.VisibleDeprecationWarning - imported by numpy, numpy.core.fromnumeric

@@ -80,11 +80,13 @@ class VideoStream:
                 # Create a pixMap from the new frame (for getPixFrame() method)
                 # Having this here means less processing work for the main program to do.
                 # TODO: Research if running a QtGui process in a thread will cause crashes
-                pixFrame = cv2.cvtColor(newFrame.copy(), cv2.COLOR_BGR2RGB)
 
-                img = QImage(pixFrame, pixFrame.shape[1], pixFrame.shape[0], QImage.Format_RGB888)
-                pix = QPixmap.fromImage(img)
-                self.pixFrame = pix
+                pixFrame               = cv2.cvtColor(newFrame.copy(), cv2.COLOR_BGR2RGB)
+                height, width, channel = pixFrame.shape
+                bytesPerLine           = 3 * width
+                img                    = QImage(pixFrame, width, height, bytesPerLine, QImage.Format_RGB888)
+                pix                    = QPixmap.fromImage(img)
+                self.pixFrame          = pix.copy()
 
                 # Keep track of new frames by counting them. (100 is an arbitrary number)
                 if self.frameCount >= 100:
@@ -166,6 +168,7 @@ class VideoStream:
     def getFrame(self):
         # Returns the latest frame grabbed from the camera
         if self.frame is not None:
+            # Frames are copied because they are generally modified.
             return self.frame.copy()
         else:
             return None
@@ -180,6 +183,8 @@ class VideoStream:
 
     def getPixFrame(self):
         # Returns the latest frame grabbed from the camera, modified to be put in a QLabel
+
+        # A copy is not returned, because pixFrames should never be modified, only displayed.
         return self.pixFrame
 
 

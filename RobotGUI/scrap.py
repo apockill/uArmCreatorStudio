@@ -1,39 +1,68 @@
-import numpy as np
-import cv2
-cv2.ocl.setUseOpenCL(False)
+from PyQt5 import QtGui, QtWidgets
 
 
-# # cap.set(cv2.CAP_PROP_WHITE_BALANCE_BLUE_U, 0)
-# # cap.set(cv2.CAP_PROP_WHITE_BALANCE_RED_V, 0)
-# cap.set(cv2.CAP_PROP_SETTINGS, 1)
-fgbg = cv2.createBackgroundSubtractorMOG2()
-cap = cv2.VideoCapture(1)
+def createIntroPage():
+    page = QtWidgets.QWizardPage()
+    page.setTitle("Introduction")
 
-while(1):
+    label = QtWidgets.QLabel("This wizard will help you register your copy of "
+            "Super Product Two.")
+    label.setWordWrap(True)
 
-    ret, frame = cap.read()
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(label)
+    page.setLayout(layout)
 
-    fgmask = fgbg.apply(frame)
-
-    cv2.imshow('memes', fgmask)
-
-    k = cv2.waitKey(30) & 0xff
-    if k == ord('p'):
-        print('place object (press n for next)')
-        while cv2.waitKey(100) != ord('n'): pass
-
-        fgmask2 = None
-        for i in range(0, 20):
-            ret, objectFrame = cap.read()
-            fgmask2 = fgbg.apply(objectFrame.copy())
-
-        afterMask = cv2.bitwise_and(objectFrame, objectFrame, mask=fgmask2)
-
-        cv2.imshow('Masked', afterMask)
-        cv2.imshow('mask', fgmask2)
-        cv2.imshow('without mask', objectFrame)
-        cv2.waitKey(30)
+    return page
 
 
-cap.release()
-cv2.destroyAllWindows()
+def createRegistrationPage():
+    page = QtWidgets.QWizardPage()
+    page.setTitle("Registration")
+    page.setSubTitle("Please fill both fields.")
+
+    nameLabel = QtWidgets.QLabel("Name:")
+    nameLineEdit = QtWidgets.QLineEdit()
+
+    emailLabel = QtWidgets.QLabel("Email address:")
+    emailLineEdit = QtWidgets.QLineEdit()
+
+    layout = QtWidgets.QGridLayout()
+    layout.addWidget(nameLabel, 0, 0)
+    layout.addWidget(nameLineEdit, 0, 1)
+    layout.addWidget(emailLabel, 1, 0)
+    layout.addWidget(emailLineEdit, 1, 1)
+    page.setLayout(layout)
+
+    return page
+
+
+def createConclusionPage():
+    page = QtWidgets.QWizardPage()
+    page.setTitle("Conclusion")
+
+    label = QtWidgets.QLabel("You are now successfully registered. Have a nice day!")
+    label.setWordWrap(True)
+
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(label)
+    page.setLayout(layout)
+
+    return page
+
+
+if __name__ == '__main__':
+
+    import sys
+
+    app = QtWidgets.QApplication(sys.argv)
+
+    wizard = QtWidgets.QWizard()
+    wizard.addPage(createIntroPage())
+    wizard.addPage(createRegistrationPage())
+    wizard.addPage(createConclusionPage())
+
+    wizard.setWindowTitle("Trivial Wizard")
+    wizard.show()
+
+    sys.exit(wizard.exec_())
