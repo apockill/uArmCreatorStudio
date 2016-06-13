@@ -11,9 +11,16 @@ class Event:
         self.commandList.append(command)
 
     def getVerifyVision(self, env):
+        vStream = env.getVStream()
+
+        if not vStream.connected():
+            self.errors.append("Camera")
         return env.getVision()
 
     def getVerifyRobot(self, env):
+        robot = env.getRobot()
+        if not robot.connected():
+            self.errors.append("Robot")
         return env.getRobot()
 
     def isActive(self):
@@ -87,8 +94,10 @@ class MotionEvent(Event):
 
         # DO ERROR CHECKING
         # If the appropriate motionCalibrations do not exist, add it to the "compile" errors, and set self.calib to None
-        if self.calib is None or not ("stationaryMovement" and "activeMovement") in self.calib:
+        if self.calib["activeMovement"] is None or self.calib["stationaryMovement"] is None:
             self.errors.append("Motion Calibrations not found in settings")
+            self.stationary = 5
+            self.active     = 10
         else:
             self.stationary = self.calib["stationaryMovement"]
             self.active     = self.calib["activeMovement"]

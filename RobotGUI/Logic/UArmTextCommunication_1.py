@@ -14,7 +14,6 @@ class Uarm:
 
     def connected(self):
         if self.serial is None:     return False
-        if not self.successConnect: return False
         if not self.__handshake():  return False
         return True
 
@@ -103,7 +102,9 @@ class Uarm:
     def __send(self, cmnd):
         if not self.connected(): return None
         cmndString = bytes("[" + cmnd + "]>", encoding='ascii')
+
         self.serial.write(cmndString)
+
         response = self.__read()
         return response
 

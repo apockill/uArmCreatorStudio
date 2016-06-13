@@ -27,7 +27,7 @@ class CalibrateWindow(QtWidgets.QDialog):
         super(CalibrateWindow, self).__init__(parent)
 
         self.env            = environment
-        self.newSettings    = {"motionCalibrations": {"stationaryMovement": None, "activeMovement": None}}
+        self.newSettings    = self.env.getSettings()
 
         # The label for the current known information for each calibration test. Label is changed in updateLabels()
         self.motionLbl = QtWidgets.QLabel("No information for this calibration")
@@ -89,19 +89,18 @@ class CalibrateWindow(QtWidgets.QDialog):
 
 
     def updateLabels(self):
-        settings = self.env.getSettings()
+        print(self.newSettings)
+        movCalib = self.newSettings["motionCalibrations"]
 
-        # Check if motionCalibrations exist in the settings dictionary
-        if "motionCalibrations" in settings:
-            movCalib = settings["motionCalibrations"]
 
-            # Check if the appropriate values exist within the motionCalibrations dictionary
-            if movCalib["stationaryMovement"] is not None:
-                self.motionLbl.setText(" Stationary Movement: " + str(movCalib["stationaryMovement"]) +
-                                       "     Active Movement: " + str(movCalib["activeMovement"]))
+        # Check if motionCalibrations already exist
+        if movCalib["stationaryMovement"] is not None:
+            self.motionLbl.setText(" Stationary Movement: " + str(movCalib["stationaryMovement"]) +
+                                   "     Active Movement: " + str(movCalib["activeMovement"]))
 
     def calibrateMotion(self):
         # Shake the robot left and right while getting frames to get a threshold for "high" movement between frames
+        displayError = lambda message: QtWidgets.QMessageBox.question(self, 'Error', message, QtWidgets.QMessageBox.Ok)
 
         vStream = self.env.getVStream()
         vision  = self.env.getVision()
@@ -110,11 +109,13 @@ class CalibrateWindow(QtWidgets.QDialog):
         # Check that there is a valid robot connected
         if not robot.connected():
             printf("CalibrateView.calibrateMotion(): No uArm connected!")
+            displayError("A robot must be connected to run this calibration.")
             return
 
         # Check that there is a valid camera connected
         if not vision.cameraConnected():
             printf("CalibrateVIew.calibrateMotion(): No Camera Connected!")
+            displayError("A camera must be connected to run this calibration.")
             return
 
         # Make sure VideoStream is collecting new frames
@@ -165,6 +166,7 @@ class CalibrateWindow(QtWidgets.QDialog):
         printf("CalibrateView.calibrateMotion(): Function complete! New motion settings: ", self.newSettings)
 
     def getSettings(self):
+        print("GETSETTINGS RUNNING")
         return self.newSettings
 
 
@@ -351,7 +353,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         self.settings  = {"robotID": None, "cameraID": None, "lastOpenedFile": None,
-                          "motionCalibrations": None}
+                          "motionCalibrations": {"stationaryMovement": None, "activeMovement": None}}
 
         # Init self variables
         self.fileName    = None
@@ -486,6 +488,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # If a calibration of type Motion has been changed, reflect this in the settings
         if isNew("motionCalibrations"):
+            print("Motioncalibrations asked!")
             self.settings["motionCalibrations"] = newSettings["motionCalibrations"]
 
 
@@ -529,42 +532,57 @@ class MainWindow(QtWidgets.QMainWindow):
     def setScript(self, state):
         # Run/pause the main script
 
-        if state == "play":
-            if not self.interpreter.isRunning():
-                printf("MainWindow.setScript(): Interpreter is ready. Loading script and starting program")
-
-                self.interpreter.loadScript(self.env, self.controlPanel.getSaveData())
-
-                # Stop you from moving stuff around while script is running, and activate the visual cmmnd highlighting
-                self.controlPanel.setScriptMode(True, self.interpreter.getStatus)
-                self.interpreter.startThread()
-
-                self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.pause_script))
-
-            else:
-                printf("MainWindow.setScript(): ERROR: Tried to start interpreter while it was already running.")
-            return
-
-        if state == "pause":
-            self.interpreter.endThread()
-            self.controlPanel.setScriptMode(False, self.interpreter.getStatus)
-
-            self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.run_script))
-            return
-
         if state == "toggle":
             if self.interpreter.isRunning():
-                self.setScript("pause")
+                self.endScript()
             else:
-                self.setScript("play")
+                self.startScript()
             return
+
+
+    def startScript(self):
+        if self.interpreter.isRunning():
+                printf("MainWindow.setScript(): ERROR: Tried to start interpreter while it was already running.")
+                return
+        printf("MainWindow.setScript(): Interpreter is ready. Loading script and starting program")
+
+
+        # Load the script, and get any relevant errors
+        errors = self.interpreter.loadScript(self.env, self.controlPanel.getSaveData())
+
+
+        # If there were during loading, present the user with the option to continue anyways
+        if len(errors):
+            # Generate a message for the user to explain what parameters are missing
+            errorStr = 'Certain Events and Commands are missing the following requirements to work properly: \n\n' + \
+                       ''.join(map(lambda err: '   -' + str(err) + '\n', errors)) + \
+                       '\nWould you like to continue anyways? This may cause the program to behave erratically.'
+
+            # Ask the user 
+            reply = QtWidgets.QMessageBox.question(self, 'Warning', errorStr,
+                                QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.Cancel)
+            if reply == QtWidgets.QMessageBox.Cancel:
+                printf("MainWindow.startScript(): Script run canceled by user before starting.")
+                return
+
+        # Stop you from moving stuff around while script is running, and activate the visual cmmnd highlighting
+        self.controlPanel.setScriptMode(True, self.interpreter.getStatus)
+        self.interpreter.startThread()
+
+        self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.pause_script))
+
+    def endScript(self):
+        self.interpreter.endThread()
+        self.controlPanel.setScriptMode(False, self.interpreter.getStatus)
+
+        self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.run_script))
 
 
     def openSettings(self):
         # This handles the opening and closing of the Settings window.
         printf("MainWindow.openSettings(): Opening Settings Window")
 
-        self.setScript("pause")
+        self.endScript()
         self.setVideo("pause")  # If you don't pause video, scanning for cameras may crash the program
 
         settingsWindow = SettingsWindow(parent=self)
@@ -589,7 +607,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # This handles the opening and closing of the Calibrations window
         printf("MainWindow.openCalibrations(): Opening Calibrations Window")
 
-        self.setScript("pause")
+        self.endScript()
         self.setVideo("pause")
 
         calibrationsWindow = CalibrateWindow(self.env, parent=self)
@@ -607,7 +625,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # This handles the opening and closing of the ObjectManager window
         printf("MainWindow.openCalibrations(): Opening ObjectManager Window")
 
-        self.setScript("pause")
+        self.endScript()
 
         # Make sure video thread is active and playing, but that the actual cameraWidget
         self.setVideo("play")
@@ -648,7 +666,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def loadTask(self,  **kwargs):
         # Load a save file
-        self.setScript("pause")  # Make sure a script isn't running while you try to load something
+        self.endScript()  # Make sure a script isn't running while you try to load something
 
         printf("MainWindow.loadTask(): Loading project")
 

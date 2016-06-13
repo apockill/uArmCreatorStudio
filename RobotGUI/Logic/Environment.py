@@ -107,21 +107,36 @@ class Interpreter:
 
     # Functions for GUI to use
     def loadScript(self, env, script):
+        """
         # Creates each event, loads it with its appropriate commandList, and then adds that event to self.events
+
+        :param      env: Environment object
+        :param      script: a loaded script from a .task file
+        :return:    any errors that commands returned during instantiation
+        """
+
         script = deepcopy(script)
+
+        errors = []  # Errors are returned from
 
         # Create each event
         for _, eventSave in enumerate(script):
             eventType = getattr(Events, eventSave['typeLogic'])
             event     = eventType(env, self, parameters=eventSave['parameters'])
+            errors   += event.errors
             self.addEvent(event)
 
             # Create the commandList for this event
             for _, commandSave in enumerate(eventSave['commandList']):
                 commandType = getattr(Commands, commandSave['typeLogic'])
                 command     = commandType(env, self, commandSave['parameters'])
+                errors     += command.errors
                 event.addCommand(command)
 
+
+        # Get rid of repeat errors
+        errors = list(set(errors))
+        return errors
 
 
 

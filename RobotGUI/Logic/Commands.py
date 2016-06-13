@@ -1,5 +1,5 @@
 from RobotGUI.Logic.Global import printf
-from time import sleep  # For WaitCommand
+from time                  import sleep  # For WaitCommand
 
 """
 Example Class Structure
@@ -33,11 +33,12 @@ class Command:
     def run(self):
         pass
 
-
     # By having functions to pull things from env, I can automatically generate Error messages for things that go wrong
     def getVerifyRobot(self, env):
         robot = env.getRobot()
-        return robot
+        if not robot.connected():
+            self.errors.append("Robot")
+        return env.getRobot()
 
 
 class MoveXYZCommand(Command):
