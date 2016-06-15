@@ -39,7 +39,7 @@ class Environment:
     def __init__(self, settings):
 
         # Set up environment objects
-        self.__vStream      = Video.VideoStream(None)       # Gets frames constantly
+        self.__vStream      = Video.VideoStream()  # Gets frames constantly
         self.__robot        = Robot(None)
         self.__settings     = settings
         self.__vision       = Video.Vision(self.__vStream)  # Performs computer vision tasks, using images from vStream
@@ -88,7 +88,6 @@ class Environment:
     def close(self):
         # This will try to safely shut down any objects that are capable of running threads.
         self.__vStream.endThread()
-
 
 
 class Interpreter:

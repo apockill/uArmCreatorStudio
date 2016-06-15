@@ -9,9 +9,8 @@ class ObjectManager(QtWidgets.QDialog):
 
     def __init__(self, environment, parent):
         super(ObjectManager, self).__init__(parent)
-        self.mainWindowParent   = parent  # Since ObjManager creates windows and deletes itself, it passes Main parent
         self.env                = environment
-        self.cameraWidget       = CameraWidget(self.env.getVStream().getPixFrame, parent=self)
+        self.cameraWidget       = CameraWidget(self.env.getVStream().getFilteredWithID, parent=self)
 
         self.selectedObjVLayout = QtWidgets.QVBoxLayout()
 
@@ -19,7 +18,7 @@ class ObjectManager(QtWidgets.QDialog):
         self.cameraWidget.play()
 
         # For debugging
-        self.openKeypointWizard()
+        # self.openKeypointWizard()
 
     def initUI(self):
 
@@ -104,14 +103,18 @@ class ObjectManager(QtWidgets.QDialog):
 
         printf("ObjectManager.openKeypointWizard(): Opening Keypoint Wizard!")
 
-        self.close()
+        self.cameraWidget.pause()
+        kpWizard = KeypointWizard(self.env, self)
 
-        kpWizard = KeypointWizard(self.env, parent=self.mainWindowParent)
         kpWizard.exec_()
+        kpWizard.close()  # Make sure that even if "cancel" was pressed, the window still closes
+
+        self.cameraWidget.play()
+
 
     def closeEvent(self, event):
         # This ensures that the cameraWidget will no longer be open when the window closes
-        self.cameraWidget.pause()
+        self.cameraWidget.close()
 
 
 
@@ -120,11 +123,18 @@ class KeypointWizard(QtWidgets.QWizard):
     def __init__(self, environment, parent):
         super(KeypointWizard, self).__init__(parent)
 
-        self.addPage(KPWPage1(parent=self))
-        self.addPage(KPWPage2(environment, parent=self))
+
+        self.page1 = KPWPage1(             parent=self)
+        self.page2 = KPWPage2(environment, parent=self)
+
+        self.addPage(self.page1)
+        self.addPage(self.page2)
 
         self.setWindowTitle("Keypoint Wizard")
         self.setWindowIcon(QtGui.QIcon(Icons.objectWizard))
+
+    def closeEvent(self, event):
+        self.page2.cameraWidget.close()
 
 
 class KPWPage1(QtWidgets.QWizardPage):
@@ -202,13 +212,17 @@ class KPWPage2(QtWidgets.QWizardPage):
         super(KPWPage2, self).__init__(parent)
 
         # Vision is used in self.isSelected() to make sure the object is valid, and to display KP information
-        self.vision = environment.getVision()
-        vStream     = environment.getVStream()
+        # self.vision = environment.getVision()
 
-        self.camera = CameraSelector(vStream.getFrame, vStream.getPixFrame, parent=self)
-        self.camera.play()
-        self.camera.frameSelected.connect(self.completeChanged)
-        self.camera.declinePicBtn.clicked.connect(self.completeChanged)
+
+        self.cameraWidget = CameraSelector(environment.getVision(),
+                                           environment.getVStream().getFilteredWithID,
+                                           parent=self)
+
+        self.cameraWidget.play()
+        self.cameraWidget.declinePicBtn.clicked.connect(self.completeChanged)
+        self.cameraWidget.stateChanged.connect(self.completeChanged)
+
         self.initUI()
 
     def initUI(self):
@@ -227,7 +241,7 @@ class KPWPage2(QtWidgets.QWizardPage):
         # Create a special row for the camera that will force it to remain in the center, regardless of size changes
         camRow = QtWidgets.QHBoxLayout()
         camRow.addStretch(1)
-        camRow.addWidget(self.camera)
+        camRow.addWidget(self.cameraWidget)
         camRow.addStretch(1)
 
         # Place the GUI objects vertically
@@ -244,8 +258,8 @@ class KPWPage2(QtWidgets.QWizardPage):
         self.setLayout(mainHLayout)
 
     def isComplete(self):
-        print("ISCOMPLETE EVENT ACTIVATED!")
-        frame = self.camera.getSelectedFrame()
-        if frame is None: return False
+
+        obj = self.cameraWidget.getSelectedObject()
+        if obj is None: return False
 
         return True

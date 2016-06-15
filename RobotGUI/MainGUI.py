@@ -113,8 +113,8 @@ class CalibrateWindow(QtWidgets.QDialog):
             return
 
         # Check that there is a valid camera connected
-        if not vision.cameraConnected():
-            printf("CalibrateVIew.calibrateMotion(): No Camera Connected!")
+        if not vStream.cameraConnected():
+            printf("CalibrateView.calibrateMotion(): No Camera Connected!")
             displayError("A camera must be connected to run this calibration.")
             return
 
@@ -366,7 +366,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.centralWidget   = QtWidgets.QStackedWidget()
         self.controlPanel    = ControlPanelGUI.ControlPanel(self.env, self.settings, parent=self)
         self.dashboardView   = DashboardView(self.controlPanel,
-                                             CameraWidget(self.env.getVStream().getPixFrame, parent=self),
+                                             CameraWidget(self.env.getVStream().getFilteredWithID, parent=self),
                                              parent=self)
 
 
@@ -394,7 +394,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.openSettings()
 
 
-        self.openObjectManager()  # For debugging
+        # self.openObjectManager()  # For debugging
 
     def initUI(self):
         # Create "File" Menu
@@ -588,6 +588,7 @@ class MainWindow(QtWidgets.QMainWindow):
         settingsWindow = SettingsWindow(parent=self)
         accepted       = settingsWindow.exec_()
 
+        self.setVideo("play")
         if not accepted:
             printf('MainWindow.closeSettings(): "Cancel" clicked, no settings applied.')
             return
@@ -595,6 +596,11 @@ class MainWindow(QtWidgets.QMainWindow):
         printf('MainWindow.closeSettings(): "Apply" clicked, applying settings...')
         self.setSettings(settingsWindow.getSettings())
 
+        vStream = self.env.getVStream()
+        vStream.setNewCamera(self.settings['cameraID'])
+
+        robot   = self.env.getRobot()
+        robot.setUArm(self.settings['robotID'])
         # if success:
         #     self.setVideo("play")
         # else:
@@ -630,9 +636,10 @@ class MainWindow(QtWidgets.QMainWindow):
         # Make sure video thread is active and playing, but that the actual cameraWidget
         self.setVideo("play")
         self.dashboardView.cameraWidget.pause()
-        objMngrWindow = ObjectManager(self.env, parent=self)
+        objMngrWindow = ObjectManager(self.env, self)
         accepted      = objMngrWindow.exec_()
-
+        objMngrWindow.close()
+        objMngrWindow.deleteLater()
         self.setVideo("play")
 
 
@@ -729,6 +736,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def closeEvent(self, event):
         # When window is closed, prompt for save, close the video stream, and close the control panel (thus script)
+        while self.layout().count():
+            child = self.layout().takeAt(0)
+            print(child)
+            # child.widget().deleteLater()
+
+        self.setVideo("pause")
         self.interpreter.endThread()
         self.promptSave()
         self.env.close()

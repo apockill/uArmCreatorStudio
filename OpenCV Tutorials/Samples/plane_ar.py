@@ -53,7 +53,7 @@ class App:
         self.rect_sel = common.RectSelector('plane', self.on_rect)
 
     def on_rect(self, rect):
-        self.tracker.add_target(self.frame, rect)
+        self.tracker.addTarget(self.frame, rect)
 
     def run(self):
         while True:
@@ -85,16 +85,27 @@ class App:
 
     def draw_overlay(self, vis, tracked):
         x0, y0, x1, y1 = tracked.target.rect
-        quad_3d = np.float32([[x0, y0, 0], [x1, y0, 0], [x1, y1, 0], [x0, y1, 0]])
+
+        quad_3d = np.float32([[x0, y0, 0],
+                              [x1, y0, 0],
+                              [x1, y1, 0],
+                              [x0, y1, 0]])
+
         fx = 0.5 + cv2.getTrackbarPos('focal', 'plane') / 50.0
         h, w = vis.shape[:2]
-        K = np.float64([[fx*w, 0, 0.5*(w-1)],
-                        [0, fx*w, 0.5*(h-1)],
-                        [0.0,0.0,      1.0]])
+
+        K = np.float64([[fx * w,      0, 0.5 * (w - 1)],
+                        [     0, fx * w, 0.5 * (h - 1)],
+                        [   0.0,    0.0,          1.0]])
+
         dist_coef = np.zeros(4)
         ret, rvec, tvec = cv2.solvePnP(quad_3d, tracked.quad, K, dist_coef)
+        # print('rvec', rvec, '\ttvec', tvec)
+        
+        print(cv2.Rodrigues(rvec, tvec))
         verts = ar_verts * [(x1-x0), (y1-y0), -(x1-x0)*0.3] + (x0, y0, 0)
         verts = cv2.projectPoints(verts, rvec, tvec, K, dist_coef)[0].reshape(-1, 2)
+
         for i, j in ar_edges:
             (x0, y0), (x1, y1) = verts[i], verts[j]
             cv2.line(vis, (int(x0), int(y0)), (int(x1), int(y1)), (255, 255, 0), 2)

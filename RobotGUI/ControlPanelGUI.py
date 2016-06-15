@@ -91,10 +91,11 @@ class ControlPanel(QtWidgets.QWidget):
         # Get the currently selected event on the eventList
         selectedEvent = self.eventList.getSelectedEvent()
 
-        # Delete all widgets on the commandList stack
+        # Remove all widgets on the commandList stack (not delete, though!)
         for c in range(0, self.commandListStack.count()):
             widget = self.commandListStack.widget(c)
             self.commandListStack.removeWidget(widget)
+
 
         # If user has no event selected, make a clear commandList to view
         if selectedEvent is None:
