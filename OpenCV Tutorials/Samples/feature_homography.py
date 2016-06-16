@@ -50,7 +50,7 @@ class App:
 
     def on_rect(self, rect):
         self.tracker.clear()
-        self.tracker.addTarget(self.frame, rect)
+        self.tracker.addTargetSample(self.frame, rect)
 
     def run(self):
         while True:

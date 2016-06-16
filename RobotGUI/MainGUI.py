@@ -353,44 +353,49 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__()
 
 
-        self.settings       = {"robotID": None, "cameraID": None, "lastOpenedFile": None,
-                            "motionCalibrations": {"stationaryMovement": None, "activeMovement": None}}
+        # This is the format of an empty settings variable. It is filled in self.loadSettings() if settings exist.
+        self.settings       = {
+                                 # LOGIC RELATED SETTINGS
+                                 "robotID":             None,
+                                 "cameraID":            None,
+                                 "objectsDirectory":    "Objects",  # Default directory for saving objects
+                                 "motionCalibrations":  {"stationaryMovement": None, "activeMovement": None},
 
-        self.programTitle   = 'uArm Creator Studio'
+                                 # GUI RELATED SETTINGS
+                                 "lastOpenedFile":      None
+                               }
+
+        # Load settings
+        configExists = self.loadSettings()
 
 
-        # Init self variables
+        # Init self and objects. All objects should be capable of being started w/o settings, THEN settings are loaded.
         self.fileName    = None
         self.loadData    = None  #Set when file is loaded. Used to check if the user has changed anything and prompt
-        self.keysPressed = None
         self.env         = Environment(self.settings)
         self.interpreter = Interpreter()
 
 
         # Set Global UI Variables
-
+        self.programTitle    = 'uArm Creator Studio'
+        self.scriptToggleBtn = QtWidgets.QAction(QtGui.QIcon(Icons.run_script),   'Run', self)
+        self.videoToggleBtn  = QtWidgets.QAction(QtGui.QIcon(Icons.play_video), 'Video', self)
         self.centralWidget   = QtWidgets.QStackedWidget()
-
         self.controlPanel    = ControlPanelGUI.ControlPanel(self.env, self.settings, parent=self)
-
         self.dashboardView   = DashboardView(self.controlPanel,
                                              CameraWidget(self.env.getVStream().getFilteredWithID, parent=self),
                                              parent=self)
 
 
-        self.scriptToggleBtn = QtWidgets.QAction(QtGui.QIcon(Icons.run_script),   'Run', self)
-        self.videoToggleBtn  = QtWidgets.QAction(QtGui.QIcon(Icons.play_video), 'Video', self)
-
-
-
-        # Now that objects have been created, load the settings
-
-        configExists = self.loadSettings()
-
-
-        # self.setVideo("play")  # This has to be done before self.initUI() to avoid window opening up and seeming lag
-        self.setVideo("play")
+        # Create Menu items, and set the Dashboard as the main widget
         self.initUI()
+        self.setVideo("play")
+
+
+
+
+        # This will set the camera and start the videoThread, and set the CameraWidget to play
+        # self.setVideo("play")
 
 
         # If any file is specified in "lastOpenedFile" then load it.
@@ -403,7 +408,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.openSettingsWindow()
 
         # For debugging
-        self.openObjectManagerWindow()
+        # self.openObjectManagerWindow()
 
     def initUI(self):
         # Create "File" Menu
@@ -497,7 +502,7 @@ class MainWindow(QtWidgets.QMainWindow):
             printf("MainWindow.setSettings(): Changing robotID from ",
                   self.settings["robotID"], "to", newSettings["robotID"])
             self.settings["robotID"] = newSettings["robotID"]
-            self.env.getRobot().setUArm(self.settings["robotID"])
+
 
 
         # If a new file has been opened, change the Settings file to reflect that so next time GUI is opened, so is file
@@ -540,6 +545,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if state == "play":
             # Make sure the videoStream object has a camera, or if the cameras changed, change it
             if not vStream.connected() or not vStream.cameraID == self.settings["cameraID"]:
+                print("Thingy")
                 success = vStream.setNewCamera(self.settings["cameraID"])
             # if not vStream.cameraID == self.settings["cameraID"]"
 

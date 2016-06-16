@@ -53,7 +53,7 @@ class App:
         self.rect_sel = common.RectSelector('plane', self.on_rect)
 
     def on_rect(self, rect):
-        self.tracker.addTarget(self.frame, rect)
+        self.tracker.addTargetSample(self.frame, rect)
 
     def run(self):
         while True:

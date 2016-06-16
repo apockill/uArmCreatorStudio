@@ -17,7 +17,7 @@ def getConnectedRobots():
 
 class Robot:
 
-    def __init__(self, comPort):
+    def __init__(self):
         self.uArm = None
 
         self.pos =     {'x': 0.0, 'y': -15.0, 'z': 15.0}

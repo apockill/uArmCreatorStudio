@@ -126,8 +126,9 @@ class CameraSelector(CameraWidget):
 
         # Add these to the superclass layout
         row1 = QtWidgets.QHBoxLayout()
-        row1.addWidget(self.declinePicBtn)
         row1.addStretch(1)
+        row1.addWidget(self.declinePicBtn)
+
 
         self.mainVLayout.addLayout(row1)
         self.layout().setContentsMargins(0,0,0,0)

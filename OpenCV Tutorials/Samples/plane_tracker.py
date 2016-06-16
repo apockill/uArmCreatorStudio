@@ -48,9 +48,9 @@ FLANN_INDEX_LSH    = 6
 MIN_MATCH_COUNT    = 10
 
 flann_params       = dict(algorithm         = FLANN_INDEX_LSH,
-                              table_number      =               6,  # 12
-                              key_size          =              12,  # 20
-                              multi_probe_level =               1)  #  2
+                          table_number      =               6,  # 12
+                          key_size          =              12,  # 20
+                          multi_probe_level =               1)  #  2
 
 
 '''
@@ -74,13 +74,13 @@ TrackedTarget = namedtuple('TrackedTarget', 'target, p0, p1, H, quad')
 class PlaneTracker:
     def __init__(self):
         self.detector = cv2.ORB_create(nfeatures = 1000)
-        self.matcher = cv2.FlannBasedMatcher(flann_params, {})  # bug : need to pass empty dict (#1329)
+        self.matcher = cv2.FlannBasedMatcher(flann_params, {}) # Bug: Must pass empty array
         self.targets = []
         self.frame_points = []
 
     def add_target(self, image, rect, data=None):
         '''Add a new tracking target.'''
-
+        start = time.time()
         x0, y0, x1, y1 = rect
         raw_points, raw_descrs = self.detect_features(image)
 
@@ -92,23 +92,29 @@ class PlaneTracker:
             if x0 <= x <= x1 and y0 <= y <= y1:
                 points.append(kp)
                 descs.append(desc)
-        print("raw_points: ", len(points), "descrs", len(descs))
+
+        print(time.time()-start)
+        # print("raw_points: ", len(points), "descrs", len(descs))
+        # print(len([descs]))
         descs = np.uint8(descs)
         self.matcher.add([descs])
         target = PlanarTarget(image = image, rect=rect, keypoints = points, descrs=descs, data=data)
 
-        print("Number of targets: ", len(self.targets))
+
         self.targets.append(target)
 
     def clear(self):
-        '''Remove all targets'''
+        # Remove all targets
         self.targets = []
         self.matcher.clear()
 
     def track(self, frame):
-        # Returns a list of detected TrackedTarget objects
+        # Returns a list of detected TrackedTarge objects
 
+        # WORST CASE SPEED just over .011, with LOTS of objects, lots of tracking, and in diff. situations.
         self.frame_points, frame_descrs = self.detect_features(frame)
+
+
 
         if len(self.frame_points) < MIN_MATCH_COUNT: return []
 
@@ -124,6 +130,7 @@ class PlaneTracker:
         tracked = []
 
 
+        # Worst case: This whole thing takes max 0.003 seconds, with lots of objects
         for imgIdx, matches in enumerate(matches_by_id):
             if len(matches) < MIN_MATCH_COUNT:
                 continue
@@ -146,7 +153,9 @@ class PlaneTracker:
             tracked.append(track)
 
 
+        # Takes 0.0? seconds. Not significant contributor
         tracked.sort(key = lambda t: len(t.p0), reverse=True)
+
 
         return tracked
 
@@ -174,8 +183,7 @@ class App:
         self.tracker.add_target(self.frame, rect)
 
     def run(self):
-        avg = 0
-        samples = 0
+
         while True:
             playing = not self.paused and not self.rect_sel.dragging
 
@@ -193,13 +201,6 @@ class App:
 
                 tracked = self.tracker.track(self.frame)
 
-                end = time.time()
-                avg += end-start
-                samples += 1
-                print(avg/samples)
-                if samples > 100:
-                    samples = 0
-                    avg = 0
 
 
                 for tr in tracked:

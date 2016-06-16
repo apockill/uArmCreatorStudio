@@ -41,7 +41,7 @@ class LetterStatModel(object):
     train_ratio = 0.5
 
     def load(self, fn):
-        self.model.load(fn)
+        self.model.__load(fn)
     def save(self, fn):
         self.model.save(fn)
 
@@ -170,7 +170,7 @@ if __name__ == '__main__':
     if '--load' in args:
         fn = args['--load']
         print('loading model from %s ...' % fn)
-        model.load(fn)
+        model.__load(fn)
     else:
         print('training %s ...' % Model.__name__)
         model.train(samples[:train_n], responses[:train_n])

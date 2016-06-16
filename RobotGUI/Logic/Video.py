@@ -63,7 +63,13 @@ class VideoStream:
         # Activate a trigger in the mainThread to turn on the camera
         # Connecting to camera is run inside the thread because it's a lengthy process (over 1 second)
         # This would lock up the GUI
-        self.setCamera = cameraID
+
+        # Make sure the mainThread is running, so that this trigger will work
+        if self.setCamera is None:
+            self.startThread()
+            self.setCamera = cameraID
+        else:
+            printf("VideoStream.setNewCamera(): ERROR: Tried to set camera while camera was already being set!")
 
     def setPaused(self, value):
         # Tells the main frunction to grab more frames
@@ -175,9 +181,6 @@ class VideoStream:
         printf("VideoStream.videoThread(): VideoStream Thread has ended")
 
     def __setNewCamera(self, cameraID):
-        self.setCamera = None
-
-
         # Set or change the current camera to a new one
         printf("VideoStream.setNewCamera(): Setting camera to cameraID ", cameraID)
 
@@ -196,6 +199,7 @@ class VideoStream:
             self.cap.release()
             self.dimensions = None
             self.cap        = None
+            self.setCamera  = None
             return False
 
 
@@ -208,12 +212,15 @@ class VideoStream:
             self.cap.release()
             self.dimensions = None
             self.cap        = None
+            self.setCamera  = None
             return False
 
-        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 10)
+        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 3)
+
 
         # Since everything worked, save the new cameraID
-        self.cameraID = cameraID
+        self.setCamera = None
+        self.cameraID  = cameraID
         return True
 
 
@@ -249,7 +256,7 @@ class VideoStream:
         # Add a filter to put on top of the self.filteredFrame each round
         with self.filterLock:
             if filterFunc in self.filterList:
-                printf("VideoStream.addFilter(): ERROR: Tried to add work function that already existed: ", filterFunc)
+                printf("VideoStream.addFilter(): Tried to add work function that already existed: ", filterFunc)
                 return
 
             self.filterList.append(filterFunc)
@@ -258,7 +265,7 @@ class VideoStream:
         # Add some function that has to be run each round. Processing is done after frame get, but before filtering.
         with self.workLock:
             if workFunc in self.workList:
-                printf("VideoStream.addWork(): ERROR: Tried to add work function that already existed: ", workFunc)
+                printf("VideoStream.addWork(): Tried to add work function that already existed: ", workFunc)
                 return
 
             self.workList.append(workFunc)
@@ -304,15 +311,16 @@ class Vision:
 
 
     # Tracker related functions
-    def getTarget(self, image, rect, name=None, pickupRect=None):
-        # Interfaces with the tracker, using workLocks for safety
-        with self.workLock:
-            target = self.tracker.getTarget(image, rect, name, pickupRect)
-        return target
+    # def getTargetSample(self, image, rect, name=None, pickupRect=None):
+    #     # Interfaces with the tracker, using workLocks for safety
+    #     with self.workLock:
+    #         target = self.tracker.getTarget(image, rect, name, pickupRect)
+    #     return target
 
-    def addTarget(self, planarTarget):
+    def addTargetSample(self, samples):
         with self.workLock:
-            self.tracker.addTarget(planarTarget)
+            for sample in samples:
+                self.tracker.addTarget(sample.name, sample.image, sample.rect)
 
     def clearTargets(self):
         with self.workLock:
@@ -334,9 +342,9 @@ class Vision:
     def endTrackerFilter(self):
         self.vStream.removeFilter(self.tracker.drawTracked)
 
-    def trackerAddStartTrack(self, planarTarget):
+    def trackerAddStartTrack(self, samples):
         # Convenience function that adds an object to the tracker, starts the tracker, and starts the filter
-        self.addTarget(planarTarget)
+        self.addTargetSample(samples)
         self.startTracker()
         self.addTrackerFilter()
 
@@ -346,6 +354,7 @@ class Vision:
         self.endTracker()
         self.endTrackerFilter()
         self.clearTargets()
+
 
     # Useful computer vision functions
     def getMotion(self):
@@ -508,6 +517,7 @@ class PlaneTracker:
         quad   - target bounary quad in input frame
     """
     PlanarTarget  = namedtuple(  'PlaneTarget',   'name, image, rect, pickupRect, keypoints, descrs')
+
     TrackedTarget = namedtuple('TrackedTarget', 'target,    p0,   p1,         H,   quad')
 
     # Tracker parameters
@@ -549,7 +559,9 @@ class PlaneTracker:
         # If it was possible to add the target
         return target
 
-    def addTarget(self, planarTarget):
+    def addTarget(self, name, image, rect):
+        planarTarget = self.getTarget(image, rect, name=name)
+
         descrs = planarTarget.descrs
         self.matcher.add([descrs])
         self.targets.append(planarTarget)
@@ -574,13 +586,15 @@ class PlaneTracker:
 
         matches = self.matcher.knnMatch(frame_descrs, k = 2)
         matches = [m[0] for m in matches if len(m) == 2 and m[0].distance < m[1].distance * 0.75]
+
         if len(matches) < self.MIN_MATCH_COUNT:
             self.tracked = []
             return
 
 
         matches_by_id = [[] for _ in range(len(self.targets))]
-        for m in matches: matches_by_id[m.imgIdx].append(m)
+        for m in matches:
+            matches_by_id[m.imgIdx].append(m)
 
 
         tracked = []
@@ -628,6 +642,8 @@ class PlaneTracker:
 
         return frame
 
+
+
 # def getMotionDirection(self):
     #     frameList = self.vStream.getFrameList()
     #
@@ -642,4 +658,16 @@ class PlaneTracker:
     #     cv2.imshow("window", copyframe)
     #     cv2.waitKey(1)
     #     return avg
+
+
+
+
+
+
+
+
+
+
+
+
 
