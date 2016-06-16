@@ -1,19 +1,9 @@
-import threading
+import cv2
 
-i = 0
-i_lock = threading.Lock()
 
-def test():
-    global i
-    i_lock.acquire()
-    for x in range(100000):
-        i += 1
+objImage = cv2.imread('test.png')
 
-threads = [threading.Thread(target=test) for t in range(10)]
-for t in threads:
-    t.start()
+cv2.imshow('test', objImage)
+cv2.waitKey(30)
 
-for t in threads:
-    t.join()
-
-assert i == 1000000
+cv2.imwrite('test2.png', objImage, data='hello')

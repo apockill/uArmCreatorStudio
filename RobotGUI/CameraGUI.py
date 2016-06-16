@@ -12,6 +12,8 @@ class CameraWidget(QtWidgets.QWidget):
                 a VideoStream object's getFrame function.
         :return:
         """
+
+
     def __init__(self, getFrameFunction, parent, fps=50):
         super(CameraWidget, self).__init__(parent)
 
@@ -19,7 +21,9 @@ class CameraWidget(QtWidgets.QWidget):
         self.getFrameFunction = getFrameFunction  # This function is given as a parameters, and returns a frame
         self.fps              = fps   # The maximum FPS the widget will update at
         self.paused           = True  # Keeps track of the video's state
-        self.timer            = None
+        self.timer            = QtCore.QTimer()
+
+        self.timer.timeout.connect(self.nextFrameSlot)
 
         # Reference to the last object frame. Used to make sure that a frame is new, before repainting
         self.lastFrameID      = None
@@ -33,35 +37,38 @@ class CameraWidget(QtWidgets.QWidget):
         self.setLayout(self.mainVLayout)
 
         # Get one frame and display it, and wait for play to be pressed
-        self.nextFrameSlot()
+        # self.nextFrameSlot()
 
 
     def play(self):
-        if self.paused and self.timer is None:
-            self.timer = QtCore.QTimer()
-            self.timer.timeout.connect(self.nextFrameSlot)
+        if self.paused:
             self.timer.start(1000. / self.fps)
 
         self.paused = False
 
     def pause(self):
-        if self.timer is not None:
-            print("CameraWidget.pause(): Stopping Timer!")
+        if not self.paused:
+            printf("CameraWidget.pause(): Stopping Timer!")
             self.timer.stop()
-        self.timer  = None
+
         self.paused = True
 
+
+    def setFrame(self, frame):
+        # When paused, you might want to have a custom frame showing. This is also useful for CameraSelector
+        # The nextFrameSlot also uses it to set frames.
+
+
+        # Convert a CV2 frame to a QPixMap and set the frameLbl to that
+        pixFrame               = cv2.cvtColor(frame.copy(), cv2.COLOR_BGR2RGB)
+        height, width, channel = pixFrame.shape
+        bytesPerLine           = 3 * width
+        img                    = QtGui.QImage(pixFrame, width, height, bytesPerLine, QtGui.QImage.Format_RGB888)
+        pix                    = QtGui.QPixmap.fromImage(img)
+
+        self.frameLbl.setPixmap(pix)
+
     def nextFrameSlot(self):
-        # print("g f:", id(self))
-        pixFrame = self.pullPixFrame()
-
-        # If no frame was returned
-        if pixFrame is None: return
-
-
-        self.frameLbl.setPixmap(pixFrame)
-
-    def pullPixFrame(self):
         frameID, frame = self.getFrameFunction()
 
         # If the frame is different than the one currently on the screen
@@ -69,16 +76,12 @@ class CameraWidget(QtWidgets.QWidget):
         self.lastFrameID = frameID
         if frame is None:               return None
 
-        pixFrame               = cv2.cvtColor(frame.copy(), cv2.COLOR_BGR2RGB)
-        height, width, channel = pixFrame.shape
-        bytesPerLine           = 3 * width
-        img                    = QtGui.QImage(pixFrame, width, height, bytesPerLine, QtGui.QImage.Format_RGB888)
-        pix                    = QtGui.QPixmap.fromImage(img)
+        self.setFrame(frame)
 
-        return pix
 
     def closeEvent(self, event):
         self.pause()
+
 
 
 class CameraSelector(CameraWidget):
@@ -88,12 +91,12 @@ class CameraSelector(CameraWidget):
     """
 
     # This signal emits only when the user selects an image, or restarts the process.
-    stateChanged = QtCore.pyqtSignal()
+    # stateChanged = QtCore.pyqtSignal()
+    objSelected  = QtCore.pyqtSignal()
 
-    def __init__(self, vision, getFrameFunction, parent):
+
+    def __init__(self, getFrameFunction, parent):
         super(CameraSelector, self).__init__(getFrameFunction, parent)
-
-        self.vision = vision
 
 
         # Set up the rubberBand specific variables (for rectangle drawing)
@@ -101,13 +104,9 @@ class CameraSelector(CameraWidget):
         self.origin        = QtCore.QPoint()
 
 
-        # Save the frame getting function. This is not for PixFrame, this is for a cv2 numpy formatted frame
-        #self.getFrame    = getFrameFunction
-
-
         # When the user has something selected, this is a frame. Otherwise, it is None
-        self.uncroppedImage = None  # When mouse is pressed, an image is immediately grabbed and put here
-        # self.croppedImage = None    # A numpy array, cv2 format, image of the cropped area the user selected.
+        self.selectedImage = None
+        self.selectedRect  = None  # The coordinates of the object inside of self.selectedImage. (x1,y1,x2,y2) format.
 
 
         # Used to "reset" the widget, in case the user was unhappy with the photo they took.
@@ -137,7 +136,7 @@ class CameraSelector(CameraWidget):
     # Selection related events
     def mousePressEvent(self, event):
         # If the user already has selected an image, leave.
-        if self.uncroppedImage is not None: return
+        if self.selectedImage is not None: return
 
 
         if event.button() == QtCore.Qt.LeftButton:
@@ -153,16 +152,12 @@ class CameraSelector(CameraWidget):
             if not 0 < pos[0] < width:  return
             if not 0 < pos[1] < height: return
 
-            # Pause the video to make it easier to select
-            self.pause()
-
 
             # Get a frame from OpenCV, so that it can be cropped when the user releases the mouse button
-            frameID, self.uncroppedImage = self.getFrameFunction()
+            frameID, self.selectedImage = self.getFrameFunction()
 
-            if self.uncroppedImage is None:
+            if self.selectedImage is None:
                 printf("CameraSelector.mouseReleaseEvent(): ERROR: getCVFrame() returned None Frame! ")
-                self.play()
                 return
 
 
@@ -195,71 +190,31 @@ class CameraSelector(CameraWidget):
 
 
             # Ensure that the selected area isn't incredibly small (aka, a quick click
-            if pt[3] - pt[1] < 5 or pt[2] - pt[0] < 5:
-                self.uncroppedImage = None
+            if pt[3] - pt[1] < 10 or pt[2] - pt[0] < 10:
+                self.selectedImage = None
+                self.selectedRect  = None
                 return
 
-
-            # Get the "target" object from the image and rectangle
-            target = self.vision.getTarget('testName', self.uncroppedImage, pt)
-
-            # Analyze it, and make sure it's a valid target
-            if len(target.descrs) == 0 or len(target.keypoints) == 0:
-                self.uncroppedImage = None
-                return
-
-
-            self.vision.addTarget(target)
-            self.vision.startTracker()
-            self.vision.addTrackerFilter()
-
-            self.play()
-
-            # # Crop the openCV frame, save it as self.selectedImage
-            # croppedFrame      = self.uncroppedImage[pt[1]:pt[3], pt[0]:pt[2]].copy()
-            # self.croppedImage = croppedFrame.copy()
-            #
-            #
-            # # Convert the cropped image to a PixMap, and set the widget to that picture.
-            # pixFrame               = cv2.cvtColor(croppedFrame, cv2.COLOR_BGR2RGB)
-            # height, width, channel = pixFrame.shape
-            # bytesPerLine           = 3 * width
-            # img                    = QtGui.QImage(pixFrame, width, height, bytesPerLine, QtGui.QImage.Format_RGB888)
-            # pix                    = QtGui.QPixmap.fromImage(img)
-
-
-            # self.frameLbl.setPixmap(pix)
-
-            # Turn on the "throw away picture" button, and emit a "frameSelected" signal
+            self.selectedRect = pt
             self.declinePicBtn.setDisabled(False)
+            self.objSelected.emit()
 
-            self.stateChanged.emit()
+
+    def getSelected(self):
+        # Returns the image and the rectangle of the selection from the image
+        return self.selectedImage, self.selectedRect
 
 
-    # def getSelectedFrame(self):
-    #     return self.croppedImage
-    def getSelectedObject(self):
-        return None
-
-    def takeAnother(self, event):
-        # Event triggered by the "Try Again" button.
-        self.stateChanged.emit()
-
+    def takeAnother(self, event=None):
         # Return the widget to "take a picture" mode, throw away the old selected frame.
-        self.vision.endTracker()
-        self.vision.endTrackerFilter()
-        self.vision.clearTargets()
-
-        self.uncroppedImage = None
+        self.selectedImage = None
+        self.selectedRect  = None
         self.declinePicBtn.setDisabled(True)
-
 
 
     def closeEvent(self, event):
         self.pause()
-        self.vision.endTracker()
-        self.vision.endTrackerFilter()
-        self.vision.clearTargets()
+
 
 
 

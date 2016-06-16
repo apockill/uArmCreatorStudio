@@ -99,6 +99,17 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         # addCmndFunc is a function passed from ControlPanel to be able to hook buttons to that function
         self.initUI()
 
+    def initUI(self):
+        movementTab = self.getMovementTab()
+        logicTab    = self.getLogicTab()
+
+        self.addTab(movementTab, "Basic")
+        self.addTab(   logicTab, "Logic")
+
+        self.setTabPosition(QtWidgets.QTabWidget.East)
+        self.setFixedWidth(85)
+
+
 
     def getMovementTab(self):
         tabWidget = QtWidgets.QWidget()
@@ -133,52 +144,12 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
 
         return tabWidget
 
-
-    def initUI(self):
-        movementTab = self.getMovementTab()
-        logicTab    = self.getLogicTab()
-
-        self.addTab(movementTab, "Basic")
-        self.addTab(   logicTab, "Logic")
-        # moveXYZBtn  = self.getButton(MoveXYZCommandGUI)
-        # detachBtn   = self.getButton(DetachCommandGUI)
-        # attachBtn   = self.getButton(AttachCommandGUI)
-        # waitBtn     = self.getButton(WaitCommandGUI)
-        # gripBtn     = self.getButton(GripCommandGUI)
-        # dropBtn     = self.getButton(DropCommandGUI)
-
-        # setVarBtn   = self.getButton(SetVariableCommandGUI)
-        # testVarBtn  = self.getButton(TestVariableCommandGUI)
-        # startBlkBtn = self.getButton(StartBlockCommandGUI)
-        # endBlkBtn   = self.getButton(EndBlockCommandGUI)
-
-        # colorBtn    = self.getButton(ColorTrackCommand)
-
-        mainVLayout = QtWidgets.QVBoxLayout()
-        # mainVLayout.addWidget(moveXYZBtn)
-        # grid = QtWidgets.QGridLayout()
-        # grid.addWidget( moveXYZBtn,  0, 0, QtCore.Qt.AlignTop)
-        # grid.addWidget(  detachBtn,  1, 0, QtCore.Qt.AlignTop)
-        # grid.addWidget(  attachBtn,  2, 0, QtCore.Qt.AlignTop)
-        # grid.addWidget(    waitBtn,  3, 0, QtCore.Qt.AlignTop)
-        # grid.addWidget(    gripBtn,  4, 0, QtCore.Qt.AlignTop)
-        # grid.addWidget(    dropBtn,  5, 0, QtCore.Qt.AlignTop)
-        # grid.addWidget(  setVarBtn,  7, 0, QtCore.Qt.AlignTop)
-        # grid.addWidget( testVarBtn,  8, 0, QtCore.Qt.AlignTop)
-        # grid.addWidget(startBlkBtn,  9, 0, QtCore.Qt.AlignTop)
-        # grid.addWidget(  endBlkBtn, 10, 0, QtCore.Qt.AlignTop)
-        # grid.addWidget( refreshBtn,  3, 0, QtCore.Qt.AlignTop)
-        # grid.addWidget(   colorBtn,  6, 0, QtCore.Qt.AlignTop)
-        self.setTabPosition(QtWidgets.QTabWidget.East)
-        self.setFixedWidth(85)
-        # self.setLayout(mainVLayout)
-
     def getButton(self, commandType):
         newButton = self.DraggableButton(str(commandType.__name__), self)
         newButton.setIcon(QtGui.QIcon(commandType.icon))
         newButton.setIconSize(QtCore.QSize(32, 32))
         newButton.setToolTip(commandType.tooltip)
-        # newButton.doubleClicked.connect(lambda: self.addCmndFunc(commandType))
+
         newButton.customContextMenuRequested.connect(lambda: self.addCommandFunc(commandType))
         return newButton
 
@@ -205,10 +176,12 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
                 # Mouse left-clicked and is now moving. Is this the start of a
                 # drag? Note time since the click and approximate distance moved
                 # since the click and test against the app's standard.
+
                 t = self.mouse_time.elapsed()
                 d = (event.pos() - self.mouse_posn).manhattanLength()
 
                 if t >= QtWidgets.QApplication.startDragTime() or d >= QtWidgets.QApplication.startDragDistance():
+
                     # Yes, a proper drag is indicated. Commence dragging.
                     self.dragEvent(QtCore.Qt.CopyAction | QtCore.Qt.MoveAction)
                     event.accept()

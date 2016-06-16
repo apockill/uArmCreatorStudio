@@ -21,7 +21,6 @@ class Environment:
         - vStream object
         - Vision object
         - Robot object
-        - Interpreter objects
 
     This will also be a platform for storing "Heavy" objects that will be used in the program. ie, image recognition
     files, anything that can't be stored in plaintext in the scriptfile that won't change during the program should
@@ -34,44 +33,70 @@ class Environment:
 
     All loading, adding replacing, and saving of objects should be done through this class.
     All objects will have a "getSaveData" implimented.
+
+    THE ENVIRONMENT DOES NOT HOLD THE INTERPRETER, BY DESIGN: Since an Interpreter can run an interpreter inside of it,
+    recursively, then the environment must not hold an interpreter. They are seperate.
     """
 
     def __init__(self, settings):
 
         # Set up environment objects
-        self.__vStream      = Video.VideoStream()  # Gets frames constantly
+        self.__vStream      = Video.VideoStream()           # Gets frames constantly
         self.__robot        = Robot(None)
         self.__settings     = settings
         self.__vision       = Video.Vision(self.__vStream)  # Performs computer vision tasks, using images from vStream
+        self.__objects      = []                            # A list of the loaded objects
 
         # This keeps track of objects that have been self.addObject()'d, so self.saveObjects() actually saves them.
         # self.changedObjects = []
 
 
     # Handling Vision Objects
-    def saveObjects(self, filename):
+    def saveObject(self, filename):
         # Any objects that have been "changed" will be saved. All other objects won't be touched.
         # This should lead to faster save times, since the user will probably save on a whim.
 
         # Checks if an interpreter is currently running before doing anything.
         pass
 
-    def loadObjects(self, filename):
+    def loadObject(self, filename):
         # Load all objects into the environment
 
         # Checks if an interpreter is currently running before doing anything.
         pass
 
-    def addObject(self, object):
-        # Adds an object to the pool.
-
-        # Checks if an interpreter is currently running before doing anything.
-
-        # Checks if the object already exists, if so, it will replace the old one, and put itself in self.changedObjects
-
-        pass
+    def addObject(self, newObject):
+        # Checks if the object already exists. If it does, then existing object with the new one.
+        for obj in self.__objects:
+            if newObject.name == obj.name:
+                printf("Environment.addObject(): ERROR: Tried adding an object that already existed")
+                return
 
 
+        # If the object doesn't already exist, adds the object to the pool of loaded objects.
+        self.__objects.append(newObject)
+
+        printf("Environment.addObject(): New Object Added!")
+
+    def getObject(self, objectID):
+        # Ask for an object by name, and get the object class
+        for obj in self.__objects:
+            if obj.name == objectID: return obj
+
+        return None
+
+    def getObjectIDList(self):
+        # Returns a list of object names. This is used in ObjectManager, or any situation when you need to know if a
+        # particular object is loaded.
+
+        nameList = []
+        for obj in self.__objects:
+            nameList.append(obj.name)
+
+        return nameList
+
+
+    # Getting System Objects
     def getRobot(self):
         return self.__robot
 
@@ -85,6 +110,7 @@ class Environment:
         return self.__settings
 
 
+    # Close system objects
     def close(self):
         # This will try to safely shut down any objects that are capable of running threads.
         self.__vStream.endThread()
@@ -152,12 +178,12 @@ class Interpreter:
 
     def endThread(self):
         # Close the thread that is currently running at the first chance it gets. Return True or False
-
         printf("Interpreter.endThread(): Closing program thread.")
 
         self.killApp = True
 
         if self.mainThread is not None:
+
             self.mainThread.join(3000)
 
             if self.mainThread.is_alive():

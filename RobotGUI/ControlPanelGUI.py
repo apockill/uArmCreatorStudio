@@ -190,7 +190,6 @@ class ControlPanel(QtWidgets.QWidget):
 
 
 
-
     def getSaveData(self):
         return self.eventList.getSaveData()
 
@@ -272,7 +271,7 @@ class EventList(QtWidgets.QListWidget):
             printf('EventList.promptUser():User rejected the prompt.')
 
 
-    def addEvent(self, eventType, **kwargs):
+    def addEvent(self, eventType, parameters=None, commandListSave=[]):
         '''
 
         :param eventType:
@@ -282,20 +281,21 @@ class EventList(QtWidgets.QListWidget):
         :return: Nothing
         '''
 
-        params = kwargs.get('parameters', None)
+        # If a file is loading, then optimize the process by changing it a bit.
+        isLoading = parameters is not None
+
 
         # Check if the event being added already exists in the self.events dictionary
+        if not isLoading:
+            for _, item in self.events.items():
+                if isinstance(item, eventType) and (item.parameters == parameters or parameters is None):
+                    printf('EventList.addEvent(): Event already exists, disregarding user input.')
+                    return
 
-        for _, item in self.events.items():
 
-            if isinstance(item, eventType) and (item.parameters == params or params is None):
-                printf('EventList.addEvent(): Event already exists, disregarding user input.')
-                return
-
-        newEvent        = eventType(params)
-        commandListSave = kwargs.get('commandListSave', [])
-        newCommandList = CommandList(self.env, parent=self)
-        newCommandList.loadData(commandListSave, self.env)
+        newEvent             = eventType(parameters)
+        newCommandList       = CommandList(self.env, parent=self)
+        newCommandList.loadData(commandListSave)
         newEvent.commandList =  newCommandList
 
         # newEvent.commandList = kwargs.get('commandListData', CommandList(self.__shared, parent=self))
@@ -314,8 +314,10 @@ class EventList(QtWidgets.QListWidget):
 
         self.events[eventWidget] = newEvent
 
-        self.setCurrentRow(self.count() - 1)  # Select the newly added event
-        self.refreshControlPanel()  # Call for a refresh of the ControlPanel so it shows the commandList
+        if not isLoading:
+            self.setCurrentRow(self.count() - 1)  # Select the newly added event
+            self.refreshControlPanel()  # Call for a refresh of the ControlPanel so it shows the commandList
+
 
     def deleteEvent(self):
         printf('EventList.deleteEvent(): Removing selected event')
@@ -411,13 +413,11 @@ class EventList(QtWidgets.QListWidget):
         self.clear()  # clear eventList
 
         # Fill event list with new data
-        for index, eventSave in enumerate(data):
-            # commandList = CommandList(parent=self)
-            # commandList.loadData(eventSave['commandList'], shared)
+        for eventSave in data:
 
             self.addEvent(getattr(EventsGUI, eventSave['typeGUI']),  # This converts the string 'EventClass' to an actual class
-                          commandListSave = eventSave['commandList'],
-                          parameters      = eventSave['parameters'])
+                          commandListSave =  eventSave['commandList'],
+                          parameters      =  eventSave['parameters'])
 
         # Select the first event for viewing
         if self.count() > 0: self.setCurrentRow(0)
@@ -494,34 +494,42 @@ class CommandList(QtWidgets.QListWidget):
         :return:
         '''
 
-        # If adding a pre-filled command (used when loading a save)
+        # If a file is loading, then set isLoading to True. This will optimize some steps.
+        isLoading = parameters is not None
 
-        if parameters is None:
-            newCommand = commandType(self.env)
-        else:
+
+        # If adding a pre-filled command (used when loading a save)
+        if isLoading:
             newCommand = commandType(self.env, parameters=parameters)
+        else:
+            newCommand = commandType(self.env)
+
 
         # Fill command with information either by opening window or loading it in
-        if parameters is None:  # If none, then this is being added by the user and not the system loading a file
+        if isLoading:
+            newCommand.parameters = parameters
+        else:
+            # If this is being added by the user, then prompt the user by opening the command window.
             accepted = newCommand.openWindow()  # Get information from user
             if not accepted:
                 printf('CommandList.addCommand(): User rejected prompt')
                 return
-        else:
-            newCommand.parameters = parameters
+
+
 
         # Create the widget to be placed inside the listWidgetItem
         newWidget = CommandsGUI.CommandWidget(self, self.deleteSelected)
         newWidget = newCommand.dressWidget(newWidget)     # Dress up the widget
+
 
         # Create the list widget item
         listWidgetItem = QtWidgets.QListWidgetItem(self)
         listWidgetItem.setSizeHint(newWidget.sizeHint())  # Widget will not appear without this line
 
 
-
         # Add list widget to commandList
         self.addItem(listWidgetItem)
+
 
         # If an index was specified, move the added widget to that index
         if index is not None:
@@ -534,14 +542,13 @@ class CommandList(QtWidgets.QListWidget):
             self.insertItem(index, takenlistWidgetItem)
 
 
-        self.setItemWidget(listWidgetItem, newWidget)
-
         # Add the new command to the list of commands, linking it with its corresponding listWidgetItem
+        self.setItemWidget(listWidgetItem, newWidget)
         self.commands[newWidget] = newCommand
 
         # Update the width of the commandList to the widest element within it
-        self.refresh()
-
+        if not isLoading:
+            self.refresh()
 
     # For deleting items
     def keyPressEvent(self, event):
@@ -616,14 +623,13 @@ class CommandList(QtWidgets.QListWidget):
 
         return commandList
 
-    def loadData(self, data, shared):
+    def loadData(self, data):
         # Clear all data on the current list
         self.commands = {}
         self.clear()
 
         # Fill the list with new data
-        for index, commandSave in enumerate(data):
-
+        for commandSave in data:
             self.addCommand(getattr(CommandsGUI, commandSave['typeGUI']),  # Convert from string to an actual event obj
                             parameters=commandSave['parameters'])
         self.refresh()

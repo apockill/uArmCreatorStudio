@@ -15,7 +15,7 @@ def printf(*args):
 
     buildString = buildString.lstrip()  #Strip whitespace from beginning of string
 
-    #Do string formatting
+    # Do string formatting
     if ':' in buildString:
         splitIndex = buildString.index(':')
 

@@ -1,7 +1,7 @@
+# import qdarkstyle
 import json
 import sys
 import webbrowser
-# import qdarkstyle
 from RobotGUI.CameraGUI         import CameraWidget
 from RobotGUI.ObjectManagerGUI  import ObjectManager
 from copy                       import deepcopy
@@ -29,9 +29,9 @@ class CalibrateWindow(QtWidgets.QDialog):
         self.env            = environment
         self.newSettings    = self.env.getSettings()
 
+
         # The label for the current known information for each calibration test. Label is changed in updateLabels()
         self.motionLbl = QtWidgets.QLabel("No information for this calibration")
-
         self.initUI()
 
         self.updateLabels()
@@ -89,7 +89,6 @@ class CalibrateWindow(QtWidgets.QDialog):
 
 
     def updateLabels(self):
-        print(self.newSettings)
         movCalib = self.newSettings["motionCalibrations"]
 
 
@@ -113,7 +112,7 @@ class CalibrateWindow(QtWidgets.QDialog):
             return
 
         # Check that there is a valid camera connected
-        if not vStream.cameraConnected():
+        if not vStream.connected():
             printf("CalibrateView.calibrateMotion(): No Camera Connected!")
             displayError("A camera must be connected to run this calibration.")
             return
@@ -343,7 +342,9 @@ class DashboardView(QtWidgets.QWidget):
 
         self.setLayout(mainVLayout)
 
-
+    def closeEvent(self, event):
+        self.cameraWidget.close()
+        self.controlPanel.close()
 
 
 ########## MAIN WINDOW ##########
@@ -352,8 +353,11 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__()
 
 
-        self.settings  = {"robotID": None, "cameraID": None, "lastOpenedFile": None,
-                          "motionCalibrations": {"stationaryMovement": None, "activeMovement": None}}
+        self.settings       = {"robotID": None, "cameraID": None, "lastOpenedFile": None,
+                            "motionCalibrations": {"stationaryMovement": None, "activeMovement": None}}
+
+        self.programTitle   = 'uArm Creator Studio'
+
 
         # Init self variables
         self.fileName    = None
@@ -362,39 +366,44 @@ class MainWindow(QtWidgets.QMainWindow):
         self.env         = Environment(self.settings)
         self.interpreter = Interpreter()
 
+
         # Set Global UI Variables
+
         self.centralWidget   = QtWidgets.QStackedWidget()
+
         self.controlPanel    = ControlPanelGUI.ControlPanel(self.env, self.settings, parent=self)
+
         self.dashboardView   = DashboardView(self.controlPanel,
                                              CameraWidget(self.env.getVStream().getFilteredWithID, parent=self),
                                              parent=self)
 
 
-        self.scriptToggleBtn = QtWidgets.QAction(QtGui.QIcon(Icons.run_script),
-                               'Run/Pause the command script (Ctrl+R)', self)
-        self.videoToggleBtn  = QtWidgets.QAction(QtGui.QIcon(Icons.play_video),
-                               'Play/Pause the video stream (Ctrl+P)', self)
+        self.scriptToggleBtn = QtWidgets.QAction(QtGui.QIcon(Icons.run_script),   'Run', self)
+        self.videoToggleBtn  = QtWidgets.QAction(QtGui.QIcon(Icons.play_video), 'Video', self)
 
 
 
         # Now that objects have been created, load the settings
+
         configExists = self.loadSettings()
-        self.setVideo("play")  # This has to be done before self.initUI() to avoid window opening up and seeming lag
+
+
+        # self.setVideo("play")  # This has to be done before self.initUI() to avoid window opening up and seeming lag
+        self.setVideo("play")
         self.initUI()
 
 
         # If any file is specified in "lastOpenedFile" then load it.
         if self.settings["lastOpenedFile"] is not None:
             self.loadTask(filename=self.settings["lastOpenedFile"])
-        else:
-            self.newTask()
+
 
         # If there is no settings File, then open the settings window first thing
         if not configExists:
-            self.openSettings()
+            self.openSettingsWindow()
 
-
-        # self.openObjectManager()  # For debugging
+        # For debugging
+        self.openObjectManagerWindow()
 
     def initUI(self):
         # Create "File" Menu
@@ -423,10 +432,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Create Toolbar
         toolbar = self.addToolBar("MainToolbar")
+        toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
 
-        settingsBtn  = QtWidgets.QAction( QtGui.QIcon(Icons.settings), 'Open Camera and Robot settings (Ctrl+T)', self)
-        calibrateBtn = QtWidgets.QAction(QtGui.QIcon(Icons.calibrate), 'Open Robot and Camera Calibration Center', self)
-        objMngrBtn   = QtWidgets.QAction(QtGui.QIcon(Icons.objectManager), 'Open Computer Vision Object Manager', self)
+        settingsBtn  = QtWidgets.QAction( QtGui.QIcon(Icons.settings), 'Settings', self)
+        calibrateBtn = QtWidgets.QAction(QtGui.QIcon(Icons.calibrate), 'Calibrate', self)
+        objMngrBtn   = QtWidgets.QAction(QtGui.QIcon(Icons.objectManager), 'Objects', self)
+
+        self.scriptToggleBtn.setToolTip('Run/Pause the command script (Ctrl+R)')
+        self.videoToggleBtn.setToolTip('Play/Pause the video stream (Ctrl+P)')
+        settingsBtn.setToolTip('Open Camera and Robot settings (Ctrl+T)',)
+        calibrateBtn.setToolTip('Open Robot and Camera Calibration Center')
+        objMngrBtn.setToolTip('Open Computer Vision Object Manager')
 
         self.scriptToggleBtn.setShortcut('Ctrl+R')
         self.videoToggleBtn.setShortcut( 'Ctrl+P')
@@ -436,9 +452,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.scriptToggleBtn.triggered.connect( lambda: self.setScript("toggle"))
         self.videoToggleBtn.triggered.connect(  lambda: self.setVideo("toggle"))
-        settingsBtn.triggered.connect( self.openSettings)
-        calibrateBtn.triggered.connect(self.openCalibrations)
-        objMngrBtn.triggered.connect(self.openObjectManager)
+        settingsBtn.triggered.connect(self.openSettingsWindow)
+        calibrateBtn.triggered.connect(self.openCalibrationsWindow)
+        objMngrBtn.triggered.connect(self.openObjectManagerWindow)
 
         toolbar.addAction(self.scriptToggleBtn)
         toolbar.addAction(self.videoToggleBtn)
@@ -451,7 +467,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         # Final touches
-        self.setWindowTitle('uArm Creator Dashboard')
+        self.setWindowTitle(self.programTitle)
         self.setWindowIcon(QtGui.QIcon(Icons.taskbar))
         self.show()
 
@@ -463,17 +479,22 @@ class MainWindow(QtWidgets.QMainWindow):
         isNew = lambda key: (key in newSettings) and (newSettings[key] is not None) and \
                             (not self.settings[key] == newSettings[key])
 
+        # If settings change, then save the changes to the config file
+        settingsChanged = False
+
+
         # If camera has been changed
         if isNew("cameraID"):
-            printf("MainWindow.closeSettingsView(): Changing cameraID from ",
+            settingsChanged = True
+            printf("MainWindow.setSettings(): Changing cameraID from ",
                   self.settings["cameraID"], "to", newSettings["cameraID"])
-
             self.settings["cameraID"] = newSettings["cameraID"]
 
 
         # If a new robot has been set, set it and reconnect to the new robot.
         if isNew("robotID"):
-            printf("MainWindow.closeSettingsView(): Changing robotID from ",
+            settingsChanged = True
+            printf("MainWindow.setSettings(): Changing robotID from ",
                   self.settings["robotID"], "to", newSettings["robotID"])
             self.settings["robotID"] = newSettings["robotID"]
             self.env.getRobot().setUArm(self.settings["robotID"])
@@ -481,19 +502,22 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # If a new file has been opened, change the Settings file to reflect that so next time GUI is opened, so is file
         if isNew("lastOpenedFile"):
+            settingsChanged = True
             printf("MainWindow.setSettings(): Loading file ", str(newSettings["lastOpenedFile"]))
             self.settings["lastOpenedFile"] = newSettings["lastOpenedFile"]
-            self.loadTask(filename=self.settings["lastOpenedFile"])
+            # self.loadTask(filename=self.settings["lastOpenedFile"])
 
 
         # If a calibration of type Motion has been changed, reflect this in the settings
         if isNew("motionCalibrations"):
+            settingsChanged = True
             print("Motioncalibrations asked!")
             self.settings["motionCalibrations"] = newSettings["motionCalibrations"]
 
 
         # Save settings to a config file
-        self.saveSettings()
+        if settingsChanged:
+            self.saveSettings()
 
     def setVideo(self, state):
         # Change the state of the videostream. The state can be play, pause, or simply "toggle
@@ -523,11 +547,13 @@ class MainWindow(QtWidgets.QMainWindow):
             self.dashboardView.cameraWidget.play()
             vStream.setPaused(False)
             self.videoToggleBtn.setIcon(QtGui.QIcon(Icons.pause_video))
+            self.videoToggleBtn.setText("Pause")
 
         if state == "pause":
             self.dashboardView.cameraWidget.pause()
             vStream.setPaused(True)
             self.videoToggleBtn.setIcon(QtGui.QIcon(Icons.play_video))
+            self.videoToggleBtn.setText("Play")
 
     def setScript(self, state):
         # Run/pause the main script
@@ -569,16 +595,20 @@ class MainWindow(QtWidgets.QMainWindow):
         self.controlPanel.setScriptMode(True, self.interpreter.getStatus)
         self.interpreter.startThread()
 
+
+        # Make sure the UI matches the state of the script
         self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.pause_script))
+        self.scriptToggleBtn.setText("Stop")
+
 
     def endScript(self):
         self.interpreter.endThread()
         self.controlPanel.setScriptMode(False, self.interpreter.getStatus)
 
         self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.run_script))
+        self.scriptToggleBtn.setText("Run")
 
-
-    def openSettings(self):
+    def openSettingsWindow(self):
         # This handles the opening and closing of the Settings window.
         printf("MainWindow.openSettings(): Opening Settings Window")
 
@@ -609,7 +639,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.setVideo("play")
 
-    def openCalibrations(self):
+    def openCalibrationsWindow(self):
         # This handles the opening and closing of the Calibrations window
         printf("MainWindow.openCalibrations(): Opening Calibrations Window")
 
@@ -627,7 +657,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.setVideo("play")
 
-    def openObjectManager(self):
+    def openObjectManagerWindow(self):
         # This handles the opening and closing of the ObjectManager window
         printf("MainWindow.openCalibrations(): Opening ObjectManager Window")
 
@@ -657,6 +687,7 @@ class MainWindow(QtWidgets.QMainWindow):
             filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save Task", "MyTask", "Task (*.task)")
             if filename == "": return  #If user hit cancel
             self.fileName = filename
+            self.setSettings({'lastOpenedFile': self.fileName})
 
 
         # Update the save file
@@ -668,11 +699,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
         printf("MainWindow.saveTask(): Project Saved")
 
-        self.setWindowTitle('uArm Creator Dashboard       ' + self.fileName)
-        self.saveSettings()
+        self.setWindowTitle(self.programTitle + '       ' + self.fileName)
+        # self.saveSettings()
 
     def loadTask(self,  **kwargs):
         # Load a save file
+
         self.endScript()  # Make sure a script isn't running while you try to load something
 
         printf("MainWindow.loadTask(): Loading project")
@@ -683,28 +715,31 @@ class MainWindow(QtWidgets.QMainWindow):
         if filename is None:  #If no filename was specified, prompt the user for where to save
             filename, filetype = QtWidgets.QFileDialog.getOpenFileName(self, "Load Task", "", "*.task")
             if filename == "": return  #If user hit cancel
+            printf("MainWindow.save(): Project Loaded:")
 
         try:
             self.loadData = json.load( open(filename))
         except IOError:
             printf("MainWindow.loadTask(): ERROR: Task file ", filename, "not found!")
-            self.settings["lastOpenedFile"] = None
+            self.fileName = None
+            self.setSettings({"lastOpenedFile": None})
             return
 
-        printf("MainWindow.save(): Project Loaded:")
         self.fileName = filename
+        self.setSettings({"lastOpenedFile": filename})
+
+
 
 
         # Load the data- BUT MAKE SURE TO DEEPCOPY otherwise any change in the program will change in self.loadData
         self.dashboardView.controlPanel.loadData(deepcopy(self.loadData))
-        self.setWindowTitle('uArm Creator Dashboard      ' + self.fileName)
+        self.setWindowTitle(self.programTitle + '      ' + self.fileName)
 
-        self.saveSettings()
+
 
 
     def saveSettings(self):
         printf("MainWindow.saveSettings(): Saving Settings")
-        self.settings["lastOpenedFile"] = self.fileName
         json.dump(self.settings, open("Settings.txt", 'w'), sort_keys=False, indent=3, separators=(',', ': '))
 
     def loadSettings(self):
@@ -725,7 +760,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def promptSave(self):
         # Prompts the user if they want to save, but only if they've changed something in the program
 
-        if self.loadData is not None and not self.loadData == self.controlPanel.getSaveData():
+        if not self.loadData == self.controlPanel.getSaveData():
             printf("MainWindow.promptSave(): Prompting user to save changes")
             reply = QtWidgets.QMessageBox.question(self, 'Warning',
                                        "You have unsaved changes. Would you like to save before continuing?",
@@ -736,16 +771,24 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def closeEvent(self, event):
         # When window is closed, prompt for save, close the video stream, and close the control panel (thus script)
-        while self.layout().count():
-            child = self.layout().takeAt(0)
-            print(child)
-            # child.widget().deleteLater()
 
-        self.setVideo("pause")
-        self.interpreter.endThread()
+
+        # Ask the user they want to save before closing anything
         self.promptSave()
+
+
+        # Close and delete GUI objects, to stop their events from running
+        self.dashboardView.close()
+        self.dashboardView.deleteLater()
+        self.centralWidget.close()
+        self.centralWidget.deleteLater()
+
+
+        # Close threads
+        self.interpreter.endThread()
         self.env.close()
 
+        printf("MainWindow.close(): Done closing all objects and threads.")
 
 
 class Application(QtWidgets.QApplication):
@@ -759,6 +802,7 @@ class Application(QtWidgets.QApplication):
         super(Application, self).__init__(args)
 
     def notify(self, receiver, event):
+        # print(receiver, '\t', event)
         # Add any keys that are pressed to keysPressed
         if event.type() == QtCore.QEvent.KeyPress:
             if event.key() not in Global.keysPressed:

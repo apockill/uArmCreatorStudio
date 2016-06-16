@@ -1,10 +1,9 @@
 import cv2
 import numpy as np
 from threading             import Thread, RLock
-from PyQt5.QtGui           import QImage, QPixmap  # Used once in VideoStream class to preprocess GUI stuff in thread
 from RobotGUI.Logic.Global import printf, FpsTimer
 from collections           import namedtuple
-import time
+
 
 def getConnectedCameras():
     tries = 10
@@ -18,6 +17,7 @@ def getConnectedCameras():
             testCap.release()
 
     return cameraList
+
 
 
 class VideoStream:
@@ -39,6 +39,7 @@ class VideoStream:
         self.workLock    = RLock()  # Lock for any "Work" functions, added under self.addWork()
 
         self.running     = False
+        self.setCamera   = None     # When this is a number and videoThread is on, it will attempt to setNewCamera(new)
         self.paused      = True
 
         self.cameraID    = None
@@ -58,12 +59,17 @@ class VideoStream:
         self.mainThread  = None
 
 
+    def setNewCamera(self, cameraID):
+        # Activate a trigger in the mainThread to turn on the camera
+        # Connecting to camera is run inside the thread because it's a lengthy process (over 1 second)
+        # This would lock up the GUI
+        self.setCamera = cameraID
+
     def setPaused(self, value):
         # Tells the main frunction to grab more frames
-
         if value is False:  # If you want to play video, make sure everything set for that to occur
-            if not self.connected:
-                self.setNewCamera(self.cameraID)
+            # if not self.connected():
+            #     self.setNewCamera(self.cameraID)
 
             if self.mainThread is None:
                 self.startThread()
@@ -76,51 +82,32 @@ class VideoStream:
         if not self.cap.isOpened(): return False
         return True
 
-    def setNewCamera(self, cameraID):
-        # Set or change the current camera to a new one
-        printf("VideoStream.setNewCamera(): Setting camera to cameraID ", cameraID)
-
-        # When the function is over it will set the camera to its previous state (playing or paused)
-        previousState = self.paused
-
-        # Make sure cap won't be called in the main thread while releasing the cap
-        self.setPaused(True)
-
-        # Gracefully close the current capture if it exists
-        if self.cap is not None: self.cap.release()
-
-        # Set the new cameraID and open the capture
-        self.cameraID = cameraID
-        self.cap = cv2.VideoCapture(self.cameraID)
-
-        if not self.cap.isOpened():
-            printf("VideoStream.setNewCamera(): ERROR: Camera not opened. cam ID: ", cameraID)
-            self.cap.release()
-            self.dimensions = None
-            self.cap        = None
-            return False
-
-        # Try getting a frame and setting self.dimensions. If it does not work, return false
-        ret, frame = self.cap.read()
-        if ret:
-            self.dimensions = [frame.shape[1], frame.shape[0]]
-        else:
-            printf("VideoStream.setNewCamera(): ERROR ERROR: Camera could not read frame. cam ID: ", cameraID)
-            self.cap.release()
-            self.dimensions = None
-            self.cap        = None
-            return False
-
-        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 10)
-        self.setPaused(previousState)  # Return to whatever state the camera was in before switching
-        return True
-
     def setFPS(self, fps):
         # Sets how often the main function grabs frames (Default: 24)
         self.fps = fps
 
 
-    def videoThread(self):
+    def startThread(self):
+        if self.mainThread is None:
+            self.running = True
+            self.mainThread = Thread(target=self.__videoThread)
+            self.mainThread.start()
+        else:
+            printf("VideoStream.startThread(): ERROR: Tried to create mainThread, but mainThread already existed.")
+
+    def endThread(self):
+        self.running = False
+
+        if self.mainThread is not None:
+            printf("VideoStream.endThread(): Ending main thread")
+            self.mainThread.join(500)
+            self.mainThread = None
+
+        if self.cap is not None:
+            printf("VideoStream.endThread(): Thread ended. Now gracefully closing Cap")
+            self.cap.release()
+
+    def __videoThread(self):
         """"
             A main thread that focuses soley on grabbing frames from a camera, limited only by self.fps
             Thread is created at startThread, which can be called by setPaused
@@ -133,9 +120,10 @@ class VideoStream:
         printf("VideoStream.videoThread(): Starting videoStream thread.")
         while self.running:
             fpsTimer.wait()
-            if not fpsTimer.ready(): continue
-            if self.paused:          continue
-            if self.cap is None:     continue
+            if not fpsTimer.ready():       continue
+            if self.setCamera is not None: self.__setNewCamera(self.setCamera)
+            if self.paused:                continue
+            if self.cap is None:           continue
 
 
             # Get a new frame
@@ -143,7 +131,7 @@ class VideoStream:
 
             if not ret:  # If a frame was not successfully returned
                 printf("VideoStream.videoThread(): ERROR while reading frame from Camera: ", self.cameraID)
-                self.setNewCamera(self.cameraID)
+                self.__setNewCamera(self.cameraID)
                 cv2.waitKey(1000)
                 continue
 
@@ -165,42 +153,68 @@ class VideoStream:
 
 
             # Run any work functions that must be run. Expect no results. Work should be run before filters.
-            with self.workLock:
-                # print("Doing: ", self.workList)
-                for workFunc in self.workList:
-                    workFunc(self.frame)
+            if len(self.workList) > 0:
+                with self.workLock:
+                    for workFunc in self.workList:
+                        workFunc(self.frame)
 
 
 
             # Run any filters that must be run, save the results in self.filterFrame
-            with self.filterLock:
-                # print("FLring: ", self.filterList)
-                filterFrame = self.getFrame()
-                for filterFunc in self.filterList:
-                    filterFrame = filterFunc(filterFrame)
-                self.filterFrame = filterFrame
+            if len(self.filterList) > 0:
+                with self.filterLock:
+                    filterFrame = self.getFrame()
+                    for filterFunc in self.filterList:
+                        filterFrame = filterFunc(filterFrame)
+                    self.filterFrame = filterFrame
+            else:
+                self.filterFrame = self.frame
 
 
 
+        printf("VideoStream.videoThread(): VideoStream Thread has ended")
 
-        printf("VideoStream.videoThread(): Ending videoStream thread")
+    def __setNewCamera(self, cameraID):
+        self.setCamera = None
 
-    def startThread(self):
-        if self.mainThread is None:
-            self.running = True
-            self.mainThread = Thread(target=self.videoThread)
-            self.mainThread.start()
-        else:
-            printf("VideoStream.startThread(): ERROR: Tried to create mainThread, but mainThread already existed.")
 
-    def endThread(self):
-        self.running = False
+        # Set or change the current camera to a new one
+        printf("VideoStream.setNewCamera(): Setting camera to cameraID ", cameraID)
 
-        if self.mainThread is not None:
-            self.mainThread.join(500)
-            self.mainThread = None
-        if self.cap is not None:
+
+        # Gracefully close the current capture if it exists
+        if self.cap is not None: self.cap.release()
+
+
+        # Set the new cameraID and open the capture
+        self.cap = cv2.VideoCapture(cameraID)
+
+
+        # Check if the cap was opened correctly
+        if not self.cap.isOpened():
+            printf("VideoStream.setNewCamera(): ERROR: Camera not opened. cam ID: ", cameraID)
             self.cap.release()
+            self.dimensions = None
+            self.cap        = None
+            return False
+
+
+        # Try getting a frame and setting self.dimensions. If it does not work, return false
+        ret, frame = self.cap.read()
+        if ret:
+            self.dimensions = [frame.shape[1], frame.shape[0]]
+        else:
+            printf("VideoStream.setNewCamera(): ERROR ERROR: Camera could not read frame. cam ID: ", cameraID)
+            self.cap.release()
+            self.dimensions = None
+            self.cap        = None
+            return False
+
+        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 10)
+
+        # Since everything worked, save the new cameraID
+        self.cameraID = cameraID
+        return True
 
 
     # Called from outside thread
@@ -214,12 +228,11 @@ class VideoStream:
 
     def getFilteredWithID(self):
         # with self.frameLock:
-        if self.frame is not None:
+        if self.filterFrame is not None:
             # Frames are copied because they are generally modified.
             return self.frameCount, self.filterFrame.copy()
         else:
             return None, None
-
 
     def getFrameList(self):
         """
@@ -236,7 +249,7 @@ class VideoStream:
         # Add a filter to put on top of the self.filteredFrame each round
         with self.filterLock:
             if filterFunc in self.filterList:
-                print("VideoStream.addFilter(): ERROR: Tried to add work function that already existed: ", filterFunc)
+                printf("VideoStream.addFilter(): ERROR: Tried to add work function that already existed: ", filterFunc)
                 return
 
             self.filterList.append(filterFunc)
@@ -245,7 +258,7 @@ class VideoStream:
         # Add some function that has to be run each round. Processing is done after frame get, but before filtering.
         with self.workLock:
             if workFunc in self.workList:
-                print("VideoStream.addWork(): ERROR: Tried to add work function that already existed: ", workFunc)
+                printf("VideoStream.addWork(): ERROR: Tried to add work function that already existed: ", workFunc)
                 return
 
             self.workList.append(workFunc)
@@ -256,7 +269,7 @@ class VideoStream:
         with self.workLock:
             # Make sure the function is actually in the workList
             if workFunc not in self.workList:
-                print("VideoStream.addWork(): ERROR: Tried to remove a work function that didn't exist: ", workFunc)
+                printf("VideoStream.addWork(): ERROR: Tried to remove a work function that didn't exist: ", workFunc)
                 return
 
             self.workList.remove(workFunc)
@@ -265,7 +278,7 @@ class VideoStream:
         with self.filterLock:
             # Make sure the function is actually in the workList
             if filterFunc not in self.filterList:
-                print("VideoStream.addFilter(): ERROR: Tried to remove a nonexistent filter: ", filterFunc)
+                printf("VideoStream.addFilter(): ERROR: Tried to remove a nonexistent filter: ", filterFunc)
                 return
 
             self.filterList.remove(filterFunc)
@@ -291,10 +304,10 @@ class Vision:
 
 
     # Tracker related functions
-    def getTarget(self, name, image, rect):
+    def getTarget(self, image, rect, name=None, pickupRect=None):
         # Interfaces with the tracker, using workLocks for safety
         with self.workLock:
-            target = self.tracker.getTarget(name, image, rect)
+            target = self.tracker.getTarget(image, rect, name, pickupRect)
         return target
 
     def addTarget(self, planarTarget):
@@ -321,7 +334,18 @@ class Vision:
     def endTrackerFilter(self):
         self.vStream.removeFilter(self.tracker.drawTracked)
 
+    def trackerAddStartTrack(self, planarTarget):
+        # Convenience function that adds an object to the tracker, starts the tracker, and starts the filter
+        self.addTarget(planarTarget)
+        self.startTracker()
+        self.addTrackerFilter()
 
+    def trackerEndStopClear(self):
+        # Convenience function to clear the tracked objects, stop tracking, and stop the tracking filter
+
+        self.endTracker()
+        self.endTrackerFilter()
+        self.clearTargets()
 
     # Useful computer vision functions
     def getMotion(self):
@@ -444,6 +468,28 @@ class Vision:
         else:
             return h, s, v
 
+    def crop(self, image, rect):
+        # Just pass an image, and a tuple/list of (x1,y1, x2,y2)
+        return image[rect[1]:rect[3], rect[0]:rect[2]]
+
+    def resizeToMax(self, image, maxWidth, maxHeight):
+        # Makes sure an image is within the bounds of maxHeight and maxWidth, and resizes to make sure
+
+        height, width, _ = image.shape
+
+        if height > maxHeight:
+            image = cv2.resize(image, (int(float(maxHeight)/height*width), maxHeight))
+
+        height, width, _ = image.shape
+
+        if width > maxWidth:
+            image = cv2.resize(image, (maxWidth, int(float(maxWidth)/width*height)))
+
+        height, width, _ = image.shape
+
+        return image
+
+
 
 class PlaneTracker:
     """
@@ -461,7 +507,7 @@ class PlaneTracker:
         H      - homography matrix from p0 to p1
         quad   - target bounary quad in input frame
     """
-    PlanarTarget  = namedtuple(  'PlaneTarget',   'name, image, rect, keypoints, descrs')
+    PlanarTarget  = namedtuple(  'PlaneTarget',   'name, image, rect, pickupRect, keypoints, descrs')
     TrackedTarget = namedtuple('TrackedTarget', 'target,    p0,   p1,         H,   quad')
 
     # Tracker parameters
@@ -475,8 +521,6 @@ class PlaneTracker:
 
 
     def __init__(self):
-
-
         self.detector     = cv2.ORB_create(nfeatures = 1000)
         self.matcher      = cv2.FlannBasedMatcher(self.flanParams, {})  # bug : need to pass empty dict (#1329)
         self.targets      = []
@@ -484,7 +528,7 @@ class PlaneTracker:
 
         self.tracked      = []
 
-    def getTarget(self, name, image, rect):
+    def getTarget(self, image, rect, name=None, pickupRect=None):
         # Get the PlanarTarget object for any name, image, and rect. These can be added in self.addTarget()
         x0, y0, x1, y1         = rect
         points, descs          = [], []
@@ -499,7 +543,8 @@ class PlaneTracker:
 
 
         descs  = np.uint8(descs)
-        target = self.PlanarTarget(name=name, image = image, rect=rect, keypoints = points, descrs=descs)
+        target = self.PlanarTarget(name=name, image = image, rect=rect, pickupRect=pickupRect,
+                                   keypoints = points, descrs=descs)
 
         # If it was possible to add the target
         return target
@@ -519,12 +564,19 @@ class PlaneTracker:
         # updates self.tracked with a list of detected TrackedTarget objects
 
         self.framePoints, frame_descrs = self.detectFeatures(frame)
-        if len(self.framePoints) < self.MIN_MATCH_COUNT: self.tracked = []
+
+
+        # If no keypoints were detected, then don't update the self.tracked array
+        if len(self.framePoints) < self.MIN_MATCH_COUNT:
+            self.tracked = []
+            return
 
 
         matches = self.matcher.knnMatch(frame_descrs, k = 2)
         matches = [m[0] for m in matches if len(m) == 2 and m[0].distance < m[1].distance * 0.75]
-        if len(matches) < self.MIN_MATCH_COUNT:          self.tracked = []
+        if len(matches) < self.MIN_MATCH_COUNT:
+            self.tracked = []
+            return
 
 
         matches_by_id = [[] for _ in range(len(self.targets))]

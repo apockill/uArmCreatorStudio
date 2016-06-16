@@ -1,9 +1,9 @@
 {
-   "lastOpenedFile": "F:/Google Drive/Projects/Git Repositories/RobotGUIProgramming/RobotGUI/Saves/Test_Everything_DNT.task",
-   "robotID": null,
    "cameraID": 1,
+   "lastOpenedFile": "F:/Google Drive/Projects/Git Repositories/RobotGUIProgramming/RobotGUI/Saves/Test_Everything_DNT.task",
+   "robotID": "COM6",
    "motionCalibrations": {
-      "activeMovement": 11.3,
-      "stationaryMovement": 6.6
+      "stationaryMovement": null,
+      "activeMovement": null
    }
 }
