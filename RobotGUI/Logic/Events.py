@@ -1,6 +1,27 @@
 from RobotGUI.Logic        import Global
 from RobotGUI.Logic.Global import printf
 
+
+"""
+Example Event
+
+class NameEvent(Event):
+
+    def __init__(self, env, interpreter, parameters):
+        super(NameEvent, self).__init__(parameters)
+
+        # Get what is needed from the environment by requesting it through self.getVerifyXXXX(env)
+        self.vision = self.getVerifyVision(env)
+        self.calib  = env.getSettings()["motionCalibrations"]
+
+
+    def isActive(self):
+        # Make sure the event won't crash if there were errors
+
+        if len(self.errors): return False  # If it did not compile without errors, don't run
+
+"""
+
 class Event:
     def __init__(self, parameters):
         self.parameters  = parameters
@@ -9,6 +30,10 @@ class Event:
 
     def addCommand(self, command):
         self.commandList.append(command)
+
+    def isActive(self):
+        pass
+
 
     def getVerifyVision(self, env):
         vStream = env.getVStream()
@@ -21,10 +46,29 @@ class Event:
         robot = env.getRobot()
         if not robot.connected():
             self.errors.append("Robot")
+
         return env.getRobot()
 
-    def isActive(self):
-        pass
+    def getVerifyMotionCalibrations(self, env):
+        calib  = env.getSettings()["motionCalibrations"]
+
+
+        # DO ERROR CHECKING
+        # If the appropriate motionCalibrations do not exist, add it to the "compile" errors, and set self.calib to None
+        if calib["activeMovement"] is None or self.calib["stationaryMovement"] is None:
+            self.errors.append("Motion Calibrations not found in settings")
+
+        return calib
+
+    def getVerifyObject(self, env, objectID):
+        objectManager = env.getObjectManager()
+        requestedObj  = objectManager.getObject(objectID)
+
+        if requestedObj is None:
+            self.errors.append("Object not found: " + str(objectID))
+        return requestedObj
+
+
 
 
 class InitEvent(Event):
@@ -92,18 +136,14 @@ class MotionEvent(Event):
         self.calib  = env.getSettings()["motionCalibrations"]
 
 
-        # DO ERROR CHECKING
-        # If the appropriate motionCalibrations do not exist, add it to the "compile" errors, and set self.calib to None
+        # If the necessary calibrations don't exist, leave now. The isActive has a check to not run.
         if self.calib["activeMovement"] is None or self.calib["stationaryMovement"] is None:
-            self.errors.append("Motion Calibrations not found in settings")
-            self.stationary = 5
-            self.active     = 10
-        else:
-            self.stationary = self.calib["stationaryMovement"]
-            self.active     = self.calib["activeMovement"]
+            return
 
 
-        # PREPARE CONSTANTS
+        self.stationary = self.calib["stationaryMovement"]
+        self.active     = self.calib["activeMovement"]
+
         # Scale the movement thresholds and set a low, medium, and high threshold
         diff      = (self.active - self.stationary)
         self.low  = self.stationary + diff
@@ -132,6 +172,32 @@ class MotionEvent(Event):
             active = active and currentMotion < self.high
 
         return active  #self.parameters["lowThreshold"] < motion < self.parameters["upperThreshold"]
+
+
+class RecognizeEvent(Event):
+
+    def __init__(self, env, interpreter, parameters):
+        super(RecognizeEvent, self).__init__(parameters)
+
+        # Get what is needed from the environment by requesting it through self.getVerifyXXXX(env)
+        self.vision     = self.getVerifyVision(env)
+        self.object     = self.getVerifyObject(env, self.parameters["objectID"])
+
+
+        # Make sure initialization can continue
+        if len(self.errors): return
+
+        # Turn on tracking and add the target. DO NOT TURN ON FILTERS, that's only for GUI to do, which it will.
+        self.vision.addTargetSamples(self.object.getSamples())
+        self.vision.startTracker()
+
+    def isActive(self):
+        # Make sure the event won't crash if there were errors
+        if len(self.errors): return False  # If it did not compile without errors, don't run
+
+        recognized = self.vision.isRecognized(self.parameters["objectID"])
+
+        return recognized
 
 
 class TipEvent(Event):

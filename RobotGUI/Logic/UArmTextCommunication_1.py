@@ -8,13 +8,17 @@ from RobotGUI.Logic.Global import printf
 class Uarm:
 
     def __init__(self, port):
-        self.successConnect = False
-        self.serial = None
+        self.isConnected = False
+        self.serial    = None
         self.__connectToRobot(port)
 
+        # For debug logs
+        self.responseLog = []  # An array of tuples, of what was sent and what was recieved [(sent, recieved), ..(s, r)]
+
     def connected(self):
-        if self.serial is None:     return False
-        if not self.__handshake():  return False
+        # if self.serial is None:     return False
+        if self.isConnected is False: return False
+        # if not self.__handshake():  return False
         return True
 
 
@@ -34,12 +38,10 @@ class Uarm:
         response = self.__send(cmnd)
 
     def pumpOn(self):
-        printf("Uarm.pumpOn(): Activating uArm Pump")
         cmnd = "pumpV1"
         response = self.__send(cmnd)
 
     def pumpOff(self):
-        printf("Uarm.pumpOn(): Deactivating uArm Pump")
         cmnd = "pumpV0"
         response = self.__send(cmnd)
 
@@ -53,11 +55,15 @@ class Uarm:
         cmnd = "detachS" + servo_number
         response = self.__send(cmnd)
 
+    def setBuzzer(self, frequency, duration):
+        cmnd = "buzzF" + str(frequency) + "T" + str(duration)
+        response = self.__send(cmnd)
 
     # Get commands
     def getCurrentCoord(self):
         # printf("Uarm.currentCoord(): Getting current coordinates of robot")
         response  = self.__send("gcoords")
+
         parsedArgs = self.__parseArgs(response, "coords", ["x", "y", "z"])
         return parsedArgs
 
@@ -89,52 +95,85 @@ class Uarm:
                                         stopbits = serial.STOPBITS_ONE,
                                         bytesize = serial.EIGHTBITS,
                                         timeout  = .1)
-            self.successConnect = True
+            self.isConnected = True
         except serial.SerialException as e:
             printf("Uarm.connectToRobot(): Could not connect to robot on port ", port)
             self.serial = None
-            self.successConnect = False
+            self.isConnected = False
         sleep(3)
 
-    def __handshake(self):
-        return True
 
     def __send(self, cmnd):
+        # This command will send a command and recieve the robots response. There must always be a response!
         if not self.connected(): return None
+
+
+        # Prepare and send the command to the robot
         cmndString = bytes("[" + cmnd + "]>", encoding='ascii')
+        try:
+            self.serial.write(cmndString)
+        except serial.serialutil.SerialException as e:
+            printf("UArm.__send(): ERROR ", e, "while sending command ", cmnd, ". Disconnecting Serial!")
+            self.isConnected = False
+            return False
 
-        self.serial.write(cmndString)
 
-        response = self.__read()
-        return response
-
-    def __read(self):
-        message = ""
+        # Read the response from the robot (THERE MUST ALWAYS BE A RESPONSE!)
+        response = ""
         while True:
-            message += str(self.serial.read(), 'ascii')
-            if "\n" in message:
-                message = message[:-1]
+
+            try:
+                response += str(self.serial.read(), 'ascii')
+            except serial.serialutil.SerialException as e:
+                printf("UArm.__send(): ERROR ", e, "while sending command ", cmnd, ". Disconnecting Serial!")
+                self.isConnected = False
+                return False
+
+            if "\n" in response:
+                response = response[:-1]
                 break
 
-        if "ERROR" in message:
-            printf("Uarm.read(): ERROR: Recieved error from robot: ", message)
+        # Save the response to a log variable, in case it's needed for debugging
+        self.responseLog.append((cmnd, response))
 
-        if not (message.count('[') == 1 and message.count(']') == 1):
-            print("Uarm.read(): ERROR: The message did not come with propper formatting!")
+        # Make sure the respone has the valid start and end characters
+        if not (response.count('[') == 1 and response.count(']') == 1):
+            printf("Uarm.read(): ERROR: The message did not come with propper formatting!")
 
-        message = message.replace("[", "")
-        message = message.replace("]", "")
-        return message.lower()
+
+        # Clean up the response
+        response = response.replace("[", "")
+        response = response.replace("]", "")
+        response = response.lower()
+
+
+        # If the robot returned an error, print that out
+        if "ERROR" in response:
+            printf("Uarm.read(): ERROR: Recieved error from robot: ", response)
+
+
+        return response
+
 
     def __parseArgs(self, message, command, arguments):
         responseDict = {n: 0 for n in arguments}  #Fill the dictionary with zero's
 
-        if command not in message:
-            printf("Uarm.read(): ERROR: The message did not come with the appropriate command!")
+
+        # Do error checking, in case communication didn't work
+        if message is False:
+            printf("Uarm.__parseArgs(): Since an error occured in communication, returning 0's for all arguments!")
             return responseDict
 
+        if command not in message:
+            printf("Uarm.__parseArgs(): ERROR: The message did not come with the appropriate command!")
+            return responseDict
+
+
+        # Get rid of the "command" part of the message, so it's just arguments and their numbers
         message = message.replace(command, "")
 
+
+        # Get the arguments and place them into the array
         for i, arg in enumerate(arguments):
             if i < len(arguments) - 1:
                 responseDict[arg] = message[message.find(arg) + 1: message.find(arguments[i + 1])]

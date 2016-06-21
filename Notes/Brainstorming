@@ -112,3 +112,15 @@ Command Ideas:
         Pick up object
         Move towards movement
         Focus on color
+
+--------------------------------------------------------------------------------------------------------------
+Generic Functions that will be needed
+
+Robot:
+
+Robot/Camera Interaction:
+    - FocusOnTarget: Put robot end efector over an object
+    -
+
+
+Camera:

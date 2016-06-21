@@ -1,0 +1,243 @@
+[
+   {
+      "parameters": {
+         "objectID": "End Effector"
+      },
+      "typeLogic": "RecognizeEvent",
+      "typeGUI": "RecognizeEventGUI",
+      "commandList": []
+   },
+   {
+      "parameters": {
+         "checkKey": "1"
+      },
+      "typeLogic": "KeypressEvent",
+      "typeGUI": "KeypressEventGUI",
+      "commandList": [
+         {
+            "parameters": {
+               "x": "1",
+               "relative": false,
+               "z": "15",
+               "y": "-15",
+               "override": false
+            },
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI"
+         }
+      ]
+   },
+   {
+      "parameters": {
+         "checkKey": "2"
+      },
+      "typeLogic": "KeypressEvent",
+      "typeGUI": "KeypressEventGUI",
+      "commandList": [
+         {
+            "parameters": {
+               "x": "-10",
+               "relative": false,
+               "z": "10",
+               "y": "-10",
+               "override": false
+            },
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI"
+         }
+      ]
+   },
+   {
+      "parameters": {
+         "checkKey": "3"
+      },
+      "typeLogic": "KeypressEvent",
+      "typeGUI": "KeypressEventGUI",
+      "commandList": [
+         {
+            "parameters": {
+               "x": "5",
+               "relative": false,
+               "z": "15",
+               "y": "-10",
+               "override": false
+            },
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI"
+         }
+      ]
+   },
+   {
+      "parameters": {
+         "checkKey": "4"
+      },
+      "typeLogic": "KeypressEvent",
+      "typeGUI": "KeypressEventGUI",
+      "commandList": [
+         {
+            "parameters": {
+               "x": "5",
+               "relative": false,
+               "z": "6",
+               "y": "-10",
+               "override": false
+            },
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI"
+         }
+      ]
+   },
+   {
+      "parameters": {
+         "checkKey": "5"
+      },
+      "typeLogic": "KeypressEvent",
+      "typeGUI": "KeypressEventGUI",
+      "commandList": [
+         {
+            "parameters": {
+               "x": "1",
+               "relative": false,
+               "z": "15",
+               "y": "-25",
+               "override": false
+            },
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI"
+         }
+      ]
+   },
+   {
+      "parameters": {
+         "checkKey": "6"
+      },
+      "typeLogic": "KeypressEvent",
+      "typeGUI": "KeypressEventGUI",
+      "commandList": [
+         {
+            "parameters": {
+               "x": "-2",
+               "relative": false,
+               "z": "16",
+               "y": "-13",
+               "override": false
+            },
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI"
+         }
+      ]
+   },
+   {
+      "parameters": {
+         "checkKey": "7"
+      },
+      "typeLogic": "KeypressEvent",
+      "typeGUI": "KeypressEventGUI",
+      "commandList": [
+         {
+            "parameters": {
+               "x": "-5",
+               "relative": false,
+               "z": "15",
+               "y": "-15",
+               "override": false
+            },
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI"
+         }
+      ]
+   },
+   {
+      "parameters": {
+         "checkKey": "8"
+      },
+      "typeLogic": "KeypressEvent",
+      "typeGUI": "KeypressEventGUI",
+      "commandList": [
+         {
+            "parameters": {
+               "x": "-7",
+               "relative": false,
+               "z": "15",
+               "y": "-25",
+               "override": false
+            },
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI"
+         }
+      ]
+   },
+   {
+      "parameters": {
+         "checkKey": "9"
+      },
+      "typeLogic": "KeypressEvent",
+      "typeGUI": "KeypressEventGUI",
+      "commandList": [
+         {
+            "parameters": {
+               "x": "11",
+               "relative": false,
+               "z": "10",
+               "y": "-14",
+               "override": false
+            },
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI"
+         }
+      ]
+   },
+   {
+      "parameters": null,
+      "typeLogic": "InitEvent",
+      "typeGUI": "InitEventGUI",
+      "commandList": [
+         {
+            "parameters": {
+               "servo2": true,
+               "servo1": true,
+               "servo4": true,
+               "servo3": true
+            },
+            "typeLogic": "AttachCommand",
+            "typeGUI": "AttachCommandGUI"
+         },
+         {
+            "parameters": {
+               "x": "1",
+               "relative": false,
+               "z": "15",
+               "y": "-15",
+               "override": false
+            },
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI"
+         }
+      ]
+   },
+   {
+      "parameters": null,
+      "typeLogic": "DestroyEvent",
+      "typeGUI": "DestroyEventGUI",
+      "commandList": [
+         {
+            "parameters": {
+               "servo2": true,
+               "servo1": true,
+               "servo4": true,
+               "servo3": true
+            },
+            "typeLogic": "DetachCommand",
+            "typeGUI": "DetachCommandGUI"
+         }
+      ]
+   },
+   {
+      "parameters": {
+         "objectID": "Jack of Cloves"
+      },
+      "typeLogic": "RecognizeEvent",
+      "typeGUI": "RecognizeEventGUI",
+      "commandList": []
+   }
+]

@@ -47,15 +47,16 @@ class ObjectManager:
         self.__directory = filename
         ensurePathExists(self.__directory)
 
+
     def loadAllObjects(self):
         # Load all objects into the environment
 
         # Checks if an interpreter is currently running before doing anything.
-        folderNames = os.listdir(self.__directory)
+        foldersAndItems = os.listdir(self.__directory)
 
 
-        newTrackable = lambda folder, directory: TrackableObject(folder.replace("TrackerObject_", ""), directory)
-        for folder in folderNames:
+        newTrackable = lambda folder, directory: TrackableObject(folder.replace("TrackerObject ", ""), directory)
+        for folder in foldersAndItems:
             path = self.__directory + "\\" + folder
 
             # Handle any TrackableObject loading
@@ -64,14 +65,13 @@ class ObjectManager:
                 if newObj.loadSuccess:
                     self.__addObject(newObj)
 
+
         # files = []
         # for (dirpath, dirnames, filenames) in os.walk(self.__directory):
         #     print('path', dirpath)
         #     print('names', dirnames)
         #
         #     print('files', filenames)
-
-
 
     def saveNewObject(self, newObject):
         wasNew = self.__addObject(newObject)
@@ -80,24 +80,30 @@ class ObjectManager:
         newObject.save(self.__directory)
 
 
+
     def getObject(self, objectID):
-        # Ask for an object by name, and get the object class
+        # Ask for an object by name, and get the object class. If it's nonexistent, return None
         for obj in self.__objects:
             if obj.name == objectID: return obj
 
         return None
 
-    def getObjectIDList(self):
+    def getObjectIDList(self, objectType=None):
         # Returns a list of object names. This is used in ObjectManager, or any situation when you need to know if a
-        # particular object is loaded.
+        # particular object is loaded. If objectType is not None, then only return objects of that type
 
         nameList = []
         for obj in self.__objects:
-            nameList.append(obj.name)
+            if objectType is None or objectType is type(obj):
+                nameList.append(obj.name)
 
         return nameList
 
+
     def __addObject(self, newObject):
+        # The reason this is private is because objects should only be added through self.saveNewObject or loadAllObj's
+
+
         # Checks if the object already exists. If it does, then replace the existing object with the new one.
         for obj in self.__objects:
             if newObject.name == obj.name:
@@ -108,6 +114,29 @@ class ObjectManager:
         # If the object doesn't already exist, adds the object to the pool of loaded objects.
         self.__objects.append(newObject)
         return True
+
+    def deleteObject(self, objectID):
+        printf("ObjectManager.deleteObject(): Deleting ", objectID, " permanently")
+
+        for obj in self.__objects:
+            if objectID == obj.name:
+                # Make sure nothing weird is going on...
+                if obj.directory is None:
+                    return False
+
+                # Get all the items in the objects folder, and delete them one by one
+                foldersAndItems = os.listdir(obj.directory)
+                for item in foldersAndItems:
+                    os.remove(obj.directory + "\\" + item)
+
+                # Now that the folder is empty, delete it too
+                os.rmdir(obj.directory)
+
+                self.__objects.remove(obj)
+                return True
+
+        printf("ObjectManager.deleteObject(): ERROR: Could not find object ", objectID, " in order to delete it!")
+        return False
 
 
 class TrackableObject:
@@ -129,8 +158,10 @@ class TrackableObject:
         Samples are used to record objects at different orientations and help aid tracking in that way.
         """
 
-        self.name    = name
-        self.samples = []
+        self.name        = name
+        self.samples     = []
+        self.directory   = loadFromDirectory  # Used in objectmanager for deleting object. Set here, or in self.save
+        self.loadSuccess = False
 
         if loadFromDirectory is not None:
             self.loadSuccess = self.__load(loadFromDirectory)
@@ -154,8 +185,10 @@ class TrackableObject:
         }
         """
 
+        printf("TrackableObject.save(): Saving self to directory ", self.directory)
         # Make sure the "objects" directory exists
-        filename  =  directory  + "\\" + "TrackerObject_" + self.name
+        filename                    =  directory  + "\\" + "TrackerObject " + self.name
+        self.directory              = filename
         ensurePathExists(filename)
         filename += "\\"
 
@@ -216,7 +249,29 @@ class TrackableObject:
     def getSamples(self):
         return self.samples
 
+    def getIcon(self, maxWidth, maxHeight):
+        # Create an icon of a cropped image of the 1st sample, and resize it to the parameters.
 
+
+        #  Get the cropped image of just the object
+        fullImage = self.samples[0].image
+        rect      = self.samples[0].rect
+        image     = fullImage[rect[1]:rect[3], rect[0]:rect[2]]
+
+
+
+        #  Resize it to fit within maxWidth and maxHeight
+        height, width, _ = image.shape
+        if height > maxHeight:
+            image = cv2.resize(image, (int(float(maxHeight)/height*width), maxHeight))
+
+        height, width, _ = image.shape
+        if width > maxWidth:
+            image = cv2.resize(image, (maxWidth, int(float(maxWidth)/width*height)))
+
+        height, width, _ = image.shape
+
+        return image.copy()
 
 
 

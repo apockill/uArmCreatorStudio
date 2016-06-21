@@ -1,174 +1,26 @@
+"""
+For all imports, try to import the bare minimum. While verbose, this will help keep unwanted elements from being
+accessed by the wrong objects. More importantly, it will help keep track of what objects are used in what modules,
+and force the developer to think about how new features should be implimented carefully.
+"""
 # import qdarkstyle
-import json
-import sys
-import webbrowser
-from RobotGUI.CameraGUI         import CameraWidget
-from RobotGUI.ObjectManagerGUI  import ObjectManager
-from copy                       import deepcopy
-from PyQt5                      import QtCore, QtWidgets, QtGui
-from RobotGUI                   import ControlPanelGUI, Icons
-from RobotGUI.Logic             import Global
-from RobotGUI.Logic.Environment import Environment, Interpreter
-from RobotGUI.Logic.Robot       import getConnectedRobots
-from RobotGUI.Logic.Video       import getConnectedCameras
-from RobotGUI.Logic.Global      import printf
-
+import json         # For saving and loading settings and tasks
+import sys          # For GUI, and overloading the default error handling
+import webbrowser   # For opening the uFactory forums under the "file" menu
+from copy                       import deepcopy                                 # For copying saves and comparing later
+from PyQt5                      import QtCore, QtWidgets, QtGui                 # All GUI things
+from RobotGUI                   import ControlPanelGUI, Icons, CalibrationsGUI  # General GUI purposes
+from RobotGUI.CameraGUI         import CameraWidget                             # General GUI purposes
+from RobotGUI.ObjectManagerGUI  import ObjectManagerWindow                      # For opening ObjectManager window
+from RobotGUI.CalibrationsGUI   import CalibrateWindow                          # For opening Calibrate window
+from RobotGUI.Logic             import Global                                   # For keeping track of keypresses
+from RobotGUI.Logic.Robot       import getConnectedRobots                       # For settingsWindow
+from RobotGUI.Logic.Video       import getConnectedCameras                      # For settingsWindow
+from RobotGUI.Logic.Global      import printf                                   # For formatted printing
+from RobotGUI.Logic.Environment import Environment, Interpreter                 # For Logic purposes
 
 
 ########## VIEWS ##########
-class CalibrateWindow(QtWidgets.QDialog):
-    """
-    This is the dashboard where the user can calibrate different aspects of their robot.
-    Things like motion calibration for the camera, color calibration, focus calibration, and maybe even eventually
-    visual servo-ing calibrations
-    """
-
-    def __init__(self, environment, parent):
-        super(CalibrateWindow, self).__init__(parent)
-
-        self.env            = environment
-        self.newSettings    = self.env.getSettings()
-
-
-        # The label for the current known information for each calibration test. Label is changed in updateLabels()
-        self.motionLbl = QtWidgets.QLabel("No information for this calibration")
-        self.initUI()
-
-        self.updateLabels()
-
-    def initUI(self):
-
-        motionBtn = QtWidgets.QPushButton("Calibrate Motion")
-        cancelBtn = QtWidgets.QPushButton("Cancel")
-        applyBtn  = QtWidgets.QPushButton("Apply")
-
-        motionBtn.clicked.connect(self.calibrateMotion)
-
-        applyBtn.clicked.connect(self.accept)
-        cancelBtn.clicked.connect(self.reject)
-
-
-        maxWidth  = 130
-        motionBtn.setFixedWidth(maxWidth)
-        cancelBtn.setFixedWidth(maxWidth)
-        applyBtn.setFixedWidth(maxWidth)
-
-
-        row1 = QtWidgets.QHBoxLayout()
-        row1.addWidget(     motionBtn, QtCore.Qt.AlignLeft)
-        row1.addWidget(self.motionLbl, QtCore.Qt.AlignRight)
-
-
-        middleVLayout = QtWidgets.QVBoxLayout()
-        middleVLayout.addLayout(row1)
-        middleVLayout.addStretch(1)
-
-
-        # Set up Cancel and Apply buttons
-        leftVLayout = QtWidgets.QVBoxLayout()
-        leftVLayout.addStretch(1)
-        leftVLayout.addWidget(cancelBtn, QtCore.Qt.AlignRight)
-        rightVLayout = QtWidgets.QVBoxLayout()
-        rightVLayout.addStretch(1)
-        rightVLayout.addWidget(applyBtn, QtCore.Qt.AlignLeft)
-
-
-        # Create the final layout with the leftVLayout, middleVLayout, and rightVLayout
-        mainHLayout = QtWidgets.QHBoxLayout()
-        mainHLayout.addStretch(3)
-        mainHLayout.addLayout(leftVLayout)
-        mainHLayout.addLayout(middleVLayout)
-        mainHLayout.addLayout(rightVLayout)
-        mainHLayout.addStretch(3)
-
-        self.setMinimumHeight(400)
-        self.setLayout(mainHLayout)
-        self.setWindowTitle('Calibrations')
-        self.setWindowIcon(QtGui.QIcon(Icons.calibrate))
-
-
-
-    def updateLabels(self):
-        movCalib = self.newSettings["motionCalibrations"]
-
-
-        # Check if motionCalibrations already exist
-        if movCalib["stationaryMovement"] is not None:
-            self.motionLbl.setText(" Stationary Movement: " + str(movCalib["stationaryMovement"]) +
-                                   "     Active Movement: " + str(movCalib["activeMovement"]))
-
-    def calibrateMotion(self):
-        # Shake the robot left and right while getting frames to get a threshold for "high" movement between frames
-        displayError = lambda message: QtWidgets.QMessageBox.question(self, 'Error', message, QtWidgets.QMessageBox.Ok)
-
-        vStream = self.env.getVStream()
-        vision  = self.env.getVision()
-        robot   = self.env.getRobot()
-
-        # Check that there is a valid robot connected
-        if not robot.connected():
-            printf("CalibrateView.calibrateMotion(): No uArm connected!")
-            displayError("A robot must be connected to run this calibration.")
-            return
-
-        # Check that there is a valid camera connected
-        if not vStream.connected():
-            printf("CalibrateView.calibrateMotion(): No Camera Connected!")
-            displayError("A camera must be connected to run this calibration.")
-            return
-
-        # Make sure VideoStream is collecting new frames
-        vStream.setPaused(False)
-
-
-        # Get movement while nothing is happening
-        totalMotion = 0.0
-        samples     = 75
-        for i in range(0, samples):
-            vStream.waitForNewFrame()
-            totalMotion += vision.getMotion()
-        noMovement = totalMotion / samples
-
-
-        # Get movement while robot is moving
-        totalMotion = 0.0
-        moves       = 10
-        samples     = 0
-        direction   = 1  #If the robot is going right or left next
-
-        # Start position
-        robot.setPos( x=-15, y=-15, z=20)
-        robot.refresh()
-
-        # Move robot left and right while getting new frames for "moves" amount of samples
-        for move in range(0, moves):
-            robot.setPos(x=30 * direction, y=0, z=0, relative=True)   #end position
-            robot.refresh(speed=30)
-
-            while robot.getMoving():
-                vStream.waitForNewFrame()
-                totalMotion += vision.getMotion()
-                samples += 1
-
-            direction *= -1
-
-        # Calculate average amount of motion when robot is moving rapidly
-        highMovement = totalMotion / samples
-
-
-        self.newSettings["motionCalibrations"]["stationaryMovement"] = round(  noMovement, 1)
-        self.newSettings["motionCalibrations"]["activeMovement"]     = round(highMovement, 1)
-
-        # Return the vStream to paused
-        vStream.setPaused(True)
-        self.updateLabels()
-        printf("CalibrateView.calibrateMotion(): Function complete! New motion settings: ", self.newSettings)
-
-    def getSettings(self):
-        print("GETSETTINGS RUNNING")
-        return self.newSettings
-
-
 class SettingsWindow(QtWidgets.QDialog):
     """
     Simple view that lets you select your robot and camera.
@@ -347,11 +199,11 @@ class DashboardView(QtWidgets.QWidget):
         self.controlPanel.close()
 
 
+
 ########## MAIN WINDOW ##########
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-
 
         # This is the format of an empty settings variable. It is filled in self.loadSettings() if settings exist.
         self.settings       = {
@@ -410,6 +262,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # For debugging
         # self.openObjectManagerWindow()
 
+
     def initUI(self):
         # Create "File" Menu
         menuBar      = self.menuBar()
@@ -421,7 +274,7 @@ class MainWindow(QtWidgets.QMainWindow):
         loadAction   = QtWidgets.QAction(QtGui.QIcon(Icons.load_file), "Load Task",    self)
         forumAction  = QtWidgets.QAction("Visit the forum!", self)
 
-        newAction.triggered.connect(    self.newTask)
+        newAction.triggered.connect(    lambda: self.newTask(promptSave=True))
         saveAction.triggered.connect(   self.saveTask)
         saveAsAction.triggered.connect( lambda: self.saveTask(True))
         loadAction.triggered.connect(   self.loadTask)
@@ -588,7 +441,7 @@ class MainWindow(QtWidgets.QMainWindow):
             # Generate a message for the user to explain what parameters are missing
             errorStr = 'Certain Events and Commands are missing the following requirements to work properly: \n\n' + \
                        ''.join(map(lambda err: '   -' + str(err) + '\n', errors)) + \
-                       '\nWould you like to continue anyways? This may cause the program to behave erratically.'
+                       '\nWould you like to continue anyways? Certain events and commands may not activate.'
 
             # Ask the user
             reply = QtWidgets.QMessageBox.question(self, 'Warning', errorStr,
@@ -597,22 +450,33 @@ class MainWindow(QtWidgets.QMainWindow):
                 printf("MainWindow.startScript(): Script run canceled by user before starting.")
                 return
 
+
         # Stop you from moving stuff around while script is running, and activate the visual cmmnd highlighting
         self.controlPanel.setScriptMode(True, self.interpreter.getStatus)
         self.interpreter.startThread()
 
+        # Make sure the vision filters are activated
+        vision = self.env.getVision()
+        vision.addTrackerFilter()
 
         # Make sure the UI matches the state of the script
         self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.pause_script))
         self.scriptToggleBtn.setText("Stop")
 
-
     def endScript(self):
-        self.interpreter.endThread()
+        vision = self.env.getVision()
+
+        self.interpreter.endThread(vision)
         self.controlPanel.setScriptMode(False, self.interpreter.getStatus)
+
+        # Make sure vision filters are stopped
+
+        vision.endTrackerFilter()
+
 
         self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.run_script))
         self.scriptToggleBtn.setText("Run")
+
 
     def openSettingsWindow(self):
         # This handles the opening and closing of the Settings window.
@@ -672,24 +536,27 @@ class MainWindow(QtWidgets.QMainWindow):
         # Make sure video thread is active and playing, but that the actual cameraWidget
         self.setVideo("play")
         self.dashboardView.cameraWidget.pause()
-        objMngrWindow = ObjectManager(self.env, self)
+        objMngrWindow = ObjectManagerWindow(self.env, self)
         accepted      = objMngrWindow.exec_()
         objMngrWindow.close()
         objMngrWindow.deleteLater()
         self.setVideo("play")
 
 
-    def newTask(self):
-        self.promptSave()
+    def newTask(self, promptSave):
+        if promptSave:
+            print("About to prompt save!")
+            self.promptSave()
+
         self.dashboardView.controlPanel.loadData([])
         self.fileName = None
         self.loadData = deepcopy(self.controlPanel.getSaveData())
 
-    def saveTask(self, promptSave):
+    def saveTask(self, promptSaveLocation):
         printf("MainWindow.saveTask(): Saving project")
 
         # If there is no filename, ask for one
-        if promptSave or self.fileName is None:
+        if promptSaveLocation or self.fileName is None:
             filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save Task", "MyTask", "Task (*.task)")
             if filename == "": return  #If user hit cancel
             self.fileName = filename
@@ -731,15 +598,23 @@ class MainWindow(QtWidgets.QMainWindow):
             self.setSettings({"lastOpenedFile": None})
             return
 
-        self.fileName = filename
-        self.setSettings({"lastOpenedFile": filename})
+
 
 
 
 
         # Load the data- BUT MAKE SURE TO DEEPCOPY otherwise any change in the program will change in self.loadData
-        self.dashboardView.controlPanel.loadData(deepcopy(self.loadData))
-        self.setWindowTitle(self.programTitle + '      ' + self.fileName)
+        try:
+            self.dashboardView.controlPanel.loadData(deepcopy(self.loadData))
+            self.fileName = filename
+            self.setSettings({"lastOpenedFile": filename})
+            self.setWindowTitle(self.programTitle + '      ' + self.fileName)
+        except Exception as e:
+            printf("Mainwindow.loadTask(): ERROR: Could not load task: ", e)
+            self.newTask(promptSave=False)
+            QtWidgets.QMessageBox.question(self, 'Warning', "The program was unable to load the following script:\n" +
+                                           filename, QtWidgets.QMessageBox.Ok)
+
 
 
 
@@ -765,22 +640,39 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def promptSave(self):
         # Prompts the user if they want to save, but only if they've changed something in the program
+        # Returns True if the user presses Cancel or "X", and wants the window to stay open.
+
 
         if not self.loadData == self.controlPanel.getSaveData():
             printf("MainWindow.promptSave(): Prompting user to save changes")
             reply = QtWidgets.QMessageBox.question(self, 'Warning',
-                                       "You have unsaved changes. Would you like to save before continuing?",
-                                       QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.Yes)
+                                    "You have unsaved changes. Would you like to save before continuing?",
+                                    QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No |QtWidgets.QMessageBox.Cancel,
+                                    QtWidgets.QMessageBox.Yes)
+
             if reply == QtWidgets.QMessageBox.Yes:
                 printf("MainWindow.promptSave():Saving changes")
                 self.saveTask(False)
+
+            if reply == QtWidgets.QMessageBox.No:
+                printf("MainWindow.promptSave(): Not saving changes")
+
+            if reply == QtWidgets.QMessageBox.Cancel:
+                printf("MainWindow.promptSave(): User canceled- aborting close!")
+                return True
+
 
     def closeEvent(self, event):
         # When window is closed, prompt for save, close the video stream, and close the control panel (thus script)
 
 
         # Ask the user they want to save before closing anything
-        self.promptSave()
+        cancelPressed = self.promptSave()
+
+        # If the user pressed "Cancel" or the "X" button on the prompt dialog, then don't close the program
+        if cancelPressed:
+            event.ignore()
+            return
 
 
         # Close and delete GUI objects, to stop their events from running
@@ -791,7 +683,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         # Close threads
-        self.interpreter.endThread()
+        self.endScript()
         self.env.close()
 
         printf("MainWindow.close(): Done closing all objects and threads.")
@@ -844,7 +736,7 @@ if __name__ == '__main__':
     # Actually start the application
     app = Application(sys.argv)
 
-    # DO THEMING STUFF NOW
+    # Apply a theme of choice here
     # app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
 
     # Set Application Font

@@ -146,8 +146,20 @@ class PlaneTracker:
             p0, p1 = p0[status], p1[status]
 
             x0, y0, x1, y1 = target.rect
-            quad = np.float32([[x0, y0], [x1, y0], [x1, y1], [x0, y1]])
-            quad = cv2.perspectiveTransform(quad.reshape(1, -1, 2), H).reshape(-1, 2)
+            quad = np.float32([[x0, y0],
+                               [x1, y0],
+                               [x1, y1],
+                               [x0, y1]])
+            # quad = np.float32([[           0,              0],
+            #                   [      x1 - x0,              0],
+            #                   [      x1 - x0,        y1 - y0],
+            #                   [            0,        y1 - y0],
+            #                   [(x1 - x0) / 2,  (y1 - y0) / 2]])
+
+            # print("B4", quad)
+            quad = quad.reshape(1, -1, 2)
+            # print("Af", quad)
+            quad = cv2.perspectiveTransform(quad, H).reshape(-1, 2)
 
             track = TrackedTarget(target=target, p0=p0, p1=p1, H=H, quad=quad)
             tracked.append(track)

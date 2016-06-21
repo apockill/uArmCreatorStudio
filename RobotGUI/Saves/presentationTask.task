@@ -1,0 +1,8 @@
+[
+   {
+      "commandList": [],
+      "parameters": null,
+      "typeGUI": "InitEventGUI",
+      "typeLogic": "InitEvent"
+   }
+]

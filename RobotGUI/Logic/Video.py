@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import time
 from threading             import Thread, RLock
 from RobotGUI.Logic.Global import printf, FpsTimer
 from collections           import namedtuple
@@ -147,9 +148,9 @@ class VideoStream:
                 self.frame = newFrame
 
                 # Add a frame to the frameList that records the 5 latest frames for Vision uses
-                self.frameList.append(self.frame.copy())
+                self.frameList.insert(0, self.frame.copy())
                 while len(self.frameList) > 5:
-                    del self.frameList[0]
+                    del self.frameList[-1]
 
                 # Keep track of new frames by counting them. (100 is an arbitrary number)
                 if self.frameCount >= 100:
@@ -255,18 +256,14 @@ class VideoStream:
     def addFilter(self, filterFunc):
         # Add a filter to put on top of the self.filteredFrame each round
         with self.filterLock:
-            if filterFunc in self.filterList:
-                printf("VideoStream.addFilter(): Tried to add work function that already existed: ", filterFunc)
-                return
+            if filterFunc in self.filterList: return
 
             self.filterList.append(filterFunc)
 
     def addWork(self, workFunc):
         # Add some function that has to be run each round. Processing is done after frame get, but before filtering.
         with self.workLock:
-            if workFunc in self.workList:
-                printf("VideoStream.addWork(): Tried to add work function that already existed: ", workFunc)
-                return
+            if workFunc in self.workList: return
 
             self.workList.append(workFunc)
 
@@ -275,18 +272,14 @@ class VideoStream:
 
         with self.workLock:
             # Make sure the function is actually in the workList
-            if workFunc not in self.workList:
-                printf("VideoStream.addWork(): ERROR: Tried to remove a work function that didn't exist: ", workFunc)
-                return
+            if workFunc not in self.workList: return
 
             self.workList.remove(workFunc)
 
     def removeFilter(self, filterFunc):
         with self.filterLock:
             # Make sure the function is actually in the workList
-            if filterFunc not in self.filterList:
-                printf("VideoStream.addFilter(): ERROR: Tried to remove a nonexistent filter: ", filterFunc)
-                return
+            if filterFunc not in self.filterList: return
 
             self.filterList.remove(filterFunc)
 
@@ -301,13 +294,11 @@ class Vision:
     def __init__(self, vStream):
 
         self.vStream    = vStream
-        self.tracker    = PlaneTracker()
+        self.tracker    = PlaneTracker(25.0)
 
         # Use these on any work functions that are intended for threading
         self.filterLock = self.vStream.filterLock
         self.workLock   = self.vStream.workLock
-
-
 
 
     # Tracker related functions
@@ -317,7 +308,7 @@ class Vision:
     #         target = self.tracker.getTarget(image, rect, name, pickupRect)
     #     return target
 
-    def addTargetSample(self, samples):
+    def addTargetSamples(self, samples):
         with self.workLock:
             for sample in samples:
                 self.tracker.addTarget(sample.name, sample.image, sample.rect)
@@ -344,7 +335,7 @@ class Vision:
 
     def trackerAddStartTrack(self, samples):
         # Convenience function that adds an object to the tracker, starts the tracker, and starts the filter
-        self.addTargetSample(samples)
+        self.addTargetSamples(samples)
         self.startTracker()
         self.addTrackerFilter()
 
@@ -356,6 +347,43 @@ class Vision:
         self.clearTargets()
 
 
+    def getRecentObjectTrack(self, objectID):
+        # Returns the most recent time that the object was tracked, and how many frames ago it occured
+
+        trackHistory = []
+        with self.workLock:
+            trackHistory = self.tracker.trackedHistory[:]
+
+
+        for frameID, historyFromFrame in enumerate(trackHistory):
+            for obj in historyFromFrame:
+                if obj.target.name == objectID:
+                    return frameID, obj
+
+        # If object was not found, None will be returned for the frame and the object
+        return None, None
+
+    def isRecognized(self, objectID, numFrames=1):
+        # numFrames is the amount of frames to check in the history
+        if numFrames >= self.tracker.historyLen:
+            printf("Vision.isRecognized(): ERROR: Tried to look further in the history than was possible!")
+            numFrames = self.tracker.historyLen
+
+
+        # Safely pull the relevant trackedHistory from the tracker object
+        trackHistory = []
+        with self.workLock:
+            trackHistory = self.tracker.trackedHistory[:numFrames]
+
+
+        # Check if the object was recognized in the most recent frame. Check most recent frames first.
+        for historyFromFrame in trackHistory:
+
+            for obj in historyFromFrame:
+                if obj.target.name == objectID:
+                    return True
+        return False
+
     # Useful computer vision functions
     def getMotion(self):
 
@@ -365,8 +393,8 @@ class Vision:
             printf("getMovement():Not enough frames in self.vid.previousFrames")
             return 0  # IF PROGRAM IS RUN BEFORE THE PROGRAM HAS EVEN 10 FRAMES
 
-        frame0 = frameList[len(frameList) - 1]
-        frame1 = frameList[len(frameList) - 3]
+        frame0 = frameList[0]
+        frame1 = frameList[2]
         movementImg = cv2.absdiff(frame0, frame1)
 
         avgDifference = cv2.mean(movementImg)[0]
@@ -481,22 +509,6 @@ class Vision:
         # Just pass an image, and a tuple/list of (x1,y1, x2,y2)
         return image[rect[1]:rect[3], rect[0]:rect[2]]
 
-    def resizeToMax(self, image, maxWidth, maxHeight):
-        # Makes sure an image is within the bounds of maxHeight and maxWidth, and resizes to make sure
-
-        height, width, _ = image.shape
-
-        if height > maxHeight:
-            image = cv2.resize(image, (int(float(maxHeight)/height*width), maxHeight))
-
-        height, width, _ = image.shape
-
-        if width > maxWidth:
-            image = cv2.resize(image, (maxWidth, int(float(maxWidth)/width*height)))
-
-        height, width, _ = image.shape
-
-        return image
 
 
 
@@ -518,7 +530,7 @@ class PlaneTracker:
     """
     PlanarTarget  = namedtuple(  'PlaneTarget',   'name, image, rect, pickupRect, keypoints, descrs')
 
-    TrackedTarget = namedtuple('TrackedTarget', 'target,    p0,   p1,         H,   quad')
+    TrackedTarget = namedtuple('TrackedTarget', 'target, p0, p1, H, quad, center, rotation')
 
     # Tracker parameters
     FLANN_INDEX_KDTREE = 1
@@ -530,20 +542,28 @@ class PlaneTracker:
                               multi_probe_level =               1)  #  2
 
 
-    def __init__(self):
+    def __init__(self, focalLength):
+        self.focalLength  = focalLength
         self.detector     = cv2.ORB_create(nfeatures = 1000)
         self.matcher      = cv2.FlannBasedMatcher(self.flanParams, {})  # bug : need to pass empty dict (#1329)
         self.targets      = []
         self.framePoints  = []
 
-        self.tracked      = []
+
+        # trackHistory is an array of arrays, that keeps track of tracked objects in each frame, for hstLen # of frames
+        # Format example [[PlanarTarget, PlanarTarget], [PlanarTarget], [PlanarTarget...]...]
+        # Where trackedHistory[0] is the most recent frame, and trackedHistory[-1] is about to be deleted.
+        self.historyLen = 30
+        self.trackedHistory = [[] for i in range(self.historyLen)]
+
+
 
     def getTarget(self, image, rect, name=None, pickupRect=None):
         # Get the PlanarTarget object for any name, image, and rect. These can be added in self.addTarget()
         x0, y0, x1, y1         = rect
         points, descs          = [], []
 
-        raw_points, raw_descrs = self.detectFeatures(image)
+        raw_points, raw_descrs = self.__detectFeatures(image)
 
         for kp, desc in zip(raw_points, raw_descrs):
             x, y = kp.pt
@@ -574,13 +594,14 @@ class PlaneTracker:
 
     def track(self, frame):
         # updates self.tracked with a list of detected TrackedTarget objects
+        self.framePoints, frame_descrs = self.__detectFeatures(frame)
 
-        self.framePoints, frame_descrs = self.detectFeatures(frame)
+        tracked = []
 
 
-        # If no keypoints were detected, then don't update the self.tracked array
+        # If no keypoints were detected, then don't update the self.trackedHistory array
         if len(self.framePoints) < self.MIN_MATCH_COUNT:
-            self.tracked = []
+            self.__addTracked(tracked)
             return
 
 
@@ -588,7 +609,7 @@ class PlaneTracker:
         matches = [m[0] for m in matches if len(m) == 2 and m[0].distance < m[1].distance * 0.75]
 
         if len(matches) < self.MIN_MATCH_COUNT:
-            self.tracked = []
+            self.__addTracked(tracked)
             return
 
 
@@ -602,6 +623,7 @@ class PlaneTracker:
             if len(matches) < self.MIN_MATCH_COUNT:
                 continue
             target = self.targets[imgIdx]
+
             p0 = [target.keypoints[m.trainIdx].pt for m in matches]
             p1 = [self.framePoints[m.queryIdx].pt for m in matches]
             p0, p1 = np.float32((p0, p1))
@@ -616,15 +638,30 @@ class PlaneTracker:
             quad = np.float32([[x0, y0], [x1, y0], [x1, y1], [x0, y1]])
             quad = cv2.perspectiveTransform(quad.reshape(1, -1, 2), H).reshape(-1, 2)
 
-            track = self.TrackedTarget(target=target, p0=p0, p1=p1, H=H, quad=quad)
+            # Calculate the 3d coordinates of the object
+            rotation, center = self.__get3DCoordinates(frame, target.rect, quad)
+
+            track = self.TrackedTarget(target=target, p0=p0, p1=p1, H=H, quad=quad, center=center, rotation=rotation)
             tracked.append(track)
 
 
         tracked.sort(key = lambda t: len(t.p0), reverse=True)
 
-        self.tracked = tracked
+        self.__addTracked(tracked)
 
-    def detectFeatures(self, frame):
+    def __addTracked(self, trackedArray):
+        # Add an array of detected objects to the self.trackedHistory array, and shorten the trackedHistory array
+        # so that it always remains self.historyLength long
+        start = time.time()
+
+
+        self.trackedHistory.insert(0, trackedArray)
+
+        while len(self.trackedHistory) > self.historyLen:
+            del self.trackedHistory[-1]
+
+
+    def __detectFeatures(self, frame):
         cv2.ocl.setUseOpenCL(False)  # THIS FIXES A ERROR BUG: "The data should normally be NULL!"
 
         # detect_features(self, frame) -> keypoints, descrs
@@ -634,8 +671,28 @@ class PlaneTracker:
         return keypoints, descrs
 
     def drawTracked(self, frame):
-        for tr in self.tracked:
-            cv2.polylines(frame, [np.int32(tr.quad)], True, (255, 255, 255), 2)
+        filterFnt   = cv2.FONT_HERSHEY_PLAIN
+        filterColor = (255, 255, 255)
+
+        for tr in self.trackedHistory[0]:
+            quad = np.int32(tr.quad)
+            cv2.polylines(frame, [quad], True, (255, 255, 255), 2)
+
+            # Figure out how much the text should be scaled (depends on the different in curr side len, and orig len)
+            rect          = tr.target.rect
+            origLength    = rect[2] - rect[0] + rect[3] - rect[1]
+            currLength    = np.linalg.norm(quad[1] - quad[0]) + np.linalg.norm(quad[2] - quad[1])  # avg side len
+            scaleFactor   = currLength / origLength
+
+            # Draw the name of the object, and coordinates
+            cv2.putText(frame,   tr.target.name, tuple(quad[1]),  filterFnt, scaleFactor, color=filterColor, thickness=1)
+
+            # FOR DEUBGGING ONLY: TODO: Remove this when deploying final product
+            try:
+                coordText = "X " + str(int(tr.center[0])) + " Y " + str(int(tr.center[1])) + " Z " + str(int(tr.center[2]))
+                cv2.putText(frame, coordText, (quad[1][0], quad[1][1] + int(15*scaleFactor)),  filterFnt, scaleFactor, color=filterColor, thickness=1)
+            except:
+                pass
 
             for (x, y) in np.int32(tr.p1):
                 cv2.circle(frame, (x, y), 2, (255, 255, 255))
@@ -643,7 +700,26 @@ class PlaneTracker:
         return frame
 
 
+    def __get3DCoordinates(self, frame, rect, quad):
+        # Do solvePnP on the tracked object
+        # return None, None
+        x0, y0, x1, y1 = rect
+        width  = (x1 - x0) / 2
+        height = (y1 - y0) / 2
+        quad3d = np.float32([[    -width,      -height, 0],
+                              [     width,      -height, 0],
+                              [     width,       height, 0],
+                              [    -width,       height, 0]])
+        fx              = 0.5 + self.focalLength / 50.0
+        dist_coef       = np.zeros(4)
+        h, w            = frame.shape[:2]
 
+        K = np.float64([[fx * w,      0, 0.5 * (w - 1)],
+                        [     0, fx * w, 0.5 * (h - 1)],
+                        [   0.0,    0.0,          1.0]])
+        ret, rvec, tvec = cv2.solvePnP(quad3d, quad, K, dist_coef)
+
+        return rvec, tvec
 # def getMotionDirection(self):
     #     frameList = self.vStream.getFrameList()
     #

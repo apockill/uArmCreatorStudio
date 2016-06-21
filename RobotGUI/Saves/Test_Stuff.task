@@ -1,0 +1,103 @@
+[
+   {
+      "parameters": null,
+      "commandList": [
+         {
+            "parameters": {
+               "time": ".1"
+            },
+            "typeGUI": "WaitCommandGUI",
+            "typeLogic": "WaitCommand"
+         },
+         {
+            "parameters": {
+               "test": 0,
+               "variable": "test",
+               "expression": "True"
+            },
+            "typeGUI": "TestVariableCommandGUI",
+            "typeLogic": "TestVariableCommand"
+         },
+         {
+            "parameters": {},
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "parameters": {
+               "time": ".10"
+            },
+            "typeGUI": "WaitCommandGUI",
+            "typeLogic": "WaitCommand"
+         },
+         {
+            "parameters": {},
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "parameters": {},
+            "typeGUI": "ElseCommandGUI",
+            "typeLogic": "ElseCommand"
+         },
+         {
+            "parameters": {},
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "parameters": {
+               "time": ".1"
+            },
+            "typeGUI": "WaitCommandGUI",
+            "typeLogic": "WaitCommand"
+         },
+         {
+            "parameters": {},
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         }
+      ],
+      "typeGUI": "StepEventGUI",
+      "typeLogic": "StepEvent"
+   },
+   {
+      "parameters": {
+         "checkKey": "A"
+      },
+      "commandList": [
+         {
+            "parameters": {
+               "variable": "test",
+               "expression": "not test"
+            },
+            "typeGUI": "SetVariableCommandGUI",
+            "typeLogic": "SetVariableCommand"
+         },
+         {
+            "parameters": {
+               "time": ".5"
+            },
+            "typeGUI": "WaitCommandGUI",
+            "typeLogic": "WaitCommand"
+         }
+      ],
+      "typeGUI": "KeypressEventGUI",
+      "typeLogic": "KeypressEvent"
+   },
+   {
+      "parameters": null,
+      "commandList": [
+         {
+            "parameters": {
+               "variable": "test",
+               "expression": "True"
+            },
+            "typeGUI": "SetVariableCommandGUI",
+            "typeLogic": "SetVariableCommand"
+         }
+      ],
+      "typeGUI": "InitEventGUI",
+      "typeLogic": "InitEvent"
+   }
+]

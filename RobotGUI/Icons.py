@@ -35,10 +35,12 @@ intersect_event    = img_file + "event_intersect.png"
 keyboard_event     = img_file + "event_keyboard.png"
 tip_event          = img_file + "event_tip.png"
 motion_event       = img_file + "event_motion.png"
+recognize_event    = img_file + "event_recognize.png"
 
 
 # Commands
 xyz_command        = img_file + "command_xyz.png"
+speed_command      = img_file + "command_speed.png"
 move_wrist_command = img_file + "command_move_wrist.png"
 detach_command     = img_file + "command_detach.png"
 attach_command     = img_file + "command_attach.png"
@@ -47,8 +49,18 @@ wait_command       = img_file + "command_wait.png"
 grip_command       = img_file + "command_grip.png"
 drop_command       = img_file + "command_drop.png"
 colortrack_command = img_file + "command_colortrack.png"
+buzzer_command     = img_file + "command_buzzer.png"
 startblock_command = img_file + "command_startblock.png"
 endblock_command   = img_file + "command_endblock.png"
+else_command       = img_file + "command_else.png"
 set_var_command    = img_file + "command_set_var.png"
 test_var_command   = img_file + "command_test_var.png"
+exit_event_command = img_file + "command_exit_event.png"
 
+
+# Tutorial
+robot_lower_head   = img_file + "tutorial_robot_lowering_head.gif"
+selecting_marker   = img_file + "tutorial_selecting_marker.gif"
+robot_cam_overview = img_file + "tutorial_robot_cam_overview.png"
+make_sticker       = img_file + "tutorial_make_sticker.png"
+sticker_on_head    = img_file + "tutorial_sticker_on_robot_head.png"

@@ -151,6 +151,11 @@ class ControlPanel(QtWidgets.QWidget):
     def refreshDrawScript(self, getStatusFunc):
         currRunning = getStatusFunc()
 
+        if currRunning is False:
+            self.setScriptMode(False, getStatusFunc)
+            return
+
+
         selectedItem = self.eventList.getSelectedEventItem()
         # Color any events that were active since last check, and de-color all other events
 
@@ -263,8 +268,8 @@ class EventList(QtWidgets.QListWidget):
 
     def promptUser(self):
         # Open the eventPromptWindow to ask the user what event they wish to create
-
-        eventPrompt = EventsGUI.EventPromptWindow(self)
+        objManager  = self.env.getObjectManager()
+        eventPrompt = EventsGUI.EventPromptWindow(objManager, parent=self)
         if eventPrompt.accepted:
             self.addEvent(eventPrompt.chosenEvent, parameters=eventPrompt.chosenParameters)
         else:
@@ -282,7 +287,7 @@ class EventList(QtWidgets.QListWidget):
         '''
 
         # If a file is loading, then optimize the process by changing it a bit.
-        isLoading = parameters is not None
+        isLoading = len(commandListSave) > 0
 
 
         # Check if the event being added already exists in the self.events dictionary
@@ -295,6 +300,7 @@ class EventList(QtWidgets.QListWidget):
 
         newEvent             = eventType(parameters)
         newCommandList       = CommandList(self.env, parent=self)
+
         newCommandList.loadData(commandListSave)
         newEvent.commandList =  newCommandList
 
@@ -317,6 +323,8 @@ class EventList(QtWidgets.QListWidget):
         if not isLoading:
             self.setCurrentRow(self.count() - 1)  # Select the newly added event
             self.refreshControlPanel()  # Call for a refresh of the ControlPanel so it shows the commandList
+
+
 
 
     def deleteEvent(self):
@@ -357,7 +365,8 @@ class EventList(QtWidgets.QListWidget):
             return
 
         # Get the type of event you will be replacing the selected event with
-        eventPrompt = EventsGUI.EventPromptWindow(parent=self)
+        objManager  = self.env.getObjectManager()
+        eventPrompt = EventsGUI.EventPromptWindow(objManager, parent=self)
         if not eventPrompt.accepted:
             printf('EventList.replaceEvent():User rejected the prompt.')
             return
@@ -505,17 +514,6 @@ class CommandList(QtWidgets.QListWidget):
             newCommand = commandType(self.env)
 
 
-        # Fill command with information either by opening window or loading it in
-        if isLoading:
-            newCommand.parameters = parameters
-        else:
-            # If this is being added by the user, then prompt the user by opening the command window.
-            accepted = newCommand.openWindow()  # Get information from user
-            if not accepted:
-                printf('CommandList.addCommand(): User rejected prompt')
-                return
-
-
 
         # Create the widget to be placed inside the listWidgetItem
         newWidget = CommandsGUI.CommandWidget(self, self.deleteSelected)
@@ -546,9 +544,25 @@ class CommandList(QtWidgets.QListWidget):
         self.setItemWidget(listWidgetItem, newWidget)
         self.commands[newWidget] = newCommand
 
+
+
+        # Fill command with information either by opening window or loading it in. Do this after adding everything.
+        if isLoading:
+            newCommand.parameters = parameters
+        else:
+            # If this is being added by the user, then prompt the user by opening the command window.
+            accepted = newCommand.openWindow()  # Get information from user
+
+            # Re-make the widget that goes on the command, so it has the new information given by the user
+            newCommand.dressWidget(newWidget)     # Dress up the widget
+
+
         # Update the width of the commandList to the widest element within it
         if not isLoading:
             self.refresh()
+
+
+
 
     # For deleting items
     def keyPressEvent(self, event):
@@ -580,7 +594,15 @@ class CommandList(QtWidgets.QListWidget):
             if dropIndex == -1: dropIndex = self.count()  # If dropped at a index past the end of list, drop at end
 
             # Add the new dragged in widget to the index that was just found
-            self.addCommand(getattr(CommandsGUI, event.mimeData().text()), index=dropIndex)
+            commandType = getattr(CommandsGUI, event.mimeData().text())
+            self.addCommand(commandType, index=dropIndex)
+
+            # For easy usability, when you drop a Test command, a StartBlock and EndBlock will drop right after it.
+            if commandType is CommandsGUI.TestVariableCommandGUI or \
+               commandType is CommandsGUI.ElseCommandGUI:
+
+                self.addCommand(CommandsGUI.StartBlockCommandGUI, index=dropIndex + 1)
+                self.addCommand(CommandsGUI.EndBlockCommandGUI, index=dropIndex + 2)
 
             event.accept()
         else:

@@ -20,7 +20,8 @@ class Robot:
     def __init__(self):
         self.uArm = None
 
-        self.pos =     {'x': 0.0, 'y': -15.0, 'z': 15.0}
+        self.pos   =     {'x': 0.0, 'y': -15.0, 'z': 15.0}
+        self.speed = 45     # In cm / second (or XYZ [unit] per second)
 
         # Every time uArm is connected correctly, all servos are attached. Set the values to match this.
         # These variables are used to keep track of which servos are attached
@@ -38,7 +39,7 @@ class Robot:
                                  4: True}
 
         # Handle the recording of the wrist position, and whether or not it has been changed
-        self.wrist           = 90.0             #Angle from 0 to 180 of the robots wrist position
+        self.wrist           = 90.0      #Angle from 0 to 180 of the robots wrist position
         self.wristChanged    = True      #Tracks whether or not the new wrist position has been sent to the robot or not
 
         self.positionChanged = True
@@ -77,9 +78,9 @@ class Robot:
 
 
     def connected(self):
-        if self.uArm is None:         return False
-        if not self.uArm.connected(): return False
-        if self.running:              return False
+        if self.uArm is None:         return False  # If the communication protocol class hasn't been created,
+        if not self.uArm.connected(): return False  # If the Serial is not connected
+        if self.running:              return False  # If the setupThread is running
         return True
 
 
@@ -121,7 +122,6 @@ class Robot:
 
     def setGripper(self, status):
         if not self.connected():
-            print("status: ", status)
             printf("Robot.setGripper(): ERROR: No uArm connected, could not set gripper to", status)
             return
 
@@ -132,16 +132,31 @@ class Robot:
             else:
                 self.uArm.pumpOff()
 
+    def setSpeed(self, speed):
+        # Changes a class wide variable that affects the move commands in self.refresh()
+        self.speed = speed
+
+    def setBuzzer(self, frequency, duration):
+        if not self.connected():
+            printf("Robot.setBuzzer(): ERROR: No uArm connected, could not set frequency to", frequency, duration)
+            return
+
+        self.uArm.setBuzzer(frequency, duration)
 
 
 
-    def refresh(self, speed=45, override=False):
+    def refresh(self, override=False):
 
         # Check that the robot is connected
         if not self.connected():
             printf("Robot.refresh(): ERROR: Tried sending command while uArm not connected, or while setting up.")
             return
 
+
+        # Handle any wrist position changes. Don't wait for robot, since this movement is usually rare and one-off
+        if self.wristChanged:
+            self.uArm.moveWrist(self.wrist)
+            self.wristChanged = False
 
         # Wait for robot to be done moving before doing anything
         if not override:
@@ -162,14 +177,10 @@ class Robot:
             self.gripperChanged = False
 
 
-        # Handle any wrist position changes
-        if self.wristChanged:
-            self.uArm.moveWrist(self.wrist)
-            self.wristChanged = False
-
         # Perform a moves in self.pos array
         # dist = lambda p1, p2: ((p2['x'] - p1['x']) ** 2 + (p2['y'] - p1['y']) ** 2 + (p2['z'] - p1['z']) ** 2) ** .5
         if self.positionChanged:
+
             # if moveTime == -1:
             #     # Calculate the amount of time the move should take so as to reach an avg speed of cmps (cm per second)
             #     currXYZ  = self.getCurrentCoord()
@@ -179,7 +190,7 @@ class Robot:
             #     time = moveTime
 
             try:
-                self.uArm.moveToWithTime(self.pos['x'], self.pos['y'], self.pos['z'], speed)
+                self.uArm.moveToWithTime(self.pos['x'], self.pos['y'], self.pos['z'], self.speed)
             except ValueError:
                 printf("Robot.refresh(): ERROR: Robot out of bounds and the uarm_python library crashed!")
 
@@ -244,6 +255,7 @@ def getDirectionToTarget(targetPos, screenDimensions, tolerance):
     """
     Returns what direction in the x and y (relative) the robot should move
     """
+
     targetFocus = [screenDimensions[0] / 2, screenDimensions[1] / 2]
     sign        = lambda x: (1.0, -1.0)[x < 0]  #sign(x) will return the sign of a number'
 
@@ -263,7 +275,7 @@ def getDirectionToTarget(targetPos, screenDimensions, tolerance):
     if abs(xDist) >= tolerance:
         xMove  = sign(xDist)
 
-    #PERFORM THE MOVE
+    # PERFORM THE MOVE
     if not (abs(xDist) < tolerance and abs(yDist) < tolerance):
         return xMove, -yMove
     else:
@@ -275,5 +287,7 @@ def getRelative(x1, y1, baseAngle):
 
     x = x1 * math.cos(angle) - y1 * math.sin(angle)
     y = x1 * math.sin(angle) + y1 * math.cos(angle)
-    return  x, y
+
+
+    return x, y
 

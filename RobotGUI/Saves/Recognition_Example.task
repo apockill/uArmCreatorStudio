@@ -1,0 +1,243 @@
+[
+   {
+      "commandList": [
+         {
+            "parameters": {
+               "speed": "45"
+            },
+            "typeGUI": "SpeedCommandGUI",
+            "typeLogic": "SpeedCommand"
+         },
+         {
+            "parameters": {
+               "variable": "combination",
+               "expression": "0"
+            },
+            "typeGUI": "SetVariableCommandGUI",
+            "typeLogic": "SetVariableCommand"
+         },
+         {
+            "parameters": {
+               "variable": "ace_spades",
+               "expression": "0"
+            },
+            "typeGUI": "SetVariableCommandGUI",
+            "typeLogic": "SetVariableCommand"
+         },
+         {
+            "parameters": {
+               "variable": "king_spades",
+               "expression": "0"
+            },
+            "typeGUI": "SetVariableCommandGUI",
+            "typeLogic": "SetVariableCommand"
+         },
+         {
+            "parameters": {
+               "variable": "joker_hearts",
+               "expression": "0"
+            },
+            "typeGUI": "SetVariableCommandGUI",
+            "typeLogic": "SetVariableCommand"
+         }
+      ],
+      "parameters": null,
+      "typeGUI": "InitEventGUI",
+      "typeLogic": "InitEvent"
+   },
+   {
+      "commandList": [
+         {
+            "parameters": {
+               "variable": "combination",
+               "expression": "0",
+               "test": 0
+            },
+            "typeGUI": "TestVariableCommandGUI",
+            "typeLogic": "TestVariableCommand"
+         },
+         {
+            "parameters": {},
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "parameters": {
+               "variable": "combination",
+               "expression": "1"
+            },
+            "typeGUI": "SetVariableCommandGUI",
+            "typeLogic": "SetVariableCommand"
+         },
+         {
+            "parameters": {},
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         }
+      ],
+      "parameters": {
+         "objectID": "Ace of Spades"
+      },
+      "typeGUI": "RecognizeEventGUI",
+      "typeLogic": "RecognizeEvent"
+   },
+   {
+      "commandList": [
+         {
+            "parameters": {
+               "variable": "combination",
+               "expression": "1",
+               "test": 0
+            },
+            "typeGUI": "TestVariableCommandGUI",
+            "typeLogic": "TestVariableCommand"
+         },
+         {
+            "parameters": {},
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "parameters": {
+               "variable": "combination",
+               "expression": "2"
+            },
+            "typeGUI": "SetVariableCommandGUI",
+            "typeLogic": "SetVariableCommand"
+         },
+         {
+            "parameters": {},
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         }
+      ],
+      "parameters": {
+         "objectID": "King of Spades"
+      },
+      "typeGUI": "RecognizeEventGUI",
+      "typeLogic": "RecognizeEvent"
+   },
+   {
+      "commandList": [
+         {
+            "parameters": {
+               "variable": "combination",
+               "expression": "2",
+               "test": 0
+            },
+            "typeGUI": "TestVariableCommandGUI",
+            "typeLogic": "TestVariableCommand"
+         },
+         {
+            "parameters": {},
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "parameters": {
+               "variable": "combination",
+               "expression": "3"
+            },
+            "typeGUI": "SetVariableCommandGUI",
+            "typeLogic": "SetVariableCommand"
+         },
+         {
+            "parameters": {},
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         }
+      ],
+      "parameters": {
+         "objectID": "Joker of Hearts"
+      },
+      "typeGUI": "RecognizeEventGUI",
+      "typeLogic": "RecognizeEvent"
+   },
+   {
+      "commandList": [
+         {
+            "parameters": {
+               "variable": "combination",
+               "expression": "3",
+               "test": 0
+            },
+            "typeGUI": "TestVariableCommandGUI",
+            "typeLogic": "TestVariableCommand"
+         },
+         {
+            "parameters": {},
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "parameters": {
+               "frequency": "500",
+               "time": ".25",
+               "waitForBuzzer": true
+            },
+            "typeGUI": "BuzzerCommandGUI",
+            "typeLogic": "BuzzerCommand"
+         },
+         {
+            "parameters": {
+               "relative": false,
+               "y": "-15",
+               "override": false,
+               "x": "1",
+               "z": "25"
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "parameters": {
+               "relative": false,
+               "y": "-15",
+               "override": false,
+               "x": "1",
+               "z": "7"
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "parameters": {
+               "relative": false,
+               "y": "-15",
+               "override": false,
+               "x": "1",
+               "z": "25"
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "parameters": {
+               "relative": false,
+               "y": "-15",
+               "override": false,
+               "x": "1",
+               "z": "7"
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "parameters": {
+               "variable": "combination",
+               "expression": "0"
+            },
+            "typeGUI": "SetVariableCommandGUI",
+            "typeLogic": "SetVariableCommand"
+         },
+         {
+            "parameters": {},
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         }
+      ],
+      "parameters": null,
+      "typeGUI": "StepEventGUI",
+      "typeLogic": "StepEvent"
+   }
+]

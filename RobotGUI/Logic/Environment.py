@@ -142,7 +142,7 @@ class Interpreter:
         else:
             printf("Interpreter.startThread(): ERROR: Tried to run programThread, but there was already one running!")
 
-    def endThread(self):
+    def endThread(self, vision):
         # Close the thread that is currently running at the first chance it gets. Return True or False
         printf("Interpreter.endThread(): Closing program thread.")
 
@@ -156,8 +156,11 @@ class Interpreter:
                 printf("Interpreter.endThread(): ERROR: Thread was told to close but did not")
                 return False
             else:
+
                 self.mainThread = None
                 self.events     = []
+                vision.clearTargets()
+                vision.endTracker()
 
                 ##### Reset self.__variables with the default values/functions #####
                 safeList = ['math', 'acos', 'asin', 'atan', 'atan2', 'ceil', 'cos', 'cosh', 'degrees',
@@ -190,7 +193,9 @@ class Interpreter:
     def getStatus(self):
         # Returns an index of the (event, command) that is currently being run
 
-        # Ensure that this event is threadsafe by building the result in an atomic way
+        if self.killApp:
+            return False
+
         currRunning = deepcopy(self.currRunning)
 
         return currRunning
@@ -237,7 +242,7 @@ class Interpreter:
             answer = eval(expression, {"__builtins__": None}, self.__variables)
 
         except:
-            print('Interpreter.__evaluateExpression(): ERROR: Expression "', expression, '" crashed!')
+            printf('Interpreter.__evaluateExpression(): ERROR: Expression "', expression, '" crashed!')
             return None, False
 
         return answer, True
@@ -277,7 +282,7 @@ class Interpreter:
         eventIndex    = self.events.index(event)
         commandList   = event.commandList
         index         = 0                   # The current command that is being considered for running
-        currentIndent = 0                   # The 'bracket' level of code
+        # currentIndent = 0                   # The 'bracket' level of code
 
         self.currRunning[eventIndex] = []
 
@@ -292,20 +297,46 @@ class Interpreter:
             evaluation = command.run()
 
 
-            # If its false, skip to the next indent of the same indentation
+            # If the command returned an "Exit event" command, then exit the event evaluation
+            if evaluation == "Exit": break
+
+
+            # If its false, skip to the next indent of the same indentation, or an "Else" command
             if evaluation is False:
+                index = self.__getNextIndex(index, commandList)
+            else:
+                # If an else command is the next block, decide whether or not to skip it
+                if index + 1 < len(commandList) and type(commandList[index + 1]) is Commands.ElseCommand:
+                    # If the evaluation was true, then DON'T run the else command
 
-                skipToIndent = currentIndent
-                nextIndent   = currentIndent
-                for i in range(index + 1, len(commandList)):
-                    if type(commandList[i]) is Commands.StartBlockCommand: nextIndent += 1
-                    if type(commandList[i]) is Commands.EndBlockCommand:   nextIndent -= 1
-                    if nextIndent == skipToIndent:
-                        index = i - 1
-                        break
+                    index = self.__getNextIndex(index + 1, commandList)
 
-                    # If there are no commands
-                    if i == len(commandList) - 1:
-                        index = i
-                        break
+
             index += 1
+
+
+
+    def __getNextIndex(self, index, commandList):
+        # If its false, skip to the next indent of the same indentation, or an "Else" command
+
+
+        skipToIndent = 0
+        nextIndent   = 0
+        for i in range(index + 1, len(commandList)):
+            if type(commandList[i]) is Commands.StartBlockCommand: nextIndent += 1
+
+            if nextIndent == skipToIndent:
+                index = i - 1
+                break
+
+            # If there are no commands
+            if i == len(commandList) - 1:
+                index = i
+                break
+
+
+            if type(commandList[i]) is Commands.EndBlockCommand:   nextIndent -= 1
+
+
+
+        return index

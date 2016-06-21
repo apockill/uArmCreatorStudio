@@ -3,6 +3,15 @@ from PyQt5                      import QtWidgets, QtCore, QtGui
 from RobotGUI.Logic.Global      import printf
 
 
+def cvToPixFrame(image):
+    # Convert a cv2 frame to a Qt PixFrame
+    pixFrame               = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    height, width, channel = pixFrame.shape
+    bytesPerLine           = 3 * width
+    img                    = QtGui.QImage(pixFrame, width, height, bytesPerLine, QtGui.QImage.Format_RGB888)
+    pix                    = QtGui.QPixmap.fromImage(img)
+    return pix
+
 class CameraWidget(QtWidgets.QWidget):
     """
         Creates a widget that will update 24 times per second, by calling for a new frame from the vStream object.
@@ -55,18 +64,10 @@ class CameraWidget(QtWidgets.QWidget):
 
 
     def setFrame(self, frame):
+        # Convert a CV2 frame to a QPixMap and set the frameLbl to that
         # When paused, you might want to have a custom frame showing. This is also useful for CameraSelector
         # The nextFrameSlot also uses it to set frames.
-
-
-        # Convert a CV2 frame to a QPixMap and set the frameLbl to that
-        pixFrame               = cv2.cvtColor(frame.copy(), cv2.COLOR_BGR2RGB)
-        height, width, channel = pixFrame.shape
-        bytesPerLine           = 3 * width
-        img                    = QtGui.QImage(pixFrame, width, height, bytesPerLine, QtGui.QImage.Format_RGB888)
-        pix                    = QtGui.QPixmap.fromImage(img)
-
-        self.frameLbl.setPixmap(pix)
+        self.frameLbl.setPixmap(cvToPixFrame(frame))
 
     def nextFrameSlot(self):
         frameID, frame = self.getFrameFunction()

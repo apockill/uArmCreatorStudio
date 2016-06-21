@@ -1,0 +1,10 @@
+{
+   "robotID": "COM6",
+   "cameraID": 0,
+   "objectsDirectory": "Objects",
+   "lastOpenedFile": "F:/Google Drive/Projects/Git Repositories/RobotGUIProgramming/RobotGUI/Saves/Music_Example.task",
+   "motionCalibrations": {
+      "activeMovement": null,
+      "stationaryMovement": null
+   }
+}
