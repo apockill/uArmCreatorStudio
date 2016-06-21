@@ -59,20 +59,28 @@ class Uarm:
         cmnd = "buzzF" + str(frequency) + "T" + str(duration)
         response = self.__send(cmnd)
 
+
     # Get commands
     def getCurrentCoord(self):
-        # printf("Uarm.currentCoord(): Getting current coordinates of robot")
+        # Returns an array of the format [x, y, z] of the robots current location
+
         response  = self.__send("gcoords")
 
         parsedArgs = self.__parseArgs(response, "coords", ["x", "y", "z"])
-        return parsedArgs
+        coordinate = [parsedArgs["x"], parsedArgs["y"], parsedArgs["z"]]
+
+        return coordinate
 
     def getIsMoving(self):
+        # Returns a 0 or a 1, depending on whether or not the robot is moving.
+
         response  = self.__send("gmoving")
         parsedArgs = self.__parseArgs(response, "moving", ["m"])
         return parsedArgs['m']
 
     def getServoAngle(self, servo_number):
+        # Returns an angle in degrees, of the servo
+
         cmnd = "gAngleS" + str(servo_number)
         response = self.__send(cmnd)
         parsedArgs = self.__parseArgs(response, "angle", ["a"])
@@ -80,7 +88,8 @@ class Uarm:
         return parsedArgs["a"]
 
     def getTipSensor(self):
-        # Returns whether or not the tip sensor is currently activated
+        # Returns 0 or 1, whether or not the tip sensor is currently activated
+
         response  = self.__send("gtip")
         parsedArgs = self.__parseArgs(response, "tip", ["v"])
 

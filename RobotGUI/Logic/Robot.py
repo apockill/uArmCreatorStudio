@@ -65,7 +65,7 @@ class Robot:
     def getCurrentCoord(self):
         if not self.connected():
             printf("Robot.getCurrentCoord(): Robot not found or setupThread is running, return 0 for all coordinates")
-            return {"x": 0, "y": 0, "z": 0}
+            return [0, 0, 0]
         else:
             return self.uArm.getCurrentCoord()
 
@@ -113,12 +113,17 @@ class Robot:
         else:
             print("WRIST DIDNT CHANGE YO!!!")
 
-    def setServos(self, **kwargs):
+    def setServos(self, setAll=None, servo1=None, servo2=None, servo3=None, servo4=None):
         # If anything changed, set the appropriate newServoStatus to reflect that
-        self.newServoStatus[1] = kwargs.get('servo1', self.newServoStatus[1])
-        self.newServoStatus[2] = kwargs.get('servo2', self.newServoStatus[2])
-        self.newServoStatus[3] = kwargs.get('servo3', self.newServoStatus[3])
-        self.newServoStatus[4] = kwargs.get('servo4', self.newServoStatus[4])
+
+        if setAll is not None: servo1, servo2, servo3, servo4 = setAll, setAll, setAll, setAll
+
+        if servo1 is not None: self.newServoStatus[1] = servo1
+        if servo2 is not None: self.newServoStatus[2] = servo2
+        if servo3 is not None: self.newServoStatus[3] = servo3
+        if servo4 is not None: self.newServoStatus[4] = servo4
+
+
 
     def setGripper(self, status):
         if not self.connected():
@@ -173,22 +178,12 @@ class Robot:
         # Move very quickly to the position you were in before servos were attached (reduces jerk)
         if self.servoAttached:
             self.servoAttached = False
-            self.uArm.moveToWithTime(currXYZ['x'], currXYZ['y'], currXYZ['z'], 0)
+            self.uArm.moveToWithTime(currXYZ[0], currXYZ[1], currXYZ[2], 0)
             self.gripperChanged = False
 
 
         # Perform a moves in self.pos array
-        # dist = lambda p1, p2: ((p2['x'] - p1['x']) ** 2 + (p2['y'] - p1['y']) ** 2 + (p2['z'] - p1['z']) ** 2) ** .5
         if self.positionChanged:
-
-            # if moveTime == -1:
-            #     # Calculate the amount of time the move should take so as to reach an avg speed of cmps (cm per second)
-            #     currXYZ  = self.getCurrentCoord()
-            #     distance = dist(currXYZ, self.pos)
-            #     time     = distance / speed
-            # else:
-            #     time = moveTime
-
             try:
                 self.uArm.moveToWithTime(self.pos['x'], self.pos['y'], self.pos['z'], self.speed)
             except ValueError:

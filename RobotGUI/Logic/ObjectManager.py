@@ -39,7 +39,7 @@ class ObjectManager:
 
 
     def __init__(self):
-        self.__objects = [] # A list of the loaded objects
+        self.__objects = []  # A list of the loaded objects
         self.__directory = None
 
     def setDirectory(self, filename):
@@ -74,8 +74,11 @@ class ObjectManager:
         #     print('files', filenames)
 
     def saveNewObject(self, newObject):
+        # If not new, replace self
         wasNew = self.__addObject(newObject)
-        if not wasNew: return
+        if not wasNew:
+            printf("ObjectManager.saveNewObject(): Tried to add object that already existed, ", newObject.name)
+            return
 
         newObject.save(self.__directory)
 
@@ -185,7 +188,7 @@ class TrackableObject:
         }
         """
 
-        printf("TrackableObject.save(): Saving self to directory ", self.directory)
+        printf("TrackableObject.save(): Saving self to directory ", directory)
         # Make sure the "objects" directory exists
         filename                    =  directory  + "\\" + "TrackerObject " + self.name
         self.directory              = filename
@@ -244,7 +247,8 @@ class TrackableObject:
         return True
 
     def addSample(self, sample):
-        self.samples.append(sample)
+        newSample = self.Sample(name=self.name, image=sample.image, rect=sample.rect, pickupRect=sample.pickupRect)
+        self.samples.append(newSample)
 
     def getSamples(self):
         return self.samples

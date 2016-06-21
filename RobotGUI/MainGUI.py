@@ -212,6 +212,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                  "cameraID":            None,
                                  "objectsDirectory":    "Objects",  # Default directory for saving objects
                                  "motionCalibrations":  {"stationaryMovement": None, "activeMovement": None},
+                                 "coordCalibrations":   {"robotPoints": None, "cameraPoints": None},
 
                                  # GUI RELATED SETTINGS
                                  "lastOpenedFile":      None
@@ -223,7 +224,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Init self and objects. All objects should be capable of being started w/o settings, THEN settings are loaded.
         self.fileName    = None
-        self.loadData    = None  #Set when file is loaded. Used to check if the user has changed anything and prompt
+        self.loadData    = []  #Set when file is loaded. Used to check if the user has changed anything and prompt
         self.env         = Environment(self.settings)
         self.interpreter = Interpreter()
 
@@ -369,9 +370,12 @@ class MainWindow(QtWidgets.QMainWindow):
         # If a calibration of type Motion has been changed, reflect this in the settings
         if isNew("motionCalibrations"):
             settingsChanged = True
-            print("Motioncalibrations asked!")
+            print("MainWindow.setSettings(): Updating Motion Calibrations!")
             self.settings["motionCalibrations"] = newSettings["motionCalibrations"]
 
+        if isNew("coordCalibrations"):
+            settingsChanged = True
+            self.settings["coordCalibrations"] = newSettings["coordCalibrations"]
 
         # Save settings to a config file
         if settingsChanged:
@@ -516,6 +520,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.endScript()
         self.setVideo("pause")
 
+        settings = self.env.getSettings()
         calibrationsWindow = CalibrateWindow(self.env, parent=self)
         accepted           = calibrationsWindow.exec_()
 
@@ -621,6 +626,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def saveSettings(self):
         printf("MainWindow.saveSettings(): Saving Settings")
+        print("Saving settings: ", self.settings)
         json.dump(self.settings, open("Settings.txt", 'w'), sort_keys=False, indent=3, separators=(',', ': '))
 
     def loadSettings(self):
@@ -633,10 +639,14 @@ class MainWindow(QtWidgets.QMainWindow):
             # printf("MainWindow.loadSettings(): Loading settings: ", newSettings, "...")
             self.setSettings(newSettings)
             return True
-        except IOError:
+        except IOError as e:
             printf("MainWindow.loadSettings(): No settings file detected. Using default values.")
             return False
-
+        except ValueError as e:
+            printf("MainWindow.loadSettings(): Error while loading an existing settings file. Using default values.")
+            QtWidgets.QMessageBox.question(self, 'Error', "Could not load existing settings file."
+                                                          "\nCreating a new one.", QtWidgets.QMessageBox.Ok)
+            return False
 
     def promptSave(self):
         # Prompts the user if they want to save, but only if they've changed something in the program

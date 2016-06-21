@@ -70,7 +70,7 @@ class Environment:
         return self.__vision
 
     def getSettings(self):
-        return self.__settings
+        return deepcopy(self.__settings)
 
     def getObjectManager(self):
         return self.__objectMngr
@@ -196,7 +196,7 @@ class Interpreter:
         if self.killApp:
             return False
 
-        currRunning = deepcopy(self.currRunning)
+        currRunning = self.currRunning
 
         return currRunning
 

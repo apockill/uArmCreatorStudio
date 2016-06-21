@@ -55,7 +55,7 @@ class Event:
 
         # DO ERROR CHECKING
         # If the appropriate motionCalibrations do not exist, add it to the "compile" errors, and set self.calib to None
-        if calib["activeMovement"] is None or self.calib["stationaryMovement"] is None:
+        if calib["activeMovement"] is None or calib["stationaryMovement"] is None:
             self.errors.append("Motion Calibrations not found in settings")
 
         return calib
@@ -133,7 +133,7 @@ class MotionEvent(Event):
         super(MotionEvent, self).__init__(parameters)
 
         self.vision = self.getVerifyVision(env)
-        self.calib  = env.getSettings()["motionCalibrations"]
+        self.calib  = self.getVerifyMotionCalibrations(env)
 
 
         # If the necessary calibrations don't exist, leave now. The isActive has a check to not run.

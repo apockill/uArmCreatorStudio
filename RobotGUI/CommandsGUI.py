@@ -436,9 +436,9 @@ class MoveXYZCommandGUI(CommandGUI):
             # This helps with workflow so you can create MoveXYZ commands and move the robot around as you work with it
             currentXYZ = env.getRobot().getCurrentCoord()
 
-            self.parameters = {'x': round(currentXYZ['x'], 1),
-                               'y': round(currentXYZ['y'], 1),
-                               'z': round(currentXYZ['z'], 1),
+            self.parameters = {'x': round(currentXYZ[0], 1),
+                               'y': round(currentXYZ[1], 1),
+                               'z': round(currentXYZ[2], 1),
                                'relative': False,
                                'override': False}
 

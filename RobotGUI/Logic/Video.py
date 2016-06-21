@@ -149,7 +149,8 @@ class VideoStream:
 
                 # Add a frame to the frameList that records the 5 latest frames for Vision uses
                 self.frameList.insert(0, self.frame.copy())
-                while len(self.frameList) > 5:
+                # print("len", len(self.frameList), "Curr frames: ", [id(frame) for frame in self.frameList])
+                while len(self.frameList) > 10:
                     del self.frameList[-1]
 
                 # Keep track of new frames by counting them. (100 is an arbitrary number)
@@ -301,13 +302,6 @@ class Vision:
         self.workLock   = self.vStream.workLock
 
 
-    # Tracker related functions
-    # def getTargetSample(self, image, rect, name=None, pickupRect=None):
-    #     # Interfaces with the tracker, using workLocks for safety
-    #     with self.workLock:
-    #         target = self.tracker.getTarget(image, rect, name, pickupRect)
-    #     return target
-
     def addTargetSamples(self, samples):
         with self.workLock:
             for sample in samples:
@@ -346,22 +340,39 @@ class Vision:
         self.endTrackerFilter()
         self.clearTargets()
 
+    def getAverageObjectPosition(self, objectID, numFrames):
+        # Finds the object in the latest numFrames from the tracking history, and returns the average pos and rot
 
-    def getRecentObjectTrack(self, objectID):
-        # Returns the most recent time that the object was tracked, and how many frames ago it occured
+        if numFrames >= self.tracker.historyLen:
+            printf("Vision.getAverageObjectPosition(): ERROR: Tried to look further in the history than was possible!")
+            numFrames = self.tracker.historyLen
+
 
         trackHistory = []
         with self.workLock:
-            trackHistory = self.tracker.trackedHistory[:]
+            trackHistory = self.tracker.trackedHistory[:numFrames]
 
+        # Set up variables
+        samples       = 0
+        locationSum   = np.float32([[0], [0], [0]])
+        rotationSum   = np.float32([[0], [0], [0]])
 
+        # Look through the history range and collect the object center and rotation
         for frameID, historyFromFrame in enumerate(trackHistory):
+
             for obj in historyFromFrame:
+
                 if obj.target.name == objectID:
-                    return frameID, obj
+                    locationSum += obj.center
+                    rotationSum += obj.rotation
+                    samples     += 1
+
 
         # If object was not found, None will be returned for the frame and the object
-        return None, None
+        if samples == 0:
+            return None, None
+
+        return locationSum/samples, rotationSum/samples
 
     def isRecognized(self, objectID, numFrames=1):
         # numFrames is the amount of frames to check in the history
@@ -384,19 +395,22 @@ class Vision:
                     return True
         return False
 
+
     # Useful computer vision functions
     def getMotion(self):
 
         # GET TWO CONSECUTIVE FRAMES
         frameList = self.vStream.getFrameList()
-        if len(frameList) < 5:  # Make sure there are enough frames to do the motion comparison
+        if len(frameList) < 10:  # Make sure there are enough frames to do the motion comparison
             printf("getMovement():Not enough frames in self.vid.previousFrames")
             return 0  # IF PROGRAM IS RUN BEFORE THE PROGRAM HAS EVEN 10 FRAMES
 
         frame0 = frameList[0]
-        frame1 = frameList[2]
-        movementImg = cv2.absdiff(frame0, frame1)
+        frame1 = frameList[9]
 
+        cv2.waitKey(1)
+        movementImg = cv2.absdiff(frame0, frame1)
+        cv2.imshow('test', movementImg)
         avgDifference = cv2.mean(movementImg)[0]
 
         return avgDifference
@@ -580,6 +594,11 @@ class PlaneTracker:
         return target
 
     def addTarget(self, name, image, rect):
+        for target in self.targets:
+            if name == target.name:
+                printf("PlaneTracker.addTarget(): ERROR: Attempted to add two targets of the same name: ", name)
+                return
+
         planarTarget = self.getTarget(image, rect, name=name)
 
         descrs = planarTarget.descrs
@@ -620,8 +639,10 @@ class PlaneTracker:
 
         tracked = []
         for imgIdx, matches in enumerate(matches_by_id):
+
             if len(matches) < self.MIN_MATCH_COUNT:
                 continue
+
             target = self.targets[imgIdx]
 
             p0 = [target.keypoints[m.trainIdx].pt for m in matches]
@@ -674,27 +695,27 @@ class PlaneTracker:
         filterFnt   = cv2.FONT_HERSHEY_PLAIN
         filterColor = (255, 255, 255)
 
-        for tr in self.trackedHistory[0]:
-            quad = np.int32(tr.quad)
+        for obj in self.trackedHistory[0]:
+            quad = np.int32(obj.quad)
             cv2.polylines(frame, [quad], True, (255, 255, 255), 2)
 
             # Figure out how much the text should be scaled (depends on the different in curr side len, and orig len)
-            rect          = tr.target.rect
+            rect          = obj.target.rect
             origLength    = rect[2] - rect[0] + rect[3] - rect[1]
             currLength    = np.linalg.norm(quad[1] - quad[0]) + np.linalg.norm(quad[2] - quad[1])  # avg side len
             scaleFactor   = currLength / origLength
 
             # Draw the name of the object, and coordinates
-            cv2.putText(frame,   tr.target.name, tuple(quad[1]),  filterFnt, scaleFactor, color=filterColor, thickness=1)
+            cv2.putText(frame, obj.target.name, tuple(quad[1]),  filterFnt, scaleFactor, color=filterColor, thickness=1)
 
             # FOR DEUBGGING ONLY: TODO: Remove this when deploying final product
             try:
-                coordText = "X " + str(int(tr.center[0])) + " Y " + str(int(tr.center[1])) + " Z " + str(int(tr.center[2]))
+                coordText = "X " + str(int(obj.center[0])) + " Y " + str(int(obj.center[1])) + " Z " + str(int(obj.center[2]))
                 cv2.putText(frame, coordText, (quad[1][0], quad[1][1] + int(15*scaleFactor)),  filterFnt, scaleFactor, color=filterColor, thickness=1)
             except:
                 pass
 
-            for (x, y) in np.int32(tr.p1):
+            for (x, y) in np.int32(obj.p1):
                 cv2.circle(frame, (x, y), 2, (255, 255, 255))
 
         return frame
@@ -720,6 +741,7 @@ class PlaneTracker:
         ret, rvec, tvec = cv2.solvePnP(quad3d, quad, K, dist_coef)
 
         return rvec, tvec
+
 # def getMotionDirection(self):
     #     frameList = self.vStream.getFrameList()
     #
