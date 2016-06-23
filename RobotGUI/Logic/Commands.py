@@ -1,5 +1,8 @@
-from RobotGUI.Logic.Global import printf
-from time                  import sleep  # For WaitCommand
+from time                       import sleep  # For WaitCommand
+from RobotGUI.Logic.Global      import printf
+from RobotGUI.Logic             import RobotVision as rv
+from RobotGUI.Logic.LogicObject import LogicObject
+
 
 """
 Example Class Structure
@@ -12,39 +15,27 @@ class NameCommand(Command):
 
         # Load any objects that will be used in the run Section here
         self.robot   = self.getVerifyRobot(env)
-        self.vstream = self.getVerifyVision(env)
+        self.vision  = self.getVerifyVision(env)
 
 
         # For any objects that don't have a "getVerify####" on them, add the error here specifically for them
-        self.errors.append["Error message about what's missing"]
+        self.errors.append("Error message about what's missing")
 
     def run(self):
-        printf("NameCommand.run(): A quick description, usually using parameters, of the command that is running"
+        printf("NameCommand.run(): A quick description, usually using parameters, of the command that is running")
 
 """
 
 
 
-class Command:
+
+class Command(LogicObject):
     def __init__(self, parameters):
+        super(Command, self).__init__()
         self.parameters = parameters
-        self.errors     = []  # Errors are created in the "getXXX(env)" functions, and are strings
 
     def run(self):
         pass
-
-    # By having functions to pull things from env, I can automatically generate Error messages for things that go wrong
-    def getVerifyRobot(self, env):
-        robot = env.getRobot()
-        if not robot.connected():
-            self.errors.append("Robot")
-        return env.getRobot()
-
-    def getVerifyVision(self, env):
-        vStream = env.getVStream()
-        if not vStream.connected():
-            self.errors.append("Camera")
-        return env.getVision()
 
 
 #   BASIC CONTROL COMMANDS
@@ -235,6 +226,95 @@ class BuzzerCommand(Command):
         # If the user wants to sleep while the buzzer is running, then sleep.
         if self.parameters["waitForBuzzer"]:
             sleep(duration)
+
+
+
+#   Robot + Vision Commands
+class FocusOnObjectCommand(Command):
+
+    def __init__(self, env, interpreter, parameters=None):
+        super(FocusOnObjectCommand, self).__init__(parameters)
+
+        # Load any objects that will be used in the run Section here
+        self.robot      = self.getVerifyRobot(env)
+        self.vision     = self.getVerifyVision(env)
+        self.vStream    = self.getVerifyVStream(env)
+        self.coordCalib = self.getVerifyCoordCalibrations(env)
+        self.object     = self.getVerifyObject(env, self.parameters["objectID"])
+        self.rbMarker   = self.getVerifyObject(env, "Robot Marker")
+
+        print(self.errors)
+        if len(self.errors): return
+
+        # Turn on tracking for the relevant object
+        self.vision.addTargetSamples(self.object.getSamples())
+        self.vision.addTargetSamples(self.rbMarker.getSamples())
+        self.vision.startTracker()
+
+    def run(self):
+        if len(self.errors) > 0: return
+        # printf("NameCommand.run(): A quick description, usually using parameters, of the command that is running")
+        self.robot.wait()
+
+        coordSave = self.robot.getCurrentCoord()
+        self.robot.setPos(z=2, relative=True)
+        def swipe(lower, upper, axis):
+            self.robot.setSpeed(30)
+
+            self.robot.setPos(**{axis:lower})
+            self.robot.refresh()
+            sleep(1)
+            self.robot.setPos(**{axis:upper})
+            self.robot.setSpeed(10)
+            self.robot.refresh()
+            while self.robot.getMoving():
+
+                robPos   = self.robot.getCurrentCoord()
+                age, obj = self.vision.getObjectLatestRecognition(self.rbMarker.name)
+                if not age == 0: continue
+                print("Appending", robPos, obj.center)
+                self.coordCalib["robotPoints"].append(robPos)
+                self.coordCalib["cameraPoints"].append(obj.center)
+
+                print("Length", len(self.coordCalib["cameraPoints"]), len(self.coordCalib["robotPoints"]))
+                self.vStream.waitForNewFrame()
+        swipe(-15, 15, "x")
+        self.robot.setPos(x=coordSave[0])
+        swipe(-8, -25, "y")
+        self.robot.setPos(y=coordSave[1])
+        swipe(8, 25, "z")
+        self.robot.setPos(z=coordSave[2])
+        self.robot.setSpeed(35)
+        self.robot.refresh()
+        self.robot.wait()
+
+        rv.mountObjectLearn(self.object.name, self.robot, self.vision, self.coordCalib)
+        # self.robot.setSpeed(10)
+        #
+        #
+        #
+        # self.robot.setSpeed(10)
+        # rv.mountObjectLearn(self.object.name, self.robot, self.vision, self.coordCalib)
+
+        # pos = rv.getObjectPosition(self.object.name, self.robot, self.vision, self.coordCalib)
+        #
+        #
+        # if pos is not None:
+        #     self.robot.refresh()
+        #     self.robot.setPos(x=pos[0], y=pos[1], z=pos[2])
+        #     self.robot.refresh()
+        #     self.robot.wait()
+        #     sleep(2)
+        #
+        #     pos, rotation = self.vision.getAverageObjectPosition(self.rbMarker.name, 29)
+        #     print("Went to: ", pos)
+        #     if pos is not None:
+        #         self.coordCalib["cameraPoints"].append(pos)
+        #         self.coordCalib["robotPoints"].append(self.robot.getCurrentCoord())
+
+            # print("Moved to\t ", self.robot.getCurrentCoord())
+
+
 
 
 #   LOGIC COMMANDS

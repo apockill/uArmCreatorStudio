@@ -1,6 +1,5 @@
 import os
-import cv2          # For image saving
-import numpy as np  # For np array saving
+import cv2                   # For image saving
 import errno
 import json
 from collections           import namedtuple
@@ -276,8 +275,6 @@ class TrackableObject:
         height, width, _ = image.shape
 
         return image.copy()
-
-
 
 
 

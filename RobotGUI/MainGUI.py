@@ -208,11 +208,18 @@ class MainWindow(QtWidgets.QMainWindow):
         # This is the format of an empty settings variable. It is filled in self.loadSettings() if settings exist.
         self.settings       = {
                                  # LOGIC RELATED SETTINGS
-                                 "robotID":             None,
-                                 "cameraID":            None,
-                                 "objectsDirectory":    "Objects",  # Default directory for saving objects
-                                 "motionCalibrations":  {"stationaryMovement": None, "activeMovement": None},
-                                 "coordCalibrations":   {"robotPoints": None, "cameraPoints": None},
+                                 "robotID":            None,                     # COM port of the robot
+
+                                 "cameraID":           None,                     # The # of the camera for cv to connect
+
+                                 "objectsDirectory":   "Objects",                # Default directory for saving objects
+
+                                 "motionCalibrations": {"stationaryMovement": None,
+                                                        "activeMovement": None},
+
+                                 "coordCalibrations":  {"robotPoints":   None,   # A robot coordinate
+                                                        "cameraPoints":  None,   # The coordinate the camera reporter
+                                                        "failurePoints": None},  # Coordiantes where robot can't be seen
 
                                  # GUI RELATED SETTINGS
                                  "lastOpenedFile":      None
@@ -456,6 +463,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         # Stop you from moving stuff around while script is running, and activate the visual cmmnd highlighting
+        robot = self.env.getRobot()
+        robot.setServos(setAll=True)
+        robot.setSpeed(45)
+        robot.refresh()
         self.controlPanel.setScriptMode(True, self.interpreter.getStatus)
         self.interpreter.startThread()
 
@@ -503,12 +514,12 @@ class MainWindow(QtWidgets.QMainWindow):
         vStream = self.env.getVStream()
         vStream.setNewCamera(self.settings['cameraID'])
 
+
+        # If the robots not connected, attempt to reestablish connection
         robot   = self.env.getRobot()
-        robot.setUArm(self.settings['robotID'])
-        # if success:
-        #     self.setVideo("play")
-        # else:
-        #     self.setVideo("pause")
+        if not robot.connected():
+            robot.setUArm(self.settings['robotID'])
+
 
 
         self.setVideo("play")
@@ -626,7 +637,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def saveSettings(self):
         printf("MainWindow.saveSettings(): Saving Settings")
-        print("Saving settings: ", self.settings)
         json.dump(self.settings, open("Settings.txt", 'w'), sort_keys=False, indent=3, separators=(',', ': '))
 
     def loadSettings(self):

@@ -1,8 +1,8 @@
 import copy
 import RobotGUI.CommandsGUI as CommandsGUI
 import RobotGUI.EventsGUI   as EventsGUI
-from PyQt5                 import QtCore, QtWidgets, QtGui
-from RobotGUI.Logic.Global import printf, FpsTimer
+from PyQt5                  import QtCore, QtWidgets, QtGui
+from RobotGUI.Logic.Global  import printf, FpsTimer
 
 
 class ControlPanel(QtWidgets.QWidget):

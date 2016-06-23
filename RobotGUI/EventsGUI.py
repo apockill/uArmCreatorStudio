@@ -163,6 +163,7 @@ class EventPromptWindow(QtWidgets.QDialog):
         ######################     MOTION MENU     ######################
         newMotionBtn = lambda params: self.btnClicked(MotionEventGUI, params=params)
         motionMnu    = QtWidgets.QMenu()
+
         motionMnu.addAction(   'Low and Above', lambda: newMotionBtn({"low":  "Low", "high":  "Inf"}))
         motionMnu.addAction('Medium and Above', lambda: newMotionBtn({"low":  "Med", "high":  "Inf"}))
         motionMnu.addAction(  'High and Above', lambda: newMotionBtn({"low": "High", "high":  "Inf"}))

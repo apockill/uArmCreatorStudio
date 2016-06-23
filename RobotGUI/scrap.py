@@ -1,9 +1,14 @@
 
 import cv2
 import numpy as np
-xTest = [[x, -15, 15] for x in range(-15, 15, 2)]
-yTest = [[y, -15, 15] for y in range(-25, -5, 2)]
-zTest = [[0, -15, z]  for z in range(  7, 25, 2)]
-combined = xTest + yTest + zTest
+testCoords = []
+testCoords += [[  6, -10,  z] for z in range(  8, 25, 3)]
+print(len(testCoords))
+print(testCoords)
 
-print(len(combined), combined)
+testCoords = []
+
+testCoords += [[ 10 + z%2,  -6 + z%2,  z] for z in range(  8, 25, 3)]
+
+print(len(testCoords))
+print(testCoords)

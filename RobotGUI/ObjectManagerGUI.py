@@ -387,6 +387,11 @@ class OWPage2(QtWidgets.QWizardPage):
     def __init__(self, environment, parent):
         super(OWPage2, self).__init__(parent)
 
+        # Detach the robots servos so that the user can move the robot out of the way
+        robot = environment.getRobot()
+        robot.setServos(setAll=False)
+        robot.refresh()
+
         # The final object is stored here:
         self.object       = None
 
@@ -414,9 +419,20 @@ class OWPage2(QtWidgets.QWizardPage):
         self.stepLbl.setFont(bold)
         self.hintLbl.setFont(bold)
 
+        # Create a tutorial gif that will be next to the video
+        movieLbl   = QtWidgets.QLabel("Could not find example gif")
+
+        # Set the animated gif on the movieLbl
+        movie = QtGui.QMovie(Icons.selecting_object)
+        movieLbl.setMovie(movie)
+        movie.start()
+
+
         # Create a special row for the camera that will force it to remain in the center, regardless of size changes
+
         camRow = QtWidgets.QHBoxLayout()
         camRow.addWidget(self.cameraWidget)
+        camRow.addWidget(movieLbl)
         camRow.addStretch(1)
 
         # Place the GUI objects vertically
@@ -575,10 +591,21 @@ class OWPage3(QtWidgets.QWizardPage):
         stepLbl.setFont(bold)
         self.yourDoneLbl.setFont(bold)
 
+
+        # Create a tutorial gif that will be next to the video
+        movieLbl   = QtWidgets.QLabel("Could not find example gif")
+
+        # Set the animated gif on the movieLbl
+        movie = QtGui.QMovie(Icons.selecting_pickArea)
+        movieLbl.setMovie(movie)
+        movie.start()
+        movieLbl.resize(320, 320)
+
         # Create a special row for the camera that will force it to remain in the center, regardless of size changes
         camRow = QtWidgets.QHBoxLayout()
         camRow.addStretch(1)
         camRow.addWidget(self.cameraWidget)
+        camRow.addWidget(movieLbl)
         camRow.addStretch(1)
 
 

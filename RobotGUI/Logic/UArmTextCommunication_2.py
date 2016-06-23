@@ -1,5 +1,5 @@
-from time                  import sleep
 import serial
+from time                  import sleep
 from RobotGUI.Logic.Global import printf
 
 

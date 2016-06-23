@@ -1,6 +1,6 @@
-from RobotGUI.Logic        import Global
-from RobotGUI.Logic.Global import printf
-
+from RobotGUI.Logic             import Global
+from RobotGUI.Logic.Global      import printf
+from RobotGUI.Logic.LogicObject import LogicObject
 
 """
 Example Event
@@ -22,53 +22,19 @@ class NameEvent(Event):
 
 """
 
-class Event:
+
+class Event(LogicObject):
     def __init__(self, parameters):
+        super(Event, self).__init__()
+
         self.parameters  = parameters
         self.commandList = []
-        self.errors      = []
 
     def addCommand(self, command):
         self.commandList.append(command)
 
     def isActive(self):
         pass
-
-
-    def getVerifyVision(self, env):
-        vStream = env.getVStream()
-
-        if not vStream.connected():
-            self.errors.append("Camera")
-        return env.getVision()
-
-    def getVerifyRobot(self, env):
-        robot = env.getRobot()
-        if not robot.connected():
-            self.errors.append("Robot")
-
-        return env.getRobot()
-
-    def getVerifyMotionCalibrations(self, env):
-        calib  = env.getSettings()["motionCalibrations"]
-
-
-        # DO ERROR CHECKING
-        # If the appropriate motionCalibrations do not exist, add it to the "compile" errors, and set self.calib to None
-        if calib["activeMovement"] is None or calib["stationaryMovement"] is None:
-            self.errors.append("Motion Calibrations not found in settings")
-
-        return calib
-
-    def getVerifyObject(self, env, objectID):
-        objectManager = env.getObjectManager()
-        requestedObj  = objectManager.getObject(objectID)
-
-        if requestedObj is None:
-            self.errors.append("Object not found: " + str(objectID))
-        return requestedObj
-
-
 
 
 class InitEvent(Event):

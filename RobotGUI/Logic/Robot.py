@@ -110,8 +110,6 @@ class Robot:
         if not self.wrist == newWrist:
             self.wrist        = newWrist
             self.wristChanged = True
-        else:
-            print("WRIST DIDNT CHANGE YO!!!")
 
     def setServos(self, setAll=None, servo1=None, servo2=None, servo3=None, servo4=None):
         # If anything changed, set the appropriate newServoStatus to reflect that
@@ -122,8 +120,6 @@ class Robot:
         if servo2 is not None: self.newServoStatus[2] = servo2
         if servo3 is not None: self.newServoStatus[3] = servo3
         if servo4 is not None: self.newServoStatus[4] = servo4
-
-
 
     def setGripper(self, status):
         if not self.connected():
@@ -149,6 +145,9 @@ class Robot:
         self.uArm.setBuzzer(frequency, duration)
 
 
+    def wait(self):
+        # Waits until the robot completes its move or whatever it's doing
+        while self.getMoving(): sleep(.05)
 
     def refresh(self, override=False):
 
@@ -165,7 +164,7 @@ class Robot:
 
         # Wait for robot to be done moving before doing anything
         if not override:
-            while self.getMoving(): sleep(.1)
+            self.wait()
 
 
 
@@ -239,8 +238,6 @@ class Robot:
 
         else:
             printf("Robot.setUArm(): ERROR: Tried setting uArm when it was already set!")
-
-
 
 
 

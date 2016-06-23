@@ -1,0 +1,61 @@
+[
+   {
+      "parameters": {
+         "high": "Inf",
+         "low": "High"
+      },
+      "commandList": [
+         {
+            "parameters": {
+               "time": ".1"
+            },
+            "typeLogic": "WaitCommand",
+            "typeGUI": "WaitCommandGUI"
+         }
+      ],
+      "typeLogic": "MotionEvent",
+      "typeGUI": "MotionEventGUI"
+   },
+   {
+      "parameters": {
+         "high": "Inf",
+         "low": "Med"
+      },
+      "commandList": [
+         {
+            "parameters": {
+               "time": ".1"
+            },
+            "typeLogic": "WaitCommand",
+            "typeGUI": "WaitCommandGUI"
+         }
+      ],
+      "typeLogic": "MotionEvent",
+      "typeGUI": "MotionEventGUI"
+   },
+   {
+      "parameters": {
+         "high": "Inf",
+         "low": "Low"
+      },
+      "commandList": [
+         {
+            "parameters": {
+               "time": ".1"
+            },
+            "typeLogic": "WaitCommand",
+            "typeGUI": "WaitCommandGUI"
+         }
+      ],
+      "typeLogic": "MotionEvent",
+      "typeGUI": "MotionEventGUI"
+   },
+   {
+      "parameters": {
+         "objectID": "Robot Marker"
+      },
+      "commandList": [],
+      "typeLogic": "RecognizeEvent",
+      "typeGUI": "RecognizeEventGUI"
+   }
+]

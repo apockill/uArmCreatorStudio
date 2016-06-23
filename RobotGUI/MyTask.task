@@ -1,0 +1,57 @@
+[
+   {
+      "commandList": [
+         {
+            "parameters": {
+               "objectID": "Back of Card"
+            },
+            "typeGUI": "FocusOnObjectCommandGUI",
+            "typeLogic": "FocusOnObjectCommand"
+         },
+         {
+            "parameters": {
+               "time": ".5"
+            },
+            "typeGUI": "WaitCommandGUI",
+            "typeLogic": "WaitCommand"
+         }
+      ],
+      "parameters": null,
+      "typeGUI": "StepEventGUI",
+      "typeLogic": "StepEvent"
+   },
+   {
+      "commandList": [
+         {
+            "parameters": {
+               "speed": "30"
+            },
+            "typeGUI": "SpeedCommandGUI",
+            "typeLogic": "SpeedCommand"
+         }
+      ],
+      "parameters": null,
+      "typeGUI": "InitEventGUI",
+      "typeLogic": "InitEvent"
+   },
+   {
+      "commandList": [
+         {
+            "parameters": {
+               "y": "-15",
+               "override": true,
+               "x": "0",
+               "z": "15",
+               "relative": false
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         }
+      ],
+      "parameters": {
+         "checkKey": "R"
+      },
+      "typeGUI": "KeypressEventGUI",
+      "typeLogic": "KeypressEvent"
+   }
+]

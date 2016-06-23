@@ -1,7 +1,8 @@
 import ast  # To check if a statement is python parsible, for evals
-from PyQt5                 import QtGui, QtCore, QtWidgets
-from RobotGUI              import Icons
-from RobotGUI.Logic.Global import printf
+from PyQt5                        import QtGui, QtCore, QtWidgets
+from RobotGUI                     import Icons
+from RobotGUI.Logic.Global        import printf
+from RobotGUI.Logic.ObjectManager import TrackableObject
 
 
 # This should only be used once, in CommandList.addCommand
@@ -100,11 +101,10 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         self.initUI()
 
     def initUI(self):
-        movementTab = self.generateBasicTab()
-        logicTab    = self.generateLogicTab()
 
-        self.addTab(movementTab, "Basic")
-        self.addTab(   logicTab, "Logic")
+        self.addTab( self.generateBasicTab(), "Basic")
+        self.addTab(self.generatePickupTab(), "Vision")
+        self.addTab( self.generateLogicTab(), "Logic")
 
         self.setTabPosition(QtWidgets.QTabWidget.East)
         self.setFixedWidth(85)
@@ -149,6 +149,16 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
 
         return tabWidget
 
+    def generatePickupTab(self):
+        tabWidget = QtWidgets.QWidget()
+        vBox = QtWidgets.QVBoxLayout()
+        vBox.setAlignment(QtCore.Qt.AlignTop)
+        tabWidget.setLayout(vBox)
+        add  = lambda btnType: vBox.addWidget(self.getButton(btnType))
+
+        add(FocusOnObjectCommandGUI)
+
+        return tabWidget
 
     def getButton(self, commandType):
         newButton = self.DraggableButton(str(commandType.__name__), self)
@@ -239,7 +249,7 @@ class CommandGUI:
     def openWindow(self):  # Open window
 
         # If this object has no window object, then skip this process and return true (ei, StartBlockCommand)
-        if len(self.parameters) == 0:
+        if self.parameters is None:
             # printf("Command.openView(): About to execute self...", self, super(Command, self), self.parent)
             return True
 
@@ -397,8 +407,9 @@ class NameCommandGUI(CommandGUI):
     def __init__(self, env, parameters=None):
         super(NameCommandGUI, self).__init__(parameters)
 
+        # If parameters do not exist, then set up the default parameters
         if self.parameters is None:
-            # Some code to set up default parameters
+            # Anything done with env should be done here. Try not to save env as a class variable whenever possible
             self.parameters = {}
 
     def dressWindow(self, prompt):
@@ -957,6 +968,95 @@ class EndEventCommandGUI(CommandGUI):
 
 
 
+
+
+#   Robot + Vision COmmands
+class FocusOnObjectCommandGUI(CommandGUI):
+    title     = "Move Robot Over Object"
+    tooltip   = "This tool uses computer vision to recognize an object of your choice, and position the robot directly"\
+                " over the object of choice, if it is visible. If it cannot be found, False will be returned."
+    icon      = Icons.move_over_command
+    logicPair = "FocusOnObjectCommand"
+
+    def __init__(self, env, parameters=None):
+        super(FocusOnObjectCommandGUI, self).__init__(parameters)
+
+        objectManager = env.getObjectManager()
+
+        # Save a list that gets all loaded objects. This is used only when the window is opened, to populate the objlist
+        self.getObjectList  = objectManager.getObjectIDList
+
+        if self.parameters is None:
+            self.parameters = {"objectID": ""}
+
+    def dressWindow(self, prompt):
+        # Define what happens when the user changes the object selection
+        # def selectionchange(comboBox):
+        #     for count in range(self.cb.count()):
+        #     print self.cb.itemText(count)
+        #     print "Current index",i,"selection changed ",self.cb.currentText()
+
+        choiceLbl = QtWidgets.QLabel("Choose an object: ")
+
+        # Create a QComboBox
+        prompt.objChoices = QtWidgets.QComboBox()
+        prompt.objChoices.setMinimumWidth(150)
+
+
+        # Add an empty item at the top if no object has ever been selected
+        prompt.objChoices.addItem(self.parameters["objectID"])
+
+
+        # Populate the comboBox with a list of all trackable objects, and select the self.parameters one if it exists
+        objectList = self.getObjectList(objectType=TrackableObject)
+        for index, objectID in enumerate(objectList):
+            prompt.objChoices.addItem(objectID)
+
+
+
+        # If there are no objects, place a nice label to let the user know
+        hintLbl = QtWidgets.QLabel()
+        bold = QtGui.QFont()
+        bold.setBold(True)
+        hintLbl.setFont(bold)
+        if len(objectList) == 0:
+            hintLbl.setText("You have not created any trackable objects yet."
+                            "\nTry adding new objects in the Object Manager!")
+
+        if 0 < len(objectList) < 2:
+            hintLbl.setText("It looks like you've only created " + str(len(objectList)) + " object(s)."
+                            "\nFeel free to add new objects in the Object Manager!")
+
+        row1 = QtWidgets.QHBoxLayout()
+        row1.addWidget(choiceLbl)
+        row1.addStretch(1)
+        row1.addWidget(prompt.objChoices)
+
+        row2 = QtWidgets.QHBoxLayout()
+        row2.addWidget(hintLbl)
+        row2.addStretch(1)
+
+
+        prompt.mainVLayout.addLayout(row1)
+        prompt.mainVLayout.addLayout(row2)
+
+        return prompt
+
+    def extractPromptInfo(self, prompt):
+        # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
+        newParameters = {"objectID": prompt.objChoices.currentText()}
+
+        print(newParameters)
+        self.parameters.update(newParameters)
+
+        return self.parameters
+
+    def updateDescription(self):
+        self.description = "Find " + self.parameters["objectID"] + " and move the robot over it"
+
+
+
+
 #   LOGIC COMMANDS
 class StartBlockCommandGUI(CommandGUI):
     """
@@ -1146,178 +1246,3 @@ class TestVariableCommandGUI(CommandGUI):
 
 
 ########### NON-UPDATED COMMANDS ########
-'''
-class RefreshCommand(CommandGUI):
-    """
-    A command for refreshing the robots position by sending the robot information.
-    It activates the robot.refresh() command, which detects if any movement variables have been changed
-    and if they have sends that info over to the robot.
-    """
-    title      = "Refresh Robot"
-    tooltip    = "Send any changed position information to the robot. This will stop event processing for a moment."
-    icon       = Icons.refresh_command
-
-    def __init__(self, parent, env, **kwargs):
-        super(RefreshCommand, self).__init__(parent)
-
-    def run(self, env):
-        env.getRobot().refresh()
-
-
-class ColorTrackCommand(CommandGUI):
-    title      = "Move to Color"
-    tooltip    = "Tracks objects by looking for a certain color."
-    icon       = Icons.colortrack_command
-
-    def __init__(self, parent, env, **kwargs):
-
-        super(ColorTrackCommand, self).__init__(parent)
-        self.parameters = kwargs.get("parameters",
-                            {'cHue': 0,
-                             'tHue': 0,
-                             'lSat': 0,
-                             'hSat': 0,
-                             'lVal': 0,
-                             'hVal': 0})
-
-
-
-
-        self.cHueEdit = QtWidgets.QLineEdit()
-        self.tHueEdit = QtWidgets.QLineEdit()
-        self.lSatEdit = QtWidgets.QLineEdit()
-        self.hSatEdit = QtWidgets.QLineEdit()
-        self.lValEdit = QtWidgets.QLineEdit()
-        self.hValEdit = QtWidgets.QLineEdit()
-
-        self.initUI(env)
-        self.setWindowIcon(QtGui.QIcon(self.icon))
-
-    def initUI(self, env):
-        #Set up all the labels for the inputs
-        hueLabel = QtWidgets.QLabel('Hue/Tolerance: ')
-        satLabel = QtWidgets.QLabel('Saturation range: ')
-        valLabel = QtWidgets.QLabel('Value range:')
-
-
-
-        #Fill the textboxes with the default parameters
-        self.cHueEdit.setText(str(self.parameters['cHue']))
-        self.tHueEdit.setText(str(self.parameters['tHue']))
-        self.lSatEdit.setText(str(self.parameters['lSat']))
-        self.hSatEdit.setText(str(self.parameters['hSat']))
-        self.lValEdit.setText(str(self.parameters['lVal']))
-        self.hValEdit.setText(str(self.parameters['hVal']))
-
-        self.cHueEdit.setFixedWidth(75)
-        self.tHueEdit.setFixedWidth(75)
-        self.lSatEdit.setFixedWidth(75)
-        self.hSatEdit.setFixedWidth(75)
-        self.lValEdit.setFixedWidth(75)
-        self.hValEdit.setFixedWidth(75)
-
-        #Set up 'scanbutton' that will scan the camera and fill out the parameters for recommended settings
-        scanLabel  = QtWidgets.QLabel("Press button to automatically fill out values:")
-        scanButton = QtWidgets.QPushButton("Scan Colors")
-        scanButton.clicked.connect(lambda: self.scanColors(env))
-
-
-
-        row1 = QtWidgets.QHBoxLayout()
-        row2 = QtWidgets.QHBoxLayout()
-        row3 = QtWidgets.QHBoxLayout()
-        row4 = QtWidgets.QHBoxLayout()
-
-        row1.addWidget(    scanLabel, QtCore.Qt.AlignLeft)
-        row1.addWidget(   scanButton, QtCore.Qt.AlignRight)
-
-        row2.addWidget(     hueLabel, QtCore.Qt.AlignLeft)
-        row2.addWidget(self.cHueEdit, QtCore.Qt.AlignRight)
-        row2.addWidget(QtWidgets.QLabel("+-"))
-        row2.addWidget(self.tHueEdit, QtCore.Qt.AlignRight)
-
-        row3.addWidget(     satLabel, QtCore.Qt.AlignLeft)
-        row3.addWidget(self.lSatEdit, QtCore.Qt.AlignRight)
-        row3.addWidget(QtWidgets.QLabel("to"))
-        row3.addWidget(self.hSatEdit, QtCore.Qt.AlignRight)
-
-        row4.addWidget(     valLabel, QtCore.Qt.AlignLeft)
-        row4.addWidget(self.lValEdit, QtCore.Qt.AlignRight)
-        row4.addWidget(QtWidgets.QLabel("to"))
-        row4.addWidget(self.hValEdit, QtCore.Qt.AlignRight)
-
-
-
-        self.mainVLayout.addLayout(row1)
-        self.mainVLayout.addLayout(row2)
-        self.mainVLayout.addLayout(row3)
-        self.mainVLayout.addLayout(row4)
-
-
-    def scanColors(self, env):
-        printf("ColorTrackCommand.scanColors(): Scanning colors!")
-
-        if env is None:
-            printf("ColorTrackCommand.scanColors(): ERROR: Tried to scan colors while env was None! colors!")
-
-            return
-
-        avgColor = env.getVision().bgr2hsv(env.getVision().getColor())
-        percentTolerance = .3
-
-        printf("avgColor", avgColor)
-        self.cHueEdit.setText(str(round(avgColor[0])))
-        self.tHueEdit.setText(str(30))  #Recommended tolerance
-        self.lSatEdit.setText(str(round(avgColor[1] - avgColor[1] * percentTolerance, 5)))
-        self.hSatEdit.setText(str(round(avgColor[1] + avgColor[1] * percentTolerance, 5)))
-        self.lValEdit.setText(str(round(avgColor[2] - avgColor[2] * percentTolerance, 5)))
-        self.hValEdit.setText(str(round(avgColor[2] + avgColor[2] * percentTolerance, 5)))
-
-    def getInfo(self):
-        #Build the info inputted into the window into a Json and return it. Used in parent class
-
-        newParameters = {'cHue': self.sanitizeFloat(self.cHueEdit, self.parameters['cHue']),
-                         'tHue': self.sanitizeFloat(self.tHueEdit, self.parameters['tHue']),
-                         'lSat': self.sanitizeFloat(self.lSatEdit, self.parameters['lSat']),
-                         'hSat': self.sanitizeFloat(self.hSatEdit, self.parameters['hSat']),
-                         'lVal': self.sanitizeFloat(self.lValEdit, self.parameters['lVal']),
-                         'hVal': self.sanitizeFloat(self.hValEdit, self.parameters['hVal'])}
-        return newParameters
-
-    def updateDescription(self):
-        self.description = 'Track objects with a hue of ' + str(self.parameters['cHue'])
-
-    def run(self, env):
-        printf("ColorTrackCommand.run(): Tracking colored objects! ")
-
-        if not env.getVision().cameraConnected():
-            printf("ColorTrackCommand.run(): ERROR: No camera detected")
-            return
-
-        #Build a function that will return the objects position whenever it is called, using the self.parameters
-        objPos = lambda: env.getVision().findObjectColor(self.parameters['cHue'],
-                                                            self.parameters['tHue'],
-                                                            self.parameters['lSat'],
-                                                            self.parameters['hSat'],
-                                                            self.parameters['lVal'],
-                                                            self.parameters['hVal'])
-        objCoords = objPos()
-
-
-        #If no object was found
-        if objCoords is None: return
-
-        move = Robot.getDirectionToTarget(objCoords, env.getVision().vStream.dimensions, 10)
-
-        #If the robot is already focused
-        if move is None: return
-
-        #Convert the move to one on the base grid
-        baseAngle = env.getRobot().getBaseAngle()
-        modDirection = Robot.getRelative(move[0], move[1], baseAngle)
-
-        # if modDirection is None: return
-
-
-        env.getRobot().setPos(x=modDirection[0] / 3, y=modDirection[1] / 3, relative=True)
-'''

@@ -1,0 +1,58 @@
+[
+   {
+      "commandList": [
+         {
+            "typeGUI": "FocusOnObjectCommandGUI",
+            "parameters": {
+               "objectID": "Back of Card"
+            },
+            "typeLogic": "FocusOnObjectCommand"
+         }
+      ],
+      "typeGUI": "KeypressEventGUI",
+      "parameters": {
+         "checkKey": "D"
+      },
+      "typeLogic": "KeypressEvent"
+   },
+   {
+      "commandList": [
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "parameters": {
+               "relative": true,
+               "z": "-1",
+               "y": "0",
+               "override": false,
+               "x": "0"
+            },
+            "typeLogic": "MoveXYZCommand"
+         }
+      ],
+      "typeGUI": "KeypressEventGUI",
+      "parameters": {
+         "checkKey": "C"
+      },
+      "typeLogic": "KeypressEvent"
+   },
+   {
+      "commandList": [
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "parameters": {
+               "relative": false,
+               "z": "15",
+               "y": "-15",
+               "override": false,
+               "x": "0"
+            },
+            "typeLogic": "MoveXYZCommand"
+         }
+      ],
+      "typeGUI": "KeypressEventGUI",
+      "parameters": {
+         "checkKey": "R"
+      },
+      "typeLogic": "KeypressEvent"
+   }
+]

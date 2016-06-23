@@ -50,6 +50,9 @@ grip_command       = img_file + "command_grip.png"
 drop_command       = img_file + "command_drop.png"
 colortrack_command = img_file + "command_colortrack.png"
 buzzer_command     = img_file + "command_buzzer.png"
+
+move_over_command  = img_file + "command_move_over.png"
+
 startblock_command = img_file + "command_startblock.png"
 endblock_command   = img_file + "command_endblock.png"
 else_command       = img_file + "command_else.png"
@@ -61,6 +64,8 @@ exit_event_command = img_file + "command_exit_event.png"
 # Tutorial
 robot_lower_head   = img_file + "tutorial_robot_lowering_head.gif"
 selecting_marker   = img_file + "tutorial_selecting_marker.gif"
+selecting_object   = img_file + "tutorial_selecting_object.gif"
+selecting_pickArea = img_file + "tutorial_selecting_pickup_rect.gif"
 robot_cam_overview = img_file + "tutorial_robot_cam_overview.png"
 make_sticker       = img_file + "tutorial_make_sticker.png"
 sticker_on_head    = img_file + "tutorial_sticker_on_robot_head.png"

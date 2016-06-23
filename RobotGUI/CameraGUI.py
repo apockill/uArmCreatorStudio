@@ -38,7 +38,7 @@ class CameraWidget(QtWidgets.QWidget):
         self.lastFrameID      = None
 
         # Initialize the UI
-        self.frameLbl         = QtWidgets.QLabel("No camera data.")  # Temp label for the frame
+        self.frameLbl         = QtWidgets.QLabel("No camera data.\nConnect a camera in Settings")
 
         # MainVLayout must be global so that its subclasses can use it to add buttons
         self.mainVLayout = QtWidgets.QVBoxLayout(self)
@@ -123,15 +123,16 @@ class CameraSelector(CameraWidget):
 
         # Disable the buttons, only enable them when the user has selected from the picture
         self.declinePicBtn.setDisabled(True)
-
+        self.declinePicBtn.setMaximumWidth(130)
 
         # Add these to the superclass layout
         row1 = QtWidgets.QHBoxLayout()
         row1.addStretch(1)
-        row1.addWidget(self.declinePicBtn)
+        row1.addWidget(self.declinePicBtn, QtCore.Qt.AlignRight)
 
 
         self.mainVLayout.addLayout(row1)
+        self.mainVLayout.addStretch(1)
         self.layout().setContentsMargins(0,0,0,0)
 
 
@@ -162,7 +163,6 @@ class CameraSelector(CameraWidget):
                 printf("CameraSelector.mouseReleaseEvent(): ERROR: getCVFrame() returned None Frame! ")
                 return
 
-
             # Set the rectangles position and unhide the rectangle
             self.origin = QtCore.QPoint(event.pos())
             self.rubberBand.setGeometry(QtCore.QRect(self.origin, QtCore.QSize()))
@@ -189,7 +189,6 @@ class CameraSelector(CameraWidget):
 
             # Get the rectangle geometry
             pt = self.rubberBand.geometry().getCoords()
-
 
             # Ensure that the selected area isn't incredibly small (aka, a quick click
             if pt[3] - pt[1] < 10 or pt[2] - pt[0] < 10:
