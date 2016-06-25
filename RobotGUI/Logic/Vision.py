@@ -273,7 +273,8 @@ class PlaneTracker:
     """
     PlanarTarget  = namedtuple(  'PlaneTarget',   'name, image, rect, pickupRect, keypoints, descrs')
 
-    TrackedTarget = namedtuple('TrackedTarget', 'target, p0, p1, H, quad, center, rotation')
+    # target: the "sample" object of the tracked object. Center: [x,y,z] Rotation[xr, yr, zr], ptCount: matched pts
+    TrackedTarget = namedtuple('TrackedTarget', 'target, quad, ptCount, center, rotation, p0, p1, H,')
 
     # Tracker parameters
     FLANN_INDEX_KDTREE = 1
@@ -391,7 +392,12 @@ class PlaneTracker:
             # Calculate the 3d coordinates of the object
             center, rotation = self.get3DCoordinates(frame, target.rect, quad)
 
-            track = self.TrackedTarget(target=target, p0=p0, p1=p1, H=H, quad=quad, center=center, rotation=rotation)
+            track = self.TrackedTarget(target=target,
+                                       quad=quad,
+                                       ptCount=len(matches),
+                                       center=center,
+                                       rotation=rotation,
+                                       p0=p0, p1=p1, H=H,)
             tracked.append(track)
 
 

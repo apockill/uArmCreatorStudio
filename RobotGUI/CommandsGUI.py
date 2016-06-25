@@ -264,6 +264,7 @@ class CommandGUI:
             prompt.close()
 
         prompt = QtWidgets.QDialog()
+
         applyBtn = QtWidgets.QPushButton('Apply')
         cancelBtn = QtWidgets.QPushButton('Cancel')
 
@@ -273,16 +274,33 @@ class CommandGUI:
         applyBtn.clicked.connect(lambda: applyClicked(prompt))
         cancelBtn.clicked.connect(lambda: cancelClicked(prompt))
 
-        prompt.mainVLayout = QtWidgets.QVBoxLayout()
 
-        grid = QtWidgets.QGridLayout()
-        grid.setSpacing(10)
-        grid.addLayout(prompt.mainVLayout, 0, 1, QtCore.Qt.AlignCenter)
-        grid.addWidget(applyBtn, 1, 2, QtCore.Qt.AlignRight)
-        grid.addWidget(cancelBtn, 1, 0, QtCore.Qt.AlignLeft)
+        # Create a content box for the command to fill out parameters and GUI elements
+        prompt.content    = QtWidgets.QVBoxLayout()
+        contentGroupBox = QtWidgets.QGroupBox("Parameters")
+        contentGroupBox.setLayout(prompt.content)
 
-        prompt.setMaximumWidth(450)
-        prompt.setLayout(grid)
+
+        # Add "Cancel" and "Apply" buttons
+        buttonRow         = QtWidgets.QHBoxLayout()
+        buttonRow.addWidget(cancelBtn)
+        buttonRow.addStretch(1)
+        buttonRow.addWidget(applyBtn)
+
+        mainVLayout = QtWidgets.QVBoxLayout()
+        mainVLayout.addWidget(contentGroupBox)
+        mainVLayout.addStretch(1)
+        mainVLayout.addLayout(buttonRow)
+
+        # grid = QtWidgets.QGridLayout()
+        # grid.setSpacing(10)
+        # grid.addLayout(prompt.content, 0, 1, QtCore.Qt.AlignCenter)
+        # grid.addWidget(applyBtn, 1, 2, QtCore.Qt.AlignRight)
+        # grid.addWidget(cancelBtn, 1, 0, QtCore.Qt.AlignLeft)
+
+        prompt.setFixedWidth(300)
+        # prompt.setFixedHeight(350)
+        prompt.setLayout(mainVLayout)
         prompt.setWindowTitle(self.title)
         prompt.setWindowIcon(QtGui.QIcon(self.icon))
         prompt.setWhatsThis(self.tooltip)  # This makes the "Question Mark" button on the window show the tooltip msg
@@ -416,7 +434,7 @@ class NameCommandGUI(CommandGUI):
         # Do some GUI code setup
         # Put all the objects into horizontal layouts called Rows
         row1 = QtWidgets.QHBoxLayout()
-        prompt.mainVLayout.addLayout(row1) # and so on for all of the rows
+        prompt.content.addLayout(row1) # and so on for all of the rows
 
         return prompt
 
@@ -504,11 +522,11 @@ class MoveXYZCommandGUI(CommandGUI):
         row5.addStretch(1)
         row5.addWidget(prompt.rltCheck)
 
-        prompt.mainVLayout.addLayout(row1)
-        prompt.mainVLayout.addLayout(row2)
-        prompt.mainVLayout.addLayout(row3)
-        prompt.mainVLayout.addLayout(row4)
-        prompt.mainVLayout.addLayout(row5)
+        prompt.content.addLayout(row1)
+        prompt.content.addLayout(row2)
+        prompt.content.addLayout(row3)
+        prompt.content.addLayout(row4)
+        prompt.content.addLayout(row5)
         return prompt
 
     def extractPromptInfo(self, prompt):
@@ -575,8 +593,8 @@ class MoveWristCommandGUI(CommandGUI):
         row2.addStretch(1)
         row2.addWidget(prompt.rltCheck)
 
-        prompt.mainVLayout.addLayout(row1)
-        prompt.mainVLayout.addLayout(row2)
+        prompt.content.addLayout(row1)
+        prompt.content.addLayout(row2)
         return prompt
 
     def extractPromptInfo(self, prompt):
@@ -622,7 +640,7 @@ class SpeedCommandGUI(CommandGUI):
         row1.addStretch(1)
         row1.addWidget(prompt.speedEdit)
 
-        prompt.mainVLayout.addLayout(row1)
+        prompt.content.addLayout(row1)
 
         return prompt
 
@@ -694,10 +712,10 @@ class DetachCommandGUI(CommandGUI):
         row4.addStretch(1)
         row4.addWidget(prompt.srvo4Box)
 
-        prompt.mainVLayout.addLayout(row1)
-        prompt.mainVLayout.addLayout(row2)
-        prompt.mainVLayout.addLayout(row3)
-        prompt.mainVLayout.addLayout(row4)
+        prompt.content.addLayout(row1)
+        prompt.content.addLayout(row2)
+        prompt.content.addLayout(row3)
+        prompt.content.addLayout(row4)
 
 
         return prompt
@@ -783,11 +801,11 @@ class AttachCommandGUI(CommandGUI):
         row4.addStretch(1)
         row4.addWidget(prompt.srvo4Box)
 
-        prompt.mainVLayout.addLayout(row1)
-        prompt.mainVLayout.addLayout(row2)
-        prompt.mainVLayout.addLayout(row3)
-        prompt.mainVLayout.addLayout(row4)
-        prompt.mainVLayout.addLayout(row1) # and so on for all of the rows
+        prompt.content.addLayout(row1)
+        prompt.content.addLayout(row2)
+        prompt.content.addLayout(row3)
+        prompt.content.addLayout(row4)
+        prompt.content.addLayout(row1) # and so on for all of the rows
 
         return prompt
 
@@ -840,7 +858,7 @@ class WaitCommandGUI(CommandGUI):
         row1.addStretch(1)
         row1.addWidget(prompt.timeEdit)
 
-        prompt.mainVLayout.addLayout(row1)
+        prompt.content.addLayout(row1)
 
         return prompt
 
@@ -926,9 +944,9 @@ class BuzzerCommandGUI(CommandGUI):
         row3.addStretch(1)
         row3.addWidget(prompt.waitCheck)
 
-        prompt.mainVLayout.addLayout(row1)
-        prompt.mainVLayout.addLayout(row2)
-        prompt.mainVLayout.addLayout(row3)
+        prompt.content.addLayout(row1)
+        prompt.content.addLayout(row2)
+        prompt.content.addLayout(row3)
         return prompt
 
     def extractPromptInfo(self, prompt):
@@ -1037,8 +1055,92 @@ class FocusOnObjectCommandGUI(CommandGUI):
         row2.addStretch(1)
 
 
-        prompt.mainVLayout.addLayout(row1)
-        prompt.mainVLayout.addLayout(row2)
+        prompt.content.addLayout(row1)
+        prompt.content.addLayout(row2)
+
+        return prompt
+
+    def extractPromptInfo(self, prompt):
+        # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
+        newParameters = {"objectID": prompt.objChoices.currentText()}
+
+        print(newParameters)
+        self.parameters.update(newParameters)
+
+        return self.parameters
+
+    def updateDescription(self):
+        self.description = "Find " + self.parameters["objectID"] + " and move the robot over it"
+
+
+class PickupObjectCommandGUI(CommandGUI):
+    title     = "Move Robot Over Object"
+    tooltip   = "This tool uses computer vision to recognize an object of your choice, and position the robot directly"\
+                " over the object of choice, if it is visible. If it cannot be found, False will be returned."
+    icon      = Icons.move_over_command
+    logicPair = "PickupObjectCommand"
+
+    def __init__(self, env, parameters=None):
+        super(FocusOnObjectCommandGUI, self).__init__(parameters)
+
+        objectManager = env.getObjectManager()
+
+        # Save a list that gets all loaded objects. This is used only when the window is opened, to populate the objlist
+        self.getObjectList  = objectManager.getObjectIDList
+
+        if self.parameters is None:
+            self.parameters = {"objectID": ""}
+
+    def dressWindow(self, prompt):
+        # Define what happens when the user changes the object selection
+        # def selectionchange(comboBox):
+        #     for count in range(self.cb.count()):
+        #     print self.cb.itemText(count)
+        #     print "Current index",i,"selection changed ",self.cb.currentText()
+
+        choiceLbl = QtWidgets.QLabel("Choose an object: ")
+
+        # Create a QComboBox
+        prompt.objChoices = QtWidgets.QComboBox()
+        prompt.objChoices.setMinimumWidth(150)
+
+
+        # Add an empty item at the top if no object has ever been selected
+        prompt.objChoices.addItem(self.parameters["objectID"])
+
+
+        # Populate the comboBox with a list of all trackable objects, and select the self.parameters one if it exists
+        objectList = self.getObjectList(objectType=TrackableObject)
+        for index, objectID in enumerate(objectList):
+            prompt.objChoices.addItem(objectID)
+
+
+
+        # If there are no objects, place a nice label to let the user know
+        hintLbl = QtWidgets.QLabel()
+        bold = QtGui.QFont()
+        bold.setBold(True)
+        hintLbl.setFont(bold)
+        if len(objectList) == 0:
+            hintLbl.setText("You have not created any trackable objects yet."
+                            "\nTry adding new objects in the Object Manager!")
+
+        if 0 < len(objectList) < 2:
+            hintLbl.setText("It looks like you've only created " + str(len(objectList)) + " object(s)."
+                            "\nFeel free to add new objects in the Object Manager!")
+
+        row1 = QtWidgets.QHBoxLayout()
+        row1.addWidget(choiceLbl)
+        row1.addStretch(1)
+        row1.addWidget(prompt.objChoices)
+
+        row2 = QtWidgets.QHBoxLayout()
+        row2.addWidget(hintLbl)
+        row2.addStretch(1)
+
+
+        prompt.content.addLayout(row1)
+        prompt.content.addLayout(row2)
 
         return prompt
 
@@ -1139,8 +1241,8 @@ class SetVariableCommandGUI(CommandGUI):
         row2.addStretch(1)
         row2.addWidget(prompt.valEdit)
 
-        prompt.mainVLayout.addLayout(row1)
-        prompt.mainVLayout.addLayout(row2)
+        prompt.content.addLayout(row1)
+        prompt.content.addLayout(row2)
 
         return prompt
 
@@ -1222,10 +1324,10 @@ class TestVariableCommandGUI(CommandGUI):
         # row4.addWidget(notLabel)
         # row4.addWidget(prompt.notCheck)
 
-        prompt.mainVLayout.addLayout(row1)
-        prompt.mainVLayout.addLayout(row2)
-        prompt.mainVLayout.addLayout(row3)
-        # prompt.mainVLayout.addLayout(row4)
+        prompt.content.addLayout(row1)
+        prompt.content.addLayout(row2)
+        prompt.content.addLayout(row3)
+        # prompt.content.addLayout(row4)
 
         return prompt
 

@@ -1,3 +1,4 @@
+import random
 from PyQt5                        import QtCore, QtWidgets, QtGui
 from RobotGUI                     import Icons
 from RobotGUI.CameraGUI           import CameraSelector
@@ -92,7 +93,8 @@ class CalibrateWindow(QtWidgets.QDialog):
         mainHLayout.addLayout(rightVLayout)
         mainHLayout.addStretch(3)
 
-        self.setMinimumHeight(400)
+        self.setMinimumHeight(480)
+        self.setMinimumWidth(640)
         self.setLayout(mainHLayout)
         self.setWindowTitle('Calibrations')
         self.setWindowIcon(QtGui.QIcon(Icons.calibrate))
@@ -107,8 +109,8 @@ class CalibrateWindow(QtWidgets.QDialog):
                                    "     Active Movement: " + str(movCalib["activeMovement"]))
 
         coordCalib = self.newSettings["coordCalibrations"]
-        if coordCalib["robotPoints"] is not None:
-            self.coordLbl.setText("Calibration has been run before. " + str(len(coordCalib["robotPoints"])) +
+        if coordCalib["robPts"] is not None:
+            self.coordLbl.setText("Calibration has been run before. " + str(len(coordCalib["robPts"])) +
                                   " points of data were collected.")
 
     def calibrateMotion(self):
@@ -151,7 +153,7 @@ class CalibrateWindow(QtWidgets.QDialog):
         direction   = 1  #If the robot is going right or left next
 
         # Start position
-        robot.setSpeed(65)
+        robot.setSpeed(10)
         robot.setServos(setAll=True)
         robot.setPos( x=-15, y=-15, z=20)
         robot.refresh()
@@ -230,9 +232,9 @@ class CalibrateWindow(QtWidgets.QDialog):
         if coordWizard.result():
             newCalibrations = coordWizard.getNewCoordCalibrations()
 
-            self.newSettings["coordCalibrations"]["robotPoints"]   = newCalibrations["robotPoints"]
-            self.newSettings["coordCalibrations"]["cameraPoints"]  = newCalibrations["cameraPoints"]
-            self.newSettings["coordCalibrations"]["failurePoints"] = newCalibrations["failurePoints"]
+            self.newSettings["coordCalibrations"]["robPts"]   = newCalibrations["robPts"]
+            self.newSettings["coordCalibrations"]["camPts"]  = newCalibrations["camPts"]
+            self.newSettings["coordCalibrations"]["failPts"] = newCalibrations["failPts"]
 
         self.updateLabels()
 
@@ -466,7 +468,6 @@ class CWPage3(QtWidgets.QWizardPage):
 
         self.setLayout(mainHLayout)
 
-
 class CWPage4(QtWidgets.QWizardPage):
 
     def __init__(self, environment, parent):
@@ -603,7 +604,7 @@ class CWPage5(QtWidgets.QWizardPage):
 
         # Initialize GUI globals
         self.startBtn        = QtWidgets.QPushButton("Start Calibration")
-        self.hintLbl         = QtWidgets.QLabel("\n\n\n\n\n") # Add newlines since window resizing is screwed up
+        self.hintLbl         = QtWidgets.QLabel("\n\n\n\n\n\t\t\t\t") # Add newlines since window resizing is screwed up
         self.newCalibrations = None
         self.successComplete = False
 
@@ -653,60 +654,6 @@ class CWPage5(QtWidgets.QWizardPage):
         vision     = env.getVision()
         objManager = env.getObjectManager()
 
-        # Set the robot to the home position, set the speed, and other things for the calibration
-
-
-
-        # Generate a large set of points to test the robot, and put them in testCoords
-
-        #   Add tests along the axes, with some variation
-
-        # testCoords += [[        x, -16 + x%3, 15 - x%3] for x in range(-15, 15, 1)]  # Test x from -15 15, +- 3 y, z
-        # testCoords += [[ -3 + y%3,         y, 14 + y%3] for y in range(-26, -6, 2)]  # Test y from -25 -6  +- 3 y, z
-        # testCoords += [[ 3  + z%3, -16 + z%3,        z] for z in range(  8, 25, 2)]  # Test z from   6 25
-        #
-        # #   Add some extra misc. test points
-        # testCoords += [[ 6 + z%2, -10 + z%2,  z] for z in range(  7, 25, 3)]  # Test z on 4 different corners
-        # testCoords += [[-6 + z%2, -10 + z%2,  z] for z in range(  7, 25, 3)]
-        # testCoords += [[ 6 + z%2, -20 + z%2,  z] for z in range(  7, 25, 3)]
-        # testCoords += [[-6 + z%2, -20 + z%2,  z] for z in range(  7, 25, 3)]
-        #
-        # testCoords += [[  9 + z%2,  -6 + z%2,  z] for z in range(  7, 25, 3)]
-        # testCoords += [[ -9 + z%2,  -6 + z%2,  z] for z in range(  7, 25, 3)]
-        # testCoords += [[  9 + z%2, -25 + z%2,  z] for z in range(  7, 25, 3)]
-        # testCoords += [[ -9 + z%2, -25 + z%2,  z] for z in range(  7, 25, 3)]
-        # testCoords += [[  x,  -6,  25] for x in range(-20, 20, 5)]  # -6 y
-        # testCoords += [[  x,  -6,  10] for x in range(-20, 20, 5)]  # 25 y
-        # testCoords += [[  x,  -6,   9] for x in range(-20, 20, 5)]  #
-        #
-        # testCoords += [[  x, -10,  25] for x in range(-20, 20, 5)]  # Middle z , y
-        # testCoords += [[  x, -10,  10] for x in range(-20, 20, 5)]  #  7 z
-        # testCoords += [[  x, -10,   8] for x in range(-20, 20, 5)]  # 25 z
-        #
-        # testCoords += [[  x, -15,  25] for x in range(-20, 20, 5)]
-        # testCoords += [[  x, -15,  10] for x in range(-20, 20, 5)]
-        # testCoords += [[  x, -15,   7] for x in range(-20, 20, 5)]
-        #
-        # testCoords += [[  x, -20,  25] for x in range(-20, 20, 5)]
-        # testCoords += [[  x, -20,  10] for x in range(-20, 20, 5)]
-        # testCoords += [[  x, -20,   7] for x in range(-20, 20, 5)]
-        #
-        # # testCoords += [[  x, -16,  25] for x in range(-20, 20, 5)]
-        # # testCoords += [[  x, -16,  25] for x in range(-20, 20, 5)]
-        #
-        #
-        # testCoords += [[  x, -25,  25] for x in range(-20, 20, 5)]
-        # testCoords += [[  x, -25,  10] for x in range(-20, 20, 5)]
-        # testCoords += [[  x, -25,   7] for x in range(-20, 20, 5)]
-        # testCoords += [[  x, -16,  15] for x in range(-15, 15, 5)]
-        # testCoords += [[  x, -16,  15] for x in range(-15, 15, 5)]
-        # testCoords += [[        x, -16 + x%3, 15 - x%3] for x in range(-15, 15, 4)]
-
-
-
-
-
-
         #   Start tracking the robots marker
         robotTarget = objManager.getObject("Robot Marker")
         vision.clearTargets()   # Make sure there are no duplicate objects being tracked
@@ -717,128 +664,141 @@ class CWPage5(QtWidgets.QWizardPage):
         errors = []
 
 
-        # A list of robot Coord and camera Coords, where each index of robotPoints corresponds to the cameraPoint index
-        newCalibrations = {"robotPoints": [], "cameraPoints": [], "failurePoints": []}
+        # A list of robot Coord and camera Coords, where each index of robPts corresponds to the cameraPoint index
+        newCalibrations = {"robPts": [], "camPts": [], "failPts": []}
 
 
-
+        # Set the robot to the home position, set the speed, and other things for the calibration
         robot.setServos(setAll=True)
-        robot.setSpeed(30)
+        robot.setSpeed(15)
         robot.refresh()
 
-        robot.setPos(x=1, y=-15, z=7)
+        zLower = 10
+        robot.setPos(x=robot.home["x"], y=robot.home["y"], z=zLower)
         robot.refresh()
         sleep(1)
-        location, _   = vision.getAverageObjectPosition("Robot Marker", 10)
-        zGroundCamera = location[2]
+        # location, _   = vision.getAverageObjectPosition("Robot Marker", 10)
+        # zGroundCamera = location[2]
 
+
+        # Generate a large set of points to test the robot, and put them in testCoords
         testCoords    = []
-        for y in range(-25, -9, 2):  # [-8, -11, -15, -19, -25]:
+        direction  = True
+
+        # Test the z on 4 xy points
+        for z in range(zLower, 25, 1): testCoords += [[0,  -15, z]]
+        for z in range(zLower, 25, 1): testCoords += [[-7, -12, z]]
+        for z in range(zLower, 25, 1): testCoords += [[-7, -18, z]]
+        for z in range(zLower, 25, 1): testCoords += [[ 7, -12, z]]
+        for z in range(zLower, 25, 1): testCoords += [[ 7, -18, z]]
+
+        # Test very near the base of the robot, but avoid the actual base
+        for x in range(-20,  -8,  1): testCoords += [[x, -5, zLower]]
+        for x in range(  8,  20,  1): testCoords += [[x, -5, zLower]]
+        for x in range( 20,   7, -1): testCoords += [[x, -6, zLower]]
+        for x in range( -7, -20, -1): testCoords += [[x, -6, zLower]]
+        for x in range(-20,  -6,  1): testCoords += [[x, -7, zLower]]
+        for x in range(  6,  20,  1): testCoords += [[x, -7, zLower]]
+
+        # Scan the entire board row by row
+        for y in range(-8, -25, -1):  # [-8, -11, -15, -19, -25]:
+
+            if direction:
+                for x in range(20, -20, -1): testCoords += [[x, y, zLower]]
+            else:
+                for x in range(-20, 20,  1): testCoords += [[x, y, zLower]]
+            direction = not direction
 
 
-            robot.setPos(y=y, z=12)
-            robot.refresh()
-            robot.wait()
-            sleep(.5)
-
-            location, _  = vision.getAverageObjectPosition("Robot Marker", 5)
-            actualHeight = location[2]
-            zLower       = 8
-            print("ActualHeight", actualHeight)
-            print("compare", zGroundCamera)
-
-            while actualHeight < zGroundCamera:
-                print("height", actualHeight, zGroundCamera)
-                robot.setPos(z=-1, relative=True)
-                robot.refresh()
-                robot.wait()
-                sleep(.5)
-                location, _  = vision.getAverageObjectPosition("Robot Marker", 5)
-                actualHeight = location[2]
-                zLower = robot.getCurrentCoord()[2]
 
 
 
-            for x in range(-20, 20, 4):
-                testCoords += [[x, y, zLower]]
 
-            # for x in [-10, -5, 5, 10]:
-            #     testCoords += [[x, y, 15]]
-            #
-            # for x in [-10, 0, 10]:
-            #     testCoords += [[x, y, 25]]
-            print(testCoords)
+        printf("CWPage5.runCalibration(): Testing ", len(testCoords), " coordinate points")
 
-
-        print("CWPage5.runCalibration(): Testing ", len(testCoords), " coordinate points")
-
-
+        seenLast = True
         # Begin testing every coordinate in the testCoords array, and recording the results into newCalibrations
         for coord in testCoords:
+            if not seenLast: # Skip in areas where there is low visibility
+                seenLast = True
+                continue
 
             printf("CWPage5.runCalibration(): Testing point ", coord)
 
             # Move the robot to the coordinate
             robot.setPos(x=coord[0], y=coord[1], z=coord[2])
             robot.refresh()
-
-
+            print("\nMoving")
             # Wait for move to finish, make sure robot stays connected throughout
             while robot.getMoving(): sleep(.1)
-            sleep(.5)
-            print("motion", vision.getMotion())
+            sleep(.1)
 
+            # Now that the robot is at the desired position, get the avg location
+            vStream.waitForNewFrame()
+            frameAge, marker = vision.getObjectLatestRecognition("Robot Marker")
 
-            # Now that the robot is at the desired position, wait for 5 new frames, then get the avg location
-            for i in range(0, 5):
-                vStream.waitForNewFrame()
-            location, _ = vision.getAverageObjectPosition("Robot Marker", 5)
+            # Make sure the object was found in a recent frame
+            if not frameAge == 0 or marker.center is None:
+                printf("CWPage5.runCalibration(): Marker was not recognized.")
+                seenLast = False
+                newCalibrations['failPts'].append(coord)
+                continue
 
+            if marker.ptCount < 50:
+                printf("CWPage5.runCalibration(): Disregarding frame. Only ", marker.ptCount, "tracker pts were found")
+                continue
 
             # Make sure the robot is still connected before recording the results
             if not robot.connected():
                 errors.append("Robot was disconnected during calibration")
                 break
 
-            robCoord = robot.getCurrentCoord()   # Get robots coordinates
+            # robCoord = robot.getCurrentCoord()   # Get robots coordinates
 
             # If the camera couldn't find this object, skip this point and go to the next one.
-            if location is None:
-                printf("CWPage5.runCalibration(): Marker not found in coord ", coord, " Skipping to next point...")
-                # Add this point to the "failurepoints" array, of areas where the robot cannot travel
-                newCalibrations['failurePoints'].append(robCoord)
-                continue
+
 
             # Since the camera found the object, now read the robots location through camera, and record both results
-            newCalibrations["robotPoints"].append(robCoord)
-            newCalibrations["cameraPoints"].append(location)
+            newCalibrations["robPts"].append(coord)
+            newCalibrations["camPts"].append(marker.center)
 
 
+        # Prune the list down to 20 less than the original size, find the best set out of those
+        minPointCount = 6
+        # prunedSize = int(len(newCalibrations["robPts"]) * .98)
+        # if prunedSize > minPointCount:
+        #     bestScore, bestCamPts, bestRobPts = self.getBestCalibrationSet(prunedSize, newCalibrations)
+        #     print("Got best score of ", bestScore)
+        #     newCalibrations["robPts"] = bestRobPts
+        #     newCalibrations["camPts"] = bestCamPts
 
         # Do error checking, to make sure everything ran smoothly
-        if not len(newCalibrations["robotPoints"]) == len(newCalibrations["cameraPoints"]):
+        if not len(newCalibrations["robPts"]) == len(newCalibrations["camPts"]):
             errors.append("System Error: The # of robot coordinates does not match # of camera coordinates!")
 
 
-        # Check the percent of points that were found vs amount of points that were in the testCoord array
 
-        if len(newCalibrations["robotPoints"]) < 15:
+        # Check the percent of points that were found vs amount of points that were in the testCoord array
+        if len(newCalibrations["robPts"]) < minPointCount:
             # If not enough points were found, append an error to the error array
-            if len(newCalibrations["robotPoints"]) == 0:
+            if len(newCalibrations["robPts"]) == 0:
                 errors.append("The marker was never seen! Try restarting the calibration and setting the marker again,"
                               "\n\t\tand making sure that the robot's head is, in fact, in view of the camera")
             else:
                 errors.append("The marker was not recognized in enough points- it was only seen " +
-                          str(len(newCalibrations["robotPoints"])) + " time(s)! It must be seen at least 15 times.\n"
+                          str(len(newCalibrations["robPts"])) + " time(s)!\n\t\tIt must be seen at least " +
+                            str(minPointCount) + " times.\n" +
                           "\t\tTry making sure that the robot's head is centered in the middle of the cameras view,\n"
                           "\t\tor try placing the camera in a higher location.")
 
 
+        # Return the robot to home and turn off tracking
         vision.trackerEndStopClear()
-        robot.setPos(x=0, y=-15, z=15)
+        robot.setPos(**robot.home)
         robot.refresh()
         robot.setServos(setAll=False)
         robot.refresh()
+
         self.endCalibration(errors, newCalibrations, len(testCoords))
 
     def endCalibration(self, errors, newCalibrations, totalPointCount):
@@ -852,7 +812,7 @@ class CWPage5(QtWidgets.QWizardPage):
             self.successComplete = False
             self.startBtn.setText("Restart Calibration")
         else:
-            hintText += "Calibration was successful, " + str(len(newCalibrations["robotPoints"])) + "/"  +\
+            hintText += "Calibration was successful, " + str(len(newCalibrations["robPts"])) + "/"  +\
                          str(totalPointCount) + " points were found.\nResults will be saved when you click Apply " +\
                         "on the calibrations page. Feel free to try this calibration again.\n" +\
                         "Make sure to repeat this calibration whenever you move your camera or move your robot."
@@ -868,6 +828,70 @@ class CWPage5(QtWidgets.QWizardPage):
         # Now, update the settings if the calibration ran correctly
         if len(errors) == 0:
             self.newCalibrations = newCalibrations
+
+    def getBestCalibrationSet(self, minSize, newCalibration):
+        import random # TODO: Remove this after testing
+        import RobotGUI.Logic.RobotVision as rv
+        import numpy as np
+
+        def getRandomSet(length, robPts, camPts):
+            robPts = robPts[:]
+            camPts = camPts[:]
+            randRobPts = []
+            randCamPts = []
+            for i in range(0, length):
+                randIndex = random.randint(0, len(robPts) - 1)
+                randRobPts.append(robPts[randIndex])
+                randCamPts.append(camPts[randIndex])
+                del robPts[randIndex]
+                del camPts[randIndex]
+
+            return randCamPts, randRobPts, camPts, robPts
+
+
+        def testTransformRMSError(transform, fromPtList, toPtList):
+            # Test the error for every point in the transform, return a root-mean-squared error value
+            errSqdSum = 0
+            for i, fromPt in enumerate(fromPtList):
+                pred       = transform(fromPt)
+                actual     = toPtList[i]
+                errSqdSum += ((actual[0]-pred[0])**2 +
+                             (actual[1]-pred[1])**2 +
+                             (actual[2]-pred[2])**2)
+            rms = (errSqdSum / float(len(fromPtList))) ** .5
+            return rms
+
+        robPts = newCalibration["robPts"]
+        camPts = newCalibration["camPts"]
+
+        # Zip the two point sets into sets of ((camPt), (robPt))
+        ptPairs = []
+        for i in range(0, len(robPts)):
+            ptPair = (tuple(camPts[i]), tuple(robPts[i]))
+            ptPairs.append(ptPair)
+
+        printf("CWPage5.getBestCalibrationSet.(): Pruning set to size ", minSize, " out of original ", len(ptPairs))
+
+        if len(robPts) + 5 < minSize:
+            return newCalibration
+
+
+        bestScore = -1
+        bestSet   = None
+        for i in range(0, 5000):
+
+            randCam, randRob, otherCam, otherRob = getRandomSet(minSize, robPts, camPts)
+
+            transform = rv.createCameraToRobotTransformFunc(randCam, randRob)
+            error     = testTransformRMSError(transform, otherCam, otherRob)
+
+            if error < bestScore or bestScore == -1:
+                bestSet = (randCam, randRob)
+                bestScore = error
+                print("New best error: ", error)
+        bestCamPts = bestSet[0]
+        bestRobPts = bestSet[1]
+        return bestScore, bestCamPts, bestRobPts
 
 
     def isComplete(self):

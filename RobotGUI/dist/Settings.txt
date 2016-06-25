@@ -1,10 +1,15 @@
 {
-   "motionCalibrations": {
-      "stationaryMovement": null,
-      "activeMovement": null
-   },
-   "robotID": "COM6",
-   "lastOpenedFile": "F:/Google Drive/Projects/Git Repositories/RobotGUIProgramming/RobotGUI/Saves/Music_Example.task",
+   "cameraID": 0,
+   "robotID": null,
    "objectsDirectory": "Objects",
-   "cameraID": 0
+   "motionCalibrations": {
+      "activeMovement": null,
+      "stationaryMovement": null
+   },
+   "coordCalibrations": {
+      "failPts": null,
+      "camPts": null,
+      "robPts": null
+   },
+   "lastOpenedFile": null
 }

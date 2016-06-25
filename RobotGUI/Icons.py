@@ -12,16 +12,16 @@ delete             = img_file + "delete.png"
 
 # "File" Menu
 new_file           = img_file + "file_new.png"
-save_file          = img_file + "file_sav.png"
+save_file          = img_file + "file_save.png"
 load_file          = img_file + "file_load.png"
-
+reddit_link        = img_file + "forum_link_reddit.png"
 
 # Toolbar
 run_script         = img_file + "script_run.png"
 pause_script       = img_file + "script_pause.png"
 pause_video        = img_file + "video_pause.png"
 play_video         = img_file + "video_play.png"
-taskbar            = img_file + "window_icon"
+taskbar            = img_file + "window_uFactory_Logo"
 settings           = img_file + "window_settings.png"
 calibrate          = img_file + "window_calibrate.png"
 objectManager      = img_file + "window_object_manager.png"

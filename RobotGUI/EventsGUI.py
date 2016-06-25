@@ -56,6 +56,8 @@ class EventPromptWindow(QtWidgets.QDialog):
 
         # UI Stuff
         self.buttonWidth = 130
+        self.initButtons()          # Create the event "Buttons"
+        self.initButtonMenus()      # Populate any event buttons that have drop down menus
         self.initUI()               # Actually format and place everything
 
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)  # TODO: Investigate adding this to command windows
@@ -63,8 +65,7 @@ class EventPromptWindow(QtWidgets.QDialog):
 
 
     def initUI(self):
-        self.initButtons()          # Create the event "Buttons"
-        self.initButtonMenus()      # Populate any event buttons that have drop down menus
+
 
 
         ####   Actually format and place everything   #####
@@ -105,7 +106,7 @@ class EventPromptWindow(QtWidgets.QDialog):
         self.cancelBtn    = QtWidgets.QPushButton('Cancel')
         self.cancelBtn    .setFixedWidth(self.buttonWidth * 1.5)
         self.cancelBtn    .setFixedHeight(25)
-        self.cancelBtn    .setIcon(QtGui.QIcon(Icons.cancel))
+        # self.cancelBtn    .setIcon(QtGui.QIcon(Icons.cancel))  # With this there, I feel like I'm copying game maker
 
 
         # Create Event Buttons

@@ -171,6 +171,9 @@ class VideoStream:
                     for filterFunc in self.filterList:
                         filterFrame = filterFunc(filterFrame)
                     self.filterFrame = filterFrame
+
+                    # cv2.imshow('myframe', self.filterFrame )
+                    # cv2.waitKey(1)
             else:
                 self.filterFrame = self.frame
 

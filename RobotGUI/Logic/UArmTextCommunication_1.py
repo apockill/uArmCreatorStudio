@@ -1,15 +1,23 @@
 import serial
 from time                  import sleep
 from RobotGUI.Logic.Global import printf
-
+import serial.tools.list_ports
 
 # This is a library for controlling uArms that have Alex Thiel's Arduino communication protocol uploaded
+def getConnectedRobots():
+    # Returns any arduino serial ports in a list [port, port, port]
+    # This is used to let the user choose the correct port that is their robot
+    ports = list(serial.tools.list_ports.comports())
+    return ports
+
 
 class Uarm:
 
-    def __init__(self, port):
-        self.isConnected = False
-        self.serial    = None
+    def __init__(self, port, printResponses=False):
+        self.printResponses = False  # printResponses
+        self.isConnected    = False
+        self.serial         = None
+
         self.__connectToRobot(port)
 
         # For debug logs
@@ -23,41 +31,40 @@ class Uarm:
 
 
     # Action commands
-
-    def moveToWithTime(self, x, y, z, timeSpend):
-        x = str(round(x, 3))
-        y = str(round(y, 3))
-        z = str(round(z, 3))
-        t = str(round(timeSpend, 3))
+    def moveToWithSpeed(self, x, y, z, speed):
+        x = str(round(    x, 2))
+        y = str(round(    y, 2))
+        z = str(round(    z, 2))
+        t = str(round(speed, 2))
         cmnd = "moveX" + x + "Y" + y + "Z" + z + "S" + t
-        response = self.__send(cmnd)
+        return self.__send(cmnd)
 
     def moveWrist(self, angle):
         angle = str(round(angle, 3))
         cmnd = "handV" + angle
-        response = self.__send(cmnd)
+        return self.__send(cmnd)
 
     def pumpOn(self):
         cmnd = "pumpV1"
-        response = self.__send(cmnd)
+        return self.__send(cmnd)
 
     def pumpOff(self):
         cmnd = "pumpV0"
-        response = self.__send(cmnd)
+        return self.__send(cmnd)
 
     def servoAttach(self, servo_number):
         servo_number = str(int(servo_number))
         cmnd = "attachS" + servo_number
-        response = self.__send(cmnd)
+        return self.__send(cmnd)
 
     def servoDetach(self, servo_number):
         servo_number = str(int(servo_number))
         cmnd = "detachS" + servo_number
-        response = self.__send(cmnd)
+        return self.__send(cmnd)
 
     def setBuzzer(self, frequency, duration):
         cmnd = "buzzF" + str(frequency) + "T" + str(duration)
-        response = self.__send(cmnd)
+        return self.__send(cmnd)
 
 
     # Get commands
@@ -75,8 +82,9 @@ class Uarm:
         # Returns a 0 or a 1, depending on whether or not the robot is moving.
 
         response  = self.__send("gmoving")
+
         parsedArgs = self.__parseArgs(response, "moving", ["m"])
-        return parsedArgs['m']
+        return parsedArgs["m"]
 
     def getServoAngle(self, servo_number):
         # Returns an angle in degrees, of the servo
@@ -95,6 +103,7 @@ class Uarm:
 
         return (True, False)[int(parsedArgs['v'])]  # Flip the value and turn it into a boolean
 
+
     # Not to be used outside of library
     def __connectToRobot(self, port):
         try:
@@ -110,7 +119,6 @@ class Uarm:
             self.serial = None
             self.isConnected = False
         sleep(3)
-
 
     def __send(self, cmnd):
         # This command will send a command and recieve the robots response. There must always be a response!
@@ -147,7 +155,7 @@ class Uarm:
 
         # Make sure the respone has the valid start and end characters
         if not (response.count('[') == 1 and response.count(']') == 1):
-            printf("Uarm.read(): ERROR: The message did not come with propper formatting!")
+            printf("Uarm.read(): ERROR: The message ", response, " did not come with proper formatting!")
 
 
         # Clean up the response
@@ -157,12 +165,12 @@ class Uarm:
 
 
         # If the robot returned an error, print that out
-        if "ERROR" in response:
+        if "error" in response:
             printf("Uarm.read(): ERROR: Recieved error from robot: ", response)
 
-
+        if self.printResponses:
+            print(response)
         return response
-
 
     def __parseArgs(self, message, command, arguments):
         responseDict = {n: 0 for n in arguments}  #Fill the dictionary with zero's
@@ -192,114 +200,6 @@ class Uarm:
             responseDict[arg] = float(responseDict[arg])
 
         return responseDict
-
-
-
-
-
-
-
-
-
-
-
-# def stopperStatus(self):
-#     printf("Uarm.stopperStatus(): Getting Stopper Status")
-
-# Not used outside of library:
-
-#
-#
-# def currentX(self):
-#     printf("Uarm.currentX(): Getting current x coordinate of robot")
-#
-#
-# def currentY(self):
-#     printf("Uarm.currentY(): Getting current y coordinate of robot")
-#
-#
-# def currentZ(self):
-#     printf("Uarm.currentZ(): Getting current z coordinate of robot")
-#
-#
-# def uarmDisconnect(self):
-#     printf("Uarm.uarmDisconnect(): Disconnecting uArm")
-#
-#
-# def uarmAttach(self):
-#     printf("Uarm.uarmAttach(): Attaching All Servos In uArm")
-#
-#
-# def uarmDetach(self):
-#     printf("Uarm.uarmDetach(): Detaching All Servos In uArm")
-#
-
-# def angleConstrain(self, Angle):
-#     printf("Uarm.angleConstrain(): Error: This function should not be run")
-#
-#
-# def writeServoAngleRaw(self, servo_number, Angle):
-#     printf("Uarm.writeServoAngleRaw(): Error: This function should not be run")
-#
-#
-# def writeServoAngle(self, servo_number, Angle):
-#     printf("Uarm.writeServoAngle(): Error: This function should not be run")
-#
-#
-# def writeAngle(self, servo_1, servo_2, servo_3, servo_4):
-#     printf("Uarm.writeAngle(): Error: This function should not be run")
-#
-#
-# def writeAngleRaw(self, servo_1, servo_2, servo_3, servo_4):
-#     printf("Uarm.writeAngleRaw(): Error: This function should not be run")
-#
-#
-# def readAnalog(self, servo_number):
-#     printf("Uarm.readAnalog(): Error: This function should not be run")
-#
-#
-# def readServoOffset(self, servo_number):
-#     printf("Uarm.readServoOffset(): Error: This function should not be run")
-#
-#
-# def readToAngle(self, input_analog, servo_number, tirgger):
-#     printf("Uarm.readToAngle(): Error: This function should not be run")
-#
-#
-# def fwdKine(self, theta_1, theta_2, theta_3):
-#     printf("Uarm.fwdKine(): Error: This function should not be run")
-#
-#
-# def readAngle(self, servo_number):
-#     printf("Uarm.readAngle(): Error: This function should not be run")
-#
-#
-# def readAngleRaw(self, servo_number):
-#     printf("Uarm.readAngleRaw(): Error: This function should not be run")
-#
-#
-# def interpolation(self, init_val, final_val):
-#     printf("Uarm.interpolation(): Error: This function should not be run")
-#
-#
-# def ivsKine(self, x, y, z):
-#     printf("Uarm.ivsKine(): Error: This function should not be run")
-#
-#
-# def moveToWithS4(self, x, y, z, timeSpend, servo_4_relative, servo_4):
-#     printf("Uarm.moveToWithS4(): Error: This function should not be run")
-#
-#
-# def moveTo(self, x, y, z):
-#     printf("Uarm.moveTo(): Error: This function should not be run")
-#
-#
-# def moveRelative(self, x, y, z, time, servo_4_relative, servo_4):
-#     printf("Uarm.moveRelative(): Error: This function should not be run")
-
-
-
-
 
 
 

@@ -43,7 +43,7 @@ class LogicObject:
 
         # DO ERROR CHECKING
         # If the appropriate motionCalibrations do not exist, add it to the "compile" errors, and set self.calib to None
-        if calib["robotPoints"] is None or calib["cameraPoints"] is None or calib["failurePoints"] is None:
+        if calib["robPts"] is None or calib["camPts"] is None or calib["failPts"] is None:
             self.errors.append("Camera/Robot Position Calibration has never been run")
 
         return calib

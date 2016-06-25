@@ -1,58 +1,211 @@
 [
    {
+      "typeGUI": "KeypressEventGUI",
+      "typeLogic": "KeypressEvent",
+      "parameters": {
+         "checkKey": "A"
+      },
       "commandList": [
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "y": "-15",
+               "z": "15",
+               "x": "0",
+               "override": false,
+               "relative": false
+            }
+         },
          {
             "typeGUI": "FocusOnObjectCommandGUI",
+            "typeLogic": "FocusOnObjectCommand",
             "parameters": {
                "objectID": "Back of Card"
-            },
-            "typeLogic": "FocusOnObjectCommand"
-         }
-      ],
-      "typeGUI": "KeypressEventGUI",
-      "parameters": {
-         "checkKey": "D"
-      },
-      "typeLogic": "KeypressEvent"
-   },
-   {
-      "commandList": [
+            }
+         },
+         {
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand",
+            "parameters": null
+         },
          {
             "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand",
             "parameters": {
-               "relative": true,
-               "z": "-1",
                "y": "0",
+               "z": "-1.5",
+               "x": "0",
                "override": false,
-               "x": "0"
-            },
-            "typeLogic": "MoveXYZCommand"
-         }
-      ],
-      "typeGUI": "KeypressEventGUI",
-      "parameters": {
-         "checkKey": "C"
-      },
-      "typeLogic": "KeypressEvent"
-   },
-   {
-      "commandList": [
+               "relative": true
+            }
+         },
+         {
+            "typeGUI": "GripCommandGUI",
+            "typeLogic": "GripCommand",
+            "parameters": null
+         },
+         {
+            "typeGUI": "WaitCommandGUI",
+            "typeLogic": "WaitCommand",
+            "parameters": {
+               "time": ".5"
+            }
+         },
          {
             "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand",
             "parameters": {
-               "relative": false,
-               "z": "15",
-               "y": "-15",
+               "y": "0",
+               "z": "5",
+               "x": "0",
                "override": false,
-               "x": "0"
-            },
-            "typeLogic": "MoveXYZCommand"
+               "relative": true
+            }
+         },
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "y": "-15",
+               "z": "15",
+               "x": "25",
+               "override": false,
+               "relative": false
+            }
+         },
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "y": "-12.8",
+               "z": "13.5",
+               "x": "25.6",
+               "override": false,
+               "relative": false
+            }
+         },
+         {
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand",
+            "parameters": null
+         },
+         {
+            "typeGUI": "DropCommandGUI",
+            "typeLogic": "DropCommand",
+            "parameters": null
          }
-      ],
+      ]
+   },
+   {
       "typeGUI": "KeypressEventGUI",
+      "typeLogic": "KeypressEvent",
       "parameters": {
          "checkKey": "R"
       },
-      "typeLogic": "KeypressEvent"
+      "commandList": [
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "y": "-15",
+               "z": "15",
+               "x": "0",
+               "override": false,
+               "relative": false
+            }
+         }
+      ]
+   },
+   {
+      "typeGUI": "KeypressEventGUI",
+      "typeLogic": "KeypressEvent",
+      "parameters": {
+         "checkKey": "B"
+      },
+      "commandList": [
+         {
+            "typeGUI": "FocusOnObjectCommandGUI",
+            "typeLogic": "FocusOnObjectCommand",
+            "parameters": {
+               "objectID": "Back of Card"
+            }
+         }
+      ]
+   },
+   {
+      "typeGUI": "RecognizeEventGUI",
+      "typeLogic": "RecognizeEvent",
+      "parameters": {
+         "objectID": "Back of Card"
+      },
+      "commandList": [
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "y": "-15",
+               "z": "15",
+               "x": "-10",
+               "override": false,
+               "relative": false
+            }
+         }
+      ]
+   },
+   {
+      "typeGUI": "InitEventGUI",
+      "typeLogic": "InitEvent",
+      "parameters": null,
+      "commandList": [
+         {
+            "typeGUI": "MoveWristCommandGUI",
+            "typeLogic": "MoveWristCommand",
+            "parameters": {
+               "angle": "0.0",
+               "relative": false
+            }
+         },
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "override": false,
+               "y": "-15.3",
+               "z": "14.2",
+               "x": "1.1",
+               "relative": false
+            }
+         },
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "override": false,
+               "y": "-14.8",
+               "z": "14.2",
+               "x": "1.1",
+               "relative": false
+            }
+         },
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "override": false,
+               "y": "-14.7",
+               "z": "14.3",
+               "x": "1.1",
+               "relative": false
+            }
+         },
+         {
+            "typeGUI": "FocusOnObjectCommandGUI",
+            "typeLogic": "FocusOnObjectCommand",
+            "parameters": {
+               "objectID": ""
+            }
+         }
+      ]
    }
 ]

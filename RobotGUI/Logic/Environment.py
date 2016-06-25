@@ -1,11 +1,7 @@
-from math                  import *                  # Used in interpreter for the eval command, do not get rid of this!
-import cv2
-import numpy as np
 from copy                  import deepcopy
 from threading             import Thread
-
-import RobotGUI.Logic.Vision
 from RobotGUI.Logic.Global import printf, FpsTimer
+from RobotGUI.Logic.Vision import Vision
 from RobotGUI.Logic        import Video, Events, Commands, ObjectManager, Robot
 
 """
@@ -41,7 +37,7 @@ class Environment:
         # Set up environment objects
         self.__vStream    = Video.VideoStream()           # Gets frames constantly
         self.__robot      = Robot.Robot()
-        self.__vision     = RobotGUI.Logic.Vision.Vision(self.__vStream)  # Performs computer vision tasks, using images from vStream
+        self.__vision     = Vision(self.__vStream)  # Performs computer vision tasks, using images from vStream
         self.__objectMngr = ObjectManager.ObjectManager()
         self.__settings   = settings
 
@@ -77,6 +73,10 @@ class Environment:
 
     def getObjectManager(self):
         return self.__objectMngr
+
+
+
+
 
 
     # Close system objects

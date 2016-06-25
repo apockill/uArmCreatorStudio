@@ -19,24 +19,18 @@ class Robot:
 
     def __init__(self):
         self.uArm = None
-
-        self.pos   =     {'x': 0.0, 'y': -15.0, 'z': 15.0}
+        self.home  = {'x': 0.0, 'y': -15.0, 'z': 15.0}
+        self.pos   = {'x': 0.0, 'y': -15.0, 'z': 15.0}
         self.speed = 45     # In cm / second (or XYZ [unit] per second)
 
         # Every time uArm is connected correctly, all servos are attached. Set the values to match this.
         # These variables are used to keep track of which servos are attached
         self.gripperStatus = False
-        self.servoStatus = {1: True,
-                            2: True,
-                            3: True,
-                            4: True}
+        self.servoStatus = [True, True, True, True]
 
         # If there is ever a change in a servos status, it is stored in this container until
         # the 'refresh' function is run and the new values are sent to the robot
-        self.newServoStatus =   {1: True,
-                                 2: True,
-                                 3: True,
-                                 4: True}
+        self.newServoStatus = [True, True, True, True]
 
         # Handle the recording of the wrist position, and whether or not it has been changed
         self.wrist           = 90.0      #Angle from 0 to 180 of the robots wrist position
@@ -45,7 +39,7 @@ class Robot:
         self.positionChanged = True
         self.gripperChanged  = False  #This should only be used in Robot.refresh() to activate the gripper
         self.servoAttached   = False  #If True, refresh() will move the robot previous pos before it attached the servo
-        self.running         = False  #Wether or not the setupThread is running
+        self.threadRunning   = False  #Wether or not the setupThread is running
 
 
     def getMoving(self):
@@ -80,7 +74,7 @@ class Robot:
     def connected(self):
         if self.uArm is None:         return False  # If the communication protocol class hasn't been created,
         if not self.uArm.connected(): return False  # If the Serial is not connected
-        if self.running:              return False  # If the setupThread is running
+        if self.threadRunning:        return False  # If the setupThread is running
         return True
 
 
@@ -116,10 +110,10 @@ class Robot:
 
         if setAll is not None: servo1, servo2, servo3, servo4 = setAll, setAll, setAll, setAll
 
-        if servo1 is not None: self.newServoStatus[1] = servo1
-        if servo2 is not None: self.newServoStatus[2] = servo2
-        if servo3 is not None: self.newServoStatus[3] = servo3
-        if servo4 is not None: self.newServoStatus[4] = servo4
+        if servo1 is not None: self.newServoStatus[0] = servo1
+        if servo2 is not None: self.newServoStatus[1] = servo2
+        if servo3 is not None: self.newServoStatus[2] = servo3
+        if servo4 is not None: self.newServoStatus[3] = servo4
 
     def setGripper(self, status):
         if not self.connected():
@@ -135,6 +129,7 @@ class Robot:
 
     def setSpeed(self, speed):
         # Changes a class wide variable that affects the move commands in self.refresh()
+        printf("Robot.setSpeed(): Setting speed to ", speed)
         self.speed = speed
 
     def setBuzzer(self, frequency, duration):
@@ -147,7 +142,7 @@ class Robot:
 
     def wait(self):
         # Waits until the robot completes its move or whatever it's doing
-        while self.getMoving(): sleep(.05)
+        while self.getMoving(): sleep(.1)
 
     def refresh(self, override=False):
 
@@ -166,46 +161,35 @@ class Robot:
         if not override:
             self.wait()
 
-
-
-        # Attach/Detach servos and prevent weird snaps by setting position when attaching a servo
-        if self.__newServoAttached():
-            currXYZ  = self.getCurrentCoord()
-
+        # The robot has an implimented feature to prevent the servos from "snapping" back
         self.__updateServos()
-
-        # Move very quickly to the position you were in before servos were attached (reduces jerk)
-        if self.servoAttached:
-            self.servoAttached = False
-            self.uArm.moveToWithTime(currXYZ[0], currXYZ[1], currXYZ[2], 0)
-            self.gripperChanged = False
 
 
         # Perform a moves in self.pos array
         if self.positionChanged:
             try:
-                self.uArm.moveToWithTime(self.pos['x'], self.pos['y'], self.pos['z'], self.speed)
+                self.uArm.moveToWithSpeed(self.pos['x'], self.pos['y'], self.pos['z'], self.speed)
             except ValueError:
                 printf("Robot.refresh(): ERROR: Robot out of bounds and the uarm_python library crashed!")
 
             self.positionChanged = False
 
     def __updateServos(self):
-        for key in self.servoStatus:
-            if not self.newServoStatus[key] == self.servoStatus[key]:
-                if self.newServoStatus[key]:
+        for i, servoVal in enumerate(self.servoStatus):
+            if not self.newServoStatus[i] == self.servoStatus[i]:
+                if self.newServoStatus[i]:
                     # Attach the servo
-                    self.uArm.servoAttach(key)
-                    self.servoStatus[key] = True
+                    self.uArm.servoAttach(i)
+                    self.servoStatus[i] = True
                 else:
                     # Detach the servo
-                    self.uArm.servoDetach(key)
-                    self.servoStatus[key] = False
+                    self.uArm.servoDetach(i)
+                    self.servoStatus[i] = False
 
     def __newServoAttached(self):
         # Boolean value that determines if a servo has been attached but this has not been sent to robot
-        for key, s in self.servoStatus.items():
-            if not self.newServoStatus[key] == s and self.newServoStatus[key]:
+        for i, servoVal in enumerate(self.servoStatus):
+            if not self.newServoStatus[i] == servoVal and self.newServoStatus[i]:
                 self.servoAttached = True
                 return True
 
@@ -220,7 +204,6 @@ class Robot:
             # Check if the uArm was able to connect successfully
             if self.uArm.connected():
                 printf("Robot.setupThread(): uArm successfully connected")
-                self.refresh(override=True)
             else:
                 printf("Robot.setupThread(): uArm was unable to connect!")
                 self.uArm = None
@@ -228,10 +211,11 @@ class Robot:
         except serial.SerialException:
             printf("Robot.setupThread(): ERROR SerialException while setting uArm to ", com)
 
-        self.running = False
+        self.threadRunning = False
 
     def setUArm(self, com):
-        if com is not None and not self.running:
+        if com is not None and not self.threadRunning:
+            self.threadRunning = True
             printf("Robot.setUArm(): Setting uArm to ", com)
             setup = Thread(target=lambda: self.__setupThread(com))
             setup.start()

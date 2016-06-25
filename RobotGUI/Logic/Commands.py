@@ -6,7 +6,10 @@ from RobotGUI.Logic.LogicObject import LogicObject
 
 """
 Example Class Structure
-
+EVERY COMMAND MUST RETURN FALSE IF IT FAILS TO RUN
+If it fails to run, return False. The idea is that users will know that any command will return false if it fails,
+and thus have contingencies. Plus its a feature that is useful only if you know about it, and doesn't add complexity
+otherwise!
 
 class NameCommand(Command):
 
@@ -23,7 +26,7 @@ class NameCommand(Command):
 
     def run(self):
         printf("NameCommand.run(): A quick description, usually using parameters, of the command that is running")
-
+        return True
 """
 
 
@@ -59,10 +62,13 @@ class MoveXYZCommand(Command):
         if successX and successY and successZ:
             self.robot.setPos(x=newX, y=newY, z=newZ,
                                   relative=self.parameters['relative'])
+            self.robot.refresh(override=self.parameters['override'])
+            return True
         else:
             printf("MoveXYZCommand.run(): ERROR in parsing either X Y or Z: ", successX, successY, successZ)
+            return False
 
-        self.robot.refresh(override=self.parameters['override'])
+
 
 
 class MoveWristCommand(Command):
@@ -82,8 +88,10 @@ class MoveWristCommand(Command):
             printf("MoveWristCommand.run(): Moving robot wrist to ", newAngle)
             self.robot.setWrist(newAngle, relative=self.parameters['relative'])
             self.robot.refresh()
+            return True
         else:
             print("MoveWristCommand.run(): ERROR in parsing new wrist angle. Expression: ", self.parameters['angle'])
+            return False
 
 
 class SpeedCommand(Command):
@@ -104,8 +112,10 @@ class SpeedCommand(Command):
         if success:
             printf("SpeedCommand.run(): Setting speed to ", speed)
             self.robot.setSpeed(speed)
+            return True
         else:
             printf("SpeedCommand.run(): ERROR: Expression ", self.parameters['speed'], " failed to evaluate correctly!")
+            return False
 
 
 class DetachCommand(Command):
@@ -130,6 +140,7 @@ class DetachCommand(Command):
         if self.parameters['servo4']: self.robot.setServos(servo4=False)
 
         self.robot.refresh()
+        return True
 
 
 class AttachCommand(Command):
@@ -152,7 +163,7 @@ class AttachCommand(Command):
         if self.parameters['servo4']: self.robot.setServos(servo4=True)
 
         self.robot.refresh()
-
+        return True
 
 class WaitCommand(Command):
 
@@ -170,8 +181,10 @@ class WaitCommand(Command):
         if success:
             printf("WaitCommand.run(): Waiting for", waitTime, "seconds")
             sleep(waitTime)
+            return True
         else:
             printf("WaitCommand.run(): ERROR: Expression ", self.parameters['time'], " failed to evaluate correctly!")
+            return False
 
 
 class GripCommand(Command):
@@ -184,6 +197,7 @@ class GripCommand(Command):
     def run(self):
         printf("GripCommand.run(): Setting gripper to True")
         self.robot.setGripper(True)
+        return True
 
 
 class DropCommand(Command):
@@ -196,7 +210,7 @@ class DropCommand(Command):
     def run(self):
         printf("DropCommand.run(): Setting gripper to False")
         self.robot.setGripper(False)
-
+        return True
 
 class BuzzerCommand(Command):
 
@@ -213,19 +227,23 @@ class BuzzerCommand(Command):
         duration,  dSuccess = self.interpreter.evaluateExpression(self.parameters['time'])
 
         # Check if evaluation worked
-        if not fSuccess or not dSuccess:
+        if fSuccess and dSuccess:
+            # Send buzzer command
+            printf("BuzzerCommand.run(): Playing frequency", self.parameters['frequency'], " for ", self.parameters['time'])
+            self.robot.setBuzzer(frequency, duration)
+
+            # If the user wants to sleep while the buzzer is running, then sleep.
+            if self.parameters["waitForBuzzer"]:
+                sleep(duration)
+
+            return True
+        else:
             printf("BuzzerCommand.run(): ERROR: ", self.parameters['frequency'],
                    " or ", self.parameters["time"], "failed to evaluate correctly!")
-            return
+            return False
 
 
-        # Send buzzer command
-        printf("BuzzerCommand.run(): Playing frequency", self.parameters['frequency'], " for ", self.parameters['time'])
-        self.robot.setBuzzer(frequency, duration)
 
-        # If the user wants to sleep while the buzzer is running, then sleep.
-        if self.parameters["waitForBuzzer"]:
-            sleep(duration)
 
 
 
@@ -252,68 +270,52 @@ class FocusOnObjectCommand(Command):
         self.vision.startTracker()
 
     def run(self):
-        if len(self.errors) > 0: return
-        # printf("NameCommand.run(): A quick description, usually using parameters, of the command that is running")
-        self.robot.wait()
+        if len(self.errors) > 0: return False
+        frameAge, trackObj = self.vision.getObjectLatestRecognition(self.object.name)
+        if trackObj is None or frameAge > 5 or trackObj.ptCount < 30:
+            printf("FocusOnObjectCommand.run(): FrameAge was too old or pointCount was too low, returning false!")
+            return False
 
-        coordSave = self.robot.getCurrentCoord()
-        self.robot.setPos(z=2, relative=True)
-        def swipe(lower, upper, axis):
-            self.robot.setSpeed(30)
-
-            self.robot.setPos(**{axis:lower})
-            self.robot.refresh()
-            sleep(1)
-            self.robot.setPos(**{axis:upper})
-            self.robot.setSpeed(10)
-            self.robot.refresh()
-            while self.robot.getMoving():
-
-                robPos   = self.robot.getCurrentCoord()
-                age, obj = self.vision.getObjectLatestRecognition(self.rbMarker.name)
-                if not age == 0: continue
-                print("Appending", robPos, obj.center)
-                self.coordCalib["robotPoints"].append(robPos)
-                self.coordCalib["cameraPoints"].append(obj.center)
-
-                print("Length", len(self.coordCalib["cameraPoints"]), len(self.coordCalib["robotPoints"]))
-                self.vStream.waitForNewFrame()
-        swipe(-15, 15, "x")
-        self.robot.setPos(x=coordSave[0])
-        swipe(-8, -25, "y")
-        self.robot.setPos(y=coordSave[1])
-        swipe(8, 25, "z")
-        self.robot.setPos(z=coordSave[2])
-        self.robot.setSpeed(35)
+        pos = rv.getRobotPositionTransform(trackObj.center, self.coordCalib)
+        self.robot.setPos(x=pos[0], y=pos[1])  # z=pos[2])
         self.robot.refresh()
-        self.robot.wait()
+        return True
 
-        rv.mountObjectLearn(self.object.name, self.robot, self.vision, self.coordCalib)
-        # self.robot.setSpeed(10)
-        #
-        #
-        #
-        # self.robot.setSpeed(10)
-        # rv.mountObjectLearn(self.object.name, self.robot, self.vision, self.coordCalib)
+#   Robot + Vision Commands
+class PickupObjectCommand(Command):
 
-        # pos = rv.getObjectPosition(self.object.name, self.robot, self.vision, self.coordCalib)
-        #
-        #
-        # if pos is not None:
-        #     self.robot.refresh()
-        #     self.robot.setPos(x=pos[0], y=pos[1], z=pos[2])
-        #     self.robot.refresh()
-        #     self.robot.wait()
-        #     sleep(2)
-        #
-        #     pos, rotation = self.vision.getAverageObjectPosition(self.rbMarker.name, 29)
-        #     print("Went to: ", pos)
-        #     if pos is not None:
-        #         self.coordCalib["cameraPoints"].append(pos)
-        #         self.coordCalib["robotPoints"].append(self.robot.getCurrentCoord())
+    def __init__(self, env, interpreter, parameters=None):
+        super(PickupObjectCommand, self).__init__(parameters)
 
-            # print("Moved to\t ", self.robot.getCurrentCoord())
+        # Load any objects that will be used in the run Section here
+        self.robot      = self.getVerifyRobot(env)
+        self.vision     = self.getVerifyVision(env)
+        self.vStream    = self.getVerifyVStream(env)
+        self.coordCalib = self.getVerifyCoordCalibrations(env)
+        self.object     = self.getVerifyObject(env, self.parameters["objectID"])
+        self.rbMarker   = self.getVerifyObject(env, "Robot Marker")
 
+        print(self.errors)
+        if len(self.errors): return
+
+        # Turn on tracking for the relevant object
+        self.vision.addTargetSamples(self.object.getSamples())
+        self.vision.addTargetSamples(self.rbMarker.getSamples())
+        self.vision.startTracker()
+
+    def run(self):
+        if len(self.errors) > 0: return False
+
+        frameAge, trackObj = self.vision.getObjectLatestRecognition(self.object.name)
+
+        if trackObj is None or frameAge > 5 or trackObj.ptCount < 30:
+            printf("PickupObjectCommand.run(): FrameAge was too old or pointCount was too low, returning false!")
+            return False
+
+        pos = rv.getRobotPositionTransform(trackObj.center, self.coordCalib)
+        self.robot.setPos(x=pos[0], y=pos[1], z=rv.PICKUP_HEIGHT)  # z=pos[2])
+        self.robot.refresh()
+        return True
 
 
 
@@ -377,7 +379,7 @@ class TestVariableCommand(Command):
         compareValue, successExp = interpreter.evaluateExpression(self.parameters['expression'])
         if not successExp: return False
 
-
+        # Compare the value of the expression using the operator from the parameters
         operations = ['==', '!=', '>', '<']
         expressionString = str(variableValue) + operations[self.parameters['test']] + self.parameters["expression"]
         testResult, success = interpreter.evaluateExpression(expressionString)
@@ -386,6 +388,7 @@ class TestVariableCommand(Command):
                                                          operations[self.parameters['test']],
                                                          self.parameters["expression"])
 
+        # If the expression was evaluated correctly, then return the testResult. Otherwise, return False
         return testResult and success
 
 
@@ -397,10 +400,10 @@ class EndProgramCommand(Command):
         # Load any objects that will be used in the run Section here
         self.interpreter = interpreter
 
-
     def run(self):
         printf("EndProgramCommand.run(): Attempting to shut down program now...")
         self.interpreter.killApp = True
+        return True
 
 
 class EndEventCommand(Command):
