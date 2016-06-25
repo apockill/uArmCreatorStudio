@@ -1,8 +1,3 @@
-"""
-For all imports, try to import the bare minimum. While verbose, this will help keep unwanted elements from being
-accessed by the wrong objects. More importantly, it will help keep track of what objects are used in what modules,
-and force the developer to think about how new features should be implimented carefully.
-"""
 # import qdarkstyle
 import json         # For saving and loading settings and tasks
 import sys          # For GUI, and overloading the default error handling
@@ -18,185 +13,6 @@ from RobotGUI.Logic.Robot       import getConnectedRobots                       
 from RobotGUI.Logic.Video       import getConnectedCameras                      # For settingsWindow
 from RobotGUI.Logic.Global      import printf                                   # For formatted printing
 from RobotGUI.Logic.Environment import Environment, Interpreter                 # For Logic purposes
-
-
-########## VIEWS ##########
-class SettingsWindow(QtWidgets.QDialog):
-    """
-    Simple view that lets you select your robot and camera.
-    The Apply/Cancel buttons are connected in the MainWindow class, which is why they are 'self' variables
-    """
-
-    def __init__(self, parent):
-        super(SettingsWindow, self).__init__(parent)
-        self.settings  = {"robotID": None, "cameraID": None}
-
-        # Init UI Globals
-        self.cameraButtonGroup = None  # Radio buttons require a "group"
-        self.robotButtonGroup  = None
-        self.robVBox           = QtWidgets.QVBoxLayout()
-        self.camVBox           = QtWidgets.QVBoxLayout()
-
-        self.initUI()
-
-    def initUI(self):
-
-        # Create Text
-        selectRobotTxt  = QtWidgets.QLabel('Please select the robot you will be using:')
-        selectCameraTxt = QtWidgets.QLabel('Please select the camera you will be using:')
-
-
-        # CREATE BUTTONS
-        robotScanBtn  = QtWidgets.QPushButton("Scan for Robots")
-        cameraScanBtn = QtWidgets.QPushButton("Scan for Cameras")
-        applyBtn      = QtWidgets.QPushButton("Apply")
-        cancelBtn     = QtWidgets.QPushButton("Cancel")
-
-        # Connect Buttons
-        robotScanBtn.clicked.connect(   self.scanForRobotsClicked)
-        cameraScanBtn.clicked.connect(  self.scanForCamerasClicked)
-        applyBtn.clicked.connect(       self.accept)
-        cancelBtn.clicked.connect(      self.reject)
-
-
-        # Set max widths of buttons
-        maxWidth = 130
-        robotScanBtn.setFixedWidth(maxWidth)
-        cameraScanBtn.setFixedWidth(maxWidth)
-        applyBtn.setFixedWidth(maxWidth)
-        cancelBtn.setFixedWidth(maxWidth)
-
-
-        # Create the rows and fill them up
-        row1 = QtWidgets.QHBoxLayout()
-        row1.addWidget(selectRobotTxt, QtCore.Qt.AlignLeft)
-        row1.addWidget(robotScanBtn, QtCore.Qt.AlignRight)
-
-        row2 = QtWidgets.QHBoxLayout()
-        row2.addLayout(self.robVBox, QtCore.Qt.AlignLeft)
-
-        row3 = QtWidgets.QHBoxLayout()
-        row3.addWidget(selectCameraTxt, QtCore.Qt.AlignLeft)
-        row3.addWidget(cameraScanBtn, QtCore.Qt.AlignRight)
-
-        row4 = QtWidgets.QHBoxLayout()
-        row4.addLayout(self.camVBox)
-
-
-        # Place the rows ito the middleVLayout
-        middleVLayout = QtWidgets.QVBoxLayout()
-        middleVLayout.addLayout(row1)
-        middleVLayout.addLayout(row2)
-        middleVLayout.addLayout(row3)
-        middleVLayout.addLayout(row4)
-        middleVLayout.addStretch(1)
-
-
-        # Set up Cancel and Apply buttons
-        leftVLayout  = QtWidgets.QVBoxLayout()
-        leftVLayout.addStretch(1)
-        leftVLayout.addWidget(cancelBtn, QtCore.Qt.AlignRight)
-        rightVLayout = QtWidgets.QVBoxLayout()
-        rightVLayout.addStretch(1)
-        rightVLayout.addWidget(applyBtn, QtCore.Qt.AlignLeft)
-
-
-        # Build the final layout
-        mainHLayout = QtWidgets.QHBoxLayout()
-        mainHLayout.addStretch(1)
-        mainHLayout.addLayout(leftVLayout)
-        mainHLayout.addLayout(middleVLayout)
-        mainHLayout.addLayout(rightVLayout)
-        mainHLayout.addStretch(1)
-
-        self.setLayout(mainHLayout)
-        self.setMinimumHeight(400)
-        self.setWindowTitle('Settings')
-        self.setWindowIcon(QtGui.QIcon(Icons.settings))
-
-
-
-
-    def scanForRobotsClicked(self):
-        connectedDevices = getConnectedRobots()  # From Robot.py
-        printf("SettingsView.scanForRobots(): Connected Devices: ", connectedDevices)
-        self.robotButtonGroup = QtWidgets.QButtonGroup()
-
-        # Update the list of found devices
-        self.clearLayout(self.robVBox)  #  Clear robot list
-        for i, port in enumerate(connectedDevices):
-            newButton = QtWidgets.QRadioButton(port[0])
-            self.robVBox.addWidget(newButton)                        # Add the button to the button layout
-            self.robotButtonGroup.addButton(newButton, i)            # Add the button to a group, with an ID of i
-            newButton.clicked.connect(self.robButtonClicked)         # Connect each radio button to a method
-
-
-        if len(connectedDevices) == 0:
-            notFoundTxt = QtWidgets.QLabel('No devices were found.')
-            self.robVBox.addWidget(notFoundTxt)
-
-    def scanForCamerasClicked(self):
-
-        # Get all of the cameras connected to the computer and list them
-        connectedCameras = getConnectedCameras()  # From the Video.py module
-
-        self.cameraButtonGroup = QtWidgets.QButtonGroup()
-
-        # Update the list of found cameras
-        self.clearLayout(self.camVBox)  #  Clear camera list
-        for i in range(len(connectedCameras)):
-            newButton = QtWidgets.QRadioButton("Camera " + str(i))
-            self.camVBox.addWidget(newButton)                  # Add the button to the button layout
-            self.cameraButtonGroup.addButton(newButton, i)     # Add the button to a group, with an ID of i
-            newButton.clicked.connect(self.camButtonClicked)   # Connect each radio button to a method
-
-
-        if len(connectedCameras) == 0:
-            notFoundTxt = QtWidgets.QLabel('No cameras were found.')
-            self.camVBox.addWidget(notFoundTxt)
-
-
-    def camButtonClicked(self):
-        self.settings["cameraID"] = self.cameraButtonGroup.checkedId()
-
-    def robButtonClicked(self):
-        self.settings["robotID"] = str(self.robotButtonGroup.checkedButton().text())
-
-
-    def clearLayout(self, layout):
-        while layout.count():
-            child = layout.takeAt(0)
-            child.widget().deleteLater()
-
-    def getSettings(self):
-        return self.settings
-
-
-class DashboardView(QtWidgets.QWidget):
-    def __init__(self, controlPanel, cameraWidget, parent):
-        super(DashboardView, self).__init__(parent)
-
-        # UI Globals setup
-        self.controlPanel   = controlPanel
-        self.cameraWidget   = cameraWidget
-
-        self.initUI()
-
-    def initUI(self):
-
-        # Create main layout
-        mainHLayout = QtWidgets.QHBoxLayout()
-        mainVLayout = QtWidgets.QVBoxLayout()
-        mainVLayout.addLayout(mainHLayout)
-
-        mainHLayout.addWidget(self.controlPanel)
-        mainHLayout.addWidget(self.cameraWidget)    #Create Camera view (RIGHT)
-
-        self.setLayout(mainVLayout)
-
-    def closeEvent(self, event):
-        self.cameraWidget.close()
-        self.controlPanel.close()
 
 
 
@@ -219,7 +35,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
                                  "coordCalibrations":  {"robPts":   None,   # A robot coordinate
                                                         "camPts":  None,   # The coordinate the camera reporter
-                                                        "failPts": None},  # Coordiantes where robot can't be seen
+                                                        "failPts": None},  # Coordinate's where robot can't be seen
 
                                  # GUI RELATED SETTINGS
                                  "lastOpenedFile":      None
@@ -229,7 +45,7 @@ class MainWindow(QtWidgets.QMainWindow):
         configExists = self.loadSettings()
 
 
-        # Init self and objects. All objects should be capable of being started w/o settings, THEN settings are loaded.
+        # Init self and objects. All objects should be capable of being started w/o filled out settings
         self.fileName    = None
         self.loadData    = []  #Set when file is loaded. Used to check if the user has changed anything and prompt
         self.env         = Environment(self.settings)
@@ -252,12 +68,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setVideo("play")
 
 
-
-
-        # This will set the camera and start the videoThread, and set the CameraWidget to play
-        # self.setVideo("play")
-
-
         # If any file is specified in "lastOpenedFile" then load it.
         if self.settings["lastOpenedFile"] is not None:
             self.loadTask(filename=self.settings["lastOpenedFile"])
@@ -267,8 +77,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if not configExists:
             self.openSettingsWindow()
 
-        # For debugging
-        # self.openObjectManagerWindow()
+
 
 
     def initUI(self):
@@ -540,7 +349,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.endScript()
         self.setVideo("pause")
 
-        settings = self.env.getSettings()
         calibrationsWindow = CalibrateWindow(self.env, parent=self)
         accepted           = calibrationsWindow.exec_()
 
@@ -718,6 +526,188 @@ class MainWindow(QtWidgets.QMainWindow):
         printf("MainWindow.close(): Done closing all objects and threads.")
 
 
+
+##########    VIEWS    ##########
+class SettingsWindow(QtWidgets.QDialog):
+    """
+    Simple view that lets you select your robot and camera.
+    The Apply/Cancel buttons are connected in the MainWindow class, which is why they are 'self' variables
+    """
+
+    def __init__(self, parent):
+        super(SettingsWindow, self).__init__(parent)
+        self.settings  = {"robotID": None, "cameraID": None}
+
+        # Init UI Globals
+        self.cameraButtonGroup = None  # Radio buttons require a "group"
+        self.robotButtonGroup  = None
+        self.robVBox           = QtWidgets.QVBoxLayout()
+        self.camVBox           = QtWidgets.QVBoxLayout()
+
+        self.initUI()
+
+    def initUI(self):
+
+        # Create Text
+        selectRobotTxt  = QtWidgets.QLabel('Please select the robot you will be using:')
+        selectCameraTxt = QtWidgets.QLabel('Please select the camera you will be using:')
+
+
+        # CREATE BUTTONS
+        robotScanBtn  = QtWidgets.QPushButton("Scan for Robots")
+        cameraScanBtn = QtWidgets.QPushButton("Scan for Cameras")
+        applyBtn      = QtWidgets.QPushButton("Apply")
+        cancelBtn     = QtWidgets.QPushButton("Cancel")
+
+        # Connect Buttons
+        robotScanBtn.clicked.connect(   self.scanForRobotsClicked)
+        cameraScanBtn.clicked.connect(  self.scanForCamerasClicked)
+        applyBtn.clicked.connect(       self.accept)
+        cancelBtn.clicked.connect(      self.reject)
+
+
+        # Set max widths of buttons
+        maxWidth = 130
+        robotScanBtn.setFixedWidth(maxWidth)
+        cameraScanBtn.setFixedWidth(maxWidth)
+        applyBtn.setFixedWidth(maxWidth)
+        cancelBtn.setFixedWidth(maxWidth)
+
+
+        # Create the rows and fill them up
+        row1 = QtWidgets.QHBoxLayout()
+        row1.addWidget(selectRobotTxt, QtCore.Qt.AlignLeft)
+        row1.addWidget(robotScanBtn, QtCore.Qt.AlignRight)
+
+        row2 = QtWidgets.QHBoxLayout()
+        row2.addLayout(self.robVBox, QtCore.Qt.AlignLeft)
+
+        row3 = QtWidgets.QHBoxLayout()
+        row3.addWidget(selectCameraTxt, QtCore.Qt.AlignLeft)
+        row3.addWidget(cameraScanBtn, QtCore.Qt.AlignRight)
+
+        row4 = QtWidgets.QHBoxLayout()
+        row4.addLayout(self.camVBox)
+
+
+        # Place the rows ito the middleVLayout
+        middleVLayout = QtWidgets.QVBoxLayout()
+        middleVLayout.addLayout(row1)
+        middleVLayout.addLayout(row2)
+        middleVLayout.addLayout(row3)
+        middleVLayout.addLayout(row4)
+        middleVLayout.addStretch(1)
+
+
+        # Set up Cancel and Apply buttons
+        leftVLayout  = QtWidgets.QVBoxLayout()
+        leftVLayout.addStretch(1)
+        leftVLayout.addWidget(cancelBtn, QtCore.Qt.AlignRight)
+        rightVLayout = QtWidgets.QVBoxLayout()
+        rightVLayout.addStretch(1)
+        rightVLayout.addWidget(applyBtn, QtCore.Qt.AlignLeft)
+
+
+        # Build the final layout
+        mainHLayout = QtWidgets.QHBoxLayout()
+        mainHLayout.addStretch(1)
+        mainHLayout.addLayout(leftVLayout)
+        mainHLayout.addLayout(middleVLayout)
+        mainHLayout.addLayout(rightVLayout)
+        mainHLayout.addStretch(1)
+
+        self.setLayout(mainHLayout)
+        self.setMinimumHeight(400)
+        self.setWindowTitle('Settings')
+        self.setWindowIcon(QtGui.QIcon(Icons.settings))
+
+
+
+
+    def scanForRobotsClicked(self):
+        connectedDevices = getConnectedRobots()  # From Robot.py
+        printf("SettingsView.scanForRobots(): Connected Devices: ", connectedDevices)
+        self.robotButtonGroup = QtWidgets.QButtonGroup()
+
+        # Update the list of found devices
+        self.clearLayout(self.robVBox)  #  Clear robot list
+        for i, port in enumerate(connectedDevices):
+            newButton = QtWidgets.QRadioButton(port[0])
+            self.robVBox.addWidget(newButton)                        # Add the button to the button layout
+            self.robotButtonGroup.addButton(newButton, i)            # Add the button to a group, with an ID of i
+            newButton.clicked.connect(self.robButtonClicked)         # Connect each radio button to a method
+
+
+        if len(connectedDevices) == 0:
+            notFoundTxt = QtWidgets.QLabel('No devices were found.')
+            self.robVBox.addWidget(notFoundTxt)
+
+    def scanForCamerasClicked(self):
+
+        # Get all of the cameras connected to the computer and list them
+        connectedCameras = getConnectedCameras()  # From the Video.py module
+
+        self.cameraButtonGroup = QtWidgets.QButtonGroup()
+
+        # Update the list of found cameras
+        self.clearLayout(self.camVBox)  #  Clear camera list
+        for i in range(len(connectedCameras)):
+            newButton = QtWidgets.QRadioButton("Camera " + str(i))
+            self.camVBox.addWidget(newButton)                  # Add the button to the button layout
+            self.cameraButtonGroup.addButton(newButton, i)     # Add the button to a group, with an ID of i
+            newButton.clicked.connect(self.camButtonClicked)   # Connect each radio button to a method
+
+
+        if len(connectedCameras) == 0:
+            notFoundTxt = QtWidgets.QLabel('No cameras were found.')
+            self.camVBox.addWidget(notFoundTxt)
+
+
+    def camButtonClicked(self):
+        self.settings["cameraID"] = self.cameraButtonGroup.checkedId()
+
+    def robButtonClicked(self):
+        self.settings["robotID"] = str(self.robotButtonGroup.checkedButton().text())
+
+
+    def clearLayout(self, layout):
+        while layout.count():
+            child = layout.takeAt(0)
+            child.widget().deleteLater()
+
+    def getSettings(self):
+        return self.settings
+
+
+class DashboardView(QtWidgets.QWidget):
+    def __init__(self, controlPanel, cameraWidget, parent):
+        super(DashboardView, self).__init__(parent)
+
+        # UI Globals setup
+        self.controlPanel   = controlPanel
+        self.cameraWidget   = cameraWidget
+
+        self.initUI()
+
+    def initUI(self):
+
+        # Create main layout
+        mainHLayout = QtWidgets.QHBoxLayout()
+        mainVLayout = QtWidgets.QVBoxLayout()
+        mainVLayout.addLayout(mainHLayout)
+
+        mainHLayout.addWidget(self.controlPanel)
+        mainHLayout.addWidget(self.cameraWidget)    #Create Camera view (RIGHT)
+
+        self.setLayout(mainVLayout)
+
+    def closeEvent(self, event):
+        self.cameraWidget.close()
+        self.controlPanel.close()
+
+
+
+##########    OTHER    ##########
 class Application(QtWidgets.QApplication):
     """
         Application subclass, to record key presses/releases
