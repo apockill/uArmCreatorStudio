@@ -52,7 +52,7 @@ colortrack_command = img_file + "command_colortrack.png"
 buzzer_command     = img_file + "command_buzzer.png"
 
 move_over_command  = img_file + "command_move_over.png"
-
+pickup_command     = img_file + "command_pickup_object.png"
 startblock_command = img_file + "command_startblock.png"
 endblock_command   = img_file + "command_endblock.png"
 else_command       = img_file + "command_else.png"

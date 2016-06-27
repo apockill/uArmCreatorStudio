@@ -165,6 +165,7 @@ class AttachCommand(Command):
         self.robot.refresh()
         return True
 
+
 class WaitCommand(Command):
 
     def __init__(self, env, interpreter, parameters=None):
@@ -211,6 +212,7 @@ class DropCommand(Command):
         printf("DropCommand.run(): Setting gripper to False")
         self.robot.setGripper(False)
         return True
+
 
 class BuzzerCommand(Command):
 

@@ -277,55 +277,64 @@ class CommandGUI:
 
         # Create a content box for the command to fill out parameters and GUI elements
         prompt.content    = QtWidgets.QVBoxLayout()
+        prompt.content.setContentsMargins(20, 10, 20, 10)
         contentGroupBox = QtWidgets.QGroupBox("Parameters")
         contentGroupBox.setLayout(prompt.content)
 
+        # Create the main vertical layout, add the contentBox to it
+        prompt.mainVLayout = QtWidgets.QVBoxLayout()
+        prompt.mainVLayout.addWidget(contentGroupBox)
+        prompt.mainVLayout.addStretch(1)
 
-        # Add "Cancel" and "Apply" buttons
+        # Dress the base window (this is where the child actually puts the content into the widget)
+        prompt = self.dressWindow(prompt)
+
+
+        # Now that the window is 'dressed', add "Cancel" and "Apply" buttons
         buttonRow         = QtWidgets.QHBoxLayout()
         buttonRow.addWidget(cancelBtn)
         buttonRow.addStretch(1)
         buttonRow.addWidget(applyBtn)
+        prompt.mainVLayout.addLayout(buttonRow)
 
-        mainVLayout = QtWidgets.QVBoxLayout()
-        mainVLayout.addWidget(contentGroupBox)
-        mainVLayout.addStretch(1)
-        mainVLayout.addLayout(buttonRow)
-
-        # grid = QtWidgets.QGridLayout()
-        # grid.setSpacing(10)
-        # grid.addLayout(prompt.content, 0, 1, QtCore.Qt.AlignCenter)
-        # grid.addWidget(applyBtn, 1, 2, QtCore.Qt.AlignRight)
-        # grid.addWidget(cancelBtn, 1, 0, QtCore.Qt.AlignLeft)
-
-        prompt.setFixedWidth(300)
-        # prompt.setFixedHeight(350)
-        prompt.setLayout(mainVLayout)
+        # Set the main layout and general window parameters
+        prompt.setFixedWidth(350)
+        prompt.setMinimumHeight(350)
+        prompt.setLayout(prompt.mainVLayout)
         prompt.setWindowTitle(self.title)
         prompt.setWindowIcon(QtGui.QIcon(self.icon))
         prompt.setWhatsThis(self.tooltip)  # This makes the "Question Mark" button on the window show the tooltip msg
 
-        # Dress the base window
-        prompt = self.dressWindow(prompt)
+
+
+
 
         # Run the info window and prevent other windows from being clicked while open:
         printf("Command.openView(): Finished executing self...")
         prompt.exec_()
 
+
         # Get information that the user input
         if prompt.accepted:
             # Get information that the user input
-            self.extractPromptInfo(prompt)
-            self.updateDescription()
+            self._extractPromptInfo(prompt)
+
+            # Update self.description for the widget to be dressed with after, by CommandList
+            self._updateDescription()
             printf('CommandWindow.openView(): New parameters: ', self.parameters)
 
         else:
             printf('CommandWindow.openView(): User Canceled.')
 
+
+        # Make sure QT properly handles the memory
+        # prompt.close()
+        # prompt.deleteLater()
+
         return prompt.accepted
 
     def dressWidget(self, newWidget):
-        self.updateDescription()
+        self._updateDescription()
 
         newWidget.setIcon(self.icon)
         newWidget.setTitle(self.title)
@@ -333,21 +342,15 @@ class CommandGUI:
         newWidget.setDescription(self.description)
         return newWidget
 
-    def sanitizeFloat(self, inputTextbox, fallback):
-        """
-        Sent it a textbox, and it will check the text in the textbox to make sure it is valid.
-        If it is, return the float within the textbox. If not, it will set the textbox to the fallback value
-        while also setting the textbox back to the fallback value.
-        """
-        # Sanitize input from the user
-        try:
-            intInput = float(str(inputTextbox.text()))
-        except:
-            intInput = fallback
-            inputTextbox.setText(str(fallback))
-        return intInput
 
-    def sanitizeEval(self, inputTextbox, fallback):
+    # The following functions should be empty, and only are there so that subclasses without them don't cause errors
+    def _updateDescription(self):
+        # This is called in openView() and will update the decription to match the parameters
+        pass
+
+
+    # The following are helper functions for general CommandGUI children purposes
+    def _sanitizeEval(self, inputTextbox, fallback):
         """
         Checks if the eval statement is python-parsible. If it is not, it will return the "fallback" value.
         """
@@ -362,7 +365,7 @@ class CommandGUI:
             return fallback
         return inputCode
 
-    def sanitizeVariable(self, inputTextbox, fallback):
+    def _sanitizeVariable(self, inputTextbox, fallback):
         # Sanitize input from the user
         possibleNumber = str(inputTextbox.text())
         possibleNumber.replace(".", "")  # For isnumeric() to work, there can't be a decimal point
@@ -372,22 +375,33 @@ class CommandGUI:
 
         return possibleNumber
 
-    # The following commands should be empty, and only are there so that subclasses without them don't cause errors
 
-    def extractPromptInfo(self, prompt):
-        # In case there is a command that does not have info, if it is called then this ensures
-        # there will be no error. For example, "start block of code" "refresh" or
-        # "activate/deactivate gripper" do not have info to give
-        pass
+    # The following are helper functions for modifying the prompt window in a consistent way
+    def _addRow(self, prompt, leftWidget, rightItem):
+        # Creates and adds a row to prompt.content, with proper formatting
+        row = QtWidgets.QHBoxLayout()
+        row.addStretch(1)
+        row.addWidget(leftWidget)
+        row.addWidget(rightItem)
+        prompt.content.addLayout(row)
 
-    def run(self, shared):
-        # For any command that does not have a function such as "start block of code"
-        # Then this function will run in it's place.
-        pass
+    def _addHint(self, prompt, hintText):
+        # Add some text (usually at the bottom of the prompt) that tells the user something to help them out
+        hintLbl = QtWidgets.QLabel(hintText)
+        hintLbl.setWordWrap(True)
+        # Make the hint bold
+        bold = QtGui.QFont()
+        bold.setBold(True)
+        hintLbl.setFont(bold)
 
-    def updateDescription(self):
-        # This is called in openView() and will update the decription to match the parameters
-        pass
+        # Create a row for the hint
+        hintRow = QtWidgets.QHBoxLayout()
+        hintRow.addStretch(1)
+        hintRow.addWidget(hintLbl)
+
+        # Add it to the prompt
+        prompt.mainVLayout.addLayout(hintRow)
+
 
 
 
@@ -483,10 +497,10 @@ class MoveXYZCommandGUI(CommandGUI):
         prompt.rltCheck = QtWidgets.QCheckBox()  # "relative" CheckBox
 
         # Set up all the labels for the inputs
-        rotLabel = QtWidgets.QLabel('X:')
-        strLabel = QtWidgets.QLabel('Y:')
-        hgtLabel = QtWidgets.QLabel('Z:')
-        ovrCheck = QtWidgets.QLabel('Override Ongoing Movement:')
+        rotLabel = QtWidgets.QLabel('X ')
+        strLabel = QtWidgets.QLabel('Y ')
+        hgtLabel = QtWidgets.QLabel('Z ')
+        ovrCheck = QtWidgets.QLabel('Override Ongoing Movement: ')
         rltCheck = QtWidgets.QLabel('Relative: ')
 
         # Fill the textboxes with the default parameters
@@ -496,44 +510,20 @@ class MoveXYZCommandGUI(CommandGUI):
         prompt.ovrCheck.setChecked(self.parameters['override'])
         prompt.rltCheck.setChecked(self.parameters['relative'])
 
-        row1 = QtWidgets.QHBoxLayout()
-        row2 = QtWidgets.QHBoxLayout()
-        row3 = QtWidgets.QHBoxLayout()
-        row4 = QtWidgets.QHBoxLayout()
-        row5 = QtWidgets.QHBoxLayout()
 
-        row1.addWidget(rotLabel)
-        row1.addStretch(1)
-        row1.addWidget(prompt.rotEdit)
+        self._addRow(prompt, rotLabel, prompt.rotEdit)
+        self._addRow(prompt, strLabel, prompt.strEdit)
+        self._addRow(prompt, hgtLabel, prompt.hgtEdit)
+        self._addRow(prompt, ovrCheck, prompt.ovrCheck)
+        self._addRow(prompt, rltCheck, prompt.rltCheck)
 
-        row2.addWidget(strLabel)
-        row2.addStretch(1)
-        row2.addWidget(prompt.strEdit)
-
-        row3.addWidget(hgtLabel)
-        row3.addStretch(1)
-        row3.addWidget(prompt.hgtEdit)
-
-        row4.addWidget(ovrCheck)
-        row4.addStretch(1)
-        row4.addWidget(prompt.ovrCheck)
-
-        row5.addWidget(rltCheck)
-        row5.addStretch(1)
-        row5.addWidget(prompt.rltCheck)
-
-        prompt.content.addLayout(row1)
-        prompt.content.addLayout(row2)
-        prompt.content.addLayout(row3)
-        prompt.content.addLayout(row4)
-        prompt.content.addLayout(row5)
         return prompt
 
-    def extractPromptInfo(self, prompt):
+    def _extractPromptInfo(self, prompt):
         # Update the parameters and the description
-        newParameters = {'x': self.sanitizeEval(prompt.rotEdit, self.parameters["x"]),
-                         'y': self.sanitizeEval(prompt.strEdit, self.parameters["y"]),
-                         'z': self.sanitizeEval(prompt.hgtEdit, self.parameters["z"]),
+        newParameters = {'x': self._sanitizeEval(prompt.rotEdit, self.parameters["x"]),
+                         'y': self._sanitizeEval(prompt.strEdit, self.parameters["y"]),
+                         'z': self._sanitizeEval(prompt.hgtEdit, self.parameters["z"]),
                          'override': prompt.ovrCheck.isChecked(),
                          'relative': prompt.rltCheck.isChecked()}
 
@@ -541,7 +531,7 @@ class MoveXYZCommandGUI(CommandGUI):
 
         return self.parameters
 
-    def updateDescription(self):
+    def _updateDescription(self):
         # Update the description, for the dressWidget() and the openView() prompt
         self.description =    'X: ' + str(self.parameters['x']) + \
                            '   Y: ' + str(self.parameters['y']) + \
@@ -582,30 +572,19 @@ class MoveWristCommandGUI(CommandGUI):
         prompt.wristEdit.setText(  self.parameters["angle"])
         prompt.rltCheck.setChecked(self.parameters["relative"])
 
-        row1 = QtWidgets.QHBoxLayout()
-        row2 = QtWidgets.QHBoxLayout()
-
-        row1.addWidget(wristLabel)
-        row1.addStretch(1)
-        row1.addWidget(prompt.wristEdit)
-
-        row2.addWidget(rltLabel)
-        row2.addStretch(1)
-        row2.addWidget(prompt.rltCheck)
-
-        prompt.content.addLayout(row1)
-        prompt.content.addLayout(row2)
+        self._addRow(prompt, wristLabel, prompt.wristEdit)
+        self._addRow(prompt, rltLabel, prompt.rltCheck)
         return prompt
 
-    def extractPromptInfo(self, prompt):
-        newParameters = {"angle":    self.sanitizeEval(prompt.wristEdit, self.parameters["angle"]),
+    def _extractPromptInfo(self, prompt):
+        newParameters = {"angle":    self._sanitizeEval(prompt.wristEdit, self.parameters["angle"]),
                          "relative": prompt.rltCheck.isChecked()}
 
         self.parameters.update(newParameters)
 
         return self.parameters
 
-    def updateDescription(self):
+    def _updateDescription(self):
         self.description = "Set the wrist position to " + self.parameters["angle"] + " degrees"
 
         if self.parameters['relative']: self.description += '   Relative'
@@ -631,27 +610,22 @@ class SpeedCommandGUI(CommandGUI):
         # Set up all the labels for the inputs
         speedLabel = QtWidgets.QLabel('Speed (cm/s): ')
 
-
         # Fill the textboxes with the default parameters
         prompt.speedEdit.setText(str(self.parameters['speed']))
 
-        row1 = QtWidgets.QHBoxLayout()
-        row1.addWidget(speedLabel)
-        row1.addStretch(1)
-        row1.addWidget(prompt.speedEdit)
+        self._addRow(prompt, speedLabel, prompt.speedEdit)
 
-        prompt.content.addLayout(row1)
 
         return prompt
 
-    def extractPromptInfo(self, prompt):
-        newParameters = {'speed': self.sanitizeEval(prompt.speedEdit, self.parameters['speed'])}
+    def _extractPromptInfo(self, prompt):
+        newParameters = {'speed': self._sanitizeEval(prompt.speedEdit, self.parameters['speed'])}
 
         self.parameters.update(newParameters)
 
         return self.parameters
 
-    def updateDescription(self):
+    def _updateDescription(self):
         self.description = 'Set robot speed to ' + str(self.parameters['speed']) + " cm/s"
 
 
@@ -690,37 +664,13 @@ class DetachCommandGUI(CommandGUI):
         prompt.srvo2Box.setChecked(self.parameters['servo2'])
         prompt.srvo3Box.setChecked(self.parameters['servo3'])
         prompt.srvo4Box.setChecked(self.parameters['servo4'])
-
-        row1 = QtWidgets.QHBoxLayout()
-        row2 = QtWidgets.QHBoxLayout()
-        row3 = QtWidgets.QHBoxLayout()
-        row4 = QtWidgets.QHBoxLayout()
-
-        row1.addWidget(label1)
-        row1.addStretch(1)
-        row1.addWidget(prompt.srvo1Box)
-
-        row2.addWidget(label2)
-        row2.addStretch(1)
-        row2.addWidget(prompt.srvo2Box)
-
-        row3.addWidget(label3)
-        row3.addStretch(1)
-        row3.addWidget(prompt.srvo3Box)
-
-        row4.addWidget(label4)
-        row4.addStretch(1)
-        row4.addWidget(prompt.srvo4Box)
-
-        prompt.content.addLayout(row1)
-        prompt.content.addLayout(row2)
-        prompt.content.addLayout(row3)
-        prompt.content.addLayout(row4)
-
-
+        self._addRow(prompt, label1, prompt.srvo1Box)
+        self._addRow(prompt, label2, prompt.srvo2Box)
+        self._addRow(prompt, label3, prompt.srvo3Box)
+        self._addRow(prompt, label4, prompt.srvo4Box)
         return prompt
 
-    def extractPromptInfo(self, prompt):
+    def _extractPromptInfo(self, prompt):
         newParameters = {'servo1': prompt.srvo1Box.isChecked(),
                          'servo2': prompt.srvo2Box.isChecked(),
                          'servo3': prompt.srvo3Box.isChecked(),
@@ -730,7 +680,7 @@ class DetachCommandGUI(CommandGUI):
 
         return self.parameters
 
-    def updateDescription(self):
+    def _updateDescription(self):
         descriptionBuild = "Servos"
         if self.parameters["servo1"]: descriptionBuild += "  Rotation"
         if self.parameters["servo2"]: descriptionBuild += "  Stretch"
@@ -780,36 +730,14 @@ class AttachCommandGUI(CommandGUI):
         prompt.srvo3Box.setChecked(self.parameters['servo3'])
         prompt.srvo4Box.setChecked(self.parameters['servo4'])
 
-        row1 = QtWidgets.QHBoxLayout()
-        row2 = QtWidgets.QHBoxLayout()
-        row3 = QtWidgets.QHBoxLayout()
-        row4 = QtWidgets.QHBoxLayout()
-
-        row1.addWidget(label1)
-        row1.addStretch(1)
-        row1.addWidget(prompt.srvo1Box)
-
-        row2.addWidget(label2)
-        row2.addStretch(1)
-        row2.addWidget(prompt.srvo2Box)
-
-        row3.addWidget(label3)
-        row3.addStretch(1)
-        row3.addWidget(prompt.srvo3Box)
-
-        row4.addWidget(label4)
-        row4.addStretch(1)
-        row4.addWidget(prompt.srvo4Box)
-
-        prompt.content.addLayout(row1)
-        prompt.content.addLayout(row2)
-        prompt.content.addLayout(row3)
-        prompt.content.addLayout(row4)
-        prompt.content.addLayout(row1) # and so on for all of the rows
+        self._addRow(prompt, label1, prompt.srvo1Box)
+        self._addRow(prompt, label2, prompt.srvo2Box)
+        self._addRow(prompt, label3, prompt.srvo3Box)
+        self._addRow(prompt, label4, prompt.srvo4Box)
 
         return prompt
 
-    def extractPromptInfo(self, prompt):
+    def _extractPromptInfo(self, prompt):
         newParameters = {'servo1': prompt.srvo1Box.isChecked(),
                          'servo2': prompt.srvo2Box.isChecked(),
                          'servo3': prompt.srvo3Box.isChecked(),
@@ -819,7 +747,7 @@ class AttachCommandGUI(CommandGUI):
 
         return self.parameters
 
-    def updateDescription(self):
+    def _updateDescription(self):
         descriptionBuild = "Servos"
         if self.parameters["servo1"]: descriptionBuild += "  Rotation"
         if self.parameters["servo2"]: descriptionBuild += "  Stretch"
@@ -852,24 +780,18 @@ class WaitCommandGUI(CommandGUI):
         # Fill the textboxes with the default parameters
         prompt.timeEdit.setText(str(self.parameters['time']))
 
-        row1 = QtWidgets.QHBoxLayout()
-
-        row1.addWidget(timeLabel)
-        row1.addStretch(1)
-        row1.addWidget(prompt.timeEdit)
-
-        prompt.content.addLayout(row1)
+        self._addRow(prompt, timeLabel, prompt.timeEdit)
 
         return prompt
 
-    def extractPromptInfo(self, prompt):
-        newParameters = {'time': self.sanitizeEval(prompt.timeEdit, self.parameters['time'])}
+    def _extractPromptInfo(self, prompt):
+        newParameters = {'time': self._sanitizeEval(prompt.timeEdit, self.parameters['time'])}
 
         self.parameters.update(newParameters)
 
         return self.parameters
 
-    def updateDescription(self):
+    def _updateDescription(self):
         self.description = str(self.parameters['time']) + " seconds"
 
 
@@ -928,38 +850,24 @@ class BuzzerCommandGUI(CommandGUI):
         prompt.tmeEdit.setText(str(self.parameters['time']))
         prompt.waitCheck.setChecked(self.parameters['waitForBuzzer'])
 
-        row1 = QtWidgets.QHBoxLayout()
-        row2 = QtWidgets.QHBoxLayout()
-        row3 = QtWidgets.QHBoxLayout()
 
-        row1.addWidget(frqLabel)
-        row1.addStretch(1)
-        row1.addWidget(prompt.frqEdit)
+        self._addRow(prompt, frqLabel, prompt.frqEdit)
+        self._addRow(prompt, tmeLabel, prompt.tmeEdit)
+        self._addRow(prompt, waitLabel, prompt.waitCheck)
 
-        row2.addWidget(tmeLabel)
-        row2.addStretch(1)
-        row2.addWidget(prompt.tmeEdit)
-
-        row3.addWidget(waitLabel)
-        row3.addStretch(1)
-        row3.addWidget(prompt.waitCheck)
-
-        prompt.content.addLayout(row1)
-        prompt.content.addLayout(row2)
-        prompt.content.addLayout(row3)
         return prompt
 
-    def extractPromptInfo(self, prompt):
+    def _extractPromptInfo(self, prompt):
         # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
-        newParameters = {"frequency":     self.sanitizeEval(prompt.frqEdit, self.parameters["frequency"]),
-                         "time":          self.sanitizeEval(prompt.tmeEdit,      self.parameters["time"]),
+        newParameters = {"frequency":     self._sanitizeEval(prompt.frqEdit, self.parameters["frequency"]),
+                         "time":          self._sanitizeEval(prompt.tmeEdit, self.parameters["time"]),
                          "waitForBuzzer": prompt.waitCheck.isChecked()}
 
         self.parameters.update(newParameters)
 
         return self.parameters
 
-    def updateDescription(self):
+    def _updateDescription(self):
         # Some string that uses your parameters to describe the object.
         self.description = "Play a tone of " + self.parameters["frequency"] + "HZ for  " +\
                            self.parameters["time"] + " seconds"
@@ -1009,10 +917,6 @@ class FocusOnObjectCommandGUI(CommandGUI):
 
     def dressWindow(self, prompt):
         # Define what happens when the user changes the object selection
-        # def selectionchange(comboBox):
-        #     for count in range(self.cb.count()):
-        #     print self.cb.itemText(count)
-        #     print "Current index",i,"selection changed ",self.cb.currentText()
 
         choiceLbl = QtWidgets.QLabel("Choose an object: ")
 
@@ -1031,36 +935,21 @@ class FocusOnObjectCommandGUI(CommandGUI):
             prompt.objChoices.addItem(objectID)
 
 
+        self._addRow(prompt, choiceLbl, prompt.objChoices)
 
         # If there are no objects, place a nice label to let the user know
-        hintLbl = QtWidgets.QLabel()
-        bold = QtGui.QFont()
-        bold.setBold(True)
-        hintLbl.setFont(bold)
         if len(objectList) == 0:
-            hintLbl.setText("You have not created any trackable objects yet."
-                            "\nTry adding new objects in the Object Manager!")
-
-        if 0 < len(objectList) < 2:
-            hintLbl.setText("It looks like you've only created " + str(len(objectList)) + " object(s)."
-                            "\nFeel free to add new objects in the Object Manager!")
-
-        row1 = QtWidgets.QHBoxLayout()
-        row1.addWidget(choiceLbl)
-        row1.addStretch(1)
-        row1.addWidget(prompt.objChoices)
-
-        row2 = QtWidgets.QHBoxLayout()
-        row2.addWidget(hintLbl)
-        row2.addStretch(1)
-
-
-        prompt.content.addLayout(row1)
-        prompt.content.addLayout(row2)
+            hintText = "You have not created any trackable objects yet." + \
+                       "\nTry adding new objects in the Object Manager!"
+            self._addHint(prompt, hintText)
+        elif len(objectList) == 1:
+            hintText = "It looks like you've only created one object." + \
+                       " Feel free to add new objects in the Object Manager!"
+            self._addHint(prompt, hintText)
 
         return prompt
 
-    def extractPromptInfo(self, prompt):
+    def _extractPromptInfo(self, prompt):
         # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
         newParameters = {"objectID": prompt.objChoices.currentText()}
 
@@ -1069,19 +958,20 @@ class FocusOnObjectCommandGUI(CommandGUI):
 
         return self.parameters
 
-    def updateDescription(self):
+    def _updateDescription(self):
         self.description = "Find " + self.parameters["objectID"] + " and move the robot over it"
 
 
 class PickupObjectCommandGUI(CommandGUI):
-    title     = "Move Robot Over Object"
-    tooltip   = "This tool uses computer vision to recognize an object of your choice, and position the robot directly"\
-                " over the object of choice, if it is visible. If it cannot be found, False will be returned."
-    icon      = Icons.move_over_command
+    title     = "Pick Up an Object"
+    tooltip   = "This tool uses computer vision to recognize an object of your choice, and attempt to pick up the " \
+                "object. If the object cannot be found or picked up, then False will be returned"
+
+    icon      = Icons.pickup_command
     logicPair = "PickupObjectCommand"
 
     def __init__(self, env, parameters=None):
-        super(FocusOnObjectCommandGUI, self).__init__(parameters)
+        super(PickupObjectCommandGUI, self).__init__(parameters)
 
         objectManager = env.getObjectManager()
 
@@ -1093,10 +983,6 @@ class PickupObjectCommandGUI(CommandGUI):
 
     def dressWindow(self, prompt):
         # Define what happens when the user changes the object selection
-        # def selectionchange(comboBox):
-        #     for count in range(self.cb.count()):
-        #     print self.cb.itemText(count)
-        #     print "Current index",i,"selection changed ",self.cb.currentText()
 
         choiceLbl = QtWidgets.QLabel("Choose an object: ")
 
@@ -1115,36 +1001,22 @@ class PickupObjectCommandGUI(CommandGUI):
             prompt.objChoices.addItem(objectID)
 
 
+        self._addRow(prompt, choiceLbl, prompt.objChoices)
+
 
         # If there are no objects, place a nice label to let the user know
-        hintLbl = QtWidgets.QLabel()
-        bold = QtGui.QFont()
-        bold.setBold(True)
-        hintLbl.setFont(bold)
         if len(objectList) == 0:
-            hintLbl.setText("You have not created any trackable objects yet."
-                            "\nTry adding new objects in the Object Manager!")
-
-        if 0 < len(objectList) < 2:
-            hintLbl.setText("It looks like you've only created " + str(len(objectList)) + " object(s)."
-                            "\nFeel free to add new objects in the Object Manager!")
-
-        row1 = QtWidgets.QHBoxLayout()
-        row1.addWidget(choiceLbl)
-        row1.addStretch(1)
-        row1.addWidget(prompt.objChoices)
-
-        row2 = QtWidgets.QHBoxLayout()
-        row2.addWidget(hintLbl)
-        row2.addStretch(1)
-
-
-        prompt.content.addLayout(row1)
-        prompt.content.addLayout(row2)
+            hintText = "You have not created any trackable objects yet." + \
+                       "\nTry adding new objects in the Object Manager!"
+            self._addHint(prompt, hintText)
+        elif len(objectList) == 1:
+            hintText = "It looks like you've only created one object(s)." + \
+                       " Feel free to add new objects in the Object Manager!"
+            self._addHint(prompt, hintText)
 
         return prompt
 
-    def extractPromptInfo(self, prompt):
+    def _extractPromptInfo(self, prompt):
         # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
         newParameters = {"objectID": prompt.objChoices.currentText()}
 
@@ -1153,9 +1025,8 @@ class PickupObjectCommandGUI(CommandGUI):
 
         return self.parameters
 
-    def updateDescription(self):
+    def _updateDescription(self):
         self.description = "Find " + self.parameters["objectID"] + " and move the robot over it"
-
 
 
 
@@ -1230,33 +1101,22 @@ class SetVariableCommandGUI(CommandGUI):
         prompt.namEdit.setText(str(self.parameters['variable']))
         prompt.valEdit.setText(str(self.parameters['expression']))
 
-        row1 = QtWidgets.QHBoxLayout()
-        row2 = QtWidgets.QHBoxLayout()
-
-        row1.addWidget(namLabel)
-        row1.addStretch(1)
-        row1.addWidget(prompt.namEdit)
-
-        row2.addWidget(valLabel)
-        row2.addStretch(1)
-        row2.addWidget(prompt.valEdit)
-
-        prompt.content.addLayout(row1)
-        prompt.content.addLayout(row2)
+        self._addRow(prompt, namLabel, prompt.namEdit)
+        self._addRow(prompt, valLabel, prompt.valEdit)
 
         return prompt
 
-    def extractPromptInfo(self, prompt):
+    def _extractPromptInfo(self, prompt):
         # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
 
-        newParameters = {"variable": self.sanitizeVariable(prompt.namEdit, self.parameters["variable"]),
+        newParameters = {"variable": self._sanitizeVariable(prompt.namEdit, self.parameters["variable"]),
                          "expression": prompt.valEdit.text()}
 
         self.parameters.update(newParameters)
 
         return self.parameters
 
-    def updateDescription(self):
+    def _updateDescription(self):
         # Some string that uses your parameters to describe the object.
         self.description = "Set " + self.parameters["variable"] + " to " + self.parameters["expression"]
 
@@ -1303,43 +1163,21 @@ class TestVariableCommandGUI(CommandGUI):
         prompt.valEdit.setText(str(self.parameters['expression']))
         # prompt.notCheck.setChecked(self.parameters['not'])
 
-        row1 = QtWidgets.QHBoxLayout()
-        row2 = QtWidgets.QHBoxLayout()
-        row3 = QtWidgets.QHBoxLayout()
-        # row4 = QtWidgets.QHBoxLayout()
-
-        row1.addWidget(varLabel)
-        row1.addStretch(1)
-        row1.addWidget(prompt.varEdit)
-
-        row2.addWidget(tstLabel)
-        row2.addStretch(1)
-        row2.addWidget(prompt.tstMenu)
-
-        row3.addWidget(valLabel)
-        row3.addStretch(1)
-        row3.addWidget(prompt.valEdit)
-
-        # row4.addStretch(1)
-        # row4.addWidget(notLabel)
-        # row4.addWidget(prompt.notCheck)
-
-        prompt.content.addLayout(row1)
-        prompt.content.addLayout(row2)
-        prompt.content.addLayout(row3)
-        # prompt.content.addLayout(row4)
+        self._addRow(prompt, varLabel, prompt.varEdit)
+        self._addRow(prompt, tstLabel, prompt.tstMenu)
+        self._addRow(prompt, valLabel, prompt.valEdit)
 
         return prompt
 
-    def extractPromptInfo(self, prompt):
-        newParameters = {'variable': self.sanitizeVariable(prompt.varEdit, self.parameters['variable']),
+    def _extractPromptInfo(self, prompt):
+        newParameters = {'variable': self._sanitizeVariable(prompt.varEdit, self.parameters['variable']),
                          'test': prompt.tstMenu.currentIndex(),
                          'expression': str(prompt.valEdit.text())}  # This can't be sanitized, unfortunately :/
 
         self.parameters.update(newParameters)
         return self.parameters
 
-    def updateDescription(self):
+    def _updateDescription(self):
         operations = [' equal to', ' not equal to', ' greater than', ' less than']
         self.description = 'If ' + str(self.parameters['variable']) + ' is' + operations[self.parameters['test']] + \
                            ' ' + self.parameters['expression'] + ' then'
