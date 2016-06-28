@@ -1,4 +1,11 @@
 {
+   "motionCalibrations": {
+      "stationaryMovement": null,
+      "activeMovement": null
+   },
+   "objectsDirectory": "Objects",
+   "cameraID": 1,
+   "lastOpenedFile": "F:/Google Drive/Projects/Git Repositories/RobotGUIProgramming/RobotGUI/Saves/MyTask.task",
    "coordCalibrations": {
       "ptPairs": [
          [
@@ -5692,12 +5699,5 @@
          ]
       ]
    },
-   "objectsDirectory": "Objects",
-   "cameraID": 1,
-   "robotID": "COM3",
-   "lastOpenedFile": "F:/Google Drive/Projects/Git Repositories/RobotGUIProgramming/RobotGUI/Saves/Music_Example.task",
-   "motionCalibrations": {
-      "stationaryMovement": null,
-      "activeMovement": null
-   }
+   "robotID": "COM3"
 }

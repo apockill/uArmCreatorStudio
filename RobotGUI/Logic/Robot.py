@@ -124,8 +124,8 @@ class Robot:
             return
 
         if not self.__gripperStatus == status:
-            self.__gripperStatus = status
-            self.__pumpChanged = True
+            self.__gripperStatus  = status
+            self.__gripperChanged = True
 
     def setSpeed(self, speed):
         # Changes a class wide variable that affects the move commands in self.refresh()
@@ -165,9 +165,11 @@ class Robot:
 
         # Handle any gripper changes. Make sure it happens after the wait command
         if self.__gripperChanged:
-            self.uArm.gripperOn()
-        else:
-            self.uArm.gripperOff()
+            if self.__gripperStatus:
+                self.uArm.gripperOn()
+            else:
+                self.uArm.gripperOff()
+            self.__gripperChanged = False
 
 
         # The robot has an implimented feature to prevent the servos from "snapping" back

@@ -196,6 +196,7 @@ class GripCommand(Command):
     def run(self):
         printf("GripCommand.run(): Setting gripper to True")
         self.robot.setGripper(True)
+        self.robot.refresh()
         return True
 
 
@@ -209,6 +210,7 @@ class DropCommand(Command):
     def run(self):
         printf("DropCommand.run(): Setting gripper to False")
         self.robot.setGripper(False)
+        self.robot.refresh()
         return True
 
 

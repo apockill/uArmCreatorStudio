@@ -1,94 +1,108 @@
 [
    {
-      "commandList": [
-         {
-            "parameters": {
-               "objectID": "Seaweed"
-            },
-            "typeGUI": "PickupObjectCommandGUI",
-            "typeLogic": "PickupObjectCommand"
-         }
-      ],
       "parameters": {
          "checkKey": "D"
       },
-      "typeGUI": "KeypressEventGUI",
-      "typeLogic": "KeypressEvent"
-   },
-   {
       "commandList": [
          {
             "parameters": {
-               "override": false,
-               "relative": false,
-               "y": "-15",
                "z": "15",
+               "override": false,
+               "y": "-15",
+               "relative": false,
                "x": "-10"
             },
-            "typeGUI": "MoveXYZCommandGUI",
-            "typeLogic": "MoveXYZCommand"
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI"
          },
          {
             "parameters": null,
-            "typeGUI": "DropCommandGUI",
-            "typeLogic": "DropCommand"
+            "typeLogic": "GripCommand",
+            "typeGUI": "GripCommandGUI"
          },
          {
             "parameters": {
-               "servo2": true,
-               "servo4": true,
-               "servo1": true,
-               "servo3": true
+               "z": "15",
+               "override": false,
+               "y": "-15",
+               "relative": false,
+               "x": "10"
             },
-            "typeGUI": "DetachCommandGUI",
-            "typeLogic": "DetachCommand"
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI"
+         },
+         {
+            "parameters": null,
+            "typeLogic": "DropCommand",
+            "typeGUI": "DropCommandGUI"
          }
       ],
-      "parameters": null,
-      "typeGUI": "DestroyEventGUI",
-      "typeLogic": "DestroyEvent"
+      "typeLogic": "KeypressEvent",
+      "typeGUI": "KeypressEventGUI"
    },
    {
-      "commandList": [
-         {
-            "parameters": {
-               "z": "15",
-               "relative": false,
-               "override": false,
-               "x": "0",
-               "y": "-15"
-            },
-            "typeGUI": "MoveXYZCommandGUI",
-            "typeLogic": "MoveXYZCommand"
-         }
-      ],
+      "parameters": null,
+      "commandList": [],
+      "typeLogic": "DestroyEvent",
+      "typeGUI": "DestroyEventGUI"
+   },
+   {
       "parameters": {
          "checkKey": "R"
       },
-      "typeGUI": "KeypressEventGUI",
-      "typeLogic": "KeypressEvent"
-   },
-   {
       "commandList": [
          {
             "parameters": {
-               "override": false,
-               "relative": false,
-               "y": "-15",
                "z": "15",
+               "override": false,
+               "y": "-15",
+               "relative": false,
+               "x": "0"
+            },
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI"
+         }
+      ],
+      "typeLogic": "KeypressEvent",
+      "typeGUI": "KeypressEventGUI"
+   },
+   {
+      "parameters": null,
+      "commandList": [
+         {
+            "parameters": {
+               "z": "15",
+               "override": false,
+               "y": "-15",
+               "relative": false,
                "x": "10"
             },
-            "typeGUI": "MoveXYZCommandGUI",
-            "typeLogic": "MoveXYZCommand"
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI"
          },
          {
             "parameters": null,
-            "typeGUI": "GripCommandGUI",
-            "typeLogic": "GripCommand"
+            "typeLogic": "GripCommand",
+            "typeGUI": "GripCommandGUI"
+         },
+         {
+            "parameters": {
+               "y": "-15",
+               "z": "15",
+               "override": false,
+               "relative": false,
+               "x": "-10"
+            },
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI"
+         },
+         {
+            "parameters": null,
+            "typeLogic": "DropCommand",
+            "typeGUI": "DropCommandGUI"
          }
       ],
-      "parameters": null,
-      "typeGUI": "InitEventGUI",
-      "typeLogic": "InitEvent"
+      "typeLogic": "InitEvent",
+      "typeGUI": "InitEventGUI"
    }
 ]

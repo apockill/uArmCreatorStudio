@@ -172,9 +172,9 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
 
         # Create and set the description for this object
-        self.selDescLbl.setText("Name:\n\t"         + obj.name          + "\n\n"
+        self.selDescLbl.setText("Name:\n"         + obj.name          + "\n\n"
                                 "# of Points: \n"   + str(avgPoints)    + "\n\n"
-                                "Samples:\n\t"      + str(len(samples)) + "\n\n\n\n"
+                                "Samples:\n"      + str(len(samples)) + "\n\n\n\n"
                                 "Image:")
 
         # Show all the labels
