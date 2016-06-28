@@ -2,8 +2,8 @@ import os
 import cv2                   # For image saving
 import errno
 import json
-from collections           import namedtuple
-from RobotGUI.Logic.Global import printf
+from collections                import namedtuple
+from RobotGUI.Logic.Global      import printf
 
 
 def ensurePathExists(path):
@@ -42,17 +42,15 @@ class ObjectManager:
         self.__directory = None
 
     def setDirectory(self, filename):
-        # Set the directory that this object will use to load and save files in
+        # Set the directory that ObjectManager  will use to load and save files in
         self.__directory = filename
         ensurePathExists(self.__directory)
 
 
     def loadAllObjects(self):
-        # Load all objects into the environment
+        # Load all objects into the ObjectManager
 
-        # Checks if an interpreter is currently running before doing anything.
         foldersAndItems = os.listdir(self.__directory)
-
 
         newTrackable = lambda folder, directory: TrackableObject(folder.replace("TrackerObject ", ""), directory)
         for folder in foldersAndItems:
@@ -64,13 +62,6 @@ class ObjectManager:
                 if newObj.loadSuccess:
                     self.__addObject(newObj)
 
-
-        # files = []
-        # for (dirpath, dirnames, filenames) in os.walk(self.__directory):
-        #     print('path', dirpath)
-        #     print('names', dirnames)
-        #
-        #     print('files', filenames)
 
     def saveNewObject(self, newObject):
         # If not new, replace self

@@ -33,9 +33,8 @@ class MainWindow(QtWidgets.QMainWindow):
                                  "motionCalibrations": {"stationaryMovement": None,
                                                         "activeMovement": None},
 
-                                 "coordCalibrations":  {"robPts":   None,   # A robot coordinate
-                                                        "camPts":  None,   # The coordinate the camera reporter
-                                                        "failPts": None},  # Coordinate's where robot can't be seen
+                                 "coordCalibrations":  {"ptPairs":  None,   # Pairs of Camera pts and Robot pts
+                                                        "failPts": None},      # Coordinate's where robot can't be seen
 
                                  # GUI RELATED SETTINGS
                                  "lastOpenedFile":      None
@@ -281,7 +280,7 @@ class MainWindow(QtWidgets.QMainWindow):
         robot.setServos(setAll=True)
         robot.setSpeed(10)
         robot.refresh()
-        self.controlPanel.setScriptMode(True, self.interpreter.getStatus)
+        self.controlPanel.setScriptModeOn(self.interpreter.getStatus, self.endScript)
         self.interpreter.startThread()
 
         # Make sure the vision filters are activated
@@ -300,7 +299,7 @@ class MainWindow(QtWidgets.QMainWindow):
         robot.refresh()
 
         self.interpreter.endThread(vision)
-        self.controlPanel.setScriptMode(False, self.interpreter.getStatus)
+        self.controlPanel.setScriptModeOff()
 
         # Make sure vision filters are stopped
 

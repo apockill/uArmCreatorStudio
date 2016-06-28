@@ -44,11 +44,11 @@ class Uarm:
         cmnd = "handV" + angle
         return self.__send(cmnd)
 
-    def pumpOn(self):
+    def gripperOn(self):
         cmnd = "pumpV1"
         return self.__send(cmnd)
 
-    def pumpOff(self):
+    def gripperOff(self):
         cmnd = "pumpV0"
         return self.__send(cmnd)
 

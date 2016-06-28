@@ -109,8 +109,8 @@ class CalibrateWindow(QtWidgets.QDialog):
                                    "     Active Movement: " + str(movCalib["activeMovement"]))
 
         coordCalib = self.newSettings["coordCalibrations"]
-        if coordCalib["robPts"] is not None:
-            self.coordLbl.setText("Calibration has been run before. " + str(len(coordCalib["robPts"])) +
+        if coordCalib["ptPairs"] is not None:
+            self.coordLbl.setText("Calibration has been run before. " + str(len(coordCalib["ptPairs"])) +
                                   " points of data were collected.")
 
     def calibrateMotion(self):
@@ -232,8 +232,7 @@ class CalibrateWindow(QtWidgets.QDialog):
         if coordWizard.result():
             newCalibrations = coordWizard.getNewCoordCalibrations()
 
-            self.newSettings["coordCalibrations"]["robPts"]   = newCalibrations["robPts"]
-            self.newSettings["coordCalibrations"]["camPts"]  = newCalibrations["camPts"]
+            self.newSettings["coordCalibrations"]["ptPairs"] = newCalibrations["ptPairs"]
             self.newSettings["coordCalibrations"]["failPts"] = newCalibrations["failPts"]
 
         self.updateLabels()
@@ -579,7 +578,7 @@ class CWPage4(QtWidgets.QWizardPage):
 
         # Turn on the camera, and start tracking
         self.cameraWidget.play()
-        self.vision.trackerAddStartTrack(self.newObject.getSamples())
+        self.vision.trackerAddStartTrack(self.newObject)
 
     def tryAgain(self):
         self.newObject = None
@@ -655,9 +654,9 @@ class CWPage5(QtWidgets.QWizardPage):
         objManager = env.getObjectManager()
 
         #   Start tracking the robots marker
-        robotTarget = objManager.getObject("Robot Marker")
+        rbMarker = objManager.getObject("Robot Marker")
         vision.clearTargets()   # Make sure there are no duplicate objects being tracked
-        vision.trackerAddStartTrack(robotTarget.getSamples())
+        vision.trackerAddStartTrack(rbMarker)
 
 
         # Keep a list of errors that occured while running, to present to the user after calibration
@@ -665,7 +664,7 @@ class CWPage5(QtWidgets.QWizardPage):
 
 
         # A list of robot Coord and camera Coords, where each index of robPts corresponds to the cameraPoint index
-        newCalibrations = {"robPts": [], "camPts": [], "failPts": []}
+        newCalibrations = {"ptPairs": [], "failPts": []}
 
 
         # Set the robot to the home position, set the speed, and other things for the calibration
@@ -710,10 +709,6 @@ class CWPage5(QtWidgets.QWizardPage):
             direction = not direction
 
 
-
-
-
-
         printf("CWPage5.runCalibration(): Testing ", len(testCoords), " coordinate points")
 
         seenLast = True
@@ -735,7 +730,7 @@ class CWPage5(QtWidgets.QWizardPage):
 
             # Now that the robot is at the desired position, get the avg location
             vStream.waitForNewFrame()
-            frameAge, marker = vision.getObjectLatestRecognition("Robot Marker")
+            frameAge, marker = vision.getObjectLatestRecognition(rbMarker)
 
             # Make sure the object was found in a recent frame
             if not frameAge == 0 or marker.center is None:
@@ -759,8 +754,7 @@ class CWPage5(QtWidgets.QWizardPage):
 
 
             # Since the camera found the object, now read the robots location through camera, and record both results
-            newCalibrations["robPts"].append(coord)
-            newCalibrations["camPts"].append(marker.center)
+            newCalibrations["ptPairs"].append([marker.center, coord])
 
 
         # Prune the list down to 20 less than the original size, find the best set out of those
@@ -772,21 +766,15 @@ class CWPage5(QtWidgets.QWizardPage):
         #     newCalibrations["robPts"] = bestRobPts
         #     newCalibrations["camPts"] = bestCamPts
 
-        # Do error checking, to make sure everything ran smoothly
-        if not len(newCalibrations["robPts"]) == len(newCalibrations["camPts"]):
-            errors.append("System Error: The # of robot coordinates does not match # of camera coordinates!")
-
-
-
         # Check the percent of points that were found vs amount of points that were in the testCoord array
-        if len(newCalibrations["robPts"]) < minPointCount:
+        if len(newCalibrations["ptPairs"]) < minPointCount:
             # If not enough points were found, append an error to the error array
-            if len(newCalibrations["robPts"]) == 0:
+            if len(newCalibrations["ptPairs"]) == 0:
                 errors.append("The marker was never seen! Try restarting the calibration and setting the marker again,"
                               "\n\t\tand making sure that the robot's head is, in fact, in view of the camera")
             else:
                 errors.append("The marker was not recognized in enough points- it was only seen " +
-                          str(len(newCalibrations["robPts"])) + " time(s)!\n\t\tIt must be seen at least " +
+                          str(len(newCalibrations["ptPairs"])) + " time(s)!\n\t\tIt must be seen at least " +
                             str(minPointCount) + " times.\n" +
                           "\t\tTry making sure that the robot's head is centered in the middle of the cameras view,\n"
                           "\t\tor try placing the camera in a higher location.")
@@ -812,7 +800,7 @@ class CWPage5(QtWidgets.QWizardPage):
             self.successComplete = False
             self.startBtn.setText("Restart Calibration")
         else:
-            hintText += "Calibration was successful, " + str(len(newCalibrations["robPts"])) + "/"  +\
+            hintText += "Calibration was successful, " + str(len(newCalibrations["ptPairs"])) + "/"  +\
                          str(totalPointCount) + " points were found.\nResults will be saved when you click Apply " +\
                         "on the calibrations page. Feel free to try this calibration again.\n" +\
                         "Make sure to repeat this calibration whenever you move your camera or move your robot."
@@ -861,11 +849,8 @@ class CWPage5(QtWidgets.QWizardPage):
             rms = (errSqdSum / float(len(fromPtList))) ** .5
             return rms
 
-        robPts = newCalibration["robPts"]
-        camPts = newCalibration["camPts"]
-
         # Zip the two point sets into sets of ((camPt), (robPt))
-        ptPairs = []
+        ptPairs = newCalibration["ptPairs"]
         for i in range(0, len(robPts)):
             ptPair = (tuple(camPts[i]), tuple(robPts[i]))
             ptPairs.append(ptPair)

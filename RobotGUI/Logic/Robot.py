@@ -18,28 +18,31 @@ def getConnectedRobots():
 class Robot:
 
     def __init__(self):
-        self.uArm = None
-        self.home  = {'x': 0.0, 'y': -15.0, 'z': 15.0}
-        self.pos   = {'x': 0.0, 'y': -15.0, 'z': 15.0}
-        self.speed = 45     # In cm / second (or XYZ [unit] per second)
+        self.uArm    = None
+        self.__speed = 10     # In cm / second (or XYZ [unit] per second)
+        self.home    = {'x': 0.0, 'y': -15.0, 'z': 15.0}
+        self.__pos   = {'x': 0.0, 'y': -15.0, 'z': 15.0}
+        self.__positionChanged = True
 
-        # Every time uArm is connected correctly, all servos are attached. Set the values to match this.
-        # These variables are used to keep track of which servos are attached
-        self.gripperStatus = False
-        self.servoStatus = [True, True, True, True]
+
+        # Keep track of the robots gripper status
+        self.__gripperStatus   = False
+        self.__gripperChanged  = False  # This should only be used in Robot.refresh() to activate the gripper
+
 
         # If there is ever a change in a servos status, it is stored in this container until
         # the 'refresh' function is run and the new values are sent to the robot
-        self.newServoStatus = [True, True, True, True]
+        self.__newServoStatus  = [True, True, True, True]
+        self.__servoStatus     = [True, True, True, True]
+
 
         # Handle the recording of the wrist position, and whether or not it has been changed
-        self.wrist           = 90.0      #Angle from 0 to 180 of the robots wrist position
-        self.wristChanged    = True      #Tracks whether or not the new wrist position has been sent to the robot or not
+        self.__wrist           = 90.0  # Angle from 0 to 180 of the robots wrist position
+        self.__wristChanged    = True  # Tracks whether or not the new wrist position has been sent to the robot or not
 
-        self.positionChanged = True
-        self.gripperChanged  = False  #This should only be used in Robot.refresh() to activate the gripper
-        self.servoAttached   = False  #If True, refresh() will move the robot previous pos before it attached the servo
-        self.threadRunning   = False  #Wether or not the setupThread is running
+
+
+        self.__threadRunning   = False  # Wether or not the setupThread is running
 
 
     def getMoving(self):
@@ -74,63 +77,60 @@ class Robot:
     def connected(self):
         if self.uArm is None:         return False  # If the communication protocol class hasn't been created,
         if not self.uArm.connected(): return False  # If the Serial is not connected
-        if self.threadRunning:        return False  # If the setupThread is running
+        if self.__threadRunning:        return False  # If the setupThread is running
         return True
 
 
 
     def setPos(self, **kwargs):
         relative = kwargs.get('relative', False)
-        posBefore = dict(self.pos)
+        posBefore = dict(self.__pos)
 
         for name, value in kwargs.items():  # Cycles through any variable that might have been in the kwargs. This is any position command!
-            if name in self.pos:  #If it is a position statement.
-                if self.pos[name] is "": continue
+            if name in self.__pos:  #If it is a position statement.
+                if self.__pos[name] is "": continue
                 if relative:
-                    self.pos[name] += value
+                    self.__pos[name] += value
                 else:
-                    self.pos[name] = value
+                    self.__pos[name] = value
 
         # If this command has changed the position, or if the position was changed earlier
-        self.positionChanged = (not (posBefore == self.pos)) or self.positionChanged
+        self.__positionChanged = (not (posBefore == self.__pos)) or self.__positionChanged
 
     def setWrist(self, angle, relative=False):
-        newWrist = self.wrist
+        newWrist = self.__wrist
         if relative:
             newWrist += angle
         else:
             newWrist  = angle
 
-        if not self.wrist == newWrist:
-            self.wrist        = newWrist
-            self.wristChanged = True
+        if not self.__wrist == newWrist:
+            self.__wrist        = newWrist
+            self.__wristChanged = True
 
     def setServos(self, setAll=None, servo1=None, servo2=None, servo3=None, servo4=None):
         # If anything changed, set the appropriate newServoStatus to reflect that
 
         if setAll is not None: servo1, servo2, servo3, servo4 = setAll, setAll, setAll, setAll
 
-        if servo1 is not None: self.newServoStatus[0] = servo1
-        if servo2 is not None: self.newServoStatus[1] = servo2
-        if servo3 is not None: self.newServoStatus[2] = servo3
-        if servo4 is not None: self.newServoStatus[3] = servo4
+        if servo1 is not None: self.__newServoStatus[0] = servo1
+        if servo2 is not None: self.__newServoStatus[1] = servo2
+        if servo3 is not None: self.__newServoStatus[2] = servo3
+        if servo4 is not None: self.__newServoStatus[3] = servo4
 
     def setGripper(self, status):
         if not self.connected():
             printf("Robot.setGripper(): ERROR: No uArm connected, could not set gripper to", status)
             return
 
-        if not self.gripperStatus == status:
-            self.gripperStatus = status
-            if self.gripperStatus:
-                self.uArm.pumpOn()
-            else:
-                self.uArm.pumpOff()
+        if not self.__gripperStatus == status:
+            self.__gripperStatus = status
+            self.__pumpChanged = True
 
     def setSpeed(self, speed):
         # Changes a class wide variable that affects the move commands in self.refresh()
         printf("Robot.setSpeed(): Setting speed to ", speed)
-        self.speed = speed
+        self.__speed = speed
 
     def setBuzzer(self, frequency, duration):
         if not self.connected():
@@ -153,44 +153,52 @@ class Robot:
 
 
         # Handle any wrist position changes. Don't wait for robot, since this movement is usually rare and one-off
-        if self.wristChanged:
-            self.uArm.moveWrist(self.wrist)
-            self.wristChanged = False
+        if self.__wristChanged:
+            self.uArm.moveWrist(self.__wrist)
+            self.__wristChanged = False
+
 
         # Wait for robot to be done moving before doing anything
         if not override:
             self.wait()
+
+
+        # Handle any gripper changes. Make sure it happens after the wait command
+        if self.__gripperChanged:
+            self.uArm.gripperOn()
+        else:
+            self.uArm.gripperOff()
+
 
         # The robot has an implimented feature to prevent the servos from "snapping" back
         self.__updateServos()
 
 
         # Perform a moves in self.pos array
-        if self.positionChanged:
+        if self.__positionChanged:
             try:
-                self.uArm.moveToWithSpeed(self.pos['x'], self.pos['y'], self.pos['z'], self.speed)
+                self.uArm.moveToWithSpeed(self.__pos['x'], self.__pos['y'], self.__pos['z'], self.__speed)
             except ValueError:
                 printf("Robot.refresh(): ERROR: Robot out of bounds and the uarm_python library crashed!")
 
-            self.positionChanged = False
+            self.__positionChanged = False
 
     def __updateServos(self):
-        for i, servoVal in enumerate(self.servoStatus):
-            if not self.newServoStatus[i] == self.servoStatus[i]:
-                if self.newServoStatus[i]:
+        for i, servoVal in enumerate(self.__servoStatus):
+            if not self.__newServoStatus[i] == self.__servoStatus[i]:
+                if self.__newServoStatus[i]:
                     # Attach the servo
                     self.uArm.servoAttach(i)
-                    self.servoStatus[i] = True
+                    self.__servoStatus[i] = True
                 else:
                     # Detach the servo
                     self.uArm.servoDetach(i)
-                    self.servoStatus[i] = False
+                    self.__servoStatus[i] = False
 
     def __newServoAttached(self):
         # Boolean value that determines if a servo has been attached but this has not been sent to robot
-        for i, servoVal in enumerate(self.servoStatus):
-            if not self.newServoStatus[i] == servoVal and self.newServoStatus[i]:
-                self.servoAttached = True
+        for i, servoVal in enumerate(self.__servoStatus):
+            if not self.__newServoStatus[i] == servoVal and self.__newServoStatus[i]:
                 return True
 
 
@@ -211,11 +219,11 @@ class Robot:
         except serial.SerialException:
             printf("Robot.setupThread(): ERROR SerialException while setting uArm to ", com)
 
-        self.threadRunning = False
+        self.__threadRunning = False
 
     def setUArm(self, com):
-        if com is not None and not self.threadRunning:
-            self.threadRunning = True
+        if com is not None and not self.__threadRunning:
+            self.__threadRunning = True
             printf("Robot.setUArm(): Setting uArm to ", com)
             setup = Thread(target=lambda: self.__setupThread(com))
             setup.start()

@@ -13,20 +13,14 @@ class LogicObject:
     def getVerifyRobot(self, env):
         robot = env.getRobot()
         if not robot.connected():
-            self.errors.append("Robot")
+            self.errors.append("Robot is not connected")
         return env.getRobot()
 
     def getVerifyVision(self, env):
         vStream = env.getVStream()
         if not vStream.connected():
-            self.errors.append("Camera")
+            self.errors.append("Camera is not connected")
         return env.getVision()
-
-    def getVerifyVStream(self, env):
-        vStream = env.getVStream()
-        if not vStream.connected():
-            self.errors.append("Camera")
-        return env.getVStream()
 
     def getVerifyMotionCalibrations(self, env):
         calib  = env.getSettings()["motionCalibrations"]
@@ -43,7 +37,7 @@ class LogicObject:
 
         # DO ERROR CHECKING
         # If the appropriate motionCalibrations do not exist, add it to the "compile" errors, and set self.calib to None
-        if calib["robPts"] is None or calib["camPts"] is None or calib["failPts"] is None:
+        if calib["ptPairs"] is None or calib["failPts"] is None:
             self.errors.append("Camera/Robot Position Calibration has never been run")
 
         return calib
@@ -53,7 +47,7 @@ class LogicObject:
         requestedObj  = objectManager.getObject(objectID)
 
         if requestedObj is None:
-            self.errors.append("Object not found: " + str(objectID))
+            self.errors.append("Object '" + str(objectID)) + "' not found"
 
         return requestedObj
 

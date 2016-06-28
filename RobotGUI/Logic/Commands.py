@@ -16,13 +16,11 @@ class NameCommand(Command):
     def __init__(self, env, interpreter, parameters=None):
         super(NameCommand, self).__init__(parameters)
 
-        # Load any objects that will be used in the run Section here
+        # Load any objects, modules, calibrations, etc  that will be used in the run Section here. Use getVerifyXXXX()
         self.robot   = self.getVerifyRobot(env)
         self.vision  = self.getVerifyVision(env)
 
 
-        # For any objects that don't have a "getVerify####" on them, add the error here specifically for them
-        self.errors.append("Error message about what's missing")
 
     def run(self):
         printf("NameCommand.run(): A quick description, usually using parameters, of the command that is running")
@@ -258,66 +256,71 @@ class FocusOnObjectCommand(Command):
         # Load any objects that will be used in the run Section here
         self.robot      = self.getVerifyRobot(env)
         self.vision     = self.getVerifyVision(env)
-        self.vStream    = self.getVerifyVStream(env)
-        self.coordCalib = self.getVerifyCoordCalibrations(env)
         self.object     = self.getVerifyObject(env, self.parameters["objectID"])
-        self.rbMarker   = self.getVerifyObject(env, "Robot Marker")
+        coordCalib      = self.getVerifyCoordCalibrations(env)
 
-        print(self.errors)
+
         if len(self.errors): return
+        self.ptPairs = coordCalib["ptPairs"]
 
         # Turn on tracking for the relevant object
-        self.vision.addTargetSamples(self.object.getSamples())
-        self.vision.addTargetSamples(self.rbMarker.getSamples())
+        self.vision.addTargetSamples(self.object)
         self.vision.startTracker()
 
     def run(self):
         if len(self.errors) > 0: return False
-        frameAge, trackObj = self.vision.getObjectLatestRecognition(self.object.name)
-        if trackObj is None or frameAge > 5 or trackObj.ptCount < 30:
+
+        # Get a super recent frame of the object
+        frameAge, trackObj = self.vision.getObjectLatestRecognition(self.object)
+
+
+        # If the frame is too old or doesn't exist or doesn't have enough points, exit the function
+        if trackObj is None or frameAge > rv.MAX_FRAME_AGE_MOVE or trackObj.ptCount < rv.MIN_POINTS_FOCUS:
             printf("FocusOnObjectCommand.run(): FrameAge was too old or pointCount was too low, returning false!")
             return False
 
-        pos = rv.getRobotPositionTransform(trackObj.center, self.coordCalib)
+
+        # Get the object position
+        printf("FocusOnObjectCommand.run(): Found object. Moving to XY Location now.")
+        pos = rv.getPositionTransform(trackObj.center, self.ptPairs)
+
+
+        # Set the robots position
         self.robot.setPos(x=pos[0], y=pos[1])  # z=pos[2])
         self.robot.refresh()
         return True
 
-#   Robot + Vision Commands
+
 class PickupObjectCommand(Command):
 
     def __init__(self, env, interpreter, parameters=None):
         super(PickupObjectCommand, self).__init__(parameters)
 
         # Load any objects that will be used in the run Section here
+        coordCalib      = self.getVerifyCoordCalibrations(env)
         self.robot      = self.getVerifyRobot(env)
         self.vision     = self.getVerifyVision(env)
-        self.vStream    = self.getVerifyVStream(env)
-        self.coordCalib = self.getVerifyCoordCalibrations(env)
-        self.object     = self.getVerifyObject(env, self.parameters["objectID"])
+        self.trackObj   = self.getVerifyObject(env, self.parameters["objectID"])
         self.rbMarker   = self.getVerifyObject(env, "Robot Marker")
 
-        print(self.errors)
-        if len(self.errors): return
 
+
+        if len(self.errors): return
+        self.ptPairs = coordCalib["ptPairs"]
         # Turn on tracking for the relevant object
-        self.vision.addTargetSamples(self.object.getSamples())
-        self.vision.addTargetSamples(self.rbMarker.getSamples())
+        self.vision.addTargetSamples(self.trackObj)
+        self.vision.addTargetSamples(self.rbMarker)
         self.vision.startTracker()
 
     def run(self):
         if len(self.errors) > 0: return False
 
-        frameAge, trackObj = self.vision.getObjectLatestRecognition(self.object.name)
 
-        if trackObj is None or frameAge > 5 or trackObj.ptCount < 30:
-            printf("PickupObjectCommand.run(): FrameAge was too old or pointCount was too low, returning false!")
-            return False
+        rv.pickupObject(self.trackObj, self.rbMarker, self.robot, self.vision, self.ptPairs)
 
-        pos = rv.getRobotPositionTransform(trackObj.center, self.coordCalib)
-        self.robot.setPos(x=pos[0], y=pos[1], z=rv.PICKUP_HEIGHT)  # z=pos[2])
-        self.robot.refresh()
+
         return True
+
 
 
 

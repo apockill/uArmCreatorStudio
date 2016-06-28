@@ -16,11 +16,21 @@ class Vision:
         self.filterLock = self.vStream.filterLock
         self.workLock   = self.vStream.workLock
 
+
+    # Wrappers for the VideoStream object
+    def waitForNewFrames(self, numFrames=1):
+        # Useful for situations when you need x amount of new frames after the robot moved, before doing vision
+        for i in range(0, numFrames):
+            print("waiting for new frame!")
+            self.vStream.waitForNewFrame()
+
+
     # Object tracker control functions
-    def addTargetSamples(self, samples):
+    def addTargetSamples(self, trackableObject):
+        samples = trackableObject.getSamples()
         with self.workLock:
             for sample in samples:
-                self.tracker.addTarget(sample.name, sample.image, sample.rect)
+                self.tracker.addTarget(sample.name, sample.image, sample.rect, sample.pickupRect)
 
     def clearTargets(self):
         with self.workLock:
@@ -36,40 +46,7 @@ class Vision:
 
 
     # Object recognition functions
-    def getAverageObjectPosition(self, objectID, numFrames):
-        # Finds the object in the latest numFrames from the tracking history, and returns the average pos and rot
-
-        if numFrames >= self.tracker.historyLen:
-            printf("Vision.getAverageObjectPosition(): ERROR: Tried to look further in the history than was possible!")
-            numFrames = self.tracker.historyLen
-
-
-        trackHistory = []
-        with self.workLock:
-            trackHistory = self.tracker.trackedHistory[:numFrames]
-
-        # Set up variables
-        samples       = 0
-        locationSum   = np.float32([0, 0, 0])
-        rotationSum   = np.float32([0, 0, 0])
-
-        # Look through the history range and collect the object center and rotation
-        for frameID, historyFromFrame in enumerate(trackHistory):
-
-            for obj in historyFromFrame:
-
-                if obj.target.name == objectID:
-                    locationSum += np.float32(obj.center)
-                    rotationSum += np.float32(obj.rotation)
-                    samples     += 1
-
-        # If object was not found, None will be returned for the frame and the object
-        if samples == 0:
-            return None, None
-
-        return tuple(map(float, locationSum/samples)), tuple(map(float, rotationSum/samples))
-
-    def getObjectLatestRecognition(self, objectID):
+    def getObjectLatestRecognition(self, trackableObj):
         # Returns the latest successful recognition of objectID, so the user can pull the position from that
         # it also returns the age of the frame where the object was found (0 means most recently)
 
@@ -80,12 +57,11 @@ class Vision:
 
             for obj in historyFromFrame:
 
-                if obj.target.name == objectID:
+                if obj.target.name == trackableObj.name:
                     return frameID, obj
         return None, None
 
-
-    def isRecognized(self, objectID, numFrames=1):
+    def isRecognized(self, trackableObject, numFrames=1):
         # numFrames is the amount of frames to check in the history
         if numFrames >= self.tracker.historyLen:
             printf("Vision.isRecognized(): ERROR: Tried to look further in the history than was possible!")
@@ -102,7 +78,7 @@ class Vision:
         for historyFromFrame in trackHistory:
 
             for obj in historyFromFrame:
-                if obj.target.name == objectID:
+                if obj.target.name == trackableObject.name:
                     return True
         return False
 
@@ -114,9 +90,9 @@ class Vision:
     def endTrackerFilter(self):
         self.vStream.removeFilter(self.tracker.drawTracked)
 
-    def trackerAddStartTrack(self, samples):
+    def trackerAddStartTrack(self, trackableObj):
         # Convenience function that adds an object to the tracker, starts the tracker, and starts the filter
-        self.addTargetSamples(samples)
+        self.addTargetSamples(trackableObj)
         self.startTracker()
         self.addTrackerFilter()
 
@@ -288,7 +264,7 @@ class PlaneTracker:
 
     def __init__(self, focalLength):
         self.focalLength  = focalLength
-        self.detector     = cv2.ORB_create(nfeatures = 7500)
+        self.detector     = cv2.ORB_create(nfeatures = 8000)
         self.matcher      = cv2.FlannBasedMatcher(self.flanParams, {})  # bug : need to pass empty dict (#1329)
         self.targets      = []
         self.framePoints  = []
@@ -323,13 +299,13 @@ class PlaneTracker:
         # If it was possible to add the target
         return target
 
-    def addTarget(self, name, image, rect):
+    def addTarget(self, name, image, rect, pickupRect):
         for target in self.targets:
             if name == target.name:
                 printf("PlaneTracker.addTarget(): ERROR: Attempted to add two targets of the same name: ", name)
                 return
 
-        planarTarget = self.getTarget(image, rect, name=name)
+        planarTarget = self.getTarget(image, rect, name=name, pickupRect=pickupRect)
 
         descrs = planarTarget.descrs
         self.matcher.add([descrs])
@@ -388,6 +364,15 @@ class PlaneTracker:
             x0, y0, x1, y1 = target.rect
             quad = np.float32([[x0, y0], [x1, y0], [x1, y1], [x0, y1]])
             quad = cv2.perspectiveTransform(quad.reshape(1, -1, 2), H).reshape(-1, 2)
+
+
+            # if target.pickupRect is not None:
+            #     pickRect = target.pickupRect
+            #     x0, y0, x1, y1 = x0 + pickRect[0], y0 + pickRect[1], x0 + pickRect[2], y0 + pickRect[3]
+            #     pickupQuad = np.float32([[x0, y0], [x1, y0], [x1, y1], [x0, y1]])
+            #     pickupQuad = cv2.perspectiveTransform(pickupQuad.reshape(1, -1, 2), H).reshape(-1, 2)
+            # else:
+            #     pickupQuad = None
 
             # Calculate the 3d coordinates of the object
             center, rotation = self.get3DCoordinates(frame, target.rect, quad)
@@ -459,7 +444,6 @@ class PlaneTracker:
     # Thread safe
     def get3DCoordinates(self, frame, rect, quad):
         # Do solvePnP on the tracked object
-        # return None, None
         x0, y0, x1, y1 = rect
         width  = (x1 - x0) / 2
         height = (y1 - y0) / 2
@@ -475,8 +459,9 @@ class PlaneTracker:
                         [     0, fx * w, 0.5 * (h - 1)],
                         [   0.0,    0.0,          1.0]])
         ret, rotation, center = cv2.solvePnP(quad3d, quad, K, dist_coef)
-
         return list(map(float,center)), list(map(float,rotation))
+
+
 
 # def getMotionDirection(self):
     #     frameList = self.vStream.getFrameList()
@@ -492,3 +477,41 @@ class PlaneTracker:
     #     cv2.imshow("window", copyframe)
     #     cv2.waitKey(1)
     #     return avg
+
+
+
+"""
+# DEPRECATED VISION FUNCTIONS
+def getAverageObjectPosition(self, objectID, numFrames):
+    # Finds the object in the latest numFrames from the tracking history, and returns the average pos and rot
+
+    if numFrames >= self.tracker.historyLen:
+        printf("Vision.getAverageObjectPosition(): ERROR: Tried to look further in the history than was possible!")
+        numFrames = self.tracker.historyLen
+
+
+    trackHistory = []
+    with self.workLock:
+        trackHistory = self.tracker.trackedHistory[:numFrames]
+
+    # Set up variables
+    samples       = 0
+    locationSum   = np.float32([0, 0, 0])
+    rotationSum   = np.float32([0, 0, 0])
+
+    # Look through the history range and collect the object center and rotation
+    for frameID, historyFromFrame in enumerate(trackHistory):
+
+        for obj in historyFromFrame:
+
+            if obj.target.name == objectID:
+                locationSum += np.float32(obj.center)
+                rotationSum += np.float32(obj.rotation)
+                samples     += 1
+
+    # If object was not found, None will be returned for the frame and the object
+    if samples == 0:
+        return None, None
+
+    return tuple(map(float, locationSum/samples)), tuple(map(float, rotationSum/samples))
+"""

@@ -22,9 +22,9 @@ if not uarm.connected():
 print("Starting various tests!")
 
 # Pump commands
-uarm.pumpOn()
+uarm.gripperOn()
 sleep(1)
-uarm.pumpOff()
+uarm.gripperOff()
 
 
 

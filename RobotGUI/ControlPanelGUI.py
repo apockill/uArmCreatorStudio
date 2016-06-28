@@ -110,7 +110,28 @@ class ControlPanel(QtWidgets.QWidget):
         self.commandListStack.setCurrentWidget(selectedEvent.commandList)
 
 
-    def setScriptMode(self, bool, interpreterStatusFunction):
+    def setScriptModeOff(self):
+        self.addEventBtn.setEnabled(True)
+        self.deleteEventBtn.setEnabled(True)
+        self.changeEventBtn.setEnabled(True)
+        self.eventList.setLocked(False)
+
+        if self.scriptTimer is not None:
+            self.scriptTimer.stop()
+            self.scriptTimer = None
+
+            # Decolor every event
+            for index in range(0, self.eventList.count()):
+                eventItem = self.eventList.item(index)
+                self.setColor(eventItem, False)
+                commandList = self.eventList.getEventFromItem(eventItem).commandList
+
+            # Decolor every command
+            for index in range(0, commandList.count()):
+                commandItem = commandList.item(index)
+                self.setColor(commandItem, False)
+
+    def setScriptModeOn(self, interpreterStatusFunction, mainWindowEndScriptFunc):
         """
         When the script is running:
             - Add/Delete/Change event buttons will be disabled
@@ -120,39 +141,24 @@ class ControlPanel(QtWidgets.QWidget):
         """
 
         # Enable or disable buttons according to whether or not the script is starting or stopping
-        self.addEventBtn.setEnabled(not bool)
-        self.deleteEventBtn.setEnabled(not bool)
-        self.changeEventBtn.setEnabled(not bool)
-        self.eventList.setLocked(bool)
+        self.addEventBtn.setEnabled(False)
+        self.deleteEventBtn.setEnabled(False)
+        self.changeEventBtn.setEnabled(False)
+        self.eventList.setLocked(True)
 
 
-        if bool:    # If script is starting up
-            self.scriptTimer = QtCore.QTimer()
-            self.scriptTimer.timeout.connect(lambda: self.refreshDrawScript(interpreterStatusFunction))
-            self.scriptTimer.start(1000.0 / 50)  # Update at same rate as the script checks events
+        self.scriptTimer = QtCore.QTimer()
+        self.scriptTimer.timeout.connect(lambda: self.refreshDrawScript(interpreterStatusFunction, mainWindowEndScriptFunc))
+        self.scriptTimer.start(1000.0 / 50)  # Update at same rate as the script checks events
 
-        else:       # If script is shutting down
-            if self.scriptTimer is not None:
-                self.scriptTimer.stop()
-                self.scriptTimer = None
 
-            # Decolor every event
-            for index in range(0, self.eventList.count()):
-                eventItem = self.eventList.item(index)
-                self.setColor(eventItem, False)
 
-                commandList = self.eventList.getEventFromItem(eventItem).commandList
-
-                # Decolor every command
-                for index in range(0, commandList.count()):
-                    commandItem = commandList.item(index)
-                    self.setColor(commandItem, False)
-
-    def refreshDrawScript(self, getStatusFunc):
+    def refreshDrawScript(self, getStatusFunc, mainWindowEndScriptFunc):
         currRunning = getStatusFunc()
 
         if currRunning is False:
-            self.setScriptMode(False, getStatusFunc)
+            mainWindowEndScriptFunc()
+            self.setScriptModeOff()
             return
 
 

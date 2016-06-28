@@ -1,11 +1,11 @@
 {
    "Sample_0": {
-      "pickupRect": null,
       "rect": [
-         317,
-         181,
-         359,
-         276
-      ]
+         325,
+         185,
+         371,
+         280
+      ],
+      "pickupRect": null
    }
 }

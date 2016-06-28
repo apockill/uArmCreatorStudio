@@ -1,58 +1,94 @@
 [
    {
+      "commandList": [
+         {
+            "parameters": {
+               "objectID": "Seaweed"
+            },
+            "typeGUI": "PickupObjectCommandGUI",
+            "typeLogic": "PickupObjectCommand"
+         }
+      ],
       "parameters": {
-         "objectID": "Ace of Spades"
+         "checkKey": "D"
       },
-      "typeGUI": "RecognizeEventGUI",
-      "commandList": [],
-      "typeLogic": "RecognizeEvent"
+      "typeGUI": "KeypressEventGUI",
+      "typeLogic": "KeypressEvent"
    },
    {
-      "parameters": {
-         "objectID": "Back of Card"
-      },
-      "typeGUI": "RecognizeEventGUI",
-      "commandList": [],
-      "typeLogic": "RecognizeEvent"
+      "commandList": [
+         {
+            "parameters": {
+               "override": false,
+               "relative": false,
+               "y": "-15",
+               "z": "15",
+               "x": "-10"
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "DropCommandGUI",
+            "typeLogic": "DropCommand"
+         },
+         {
+            "parameters": {
+               "servo2": true,
+               "servo4": true,
+               "servo1": true,
+               "servo3": true
+            },
+            "typeGUI": "DetachCommandGUI",
+            "typeLogic": "DetachCommand"
+         }
+      ],
+      "parameters": null,
+      "typeGUI": "DestroyEventGUI",
+      "typeLogic": "DestroyEvent"
    },
    {
+      "commandList": [
+         {
+            "parameters": {
+               "z": "15",
+               "relative": false,
+               "override": false,
+               "x": "0",
+               "y": "-15"
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         }
+      ],
       "parameters": {
-         "objectID": "Gatorade"
+         "checkKey": "R"
       },
-      "typeGUI": "RecognizeEventGUI",
-      "commandList": [],
-      "typeLogic": "RecognizeEvent"
+      "typeGUI": "KeypressEventGUI",
+      "typeLogic": "KeypressEvent"
    },
    {
-      "parameters": {
-         "objectID": "Marker"
-      },
-      "typeGUI": "RecognizeEventGUI",
-      "commandList": [],
-      "typeLogic": "RecognizeEvent"
-   },
-   {
-      "parameters": {
-         "objectID": "Queen of Hearts"
-      },
-      "typeGUI": "RecognizeEventGUI",
-      "commandList": [],
-      "typeLogic": "RecognizeEvent"
-   },
-   {
-      "parameters": {
-         "objectID": "Seaweed"
-      },
-      "typeGUI": "RecognizeEventGUI",
-      "commandList": [],
-      "typeLogic": "RecognizeEvent"
-   },
-   {
-      "parameters": {
-         "objectID": "Go Pro"
-      },
-      "typeGUI": "RecognizeEventGUI",
-      "commandList": [],
-      "typeLogic": "RecognizeEvent"
+      "commandList": [
+         {
+            "parameters": {
+               "override": false,
+               "relative": false,
+               "y": "-15",
+               "z": "15",
+               "x": "10"
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "GripCommandGUI",
+            "typeLogic": "GripCommand"
+         }
+      ],
+      "parameters": null,
+      "typeGUI": "InitEventGUI",
+      "typeLogic": "InitEvent"
    }
 ]

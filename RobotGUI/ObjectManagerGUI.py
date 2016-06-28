@@ -4,7 +4,7 @@ from RobotGUI                     import Icons
 from RobotGUI.CameraGUI           import CameraWidget, CameraSelector, cvToPixFrame
 from RobotGUI.Logic.Global        import printf
 from RobotGUI.Logic.ObjectManager import TrackableObject
-
+from RobotGUI.Logic.RobotVision   import MIN_POINTS_TO_LEARN_OBJECT
 
 class ObjectManagerWindow(QtWidgets.QDialog):
 
@@ -149,7 +149,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         # Start Tracking the selected object
         self.vision.clearTargets()
-        self.vision.trackerAddStartTrack(obj.getSamples())
+        self.vision.trackerAddStartTrack(obj)
 
         samples = obj.getSamples()
         if len(samples) == 0:
@@ -418,6 +418,7 @@ class OWPage2(QtWidgets.QWizardPage):
         bold.setBold(True)
         self.stepLbl.setFont(bold)
         self.hintLbl.setFont(bold)
+        self.hintLbl.setWordWrap(True)
 
         # Create a tutorial gif that will be next to the video
         movieLbl   = QtWidgets.QLabel("Could not find example gif")
@@ -456,6 +457,7 @@ class OWPage2(QtWidgets.QWizardPage):
                 "\nshould be focused, and the object in the orientation that it will be recognized in. \n\n" +\
                 "When ready, Click the mouse on the corner of the object, drag it tightly over the object, then" + \
                 "\nrelease the mouse button."
+
 
         if step == 2:
             s = "\n\nStep 3: Verify"
@@ -496,10 +498,11 @@ class OWPage2(QtWidgets.QWizardPage):
 
         # Do all the necessary things: Change the instructions, the step
         self.setStep(2)
+        numPoints = str(len(self.object.descrs))
         des = "Good job, you have selected an object. Try moving the object around to see how accurate the" + \
             "\ntracking is. If it's not good enough, click 'Try Again'' on the bottom right of the camera to"       + \
             "\nreselect the object.\n\n" + \
-            "Your selected object has " + str(len(self.object.descrs)) + " points to describe it. " + \
+            "Your selected object has " + numPoints + " points to describe it. " + \
             "The more detail on the object, the more points"   + \
             "\nwill be found, and the better the tracking will be. If you are having trouble tracking, try adding" + \
             "\ndetail to the object by drawing on it or putting a sticker on it. \n"
@@ -507,16 +510,17 @@ class OWPage2(QtWidgets.QWizardPage):
 
 
         # If the object was not very good, warn the user. Otherwise, state the # of points on the object
-        if len(target.descrs) < 150:
-            self.hintLbl.setText("Your selected object is not very detailed, or is too small. "
-                                 "Tracking may not be very accurate.")
+        if len(target.descrs) < MIN_POINTS_TO_LEARN_OBJECT:
+            self.hintLbl.setText("Your selected object has only " + numPoints + " points to describe it. It is not very"
+                                 " detailed, or is too small. Try adding more detail by drawing on it, or adding a "
+                                 "sticker to it. Tracking may not be very accurate.")
         else:
             self.hintLbl.setText("Tracking " + str(len(self.object.descrs)) + " Points")
 
 
         # Turn on the camera, and start tracking
         self.cameraWidget.play()
-        self.vision.tracker.addTarget(self.object.name, self.object.image, self.object.rect)
+        self.vision.tracker.addTarget(self.object.name, self.object.image, self.object.rect, None)
         self.vision.startTracker()
         self.vision.addTrackerFilter()
         self.newObject.emit()

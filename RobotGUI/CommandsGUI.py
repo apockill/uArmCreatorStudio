@@ -103,7 +103,7 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
     def initUI(self):
 
         self.addTab( self.generateBasicTab(), "Basic")
-        self.addTab(self.generatePickupTab(), "Vision")
+        self.addTab(self.generateVisionTab(), "Vision")
         self.addTab( self.generateLogicTab(), "Logic")
 
         self.setTabPosition(QtWidgets.QTabWidget.East)
@@ -149,7 +149,7 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
 
         return tabWidget
 
-    def generatePickupTab(self):
+    def generateVisionTab(self):
         tabWidget = QtWidgets.QWidget()
         vBox = QtWidgets.QVBoxLayout()
         vBox.setAlignment(QtCore.Qt.AlignTop)
@@ -157,6 +157,8 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         add  = lambda btnType: vBox.addWidget(self.getButton(btnType))
 
         add(FocusOnObjectCommandGUI)
+        add(PickupObjectCommandGUI)
+
 
         return tabWidget
 
@@ -274,6 +276,7 @@ class CommandGUI:
         applyBtn.clicked.connect(lambda: applyClicked(prompt))
         cancelBtn.clicked.connect(lambda: cancelClicked(prompt))
 
+        applyBtn.setDefault(True)
 
         # Create a content box for the command to fill out parameters and GUI elements
         prompt.content    = QtWidgets.QVBoxLayout()
@@ -291,7 +294,7 @@ class CommandGUI:
 
 
         # Now that the window is 'dressed', add "Cancel" and "Apply" buttons
-        buttonRow         = QtWidgets.QHBoxLayout()
+        buttonRow = QtWidgets.QHBoxLayout()
         buttonRow.addWidget(cancelBtn)
         buttonRow.addStretch(1)
         buttonRow.addWidget(applyBtn)
@@ -313,6 +316,10 @@ class CommandGUI:
         printf("Command.openView(): Finished executing self...")
         prompt.exec_()
 
+        # Make sure QT properly handles the memory after this function ends
+        prompt.close()
+        prompt.deleteLater()
+
 
         # Get information that the user input
         if prompt.accepted:
@@ -327,9 +334,7 @@ class CommandGUI:
             printf('CommandWindow.openView(): User Canceled.')
 
 
-        # Make sure QT properly handles the memory
-        # prompt.close()
-        # prompt.deleteLater()
+
 
         return prompt.accepted
 
@@ -467,7 +472,7 @@ class NameCommandGUI(CommandGUI):
 #   BASIC CONTROL COMMANDS
 class MoveXYZCommandGUI(CommandGUI):
     title     = "Move XYZ"
-    tooltip   = "Set the robots position. The robot will move after all events are evaluated"
+    tooltip   = "Set the robots position.\nThe robot will move after all events are evaluated"
     icon      = Icons.xyz_command
     logicPair = 'MoveXYZCommand'
 
@@ -601,8 +606,8 @@ class SpeedCommandGUI(CommandGUI):
 
         if self.parameters is None:
             # Some code to set up default parameters
-            robot = env.getRobot()
-            self.parameters = {"speed": str(robot.speed)}
+            # robot = env.getRobot()
+            self.parameters = {"speed": str(10)}
 
     def dressWindow(self, prompt):
         prompt.speedEdit = QtWidgets.QLineEdit()
@@ -900,7 +905,7 @@ class EndEventCommandGUI(CommandGUI):
 class FocusOnObjectCommandGUI(CommandGUI):
     title     = "Move Robot Over Object"
     tooltip   = "This tool uses computer vision to recognize an object of your choice, and position the robot directly"\
-                " over the object of choice, if it is visible. If it cannot be found, False will be returned."
+                "\nover the object of choice, if it is visible. If it cannot be found, False will be returned."
     icon      = Icons.move_over_command
     logicPair = "FocusOnObjectCommand"
 
@@ -965,7 +970,7 @@ class FocusOnObjectCommandGUI(CommandGUI):
 class PickupObjectCommandGUI(CommandGUI):
     title     = "Pick Up an Object"
     tooltip   = "This tool uses computer vision to recognize an object of your choice, and attempt to pick up the " \
-                "object. If the object cannot be found or picked up, then False will be returned"
+                "\nobject. If the object cannot be found or picked up, then False will be returned"
 
     icon      = Icons.pickup_command
     logicPair = "PickupObjectCommand"

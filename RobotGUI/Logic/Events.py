@@ -154,14 +154,14 @@ class RecognizeEvent(Event):
         if len(self.errors): return
 
         # Turn on tracking and add the target. DO NOT TURN ON FILTERS, that's only for GUI to do, which it will.
-        self.vision.addTargetSamples(self.object.getSamples())
+        self.vision.addTargetSamples(self.object)
         self.vision.startTracker()
 
     def isActive(self):
         # Make sure the event won't crash if there were errors
         if len(self.errors): return False  # If it did not compile without errors, don't run
 
-        recognized = self.vision.isRecognized(self.parameters["objectID"])
+        recognized = self.vision.isRecognized(self.object)
 
         return recognized
 
