@@ -2,17 +2,17 @@
 import json         # For saving and loading settings and tasks
 import sys          # For GUI, and overloading the default error handling
 import webbrowser   # For opening the uFactory forums under the "file" menu
-from copy                       import deepcopy                                 # For copying saves and comparing later
-from PyQt5                      import QtCore, QtWidgets, QtGui                 # All GUI things
-from RobotGUI                   import ControlPanelGUI, Icons, CalibrationsGUI  # General GUI purposes
-from RobotGUI.CameraGUI         import CameraWidget                             # General GUI purposes
-from RobotGUI.ObjectManagerGUI  import ObjectManagerWindow                      # For opening ObjectManager window
-from RobotGUI.CalibrationsGUI   import CalibrateWindow                          # For opening Calibrate window
-from RobotGUI.Logic             import Global                                   # For keeping track of keypresses
-from RobotGUI.Logic.Robot       import getConnectedRobots                       # For settingsWindow
-from RobotGUI.Logic.Video       import getConnectedCameras                      # For settingsWindow
-from RobotGUI.Logic.Global      import printf                                   # For formatted printing
-from RobotGUI.Logic.Environment import Environment, Interpreter                 # For Logic purposes
+import ControlPanelGUI, Paths, CalibrationsGUI
+from copy              import deepcopy                  # For copying saves and comparing later
+from PyQt5             import QtCore, QtWidgets, QtGui  # All GUI things
+from CameraGUI         import CameraWidget              # General GUI purposes
+from ObjectManagerGUI  import ObjectManagerWindow       # For opening ObjectManager window
+from CalibrationsGUI   import CalibrateWindow           # For opening Calibrate window
+from Logic             import Global                    # For keeping track of keypresses
+from Logic.Robot       import getConnectedRobots        # For settingsWindow
+from Logic.Video       import getConnectedCameras       # For settingsWindow
+from Logic.Global      import printf  # For formatted printing
+from Logic.Environment import Environment, Interpreter  # For Logic purposes
 
 
 
@@ -28,13 +28,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
                                  "cameraID":           None,                     # The # of the camera for cv to connect
 
-                                 "objectsDirectory":   "Objects",                # Default directory for saving objects
+                                 "objectsDirectory":   Paths.objects_dir,    # Default directory for saving objects
 
                                  "motionCalibrations": {"stationaryMovement": None,
                                                         "activeMovement": None},
 
-                                 "coordCalibrations":  {"ptPairs":  None,   # Pairs of Camera pts and Robot pts
-                                                        "failPts": None},      # Coordinate's where robot can't be seen
+                                 "coordCalibrations":  {"ptPairs":   None,   # Pairs of Camera pts and Robot pts
+                                                        "failPts":   None,   # Coordinate's where robot can't be seen
+                                                        "groundPos": None},  # The "Ground" position, in [x,y,z]
 
                                  # GUI RELATED SETTINGS
                                  "lastOpenedFile":      None
@@ -53,8 +54,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Set Global UI Variables
         self.programTitle    = 'uArm Creator Studio'
-        self.scriptToggleBtn = QtWidgets.QAction(QtGui.QIcon(Icons.run_script),   'Run', self)
-        self.videoToggleBtn  = QtWidgets.QAction(QtGui.QIcon(Icons.play_video), 'Video', self)
+        self.scriptToggleBtn = QtWidgets.QAction(QtGui.QIcon(Paths.run_script), 'Run', self)
+        self.videoToggleBtn  = QtWidgets.QAction(QtGui.QIcon(Paths.play_video), 'Video', self)
         self.centralWidget   = QtWidgets.QStackedWidget()
         self.controlPanel    = ControlPanelGUI.ControlPanel(self.env, self.settings, parent=self)
         self.dashboardView   = DashboardView(self.controlPanel,
@@ -84,12 +85,12 @@ class MainWindow(QtWidgets.QMainWindow):
         menuBar      = self.menuBar()
         fileMenu     = menuBar.addMenu('File')
 
-        newAction    = QtWidgets.QAction(   QtGui.QIcon(Icons.new_file),             "New Task", self)
-        saveAction   = QtWidgets.QAction(  QtGui.QIcon(Icons.save_file),            "Save Task", self)
-        saveAsAction = QtWidgets.QAction(  QtGui.QIcon(Icons.save_file),         "Save Task As", self)
-        loadAction   = QtWidgets.QAction(  QtGui.QIcon(Icons.load_file),            "Load Task", self)
-        forumAction  = QtWidgets.QAction(    QtGui.QIcon(Icons.taskbar),     "Visit the forum!", self)
-        redditAction = QtWidgets.QAction(QtGui.QIcon(Icons.reddit_link), "Visit our subreddit!", self)
+        newAction    = QtWidgets.QAction(QtGui.QIcon(Paths.new_file), "New Task", self)
+        saveAction   = QtWidgets.QAction(QtGui.QIcon(Paths.save_file), "Save Task", self)
+        saveAsAction = QtWidgets.QAction(QtGui.QIcon(Paths.save_file), "Save Task As", self)
+        loadAction   = QtWidgets.QAction(QtGui.QIcon(Paths.load_file), "Load Task", self)
+        forumAction  = QtWidgets.QAction(QtGui.QIcon(Paths.taskbar), "Visit the forum!", self)
+        redditAction = QtWidgets.QAction(QtGui.QIcon(Paths.reddit_link), "Visit our subreddit!", self)
 
         newAction.triggered.connect(    lambda: self.newTask(promptSave=True))
         saveAction.triggered.connect(   self.saveTask)
@@ -113,9 +114,9 @@ class MainWindow(QtWidgets.QMainWindow):
         toolbar = self.addToolBar("MainToolbar")
         toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
 
-        settingsBtn  = QtWidgets.QAction( QtGui.QIcon(Icons.settings), 'Settings', self)
-        calibrateBtn = QtWidgets.QAction(QtGui.QIcon(Icons.calibrate), 'Calibrate', self)
-        objMngrBtn   = QtWidgets.QAction(QtGui.QIcon(Icons.objectManager), 'Objects', self)
+        settingsBtn  = QtWidgets.QAction(QtGui.QIcon(Paths.settings), 'Settings', self)
+        calibrateBtn = QtWidgets.QAction(QtGui.QIcon(Paths.calibrate), 'Calibrate', self)
+        objMngrBtn   = QtWidgets.QAction(QtGui.QIcon(Paths.objectManager), 'Objects', self)
 
         self.scriptToggleBtn.setToolTip('Run/Pause the command script (Ctrl+R)')
         self.videoToggleBtn.setToolTip('Play/Pause the video stream (Ctrl+P)')
@@ -147,7 +148,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Final touches
         self.setWindowTitle(self.programTitle)
-        self.setWindowIcon(QtGui.QIcon(Icons.taskbar))
+        self.setWindowIcon(QtGui.QIcon(Paths.taskbar))
         self.show()
 
 
@@ -222,20 +223,19 @@ class MainWindow(QtWidgets.QMainWindow):
         if state == "play":
             # Make sure the videoStream object has a camera, or if the cameras changed, change it
             if not vStream.connected() or not vStream.cameraID == self.settings["cameraID"]:
-                print("Thingy")
                 success = vStream.setNewCamera(self.settings["cameraID"])
             # if not vStream.cameraID == self.settings["cameraID"]"
 
 
             self.dashboardView.cameraWidget.play()
             vStream.setPaused(False)
-            self.videoToggleBtn.setIcon(QtGui.QIcon(Icons.pause_video))
+            self.videoToggleBtn.setIcon(QtGui.QIcon(Paths.pause_video))
             self.videoToggleBtn.setText("Pause")
 
         if state == "pause":
             self.dashboardView.cameraWidget.pause()
             vStream.setPaused(True)
-            self.videoToggleBtn.setIcon(QtGui.QIcon(Icons.play_video))
+            self.videoToggleBtn.setIcon(QtGui.QIcon(Paths.play_video))
             self.videoToggleBtn.setText("Play")
 
     def setScript(self, state):
@@ -277,7 +277,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Stop you from moving stuff around while script is running, and activate the visual cmmnd highlighting
         robot = self.env.getRobot()
-        robot.setServos(setAll=True)
+        robot.setServos(all=True)
         robot.setSpeed(10)
         robot.refresh()
         self.controlPanel.setScriptModeOn(self.interpreter.getStatus, self.endScript)
@@ -288,7 +288,7 @@ class MainWindow(QtWidgets.QMainWindow):
         vision.addTrackerFilter()
 
         # Make sure the UI matches the state of the script
-        self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.pause_script))
+        self.scriptToggleBtn.setIcon(QtGui.QIcon(Paths.pause_script))
         self.scriptToggleBtn.setText("Stop")
 
     def endScript(self):
@@ -306,7 +306,7 @@ class MainWindow(QtWidgets.QMainWindow):
         vision.endTrackerFilter()
 
 
-        self.scriptToggleBtn.setIcon(QtGui.QIcon(Icons.run_script))
+        self.scriptToggleBtn.setIcon(QtGui.QIcon(Paths.run_script))
         self.scriptToggleBtn.setText("Run")
 
 
@@ -453,15 +453,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def saveSettings(self):
         printf("MainWindow.saveSettings(): Saving Settings")
-        json.dump(self.settings, open("Settings.txt", 'w'), sort_keys=False, indent=3, separators=(',', ': '))
+        # saveJSON(self.settings, Paths.settings_txt)
+        print("Opening ", Paths.settings_txt)
+        json.dump(self.settings, open(Paths.settings_txt, 'w'), sort_keys=False, indent=3, separators=(',', ': '))
 
     def loadSettings(self):
         # Load the settings config and set them
-
         printf("MainWindow.loadSettings(): Loading Settings")
-        # newSettings = json.load(open( "Settings.txt"))
+
         try:
-            newSettings = json.load(open( "Settings.txt"))
+            newSettings = json.load(open(Paths.settings_txt))
             # printf("MainWindow.loadSettings(): Loading settings: ", newSettings, "...")
             self.setSettings(newSettings)
             return True
@@ -504,12 +505,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Ask the user they want to save before closing anything
         cancelPressed = self.promptSave()
-
-        # If the user pressed "Cancel" or the "X" button on the prompt dialog, then don't close the program
-        if cancelPressed:
+        if cancelPressed:  # If the user cancelled the close
             event.ignore()
             return
 
+        robot = self.env.getRobot()
+        robot.refresh()  # Finish any moves
+        robot.setServos(all=False)
+        robot.refresh()
 
         # Close and delete GUI objects, to stop their events from running
         self.dashboardView.close()
@@ -618,9 +621,7 @@ class SettingsWindow(QtWidgets.QDialog):
         self.setLayout(mainHLayout)
         self.setMinimumHeight(400)
         self.setWindowTitle('Settings')
-        self.setWindowIcon(QtGui.QIcon(Icons.settings))
-
-
+        self.setWindowIcon(QtGui.QIcon(Paths.settings))
 
 
     def scanForRobotsClicked(self):
@@ -733,7 +734,6 @@ class Application(QtWidgets.QApplication):
 
         # Call Base Class Method to Continue Normal Event Processing
         return super(Application, self).notify(receiver, event)
-
 
 
 

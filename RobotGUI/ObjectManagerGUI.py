@@ -1,10 +1,10 @@
 import cv2
-from PyQt5                        import QtCore, QtWidgets, QtGui
-from RobotGUI                     import Icons
-from RobotGUI.CameraGUI           import CameraWidget, CameraSelector, cvToPixFrame
-from RobotGUI.Logic.Global        import printf
-from RobotGUI.Logic.ObjectManager import TrackableObject
-from RobotGUI.Logic.RobotVision   import MIN_POINTS_TO_LEARN_OBJECT
+import Paths
+from PyQt5               import QtCore, QtWidgets, QtGui
+from CameraGUI           import CameraWidget, CameraSelector, cvToPixFrame
+from Logic.Global        import printf
+from Logic.ObjectManager import TrackableObject
+from Logic.RobotVision   import MIN_POINTS_TO_LEARN_OBJECT
 
 class ObjectManagerWindow(QtWidgets.QDialog):
 
@@ -96,7 +96,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         # Set the layout and customize the window
         self.setLayout(mainVLayout)
         self.setWindowTitle('Object Manager')
-        self.setWindowIcon(QtGui.QIcon(Icons.objectManager))
+        self.setWindowIcon(QtGui.QIcon(Paths.objectManager))
 
         # self.refreshSelectedObjMenu()
 
@@ -151,7 +151,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         self.vision.clearTargets()
         self.vision.trackerAddStartTrack(obj)
 
-        samples = obj.getSamples()
+        samples = obj.getOrientations()
         if len(samples) == 0:
             printf("ObjectManager.refreshSelectedObjMenu(): ERROR: Object returned ZERO samples!")
             hideLabels()
@@ -253,33 +253,42 @@ class ObjectWizard(QtWidgets.QWizard):
         self.newObject  = None  # Is set in self.close()
 
         self.page1 = OWPage1(self.objManager.getObjectIDList(), parent=self)
-        self.page2 = OWPage2(                      environment, parent=self)
-        self.page3 = OWPage3(                      environment, parent=self)
+        self.page2 = OWPage2(environment, parent=self)
+        self.page3 = OWPage3(parent=self)
+        self.page4 = OWPage4(environment, parent=self)
 
-        self.page2.newObject.connect(lambda: self.page3.setObject(self.page2.object))  # Link page3 to page2's object
+        self.page2.newObject.connect(lambda: self.page4.setObject(self.page2.object))  # Link page3 to page2's object
 
 
         self.addPage(self.page1)
         self.addPage(self.page2)
         self.addPage(self.page3)
+        self.addPage(self.page4)
+
         self.setWindowTitle("Object Wizard")
-        self.setWindowIcon(QtGui.QIcon(Icons.objectWizard))
+        self.setWindowIcon(QtGui.QIcon(Paths.objectWizard))
 
     def addNewObject(self):
         # Call this after the wizard has been run, to generate and add the new object to the objectManager
 
         # Here is where the objectWizard will add a new object to the ObjectManager
-        objName     = self.page1.nameTxt.text()
-        pickupRect  = self.page3.pickupRect
-        objSample   = self.page2.object
-        image       = objSample.image.copy()
-        rect        = objSample.rect
+        name        = self.page1.nameTxt.text()
+        image       = self.page2.object.image.copy()
+        rect        = self.page2.object.rect
+        pickupRect  = self.page4.pickupRect
+        height      = float(self.page3.heightTxt.text())
 
-        finalSample = self.vision.tracker.getTarget(image, rect, name=objName, pickupRect=pickupRect)
+
+
+        # finalSample = self.vision.tracker.getTarget(image, rect, name=objName, pickupRect=pickupRect, height=objHeight)
 
         # Create an actual TrackableObject with this information
-        self.newObject   = TrackableObject(objName)
-        self.newObject.addSample(finalSample)
+        self.newObject   = TrackableObject(name)
+        self.newObject.addOrientation(image      = image,
+                                      rect       = rect,
+                                      pickupRect = pickupRect,
+                                      height     = height)
+
         self.objManager.saveNewObject(self.newObject)
 
     def getNewObject(self):
@@ -291,6 +300,7 @@ class ObjectWizard(QtWidgets.QWizard):
         self.page1.close()
         self.page2.close()
         self.page3.close()
+        self.page4.close()
 
 
 class OWPage1(QtWidgets.QWizardPage):
@@ -381,6 +391,7 @@ class OWPage1(QtWidgets.QWizardPage):
         return True
 
 
+
 class OWPage2(QtWidgets.QWizardPage):
     newObject = QtCore.pyqtSignal()  # This emits when a valid object is selected, so that KPWPage3 can update
 
@@ -389,7 +400,7 @@ class OWPage2(QtWidgets.QWizardPage):
 
         # Detach the robots servos so that the user can move the robot out of the way
         robot = environment.getRobot()
-        robot.setServos(setAll=False)
+        robot.setServos(all=False)
         robot.refresh()
 
         # The final object is stored here:
@@ -424,7 +435,7 @@ class OWPage2(QtWidgets.QWizardPage):
         movieLbl   = QtWidgets.QLabel("Could not find example gif")
 
         # Set the animated gif on the movieLbl
-        movie = QtGui.QMovie(Icons.selecting_object)
+        movie = QtGui.QMovie(Paths.selecting_object)
         movieLbl.setMovie(movie)
         movie.start()
 
@@ -520,7 +531,7 @@ class OWPage2(QtWidgets.QWizardPage):
 
         # Turn on the camera, and start tracking
         self.cameraWidget.play()
-        self.vision.tracker.addTarget(self.object.name, self.object.image, self.object.rect, None)
+        self.vision.tracker.addTarget(self.object.name, self.object.image, self.object.rect, pickupRect=None, height=None)
         self.vision.startTracker()
         self.vision.addTrackerFilter()
         self.newObject.emit()
@@ -546,6 +557,71 @@ class OWPage2(QtWidgets.QWizardPage):
 
 
 class OWPage3(QtWidgets.QWizardPage):
+    def __init__(self, parent):
+        super(OWPage3, self).__init__(parent)
+
+        # Create GUI objects
+        self.errorLbl  = QtWidgets.QLabel("")  # Tells the user why the height is invalid
+        self.heightTxt = QtWidgets.QLineEdit()
+
+        self.heightTxt.textChanged.connect(self.completeChanged)
+
+        self.initUI()
+
+    def initUI(self):
+        self.heightTxt.setMaximumWidth(260)
+
+        step1Lbl   = QtWidgets.QLabel("\n\nStep 4: Measure Height")
+        promptLbl  = QtWidgets.QLabel("Please enter the height of the object in centimeters. "
+                                      "\nIf the object is very thin, like paper, enter 0."
+                                      "\nIf the object is not flat on the top, measure the height to the part of the "
+                                      "object that the robot will be grasping.")
+
+
+        # Set titles bold
+        bold = QtGui.QFont()
+        bold.setBold(True)
+        step1Lbl.setFont(bold)
+        self.errorLbl.setFont(bold)
+
+
+        # Place the GUI objects vertically
+        col1 = QtWidgets.QVBoxLayout()
+        col1.addWidget(step1Lbl)
+        col1.addWidget(promptLbl)
+        col1.addWidget(self.heightTxt)
+        col1.addStretch(1)
+        col1.addWidget(self.errorLbl)
+        mainHLayout = QtWidgets.QHBoxLayout()
+        mainHLayout.addLayout(col1)
+
+        self.setMinimumHeight(750)
+        self.setMinimumWidth(700)
+        self.setLayout(mainHLayout)
+
+    def isComplete(self):
+        # Check if the user entered a valid height
+
+        if len(self.heightTxt.text()) == 0:
+            self.errorLbl.setText('')
+            return False
+
+        # Make sure the value is a number
+        try:
+            float(self.heightTxt.text())
+        except ValueError:
+            self.errorLbl.setText('You must input a real number.')
+            return False
+
+        if float(self.heightTxt.text()) < 0:
+            self.errorLbl.setText('Height must be a number greater than or equal to 0.')
+            return False
+
+        self.errorLbl.setText('')
+        return True
+
+
+class OWPage4(QtWidgets.QWizardPage):
     """
     If anything is changed here, check the CoordWizard in CalibrationsGUI.py to make sure that it still works, since
     this class is used there.
@@ -557,8 +633,9 @@ class OWPage3(QtWidgets.QWizardPage):
 
     Only a rectangle is returned, to be used with PlaneTracker's pickupRect variable
     """
+
     def __init__(self, environment, parent):
-        super(OWPage3, self).__init__(parent)
+        super(OWPage4, self).__init__(parent)
 
 
         # The final "rect" of the pickup area of the object is stored here: (x1,y1,x2,y2)
@@ -569,7 +646,7 @@ class OWPage3(QtWidgets.QWizardPage):
 
         # Create the camera widget and set it up. The camera's image is set in self.setObject()
         self.vision       = environment.getVision()
-        self.cameraWidget = CameraSelector(environment.getVStream().getFilteredWithID, parent=self)
+        self.cameraWidget = CameraSelector(environment.getVStream().getFilteredWithID, parent=self, hideRectangle=False)
         self.cameraWidget.pause()
         self.cameraWidget.declinePicBtn.clicked.connect(self.tryAgain)
         self.cameraWidget.objSelected.connect(self.rectSelected)
@@ -585,7 +662,7 @@ class OWPage3(QtWidgets.QWizardPage):
                "\nThis information will be used in any commands that require the robot to pick up the object. If you" +\
                "\ndo not intend to use those functions, then just select an area around the center of the object.\n\n"
 
-        stepLbl = QtWidgets.QLabel("Step 4: Select the Pickup Area")
+        stepLbl = QtWidgets.QLabel("Step 5: Select the Pickup Area")
         howToLbl = QtWidgets.QLabel(desc)
 
 
@@ -600,7 +677,7 @@ class OWPage3(QtWidgets.QWizardPage):
         movieLbl   = QtWidgets.QLabel("Could not find example gif")
 
         # Set the animated gif on the movieLbl
-        movie = QtGui.QMovie(Icons.selecting_pickArea)
+        movie = QtGui.QMovie(Paths.selecting_pickArea)
         movieLbl.setMovie(movie)
         movie.start()
         movieLbl.resize(320, 320)
@@ -659,3 +736,5 @@ class OWPage3(QtWidgets.QWizardPage):
 
     def close(self):
         self.cameraWidget.close()
+
+

@@ -1,0 +1,12 @@
+{
+   "Orientation_0": {
+      "height": null,
+      "pickupRect": null,
+      "rect": [
+         324,
+         170,
+         369,
+         266
+      ]
+   }
+}

@@ -67,8 +67,6 @@ class MoveXYZCommand(Command):
             return False
 
 
-
-
 class MoveWristCommand(Command):
 
     def __init__(self, env, interpreter, parameters=None):
@@ -273,18 +271,14 @@ class FocusOnObjectCommand(Command):
         if len(self.errors) > 0: return False
 
         # Get a super recent frame of the object
-        frameAge, trackObj = self.vision.getObjectLatestRecognition(self.object)
-
-
-        # If the frame is too old or doesn't exist or doesn't have enough points, exit the function
-        if trackObj is None or frameAge > rv.MAX_FRAME_AGE_MOVE or trackObj.ptCount < rv.MIN_POINTS_FOCUS:
-            printf("FocusOnObjectCommand.run(): FrameAge was too old or pointCount was too low, returning false!")
-            return False
-
+        trackedObj = self.vision.getObjectBruteAccurate(self.object,
+                                                        minPoints   = rv.MIN_POINTS_FOCUS,
+                                                        maxFrameAge = rv.MAX_FRAME_AGE_MOVE)
+        if trackedObj is None: return False
 
         # Get the object position
         printf("FocusOnObjectCommand.run(): Found object. Moving to XY Location now.")
-        pos = rv.getPositionTransform(trackObj.center, self.ptPairs)
+        pos = rv.getPositionTransform(trackedObj.center, self.ptPairs, direction=1)
 
 
         # Set the robots position
@@ -309,6 +303,7 @@ class PickupObjectCommand(Command):
 
         if len(self.errors): return
         self.ptPairs = coordCalib["ptPairs"]
+        self.grndHeight = coordCalib["groundPos"][2]
         # Turn on tracking for the relevant object
         self.vision.addTargetSamples(self.trackObj)
         self.vision.addTargetSamples(self.rbMarker)
@@ -318,10 +313,8 @@ class PickupObjectCommand(Command):
         if len(self.errors) > 0: return False
 
 
-        rv.pickupObject(self.trackObj, self.rbMarker, self.robot, self.vision, self.ptPairs)
+        return rv.pickupObject(self.trackObj, self.rbMarker, self.ptPairs, self.grndHeight, self.robot, self.vision)
 
-
-        return True
 
 
 

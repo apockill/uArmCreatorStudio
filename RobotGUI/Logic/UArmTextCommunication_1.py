@@ -1,7 +1,7 @@
 import serial
-from time                  import sleep
-from RobotGUI.Logic.Global import printf
 import serial.tools.list_ports
+from time                  import sleep
+from Logic.Global import printf
 
 # This is a library for controlling uArms that have Alex Thiel's Arduino communication protocol uploaded
 def getConnectedRobots():
@@ -14,7 +14,7 @@ def getConnectedRobots():
 class Uarm:
 
     def __init__(self, port, printResponses=False):
-        self.printResponses = False  # printResponses
+        self.printResponses = printResponses
         self.isConnected    = False
         self.serial         = None
 
@@ -53,11 +53,13 @@ class Uarm:
         return self.__send(cmnd)
 
     def servoAttach(self, servo_number):
+        print("Attaching")
         servo_number = str(int(servo_number))
         cmnd = "attachS" + servo_number
         return self.__send(cmnd)
 
     def servoDetach(self, servo_number):
+        print("Detaching")
         servo_number = str(int(servo_number))
         cmnd = "detachS" + servo_number
         return self.__send(cmnd)

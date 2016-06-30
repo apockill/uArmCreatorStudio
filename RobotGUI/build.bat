@@ -1,5 +1,41 @@
-set PIP=C:\Python34\Scripts\pyinstaller.exe
-%PIP% MainGUI.py --onefile
+REM Compile all the icons into the the CompiledImages.py 
+pyrcc5 "Resources/Images.qrc" -o "Resources/CompiledImages.py"
 
-//python %PIP%Makespec.py --onefile --noconsole --upx MainGUI.py
-//python %PIP%Build.py MainGUI.spec
+PAUSE
+
+
+REM Get the PyInstaller path
+set PYINSTALLER=C:\Python34\Scripts\pyinstaller.exe
+
+
+REM Create the executable
+REM python %PIP%Makespec.py --onefile --noconsole --upx MainGUI.py
+%PYINSTALLER% MainGUI.py --onefile --name "uArmCreator"
+ 
+
+REM Check if the build finished, if it did, delete "Latest Build" before renaming "dist"
+if exist "dist/uArmCreator.exe" RD /S /Q "Latest Build"
+ 
+
+
+REM Rename 'dist' folder to "Latest Build"
+rename dist "Latest Build"
+
+REM Re
+
+
+REM Delete the .spec file after building
+DEL uArmCreator.spec
+
+
+REM Delete the 'build' folder after building
+RD /S /Q build
+
+
+REM Delete the '__pycache__' folder after building
+RD /S /Q "__pycache__"
+ 
+
+
+PAUSE
+ 

@@ -2,7 +2,7 @@ import time
 import cv2
 import numpy as np
 from collections           import namedtuple
-from RobotGUI.Logic.Global import printf
+from Logic.Global import printf
 
 
 class Vision:
@@ -21,16 +21,16 @@ class Vision:
     def waitForNewFrames(self, numFrames=1):
         # Useful for situations when you need x amount of new frames after the robot moved, before doing vision
         for i in range(0, numFrames):
-            print("waiting for new frame!")
+            printf("Vision.waitForNewFrames(): Waiting for new frame! #", i)
             self.vStream.waitForNewFrame()
 
 
     # Object tracker control functions
     def addTargetSamples(self, trackableObject):
-        samples = trackableObject.getSamples()
+        orientations = trackableObject.getOrientations()
         with self.workLock:
-            for sample in samples:
-                self.tracker.addTarget(sample.name, sample.image, sample.rect, sample.pickupRect)
+            for o in orientations:
+                self.tracker.addTarget(o.name, o.image, o.rect, o.pickupRect, o.height)
 
     def clearTargets(self):
         with self.workLock:
@@ -54,12 +54,38 @@ class Vision:
             trackHistory = self.tracker.trackedHistory[:]
 
         for frameID, historyFromFrame in enumerate(trackHistory):
-
             for obj in historyFromFrame:
-
                 if obj.target.name == trackableObj.name:
                     return frameID, obj
         return None, None
+
+    def getObjectBruteAccurate(self, trackableObj, minPoints=-1, maxFrameAge=0, maxAttempts=1):
+        """
+        This will brute-force the object finding process somewhat, and ensure a good recognition, or nothing at all.
+
+        :param trackableObj: The TrackableObject you intend to find
+        :param minPoints:    Minimum amount of recognition points that must be found in order to track. -1 means ignore
+        :param maxFrameAge:  How recent the recognition was, in "frames gotten from camera"
+        :param maxAttempts:  How many frames it should wait for before quitting the search.
+        :return:
+        """
+
+
+        # Get a super recent frame of the object
+        for i in range(0, maxAttempts):
+            # If the frame is too old or marker doesn't exist or doesn't have enough points, exit the function
+            frameAge, trackedObj = self.getObjectLatestRecognition(trackableObj)
+
+            if trackedObj is None or frameAge > maxFrameAge or trackedObj.ptCount < minPoints:
+                if i == maxAttempts - 1: break
+
+                self.waitForNewFrames()
+                continue
+
+            # If the object was successfully found with the correct attributes, return it
+            return trackedObj
+
+        return None
 
     def isRecognized(self, trackableObject, numFrames=1):
         # numFrames is the amount of frames to check in the history
@@ -247,7 +273,7 @@ class PlaneTracker:
         H      - homography matrix from p0 to p1
         quad   - target bounary quad in input frame
     """
-    PlanarTarget  = namedtuple(  'PlaneTarget',   'name, image, rect, pickupRect, keypoints, descrs')
+    PlanarTarget  = namedtuple(  'PlaneTarget',   'name, image, rect, pickupRect, height, keypoints, descrs')
 
     # target: the "sample" object of the tracked object. Center: [x,y,z] Rotation[xr, yr, zr], ptCount: matched pts
     TrackedTarget = namedtuple('TrackedTarget', 'target, quad, ptCount, center, rotation, p0, p1, H,')
@@ -278,7 +304,7 @@ class PlaneTracker:
 
 
 
-    def getTarget(self, image, rect, name=None, pickupRect=None):
+    def getTarget(self, image, rect, name=None, pickupRect=None, height=None):
         # Get the PlanarTarget object for any name, image, and rect. These can be added in self.addTarget()
         x0, y0, x1, y1         = rect
         points, descs          = [], []
@@ -294,18 +320,18 @@ class PlaneTracker:
 
         descs  = np.uint8(descs)
         target = self.PlanarTarget(name=name, image = image, rect=rect, pickupRect=pickupRect,
-                                   keypoints = points, descrs=descs)
+                                   keypoints = points, descrs=descs, height=height)
 
         # If it was possible to add the target
         return target
 
-    def addTarget(self, name, image, rect, pickupRect):
+    def addTarget(self, name, image, rect, pickupRect, height):
         for target in self.targets:
             if name == target.name:
                 printf("PlaneTracker.addTarget(): ERROR: Attempted to add two targets of the same name: ", name)
                 return
 
-        planarTarget = self.getTarget(image, rect, name=name, pickupRect=pickupRect)
+        planarTarget = self.getTarget(image, rect, name=name, pickupRect=pickupRect, height=height)
 
         descrs = planarTarget.descrs
         self.matcher.add([descrs])
@@ -430,7 +456,10 @@ class PlaneTracker:
 
             # FOR DEUBGGING ONLY: TODO: Remove this when deploying final product
             try:
-                coordText = "X " + str(int(obj.center[0])) + " Y " + str(int(obj.center[1])) + " Z " + str(int(obj.center[2]))
+                coordText = "X " + str(int(obj.center[0]))  + \
+                            " Y " + str(int(obj.center[1])) + \
+                            " Z " + str(int(obj.center[2])) + \
+                            " R " + str(round(obj.rotation[2], 2))
                 cv2.putText(frame, coordText, (quad[1][0], quad[1][1] + int(15*scaleFactor)),  filterFnt, scaleFactor, color=filterColor, thickness=1)
             except:
                 pass

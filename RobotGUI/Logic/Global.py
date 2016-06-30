@@ -1,9 +1,19 @@
+import os
+import errno
+import json
 from time import time, sleep
+
+"""
+Global is a set of functions that are used in many places around the project and are very general use.
+It also holds the actual global variable "keysPressed".
+"""
+
 
 # Initiate the keysPressed global variable
 def init():
     global keysPressed
     keysPressed    = []        #Used in keyboardEvent. Updated through Main.Application.notify()
+
 
 
 spaceFunc = lambda n: ''.join(' ' for _ in range(n)) # For printf
@@ -52,6 +62,20 @@ class FpsTimer:
         return isReady
 
 
+def saveJSON(data, directory):
+    ensurePathExists(directory)
+    json.dump(data, open(directory, 'w'), sort_keys=False, indent=3, separators=(',', ': '))
 
-
+def ensurePathExists(path):
+    '''
+        This is a cross platform, race-condition free way of checking if a directory exists. It's used every time
+        an object is loaded and saved
+    '''
+    try:
+        dir = os.path.dirname(path)
+        print("path", path, "dir", dir)
+        os.makedirs(dir)
+    except OSError as exception:
+        if exception.errno != errno.EEXIST:
+            raise
 

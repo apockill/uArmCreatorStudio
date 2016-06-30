@@ -47,7 +47,7 @@ class LogicObject:
         requestedObj  = objectManager.getObject(objectID)
 
         if requestedObj is None:
-            self.errors.append("Object '" + str(objectID)) + "' not found"
+            self.errors.append("Object '" + str(objectID) + "' not found")
 
         return requestedObj
 

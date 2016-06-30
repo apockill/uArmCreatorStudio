@@ -1,6 +1,6 @@
 import cv2
-from PyQt5                      import QtWidgets, QtCore, QtGui
-from RobotGUI.Logic.Global      import printf
+from PyQt5        import QtWidgets, QtCore, QtGui
+from Logic.Global import printf
 
 
 def cvToPixFrame(image):
@@ -96,13 +96,22 @@ class CameraSelector(CameraWidget):
     objSelected  = QtCore.pyqtSignal()
 
 
-    def __init__(self, getFrameFunction, parent):
+    def __init__(self, getFrameFunction, parent, hideRectangle=True):
+        """
+        :param getFrameFunction: A function that gets an openCV frame from the vStream, for updating the screen
+        :param hideRectangle: If True, then when something is selected, the rubber band won't go away.
+        :param parent: The GUI Parent of this widget
+        """
+
+
         super(CameraSelector, self).__init__(getFrameFunction, parent)
 
 
         # Set up the rubberBand specific variables (for rectangle drawing)
-        self.rubberBand    = QtWidgets.QRubberBand(QtWidgets.QRubberBand.Rectangle, self)
+        self.rectangle     = QtWidgets.QRubberBand(QtWidgets.QRubberBand.Rectangle, self)
+        self.hideRectangle = hideRectangle
         self.origin        = QtCore.QPoint()
+
 
 
         # When the user has something selected, this is a frame. Otherwise, it is None
@@ -165,8 +174,8 @@ class CameraSelector(CameraWidget):
 
             # Set the rectangles position and unhide the rectangle
             self.origin = QtCore.QPoint(event.pos())
-            self.rubberBand.setGeometry(QtCore.QRect(self.origin, QtCore.QSize()))
-            self.rubberBand.show()
+            self.rectangle.setGeometry(QtCore.QRect(self.origin, QtCore.QSize()))
+            self.rectangle.show()
 
     def mouseMoveEvent(self, event):
 
@@ -180,15 +189,16 @@ class CameraSelector(CameraWidget):
             if not 0 < pos[0] < width:  return
             if not 0 < pos[1] < height: return
 
-            self.rubberBand.setGeometry(QtCore.QRect(self.origin, event.pos()).normalized())
+            self.rectangle.setGeometry(QtCore.QRect(self.origin, event.pos()).normalized())
 
     def mouseReleaseEvent(self, event):
 
-        if event.button() == QtCore.Qt.LeftButton and not self.rubberBand.isHidden():
-            self.rubberBand.hide()
+        if event.button() == QtCore.Qt.LeftButton and self.selectedRect is None:
+            if self.hideRectangle: self.rectangle.hide()
+
 
             # Get the rectangle geometry
-            pt = self.rubberBand.geometry().getCoords()
+            pt = self.rectangle.geometry().getCoords()
 
             # Ensure that the selected area isn't incredibly small (aka, a quick click
             if pt[3] - pt[1] < 10 or pt[2] - pt[0] < 10:
@@ -196,7 +206,8 @@ class CameraSelector(CameraWidget):
                 self.selectedRect  = None
                 return
 
-            self.selectedRect = pt
+            self.selectedRect  = pt
+            self.selectionMode = False
             self.declinePicBtn.setDisabled(False)
             self.objSelected.emit()
 
@@ -210,6 +221,7 @@ class CameraSelector(CameraWidget):
         # Return the widget to "take a picture" mode, throw away the old selected frame.
         self.selectedImage = None
         self.selectedRect  = None
+        self.rectangle.hide()
         self.declinePicBtn.setDisabled(True)
 
 

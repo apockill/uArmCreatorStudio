@@ -1,6 +1,7 @@
 import cv2
-from threading             import Thread, RLock
-from RobotGUI.Logic.Global import printf, FpsTimer
+from threading    import Thread, RLock
+from time         import sleep     # Used only in waitForNewFrame to prevent a CPU heavy wait loop
+from Logic.Global import printf, FpsTimer
 
 
 def getConnectedCameras():
@@ -285,7 +286,7 @@ class VideoStream:
 
     def waitForNewFrame(self):
         lastFrame = self.frameCount
-        while self.frameCount == lastFrame: pass
+        while self.frameCount == lastFrame: sleep(.05)
 
 
 

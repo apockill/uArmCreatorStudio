@@ -1,8 +1,8 @@
-from copy                  import deepcopy
-from threading             import Thread
-from RobotGUI.Logic.Global import printf, FpsTimer
-from RobotGUI.Logic.Vision import Vision
-from RobotGUI.Logic        import Video, Events, Commands, ObjectManager, Robot
+from copy         import deepcopy
+from threading    import Thread
+from Logic.Global import printf, FpsTimer
+from Logic.Vision import Vision
+from Logic        import Video, Events, Commands, ObjectManager, Robot
 
 """
     Rules of thumb:

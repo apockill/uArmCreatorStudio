@@ -1,6 +1,6 @@
-from RobotGUI.Logic             import Global
-from RobotGUI.Logic.Global      import printf
-from RobotGUI.Logic.LogicObject import LogicObject
+from Logic             import Global
+from Logic.Global      import printf
+from Logic.LogicObject import LogicObject
 
 """
 Example Event

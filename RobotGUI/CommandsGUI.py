@@ -1,8 +1,8 @@
 import ast  # To check if a statement is python parsible, for evals
-from PyQt5                        import QtGui, QtCore, QtWidgets
-from RobotGUI                     import Icons
-from RobotGUI.Logic.Global        import printf
-from RobotGUI.Logic.ObjectManager import TrackableObject
+import Paths
+from PyQt5               import QtGui, QtCore, QtWidgets
+from Logic.Global        import printf
+from Logic.ObjectManager import TrackableObject
 
 
 # This should only be used once, in CommandList.addCommand
@@ -28,7 +28,7 @@ class CommandWidget(QtWidgets.QWidget):
     def initUI(self):
         # Create the delete button
         self.deleteBtn.setFlat(True)
-        self.deleteBtn.setIcon(QtGui.QIcon(Icons.delete))
+        self.deleteBtn.setIcon(QtGui.QIcon(Paths.delete))
         self.deleteBtn.setVisible(False)
 
         font = QtGui.QFont()
@@ -473,7 +473,7 @@ class NameCommandGUI(CommandGUI):
 class MoveXYZCommandGUI(CommandGUI):
     title     = "Move XYZ"
     tooltip   = "Set the robots position.\nThe robot will move after all events are evaluated"
-    icon      = Icons.xyz_command
+    icon      = Paths.xyz_command
     logicPair = 'MoveXYZCommand'
 
     def __init__(self, env, parameters=None):
@@ -549,7 +549,7 @@ class MoveXYZCommandGUI(CommandGUI):
 class MoveWristCommandGUI(CommandGUI):
     title     = "Set Wrist Angle"
     tooltip   = "This command sets the angle of the robots 4th axis, the wrist."
-    icon      = Icons.move_wrist_command
+    icon      = Paths.move_wrist_command
     logicPair = "MoveWristCommand"
 
     def __init__(self, env, parameters=None):
@@ -598,7 +598,7 @@ class MoveWristCommandGUI(CommandGUI):
 class SpeedCommandGUI(CommandGUI):
     title     = "Set Speed"
     tooltip   = "This tool sets the speed of the robot for any move commands that are done after this. "
-    icon      = Icons.speed_command
+    icon      = Paths.speed_command
     logicPair = "SpeedCommand"
 
     def __init__(self, env, parameters=None):
@@ -637,7 +637,7 @@ class SpeedCommandGUI(CommandGUI):
 class DetachCommandGUI(CommandGUI):
     title     = "Detach Servos"
     tooltip   = "Disengage the specified servos on the robot"
-    icon      = Icons.detach_command
+    icon      = Paths.detach_command
     logicPair = "DetachCommand"
 
     def __init__(self, env, parameters=None):
@@ -659,7 +659,7 @@ class DetachCommandGUI(CommandGUI):
         prompt.srvo4Box = QtWidgets.QCheckBox()  # "relative" CheckBox
 
         # Set up all the labels for the inputs
-        label1 = QtWidgets.QLabel('Rotation Servo:')
+        label1 = QtWidgets.QLabel('Base Servo:')
         label2 = QtWidgets.QLabel('Stretch Servo:')
         label3 = QtWidgets.QLabel('Height Servo:')
         label4 = QtWidgets.QLabel('Wrist Servo:')
@@ -687,7 +687,7 @@ class DetachCommandGUI(CommandGUI):
 
     def _updateDescription(self):
         descriptionBuild = "Servos"
-        if self.parameters["servo1"]: descriptionBuild += "  Rotation"
+        if self.parameters["servo1"]: descriptionBuild += "  Base"
         if self.parameters["servo2"]: descriptionBuild += "  Stretch"
         if self.parameters["servo3"]: descriptionBuild += "  Height"
         if self.parameters["servo4"]: descriptionBuild += "  Wrist"
@@ -702,7 +702,7 @@ class AttachCommandGUI(CommandGUI):
 
     title     = "Attach Servos"
     tooltip   = "Re-engage servos on the robot"
-    icon      = Icons.attach_command
+    icon      = Paths.attach_command
     logicPair = "AttachCommand"
 
     def __init__(self, env, parameters=None):
@@ -724,7 +724,7 @@ class AttachCommandGUI(CommandGUI):
         prompt.srvo4Box = QtWidgets.QCheckBox()  #  "relative" CheckBox
 
         # Set up all the labels for the inputs
-        label1 = QtWidgets.QLabel('Rotation Servo:')
+        label1 = QtWidgets.QLabel('Base Servo:')
         label2 = QtWidgets.QLabel('Stretch Servo:')
         label3 = QtWidgets.QLabel('Height Servo:')
         label4 = QtWidgets.QLabel('Wrist Servo:')
@@ -754,7 +754,7 @@ class AttachCommandGUI(CommandGUI):
 
     def _updateDescription(self):
         descriptionBuild = "Servos"
-        if self.parameters["servo1"]: descriptionBuild += "  Rotation"
+        if self.parameters["servo1"]: descriptionBuild += "  Base"
         if self.parameters["servo2"]: descriptionBuild += "  Stretch"
         if self.parameters["servo3"]: descriptionBuild += "  Height"
         if self.parameters["servo4"]: descriptionBuild += "  Wrist"
@@ -765,7 +765,7 @@ class AttachCommandGUI(CommandGUI):
 class WaitCommandGUI(CommandGUI):
     title     = "Wait"
     tooltip   = "Halts the program for a preset amount of time"
-    icon      = Icons.wait_command
+    icon      = Paths.wait_command
     logicPair = "WaitCommand"
 
     def __init__(self, env, parameters=None):
@@ -803,7 +803,7 @@ class WaitCommandGUI(CommandGUI):
 class GripCommandGUI(CommandGUI):
     title     = "Activate Gripper"
     tooltip   = "Activates the robots gripper"
-    icon      = Icons.grip_command
+    icon      = Paths.grip_command
     logicPair = "GripCommand"
 
     def __init__(self, env, parameters=None):
@@ -813,7 +813,7 @@ class GripCommandGUI(CommandGUI):
 class DropCommandGUI(CommandGUI):
     title     = "Deactivate Gripper"
     tooltip   = "Deactivates the robots gripper"
-    icon      = Icons.drop_command
+    icon      = Paths.drop_command
     logicPair = "DropCommand"
 
     def __init__(self, env, parameters=None):
@@ -823,7 +823,7 @@ class DropCommandGUI(CommandGUI):
 class BuzzerCommandGUI(CommandGUI):
     title     = "Play Tone"
     tooltip   = "This tool uses the robots buzzer to play a tone at a certain frequency for a certain amount of time"
-    icon      = Icons.buzzer_command
+    icon      = Paths.buzzer_command
     logicPair = "BuzzerCommand"
 
     def __init__(self, env, parameters=None):
@@ -879,9 +879,9 @@ class BuzzerCommandGUI(CommandGUI):
 
 
 class EndProgramCommandGUI(CommandGUI):
-    title     = "Ends Program"
+    title     = "End Program"
     tooltip   = "When the code reaches this point, the program will end."
-    icon      = Icons.pause_script
+    icon      = Paths.end_prgrm_command
     logicPair = "EndProgramCommand"
 
     def __init__(self, env, parameters=None):
@@ -891,7 +891,7 @@ class EndProgramCommandGUI(CommandGUI):
 class EndEventCommandGUI(CommandGUI):
     title     = "Exit Current Event"
     tooltip   = "When the code reaches this point, the program will not process the rest of this event."
-    icon      = Icons.exit_event_command
+    icon      = Paths.exit_event_command
     logicPair = "EndEventCommand"
 
     def __init__(self, env, parameters=None):
@@ -906,7 +906,7 @@ class FocusOnObjectCommandGUI(CommandGUI):
     title     = "Move Robot Over Object"
     tooltip   = "This tool uses computer vision to recognize an object of your choice, and position the robot directly"\
                 "\nover the object of choice, if it is visible. If it cannot be found, False will be returned."
-    icon      = Icons.move_over_command
+    icon      = Paths.move_over_command
     logicPair = "FocusOnObjectCommand"
 
     def __init__(self, env, parameters=None):
@@ -972,7 +972,7 @@ class PickupObjectCommandGUI(CommandGUI):
     tooltip   = "This tool uses computer vision to recognize an object of your choice, and attempt to pick up the " \
                 "\nobject. If the object cannot be found or picked up, then False will be returned"
 
-    icon      = Icons.pickup_command
+    icon      = Paths.pickup_command
     logicPair = "PickupObjectCommand"
 
     def __init__(self, env, parameters=None):
@@ -1041,7 +1041,7 @@ class StartBlockCommandGUI(CommandGUI):
     Start a block of code with this class
     """
 
-    icon      = Icons.startblock_command
+    icon      = Paths.startblock_command
     tooltip   = "This is the start of a block of commands that only run if a conditional statement is met."
     logicPair = 'StartBlockCommand'
 
@@ -1054,7 +1054,7 @@ class EndBlockCommandGUI(CommandGUI):
     End a block of code with this command
     """
 
-    icon      = Icons.endblock_command
+    icon      = Paths.endblock_command
     tooltip   = "This is the end of a block of commands."
     logicPair = 'EndBlockCommand'
 
@@ -1067,7 +1067,7 @@ class ElseCommandGUI(CommandGUI):
     End a block of code with this command
     """
 
-    icon      = Icons.else_command
+    icon      = Paths.else_command
     tooltip   = "This will run commands if a test evaluates to False"
     logicPair = 'ElseCommand'
 
@@ -1078,7 +1078,7 @@ class ElseCommandGUI(CommandGUI):
 class SetVariableCommandGUI(CommandGUI):
     title     = "Set Variable"
     tooltip   = "This command can create a variable or set an existing variable to a value or an expression."
-    icon      = Icons.set_var_command
+    icon      = Paths.set_var_command
     logicPair = "SetVariableCommand"
 
     def __init__(self, env, parameters=None):
@@ -1129,7 +1129,7 @@ class SetVariableCommandGUI(CommandGUI):
 class TestVariableCommandGUI(CommandGUI):
     title     = "Test Variable"
     tooltip   = "This will allow/disallow code to run that is in blocked brackets below it."
-    icon      = Icons.test_var_command
+    icon      = Paths.test_var_command
     logicPair = 'TestVariableCommand'
 
     def __init__(self, env, parameters=None):

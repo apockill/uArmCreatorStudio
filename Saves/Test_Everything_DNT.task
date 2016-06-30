@@ -1,0 +1,295 @@
+[
+   {
+      "commandList": [
+         {
+            "typeLogic": "AttachCommand",
+            "parameters": {
+               "servo3": true,
+               "servo1": false,
+               "servo2": true,
+               "servo4": true
+            },
+            "typeGUI": "AttachCommandGUI"
+         },
+         {
+            "typeLogic": "SetVariableCommand",
+            "parameters": {
+               "expression": "5",
+               "variable": "distance"
+            },
+            "typeGUI": "SetVariableCommandGUI"
+         },
+         {
+            "typeLogic": "SetVariableCommand",
+            "parameters": {
+               "expression": "120",
+               "variable": "wristConst"
+            },
+            "typeGUI": "SetVariableCommandGUI"
+         },
+         {
+            "typeLogic": "SetVariableCommand",
+            "parameters": {
+               "expression": "0",
+               "variable": "pump"
+            },
+            "typeGUI": "SetVariableCommandGUI"
+         },
+         {
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "z": "15",
+               "y": "-15",
+               "override": false,
+               "x": "10",
+               "relative": false
+            },
+            "typeGUI": "MoveXYZCommandGUI"
+         },
+         {
+            "typeLogic": "MoveWristCommand",
+            "parameters": {
+               "angle": "60",
+               "relative": false
+            },
+            "typeGUI": "MoveWristCommandGUI"
+         }
+      ],
+      "typeLogic": "InitEvent",
+      "parameters": {},
+      "typeGUI": "InitEventGUI"
+   },
+   {
+      "commandList": [
+         {
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "z": "14.8",
+               "y": "-13.9",
+               "override": false,
+               "x": "3.9",
+               "relative": false
+            },
+            "typeGUI": "MoveXYZCommandGUI"
+         },
+         {
+            "typeLogic": "TestVariableCommand",
+            "parameters": {
+               "expression": "1",
+               "test": 2,
+               "variable": "hello"
+            },
+            "typeGUI": "TestVariableCommandGUI"
+         },
+         {
+            "typeLogic": "StartBlockCommand",
+            "parameters": {},
+            "typeGUI": "StartBlockCommandGUI"
+         },
+         {
+            "typeLogic": "DropCommand",
+            "parameters": {},
+            "typeGUI": "DropCommandGUI"
+         },
+         {
+            "typeLogic": "EndBlockCommand",
+            "parameters": {},
+            "typeGUI": "EndBlockCommandGUI"
+         }
+      ],
+      "typeLogic": "StepEvent",
+      "parameters": {},
+      "typeGUI": "StepEventGUI"
+   },
+   {
+      "commandList": [
+         {
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "z": "15",
+               "y": "-15",
+               "override": false,
+               "x": "distance",
+               "relative": false
+            },
+            "typeGUI": "MoveXYZCommandGUI"
+         }
+      ],
+      "typeLogic": "KeypressEvent",
+      "parameters": {
+         "checkKey": "A"
+      },
+      "typeGUI": "KeypressEventGUI"
+   },
+   {
+      "commandList": [
+         {
+            "typeLogic": "SetVariableCommand",
+            "parameters": {
+               "expression": "distance*2",
+               "variable": "distance"
+            },
+            "typeGUI": "SetVariableCommandGUI"
+         }
+      ],
+      "typeLogic": "KeypressEvent",
+      "parameters": {
+         "checkKey": "S"
+      },
+      "typeGUI": "KeypressEventGUI"
+   },
+   {
+      "commandList": [
+         {
+            "typeLogic": "TestVariableCommand",
+            "parameters": {
+               "expression": "1",
+               "test": 0,
+               "variable": "pump"
+            },
+            "typeGUI": "TestVariableCommandGUI"
+         },
+         {
+            "typeLogic": "StartBlockCommand",
+            "parameters": {},
+            "typeGUI": "StartBlockCommandGUI"
+         },
+         {
+            "typeLogic": "DropCommand",
+            "parameters": {},
+            "typeGUI": "DropCommandGUI"
+         },
+         {
+            "typeLogic": "EndBlockCommand",
+            "parameters": {},
+            "typeGUI": "EndBlockCommandGUI"
+         },
+         {
+            "typeLogic": "TestVariableCommand",
+            "parameters": {
+               "expression": "0",
+               "test": 0,
+               "variable": "pump"
+            },
+            "typeGUI": "TestVariableCommandGUI"
+         },
+         {
+            "typeLogic": "StartBlockCommand",
+            "parameters": {},
+            "typeGUI": "StartBlockCommandGUI"
+         },
+         {
+            "typeLogic": "GripCommand",
+            "parameters": {},
+            "typeGUI": "GripCommandGUI"
+         },
+         {
+            "typeLogic": "EndBlockCommand",
+            "parameters": {},
+            "typeGUI": "EndBlockCommandGUI"
+         },
+         {
+            "typeLogic": "SetVariableCommand",
+            "parameters": {
+               "expression": "not pump",
+               "variable": "pump"
+            },
+            "typeGUI": "SetVariableCommandGUI"
+         },
+         {
+            "typeLogic": "WaitCommand",
+            "parameters": {
+               "time": ".5"
+            },
+            "typeGUI": "WaitCommandGUI"
+         }
+      ],
+      "typeLogic": "TipEvent",
+      "parameters": {},
+      "typeGUI": "TipEventGUI"
+   },
+   {
+      "commandList": [
+         {
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "z": "15",
+               "y": "-20",
+               "override": false,
+               "x": "-10",
+               "relative": false
+            },
+            "typeGUI": "MoveXYZCommandGUI"
+         },
+         {
+            "typeLogic": "MoveWristCommand",
+            "parameters": {
+               "angle": "wristConst",
+               "relative": false
+            },
+            "typeGUI": "MoveWristCommandGUI"
+         },
+         {
+            "typeLogic": "DropCommand",
+            "parameters": {},
+            "typeGUI": "DropCommandGUI"
+         },
+         {
+            "typeLogic": "DetachCommand",
+            "parameters": {
+               "servo3": true,
+               "servo1": true,
+               "servo2": true,
+               "servo4": true
+            },
+            "typeGUI": "DetachCommandGUI"
+         }
+      ],
+      "typeLogic": "DestroyEvent",
+      "parameters": {},
+      "typeGUI": "DestroyEventGUI"
+   },
+   {
+      "commandList": [
+         {
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "z": "15",
+               "y": "-15",
+               "override": false,
+               "x": "0",
+               "relative": false
+            },
+            "typeGUI": "MoveXYZCommandGUI"
+         },
+         {
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "z": "15",
+               "y": "-15",
+               "override": false,
+               "x": "10",
+               "relative": false
+            },
+            "typeGUI": "MoveXYZCommandGUI"
+         },
+         {
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "z": "15",
+               "y": "-15",
+               "override": false,
+               "x": "-15",
+               "relative": false
+            },
+            "typeGUI": "MoveXYZCommandGUI"
+         }
+      ],
+      "typeLogic": "MotionEvent",
+      "parameters": {
+         "low": "High",
+         "high": "Inf"
+      },
+      "typeGUI": "MotionEventGUI"
+   }
+]

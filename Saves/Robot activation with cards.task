@@ -1,0 +1,162 @@
+[
+   {
+      "commandList": [
+         {
+            "parameters": {},
+            "typeGUI": "GripCommandGUI",
+            "typeLogic": "GripCommand"
+         }
+      ],
+      "parameters": {
+         "objectID": "10 of Diamonds"
+      },
+      "typeGUI": "RecognizeEventGUI",
+      "typeLogic": "RecognizeEvent"
+   },
+   {
+      "commandList": [
+         {
+            "parameters": {},
+            "typeGUI": "DropCommandGUI",
+            "typeLogic": "DropCommand"
+         }
+      ],
+      "parameters": {
+         "objectID": "King of Spades"
+      },
+      "typeGUI": "RecognizeEventGUI",
+      "typeLogic": "RecognizeEvent"
+   },
+   {
+      "commandList": [
+         {
+            "parameters": {
+               "relative": false,
+               "y": "-15",
+               "override": false,
+               "x": "15",
+               "z": "20"
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "parameters": {
+               "frequency": "250",
+               "time": ".25",
+               "waitForBuzzer": true
+            },
+            "typeGUI": "BuzzerCommandGUI",
+            "typeLogic": "BuzzerCommand"
+         },
+         {
+            "parameters": {
+               "relative": true,
+               "y": "0",
+               "override": false,
+               "x": "0",
+               "z": "5"
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "parameters": {
+               "relative": true,
+               "y": "0",
+               "override": false,
+               "x": "0",
+               "z": "-10"
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         }
+      ],
+      "parameters": {
+         "objectID": "Joker of Hearts"
+      },
+      "typeGUI": "RecognizeEventGUI",
+      "typeLogic": "RecognizeEvent"
+   },
+   {
+      "commandList": [
+         {
+            "parameters": {
+               "relative": false,
+               "y": "-15",
+               "override": false,
+               "x": "-15",
+               "z": "20"
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "parameters": {
+               "frequency": "500",
+               "time": ".25",
+               "waitForBuzzer": true
+            },
+            "typeGUI": "BuzzerCommandGUI",
+            "typeLogic": "BuzzerCommand"
+         },
+         {
+            "parameters": {
+               "relative": true,
+               "y": "0",
+               "override": false,
+               "x": "0",
+               "z": "5"
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "parameters": {
+               "relative": true,
+               "y": "0",
+               "override": false,
+               "x": "0",
+               "z": "-10"
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         }
+      ],
+      "parameters": {
+         "objectID": "Ace of Spades"
+      },
+      "typeGUI": "RecognizeEventGUI",
+      "typeLogic": "RecognizeEvent"
+   },
+   {
+      "commandList": [
+         {
+            "parameters": {
+               "speed": "80"
+            },
+            "typeGUI": "SpeedCommandGUI",
+            "typeLogic": "SpeedCommand"
+         }
+      ],
+      "parameters": {
+         "objectID": "Back of Card"
+      },
+      "typeGUI": "RecognizeEventGUI",
+      "typeLogic": "RecognizeEvent"
+   },
+   {
+      "commandList": [
+         {
+            "parameters": {
+               "speed": "45"
+            },
+            "typeGUI": "SpeedCommandGUI",
+            "typeLogic": "SpeedCommand"
+         }
+      ],
+      "parameters": null,
+      "typeGUI": "InitEventGUI",
+      "typeLogic": "InitEvent"
+   }
+]

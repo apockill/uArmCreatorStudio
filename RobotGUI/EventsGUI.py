@@ -1,8 +1,8 @@
 from PyQt5                        import QtGui, QtCore, QtWidgets
-from RobotGUI                     import Icons
-from RobotGUI.CameraGUI           import cvToPixFrame
-from RobotGUI.Logic.ObjectManager import TrackableObject
-from RobotGUI.Logic.Global        import printf
+import Paths
+from CameraGUI           import cvToPixFrame
+from Logic.ObjectManager import TrackableObject
+from Logic.Global        import printf
 
 
 class EventWidget(QtWidgets.QWidget):
@@ -257,7 +257,7 @@ class NameEventGUI(EventGUI):
 class InitEventGUI(EventGUI):
     title     = 'Initialization'
     tooltip   = 'Activates once each time the program is run'
-    icon      = Icons.creation_event
+    icon      = Paths.creation_event
     logicPair = 'InitEvent'
 
     def __init__(self, parameters):
@@ -267,7 +267,7 @@ class InitEventGUI(EventGUI):
 class DestroyEventGUI(EventGUI):
     title     = 'End of Program'
     tooltip   = 'Activates once, when the program is ended'
-    icon      = Icons.destroy_event
+    icon      = Paths.destroy_event
     logicPair = 'DestroyEvent'
 
     def __init__(self, parameters):
@@ -277,7 +277,7 @@ class DestroyEventGUI(EventGUI):
 class StepEventGUI(EventGUI):
     title     = 'Step'
     tooltip   = 'Activates every time the events are refreshed'
-    icon      = Icons.step_event
+    icon      = Paths.step_event
     logicPair = 'StepEvent'
 
     def __init__(self, parameters):
@@ -291,7 +291,7 @@ class TipEventGUI(EventGUI):
 
     title     = 'Tip'
     tooltip   = 'Activates when the sensor on the tip of the arm is pressed'
-    icon      = Icons.tip_event
+    icon      = Paths.tip_event
     logicPair = 'TipEvent'
 
     def __init__(self, parameters):
@@ -302,7 +302,7 @@ class TipEventGUI(EventGUI):
 
 #   EVENTS WITH PARAMETERS
 class KeypressEventGUI(EventGUI):
-    icon      = Icons.keyboard_event
+    icon      = Paths.keyboard_event
     logicPair = 'KeypressEvent'
 
     def __init__(self, parameters):
@@ -321,7 +321,7 @@ class MotionEventGUI(EventGUI):
     This event activates when the sensor on the tip of the robots sucker is pressed/triggered
     """
 
-    icon = Icons.motion_event
+    icon = Paths.motion_event
     logicPair = 'MotionEvent'
 
     def __init__(self, parameters):
@@ -336,7 +336,7 @@ class MotionEventGUI(EventGUI):
 
 
 class RecognizeEventGUI(EventGUI):
-    icon      = Icons.recognize_event
+    icon      = Paths.recognize_event
     logicPair = 'RecognizeEvent'
 
     def __init__(self, parameters):

@@ -1,10 +1,11 @@
 import math
 import serial
 import serial.tools.list_ports
-from threading                              import Thread
-from RobotGUI.Logic.Global                  import printf
-from RobotGUI.Logic.UArmTextCommunication_1 import Uarm
-from time import sleep  #Only use in refresh() command while querying robot if it's done moving
+from threading                     import Thread
+from time                          import sleep  #Only use in refresh() command while querying robot if it's done moving
+from Logic.Global                  import printf
+from Logic.UArmTextCommunication_1 import Uarm
+
 
 
 
@@ -20,14 +21,14 @@ class Robot:
     def __init__(self):
         self.uArm    = None
         self.__speed = 10     # In cm / second (or XYZ [unit] per second)
-        self.home    = {'x': 0.0, 'y': -15.0, 'z': 15.0}
-        self.__pos   = {'x': 0.0, 'y': -15.0, 'z': 15.0}
+
+        self.pos   = {'x': 0.0, 'y': -15.0, 'z': 15.0}
         self.__positionChanged = True
 
 
         # Keep track of the robots gripper status
         self.__gripperStatus   = False
-        self.__gripperChanged  = False  # This should only be used in Robot.refresh() to activate the gripper
+        self.__gripperChanged  = True  # This should only be used in Robot.refresh() to activate the gripper
 
 
         # If there is ever a change in a servos status, it is stored in this container until
@@ -43,6 +44,10 @@ class Robot:
 
 
         self.__threadRunning   = False  # Wether or not the setupThread is running
+
+        # Set up some constants for other functions to use
+        self.home      = {'x': 0.0, 'y': -15.0, 'z': 15.0}
+        self.maxHeight = 25
 
 
     def getMoving(self):
@@ -62,7 +67,7 @@ class Robot:
     def getCurrentCoord(self):
         if not self.connected():
             printf("Robot.getCurrentCoord(): Robot not found or setupThread is running, return 0 for all coordinates")
-            return [0, 0, 0]
+            return [0.0, 0.0, 0.0]
         else:
             return self.uArm.getCurrentCoord()
 
@@ -83,21 +88,29 @@ class Robot:
 
 
     def setPos(self, **kwargs):
+        if not self.connected():
+            printf("Robot.setPos(): ERROR: Robot not found or setupThread is running, canceling position change")
+            return
+
         relative = kwargs.get('relative', False)
-        posBefore = dict(self.__pos)
+        posBefore = dict(self.pos)
 
         for name, value in kwargs.items():  # Cycles through any variable that might have been in the kwargs. This is any position command!
-            if name in self.__pos:  #If it is a position statement.
-                if self.__pos[name] is "": continue
+            if name in self.pos:  #If it is a position statement.
+                if self.pos[name] is "": continue
                 if relative:
-                    self.__pos[name] += value
+                    self.pos[name] += value
                 else:
-                    self.__pos[name] = value
+                    self.pos[name] = value
 
         # If this command has changed the position, or if the position was changed earlier
-        self.__positionChanged = (not (posBefore == self.__pos)) or self.__positionChanged
+        self.__positionChanged = (not (posBefore == self.pos)) or self.__positionChanged
 
     def setWrist(self, angle, relative=False):
+        if not self.connected():
+            printf("Robot.setWrist(): ERROR: Robot not found or setupThread is running, canceling wrist change")
+            return
+
         newWrist = self.__wrist
         if relative:
             newWrist += angle
@@ -108,10 +121,14 @@ class Robot:
             self.__wrist        = newWrist
             self.__wristChanged = True
 
-    def setServos(self, setAll=None, servo1=None, servo2=None, servo3=None, servo4=None):
+    def setServos(self, all=None, servo1=None, servo2=None, servo3=None, servo4=None):
+        if not self.connected():
+            printf("Robot.setServos(): ERROR: Robot not found or setupThread is running, canceling servo change")
+            return
+
         # If anything changed, set the appropriate newServoStatus to reflect that
 
-        if setAll is not None: servo1, servo2, servo3, servo4 = setAll, setAll, setAll, setAll
+        if all is not None: servo1, servo2, servo3, servo4 = all, all, all, all
 
         if servo1 is not None: self.__newServoStatus[0] = servo1
         if servo2 is not None: self.__newServoStatus[1] = servo2
@@ -120,24 +137,26 @@ class Robot:
 
     def setGripper(self, status):
         if not self.connected():
-            printf("Robot.setGripper(): ERROR: No uArm connected, could not set gripper to", status)
+            printf("Robot.setGripper(): ERROR: Robot not found or setupThread is running, canceling gripper change")
             return
 
         if not self.__gripperStatus == status:
             self.__gripperStatus  = status
             self.__gripperChanged = True
 
-    def setSpeed(self, speed):
-        # Changes a class wide variable that affects the move commands in self.refresh()
-        printf("Robot.setSpeed(): Setting speed to ", speed)
-        self.__speed = speed
-
     def setBuzzer(self, frequency, duration):
         if not self.connected():
-            printf("Robot.setBuzzer(): ERROR: No uArm connected, could not set frequency to", frequency, duration)
+            printf("Robot.setGripper(): ERROR: Robot not found or setupThread is running, canceling buzzer change")
             return
 
         self.uArm.setBuzzer(frequency, duration)
+
+    def setSpeed(self, speed):
+        # Changes a class wide variable that affects the move commands in self.refresh()
+        printf("Robot.setSpeed(): ERROR: Setting speed to ", speed)
+        self.__speed = speed
+
+
 
 
     def wait(self):
@@ -179,13 +198,17 @@ class Robot:
         # Perform a moves in self.pos array
         if self.__positionChanged:
             try:
-                self.uArm.moveToWithSpeed(self.__pos['x'], self.__pos['y'], self.__pos['z'], self.__speed)
+                self.uArm.moveToWithSpeed(self.pos['x'], self.pos['y'], self.pos['z'], self.__speed)
             except ValueError:
                 printf("Robot.refresh(): ERROR: Robot out of bounds and the uarm_python library crashed!")
 
             self.__positionChanged = False
 
     def __updateServos(self):
+        if not self.connected():
+            printf("Robot.setServos(): ERROR: Robot not found or setupThread is running, canceling servo update")
+            return
+
         for i, servoVal in enumerate(self.__servoStatus):
             if not self.__newServoStatus[i] == self.__servoStatus[i]:
                 if self.__newServoStatus[i]:
@@ -232,6 +255,7 @@ class Robot:
 
         else:
             printf("Robot.setUArm(): ERROR: Tried setting uArm when it was already set!")
+
 
 
 

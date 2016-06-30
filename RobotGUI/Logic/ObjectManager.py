@@ -1,22 +1,9 @@
-import os
 import cv2                   # For image saving
-import errno
+import os
 import json
-from collections                import namedtuple
-from RobotGUI.Logic.Global      import printf
+from collections   import namedtuple
+from Logic.Global  import printf, ensurePathExists
 
-
-def ensurePathExists(path):
-    '''
-        This is a cross platform, race-condition free way of checking if a directory exists. It's used every time
-        an object is loaded and saved
-    '''
-
-    try:
-        os.makedirs(path)
-    except OSError as exception:
-        if exception.errno != errno.EEXIST:
-            raise
 
 
 class ObjectManager:
@@ -133,26 +120,26 @@ class ObjectManager:
 
 
 class TrackableObject:
-    Sample = namedtuple(  'Sample',   'name, image, rect, pickupRect')
+    Orientation = namedtuple('Orientation', 'name, image, rect, pickupRect, height')
 
     def __init__(self, name, loadFromDirectory = None):
         """
         Name: A String of the objects unique name. It must be unique for file saving purposes.
 
-        "Samples" is a list [sample, sample, sample] of samples.
-        A Sample is a dictionary that looks like this:
+        "Orientations" is a list [Orientation, Orientation, Orientation] of Orientations.
+        An Orientation is a dictionary that looks like this:
                 {   'image': cv2Frame,
                     'rect': (x1,y1,x2,y2),
                     'pickupRect': (x1,y1,x2,y2),
-                    'keypoints': np arr of keypoints of the object,
-                    'descrs': np array of the descriptors of the object
+                    'height': 3
                 }
 
-        Samples are used to record objects at different orientations and help aid tracking in that way.
+        Orientation are used to record objects at different orientations and help aid tracking in that way.
         """
 
         self.name        = name
-        self.samples     = []
+        self.height      = 0     # The height in cm of the object
+        self.orientations     = []
         self.directory   = loadFromDirectory  # Used in objectmanager for deleting object. Set here, or in self.save
         self.loadSuccess = False
 
@@ -163,15 +150,15 @@ class TrackableObject:
         """
         Everything goes into a folder called TrackableObject_OBJECTNAMEHERE
 
-        Saves images for each sample, with the format Sample_#,
+        Saves images for each Orientation, with the format Orientation_#,
         and a data.txt folder is saved as a json, with this structure:
         {
-            "Sample_1": {
+            "Orientation_1": {
                             "rect": (0, 0, 10, 10),
                             "pickupRect": (0, 0, 10, 10),
                         },
 
-            "Sample_2": {
+            "Orientation_1": {
                             "rect": (0, 0, 10, 10),
                             "pickupRect": (0, 0, 10, 10),
                         },
@@ -180,25 +167,25 @@ class TrackableObject:
 
         printf("TrackableObject.save(): Saving self to directory ", directory)
         # Make sure the "objects" directory exists
-        filename                    =  directory  + "\\" + "TrackerObject " + self.name
+        filename                    = directory + "TrackerObject " + self.name + "\\"
         self.directory              = filename
         ensurePathExists(filename)
-        filename += "\\"
+
 
 
         dataJson = {}
         # Save images and numpy arrays as seperate folders
-        for index, sample in enumerate(self.samples):
+        for index, orientation in enumerate(self.orientations):
             # Save the image
-            cv2.imwrite(filename + "Sample_" + str(index) + "_Image.png", sample.image)
+            cv2.imwrite(filename + "Orientation_" + str(index) + "_Image.png", orientation.image)
 
-            # Add any sample data to the dataJson
-            dataJson["Sample_" + str(index)] = {"rect":       sample.rect,
-                                                "pickupRect": sample.pickupRect}
+            # Add any orientation data to the dataJson
+            dataJson["Orientation_" + str(index)] = {"rect":       orientation.rect,
+                                                "pickupRect": orientation.pickupRect,
+                                                "height":     orientation.height}
 
+        print("Opening ", filename + "data.txt")
         json.dump(dataJson, open(filename + "data.txt", 'w'), sort_keys=False, indent=3, separators=(',', ': '))
-
-
 
 
     def __load(self, directory):
@@ -216,11 +203,13 @@ class TrackableObject:
             loadedData = json.load( open(dataFile))
 
         except IOError:
-            printf("TrackableObject.__load() ERROR: Data file ", dataFile, " was not found!")
+            printf("TrackableObject.__load(): ERROR: Data file ", dataFile, " was not found!")
+            return False
+        except ValueError:
+            printf("TrackableObject.__load(): ERROR: Object in ", directory, " is corrupted!")
             return False
 
-
-        # For each sample, load the image associated with it, and build the appropriate sample
+        # For each orientation, load the image associated with it, and build the appropriate orientation
         for key in loadedData:
             imageFile = directory + '\\' + key + "_Image.png"
             image     = cv2.imread(imageFile)
@@ -229,27 +218,30 @@ class TrackableObject:
                 printf("TrackableObject.__load() ERROR: Image File", imageFile, " was unable to be loaded!")
                 return False
 
-            sample = self.Sample(name=self.name, image=image, rect=loadedData[key]["rect"],
-                                 pickupRect=loadedData[key]["pickupRect"])
-
-            self.addSample(sample)
-
+            self.addOrientation(image      = image,
+                                rect       = loadedData[key]["rect"],
+                                pickupRect = loadedData[key]["pickupRect"],
+                                height     = loadedData[key]["height"])
         return True
 
-    def addSample(self, sample):
-        newSample = self.Sample(name=self.name, image=sample.image, rect=sample.rect, pickupRect=sample.pickupRect)
-        self.samples.append(newSample)
+    def addOrientation(self, image, rect, pickupRect, height):
+        newOrientation = self.Orientation(name       = self.name,
+                                          image      = image,
+                                          rect       = rect,
+                                          pickupRect = pickupRect,
+                                          height     = height)
+        self.orientations.append(newOrientation)
 
-    def getSamples(self):
-        return self.samples
+    def getOrientations(self):
+        return self.orientations
 
     def getIcon(self, maxWidth, maxHeight):
-        # Create an icon of a cropped image of the 1st sample, and resize it to the parameters.
+        # Create an icon of a cropped image of the 1st Orientation, and resize it to the parameters.
 
 
         #  Get the cropped image of just the object
-        fullImage = self.samples[0].image
-        rect      = self.samples[0].rect
+        fullImage = self.orientations[0].image
+        rect      = self.orientations[0].rect
         image     = fullImage[rect[1]:rect[3], rect[0]:rect[2]]
 
 

@@ -1,0 +1,73 @@
+[
+   {
+      "typeGUI": "KeypressEventGUI",
+      "parameters": {
+         "checkKey": "A"
+      },
+      "typeLogic": "KeypressEvent",
+      "commandList": [
+         {
+            "typeGUI": "PickupObjectCommandGUI",
+            "parameters": {
+               "objectID": "Ace of Spades"
+            },
+            "typeLogic": "PickupObjectCommand"
+         }
+      ]
+   },
+   {
+      "typeGUI": "KeypressEventGUI",
+      "parameters": {
+         "checkKey": "R"
+      },
+      "typeLogic": "KeypressEvent",
+      "commandList": [
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "parameters": {
+               "override": false,
+               "z": "5",
+               "y": "0",
+               "relative": true,
+               "x": "0"
+            },
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "parameters": {
+               "override": false,
+               "z": "15",
+               "y": "-15",
+               "relative": false,
+               "x": "-10"
+            },
+            "typeLogic": "MoveXYZCommand"
+         }
+      ]
+   },
+   {
+      "typeGUI": "KeypressEventGUI",
+      "parameters": {
+         "checkKey": "D"
+      },
+      "typeLogic": "KeypressEvent",
+      "commandList": [
+         {
+            "typeGUI": "DetachCommandGUI",
+            "parameters": {
+               "servo3": true,
+               "servo4": true,
+               "servo1": true,
+               "servo2": true
+            },
+            "typeLogic": "DetachCommand"
+         },
+         {
+            "typeGUI": "DropCommandGUI",
+            "parameters": null,
+            "typeLogic": "DropCommand"
+         }
+      ]
+   }
+]
