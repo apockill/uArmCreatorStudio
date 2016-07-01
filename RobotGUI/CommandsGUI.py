@@ -1,8 +1,9 @@
 import ast  # To check if a statement is python parsible, for evals
-import Paths
-from PyQt5               import QtGui, QtCore, QtWidgets
-from Logic.Global        import printf
-from Logic.ObjectManager import TrackableObject
+import re   # For variable santization
+from PyQt5                        import QtGui, QtCore, QtWidgets
+from RobotGUI                     import Paths
+from RobotGUI.Logic.Global        import printf
+from RobotGUI.Logic.ObjectManager import TrackableObject
 
 
 # This should only be used once, in CommandList.addCommand
@@ -156,7 +157,7 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         tabWidget.setLayout(vBox)
         add  = lambda btnType: vBox.addWidget(self.getButton(btnType))
 
-        add(FocusOnObjectCommandGUI)
+        add(MoveRelativeToObjectCommandGUI)
         add(PickupObjectCommandGUI)
 
 
@@ -257,13 +258,11 @@ class CommandGUI:
 
         ##### Create the base window #####
 
-        def applyClicked(prompt):
-            prompt.accepted = True
-            prompt.close()
+        def accepted(prompt):
+            prompt.applyClicked = True
 
-        def cancelClicked(prompt):
-            prompt.accepted = False
-            prompt.close()
+        def rejected(prompt):
+            prompt.applyClicked = False
 
         prompt = QtWidgets.QDialog()
 
@@ -272,10 +271,11 @@ class CommandGUI:
 
         applyBtn.setMaximumWidth(100)
         cancelBtn.setMaximumWidth(100)
-
-        applyBtn.clicked.connect(lambda: applyClicked(prompt))
-        cancelBtn.clicked.connect(lambda: cancelClicked(prompt))
-
+        prompt.applyClicked = True
+        applyBtn.clicked.connect(prompt.accept)
+        cancelBtn.clicked.connect(prompt.reject)
+        prompt.rejected.connect(lambda: rejected(prompt))
+        prompt.accepted.connect(lambda: accepted(prompt))
         applyBtn.setDefault(True)
 
         # Create a content box for the command to fill out parameters and GUI elements
@@ -322,7 +322,7 @@ class CommandGUI:
 
 
         # Get information that the user input
-        if prompt.accepted:
+        if prompt.applyClicked:
             # Get information that the user input
             self._extractPromptInfo(prompt)
 
@@ -336,7 +336,7 @@ class CommandGUI:
 
 
 
-        return prompt.accepted
+        return prompt.applyClicked
 
     def dressWidget(self, newWidget):
         self._updateDescription()
@@ -372,13 +372,20 @@ class CommandGUI:
 
     def _sanitizeVariable(self, inputTextbox, fallback):
         # Sanitize input from the user
-        possibleNumber = str(inputTextbox.text())
-        possibleNumber.replace(".", "")  # For isnumeric() to work, there can't be a decimal point
+        possibleVariable = str(inputTextbox.text())
 
-        if possibleNumber.isnumeric():
+        # Remove invalid characters
+        possibleVariable = re.sub('[^0-9a-zA-Z_]', '', possibleVariable)
+
+        # Remove leading characters until we find a letter or underscore
+        possibleVariable = re.sub('^[^a-zA-Z_]+', '', possibleVariable)
+
+
+        # If the variable has been changed, then it was not valid, so return the "fallback" instead.
+        if not possibleVariable == inputTextbox.text():
             return fallback
 
-        return possibleNumber
+        return possibleVariable
 
 
     # The following are helper functions for modifying the prompt window in a consistent way
@@ -487,49 +494,44 @@ class MoveXYZCommandGUI(CommandGUI):
             self.parameters = {'x': round(currentXYZ[0], 1),
                                'y': round(currentXYZ[1], 1),
                                'z': round(currentXYZ[2], 1),
-                               'relative': False,
-                               'override': False}
+                               'relative': False}
 
     def dressWindow(self, prompt):
         # Prompt is a QDialog type, this is simply a function to dress it up with the appropriate interface
         # Then it's returned, and the Command.openView() function will open the window and perform appropriate actions
 
         # Input: the base window with the cancel and apply buttons, and the layouts set up and connected
-        prompt.rotEdit = QtWidgets.QLineEdit()  # Rotation textbox
-        prompt.strEdit = QtWidgets.QLineEdit()  # Stretch textbox
-        prompt.hgtEdit = QtWidgets.QLineEdit()  # Height textbox
+        prompt.xEdit = QtWidgets.QLineEdit()  # Rotation textbox
+        prompt.yEdit = QtWidgets.QLineEdit()  # Stretch textbox
+        prompt.zEdit = QtWidgets.QLineEdit()  # Height textbox
         prompt.ovrCheck = QtWidgets.QCheckBox()  # "override" CheckBox
         prompt.rltCheck = QtWidgets.QCheckBox()  # "relative" CheckBox
 
         # Set up all the labels for the inputs
-        rotLabel = QtWidgets.QLabel('X ')
-        strLabel = QtWidgets.QLabel('Y ')
-        hgtLabel = QtWidgets.QLabel('Z ')
-        ovrCheck = QtWidgets.QLabel('Override Ongoing Movement: ')
+        xLabel = QtWidgets.QLabel('X ')
+        yLabel = QtWidgets.QLabel('Y ')
+        zLabel = QtWidgets.QLabel('Z ')
         rltCheck = QtWidgets.QLabel('Relative: ')
 
         # Fill the textboxes with the default parameters
-        prompt.rotEdit.setText(str(self.parameters['x']))
-        prompt.strEdit.setText(str(self.parameters['y']))
-        prompt.hgtEdit.setText(str(self.parameters['z']))
-        prompt.ovrCheck.setChecked(self.parameters['override'])
+        prompt.xEdit.setText(str(self.parameters['x']))
+        prompt.yEdit.setText(str(self.parameters['y']))
+        prompt.zEdit.setText(str(self.parameters['z']))
         prompt.rltCheck.setChecked(self.parameters['relative'])
 
 
-        self._addRow(prompt, rotLabel, prompt.rotEdit)
-        self._addRow(prompt, strLabel, prompt.strEdit)
-        self._addRow(prompt, hgtLabel, prompt.hgtEdit)
-        self._addRow(prompt, ovrCheck, prompt.ovrCheck)
+        self._addRow(prompt, xLabel, prompt.xEdit)
+        self._addRow(prompt, yLabel, prompt.yEdit)
+        self._addRow(prompt, zLabel, prompt.zEdit)
         self._addRow(prompt, rltCheck, prompt.rltCheck)
 
         return prompt
 
     def _extractPromptInfo(self, prompt):
         # Update the parameters and the description
-        newParameters = {'x': self._sanitizeEval(prompt.rotEdit, self.parameters["x"]),
-                         'y': self._sanitizeEval(prompt.strEdit, self.parameters["y"]),
-                         'z': self._sanitizeEval(prompt.hgtEdit, self.parameters["z"]),
-                         'override': prompt.ovrCheck.isChecked(),
+        newParameters = {'x': self._sanitizeEval(prompt.xEdit, self.parameters["x"]),
+                         'y': self._sanitizeEval(prompt.yEdit, self.parameters["y"]),
+                         'z': self._sanitizeEval(prompt.zEdit, self.parameters["z"]),
                          'relative': prompt.rltCheck.isChecked()}
 
         self.parameters.update(newParameters)
@@ -538,11 +540,10 @@ class MoveXYZCommandGUI(CommandGUI):
 
     def _updateDescription(self):
         # Update the description, for the dressWidget() and the openView() prompt
-        self.description =    'X: ' + str(self.parameters['x']) + \
-                           '   Y: ' + str(self.parameters['y']) + \
-                           '   Z: ' + str(self.parameters['z'])
+        self.description = 'XYZ( ' + str(self.parameters['x']) + \
+                           ', ' + str(self.parameters['y'])    + \
+                           ', ' + str(self.parameters['z'])    + ')'
 
-        if self.parameters['override']: self.description += '   Override'
         if self.parameters['relative']: self.description += '   Relative'
 
 
@@ -557,7 +558,7 @@ class MoveWristCommandGUI(CommandGUI):
 
 
         if self.parameters is None:
-            currentWrist = env.getRobot().getServoAngle(4)
+            currentWrist = env.getRobot().getServoAngle(3)
             self.parameters = {"angle": str(currentWrist),
                                "relative": False}
 
@@ -902,45 +903,71 @@ class EndEventCommandGUI(CommandGUI):
 
 
 #   Robot + Vision COmmands
-class FocusOnObjectCommandGUI(CommandGUI):
-    title     = "Move Robot Over Object"
+class MoveRelativeToObjectCommandGUI(CommandGUI):
+    title     = "Move Relative To Object"
     tooltip   = "This tool uses computer vision to recognize an object of your choice, and position the robot directly"\
-                "\nover the object of choice, if it is visible. If it cannot be found, False will be returned."
+                "\nrelative to this objects XYZ location. If XYZ = 0,0,0, the robot will move directly onto the object."
     icon      = Paths.move_over_command
-    logicPair = "FocusOnObjectCommand"
+    logicPair = "MoveRelativeToObjectCommand"
 
     def __init__(self, env, parameters=None):
-        super(FocusOnObjectCommandGUI, self).__init__(parameters)
+        super(MoveRelativeToObjectCommandGUI, self).__init__(parameters)
 
         objectManager = env.getObjectManager()
 
         # Save a list that gets all loaded objects. This is used only when the window is opened, to populate the objlist
-        self.getObjectList  = objectManager.getObjectIDList
+        self.getObjectList  = lambda: objectManager.getObjectIDList()
 
         if self.parameters is None:
-            self.parameters = {"objectID": ""}
+            self.parameters = {"objectID": "",
+                               "x": 0,
+                               "y": 0,
+                               "z": 5}
 
     def dressWindow(self, prompt):
         # Define what happens when the user changes the object selection
 
+
+
+
+        # Set up all the labels for the inputs
         choiceLbl = QtWidgets.QLabel("Choose an object: ")
+        xLabel    = QtWidgets.QLabel('X ')
+        yLabel    = QtWidgets.QLabel('Y ')
+        zLabel    = QtWidgets.QLabel('Z ')
+
 
         # Create a QComboBox
         prompt.objChoices = QtWidgets.QComboBox()
         prompt.objChoices.setMinimumWidth(150)
 
-
         # Add an empty item at the top if no object has ever been selected
         prompt.objChoices.addItem(self.parameters["objectID"])
 
-
         # Populate the comboBox with a list of all trackable objects, and select the self.parameters one if it exists
-        objectList = self.getObjectList(objectType=TrackableObject)
+        objectList = self.getObjectList()
         for index, objectID in enumerate(objectList):
             prompt.objChoices.addItem(objectID)
 
 
+        prompt.xEdit = QtWidgets.QLineEdit()
+        prompt.yEdit = QtWidgets.QLineEdit()
+        prompt.zEdit = QtWidgets.QLineEdit()
+
+
+
+        # Fill the textboxes with the default parameters
+        prompt.xEdit.setText(str(self.parameters['x']))
+        prompt.yEdit.setText(str(self.parameters['y']))
+        prompt.zEdit.setText(str(self.parameters['z']))
+
+
         self._addRow(prompt, choiceLbl, prompt.objChoices)
+        self._addRow(prompt, xLabel, prompt.xEdit)
+        self._addRow(prompt, yLabel, prompt.yEdit)
+        self._addRow(prompt, zLabel, prompt.zEdit)
+
+
 
         # If there are no objects, place a nice label to let the user know
         if len(objectList) == 0:
@@ -956,7 +983,10 @@ class FocusOnObjectCommandGUI(CommandGUI):
 
     def _extractPromptInfo(self, prompt):
         # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
-        newParameters = {"objectID": prompt.objChoices.currentText()}
+        newParameters = {"objectID": prompt.objChoices.currentText(),
+                         'x': self._sanitizeEval(prompt.xEdit, self.parameters["x"]),
+                         'y': self._sanitizeEval(prompt.yEdit, self.parameters["y"]),
+                         'z': self._sanitizeEval(prompt.zEdit, self.parameters["z"])}
 
         print(newParameters)
         self.parameters.update(newParameters)
@@ -964,7 +994,10 @@ class FocusOnObjectCommandGUI(CommandGUI):
         return self.parameters
 
     def _updateDescription(self):
-        self.description = "Find " + self.parameters["objectID"] + " and move the robot over it"
+        self.description = 'XYZ( ' + str(self.parameters['x']) + \
+                           ', ' + str(self.parameters['y'])    + \
+                           ', ' + str(self.parameters['z'])    + \
+                           ') relative to ' + self.parameters["objectID"]
 
 
 class PickupObjectCommandGUI(CommandGUI):
@@ -1001,7 +1034,7 @@ class PickupObjectCommandGUI(CommandGUI):
 
 
         # Populate the comboBox with a list of all trackable objects, and select the self.parameters one if it exists
-        objectList = self.getObjectList(objectType=TrackableObject)
+        objectList = self.getObjectList()
         for index, objectID in enumerate(objectList):
             prompt.objChoices.addItem(objectID)
 

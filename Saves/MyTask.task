@@ -1,65 +1,45 @@
 [
    {
       "typeGUI": "KeypressEventGUI",
-      "parameters": {
-         "checkKey": "A"
-      },
-      "typeLogic": "KeypressEvent",
-      "commandList": [
-         {
-            "typeGUI": "PickupObjectCommandGUI",
-            "parameters": {
-               "objectID": "Ace of Spades"
-            },
-            "typeLogic": "PickupObjectCommand"
-         }
-      ]
-   },
-   {
-      "typeGUI": "KeypressEventGUI",
-      "parameters": {
-         "checkKey": "R"
-      },
-      "typeLogic": "KeypressEvent",
       "commandList": [
          {
             "typeGUI": "MoveXYZCommandGUI",
             "parameters": {
-               "override": false,
+               "x": "0",
                "z": "5",
+               "override": false,
                "y": "0",
-               "relative": true,
-               "x": "0"
+               "relative": true
             },
             "typeLogic": "MoveXYZCommand"
          },
          {
             "typeGUI": "MoveXYZCommandGUI",
             "parameters": {
-               "override": false,
+               "x": "0",
                "z": "15",
+               "override": false,
                "y": "-15",
-               "relative": false,
-               "x": "-10"
+               "relative": false
             },
             "typeLogic": "MoveXYZCommand"
          }
-      ]
+      ],
+      "parameters": {
+         "checkKey": "R"
+      },
+      "typeLogic": "KeypressEvent"
    },
    {
       "typeGUI": "KeypressEventGUI",
-      "parameters": {
-         "checkKey": "D"
-      },
-      "typeLogic": "KeypressEvent",
       "commandList": [
          {
             "typeGUI": "DetachCommandGUI",
             "parameters": {
-               "servo3": true,
-               "servo4": true,
                "servo1": true,
-               "servo2": true
+               "servo2": true,
+               "servo3": true,
+               "servo4": true
             },
             "typeLogic": "DetachCommand"
          },
@@ -68,6 +48,45 @@
             "parameters": null,
             "typeLogic": "DropCommand"
          }
-      ]
+      ],
+      "parameters": {
+         "checkKey": "D"
+      },
+      "typeLogic": "KeypressEvent"
+   },
+   {
+      "typeGUI": "KeypressEventGUI",
+      "commandList": [
+         {
+            "typeGUI": "MoveRelativeToObjectCommandGUI",
+            "parameters": {
+               "x": "0",
+               "z": "0",
+               "y": "0",
+               "objectID": "Ace of Spades"
+            },
+            "typeLogic": "MoveRelativeToObjectCommand"
+         }
+      ],
+      "parameters": {
+         "checkKey": "A"
+      },
+      "typeLogic": "KeypressEvent"
+   },
+   {
+      "typeGUI": "RecognizeEventGUI",
+      "commandList": [],
+      "parameters": {
+         "objectID": "2 of Cloves"
+      },
+      "typeLogic": "RecognizeEvent"
+   },
+   {
+      "typeGUI": "RecognizeEventGUI",
+      "commandList": [],
+      "parameters": {
+         "objectID": "Robot Marker"
+      },
+      "typeLogic": "RecognizeEvent"
    }
 ]

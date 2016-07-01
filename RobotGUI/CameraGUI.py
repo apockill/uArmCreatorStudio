@@ -1,6 +1,6 @@
 import cv2
-from PyQt5        import QtWidgets, QtCore, QtGui
-from Logic.Global import printf
+from PyQt5                 import QtWidgets, QtCore, QtGui
+from RobotGUI.Logic.Global import printf
 
 
 def cvToPixFrame(image):

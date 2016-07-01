@@ -1,8 +1,8 @@
 from PyQt5                        import QtGui, QtCore, QtWidgets
-import Paths
-from CameraGUI           import cvToPixFrame
-from Logic.ObjectManager import TrackableObject
-from Logic.Global        import printf
+from RobotGUI                     import Paths
+from RobotGUI.CameraGUI           import cvToPixFrame
+from RobotGUI.Logic.ObjectManager import TrackableObject
+from RobotGUI.Logic.Global        import printf
 
 
 class EventWidget(QtWidgets.QWidget):
@@ -184,7 +184,7 @@ class EventPromptWindow(QtWidgets.QDialog):
         ######################   RECOGNIZE MENU    ######################
         newRecognizeBtn = lambda params: self.btnClicked(RecognizeEventGUI, params=params)
         recognizeMnu    = QtWidgets.QMenu()
-        trackableList   = self.objManager.getObjectIDList(objectType=TrackableObject)
+        trackableList   = self.objManager.getObjectIDList()
         for name in trackableList:
             customIcon  = self.objManager.getObject(name).getIcon(32, 32)
             customIcon  = cvToPixFrame(customIcon)

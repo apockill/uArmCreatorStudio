@@ -2,17 +2,17 @@
 import json         # For saving and loading settings and tasks
 import sys          # For GUI, and overloading the default error handling
 import webbrowser   # For opening the uFactory forums under the "file" menu
-import ControlPanelGUI, Paths, CalibrationsGUI
-from copy              import deepcopy                  # For copying saves and comparing later
-from PyQt5             import QtCore, QtWidgets, QtGui  # All GUI things
-from CameraGUI         import CameraWidget              # General GUI purposes
-from ObjectManagerGUI  import ObjectManagerWindow       # For opening ObjectManager window
-from CalibrationsGUI   import CalibrateWindow           # For opening Calibrate window
-from Logic             import Global                    # For keeping track of keypresses
-from Logic.Robot       import getConnectedRobots        # For settingsWindow
-from Logic.Video       import getConnectedCameras       # For settingsWindow
-from Logic.Global      import printf  # For formatted printing
-from Logic.Environment import Environment, Interpreter  # For Logic purposes
+from copy                       import deepcopy                  # For copying saves and comparing later
+from PyQt5                      import QtCore, QtWidgets, QtGui  # All GUI things
+from RobotGUI                   import ControlPanelGUI, Paths
+from RobotGUI.CameraGUI         import CameraWidget              # General GUI purposes
+from RobotGUI.ObjectManagerGUI  import ObjectManagerWindow       # For opening ObjectManager window
+from RobotGUI.CalibrationsGUI   import CalibrateWindow           # For opening Calibrate window
+from RobotGUI.Logic             import Global                    # For keeping track of keypresses
+from RobotGUI.Logic.Robot       import getConnectedRobots        # For settingsWindow
+from RobotGUI.Logic.Video       import getConnectedCameras       # For settingsWindow
+from RobotGUI.Logic.Global      import printf                    # For my personal printing format
+from RobotGUI.Logic.Environment import Environment, Interpreter  # For Logic purposes
 
 
 
@@ -262,11 +262,18 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # If there were during loading, present the user with the option to continue anyways
         if len(errors):
+            errorText = ""
+            for error, errorObjects in errors.items():
+                errorText += "" + str(error) + "\n"
+                for errObject in list(set(errorObjects)):
+                    errorText += "     " + str(errObject) + "\n"
+                errorText += '\n'
+
             # Generate a message for the user to explain what parameters are missing
             errorStr = 'Certain Events and Commands are missing the following requirements to work properly: \n\n' + \
-                       ''.join(map(lambda err: '   -' + str(err) + '\n', errors)) + \
+                       ''.join(errorText) + \
                        '\nWould you like to continue anyways? Certain events and commands may not activate.'
-
+            # # .join(map(lambda err: '   -' + str(err) + '\n', errors)) + \
             # Ask the user
             reply = QtWidgets.QMessageBox.question(self, 'Warning', errorStr,
                                 QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.Cancel)
@@ -448,13 +455,8 @@ class MainWindow(QtWidgets.QMainWindow):
                                            filename, QtWidgets.QMessageBox.Ok)
 
 
-
-
-
     def saveSettings(self):
         printf("MainWindow.saveSettings(): Saving Settings")
-        # saveJSON(self.settings, Paths.settings_txt)
-        print("Opening ", Paths.settings_txt)
         json.dump(self.settings, open(Paths.settings_txt, 'w'), sort_keys=False, indent=3, separators=(',', ': '))
 
     def loadSettings(self):

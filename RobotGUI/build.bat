@@ -10,11 +10,11 @@ set PYINSTALLER=C:\Python34\Scripts\pyinstaller.exe
 
 REM Create the executable
 REM python %PIP%Makespec.py --onefile --noconsole --upx MainGUI.py
-%PYINSTALLER% MainGUI.py --onefile --name "uArmCreator"
+%PYINSTALLER% MainGUI.py --onefile --name "uArmCreatorStudio"
  
 
 REM Check if the build finished, if it did, delete "Latest Build" before renaming "dist"
-if exist "dist/uArmCreator.exe" RD /S /Q "Latest Build"
+if exist "dist/uArmCreatorStudio.exe" RD /S /Q "Latest Build"
  
 
 
@@ -25,7 +25,7 @@ REM Re
 
 
 REM Delete the .spec file after building
-DEL uArmCreator.spec
+DEL uArmCreatorStudio.spec
 
 
 REM Delete the 'build' folder after building

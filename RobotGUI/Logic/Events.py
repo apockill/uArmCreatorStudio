@@ -1,6 +1,6 @@
-from Logic             import Global
-from Logic.Global      import printf
-from Logic.LogicObject import LogicObject
+from RobotGUI.Logic             import Global
+from RobotGUI.Logic.Global      import printf
+from RobotGUI.Logic.LogicObject import LogicObject
 
 """
 Example Event
@@ -154,7 +154,7 @@ class RecognizeEvent(Event):
         if len(self.errors): return
 
         # Turn on tracking and add the target. DO NOT TURN ON FILTERS, that's only for GUI to do, which it will.
-        self.vision.addTargetSamples(self.object)
+        self.vision.addTrackable(self.object)
         self.vision.startTracker()
 
     def isActive(self):

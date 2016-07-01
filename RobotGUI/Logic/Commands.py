@@ -50,7 +50,6 @@ class MoveXYZCommand(Command):
         self.robot       = self.getVerifyRobot(env)
 
     def run(self):
-
         newX, successX = self.interpreter.evaluateExpression(self.parameters['x'])
         newY, successY = self.interpreter.evaluateExpression(self.parameters['y'])
         newZ, successZ = self.interpreter.evaluateExpression(self.parameters['z'])
@@ -248,15 +247,16 @@ class BuzzerCommand(Command):
 
 
 #   Robot + Vision Commands
-class FocusOnObjectCommand(Command):
+class MoveRelativeToObjectCommand(Command):
 
     def __init__(self, env, interpreter, parameters=None):
-        super(FocusOnObjectCommand, self).__init__(parameters)
+        super(MoveRelativeToObjectCommand, self).__init__(parameters)
 
+        self.interpreter = interpreter
         # Load any objects that will be used in the run Section here
         self.robot      = self.getVerifyRobot(env)
         self.vision     = self.getVerifyVision(env)
-        self.object     = self.getVerifyObject(env, self.parameters["objectID"])
+        self.trackable  = self.getVerifyObject(env, self.parameters["objectID"])
         coordCalib      = self.getVerifyCoordCalibrations(env)
 
 
@@ -264,14 +264,24 @@ class FocusOnObjectCommand(Command):
         self.ptPairs = coordCalib["ptPairs"]
 
         # Turn on tracking for the relevant object
-        self.vision.addTargetSamples(self.object)
+        self.vision.addTrackable(self.trackable)
         self.vision.startTracker()
 
     def run(self):
         if len(self.errors) > 0: return False
 
+        newX, successX = self.interpreter.evaluateExpression(self.parameters['x'])
+        newY, successY = self.interpreter.evaluateExpression(self.parameters['y'])
+        newZ, successZ = self.interpreter.evaluateExpression(self.parameters['z'])
+
+        printf("MoveXYZCommand.run(): Moving robot to ", newX, " ", newY, " ", newZ, " ")
+
+        if not (successX and successY and successZ):
+            printf("MoveXYZCommand.run(): ERROR in parsing either X Y or Z: ", successX, successY, successZ)
+            return False
+
         # Get a super recent frame of the object
-        trackedObj = self.vision.getObjectBruteAccurate(self.object,
+        trackedObj = self.vision.getObjectBruteAccurate(self.trackable,
                                                         minPoints   = rv.MIN_POINTS_FOCUS,
                                                         maxFrameAge = rv.MAX_FRAME_AGE_MOVE)
         if trackedObj is None: return False
@@ -282,7 +292,7 @@ class FocusOnObjectCommand(Command):
 
 
         # Set the robots position
-        self.robot.setPos(x=pos[0], y=pos[1])  # z=pos[2])
+        self.robot.setPos(x=pos[0] + newX, y=pos[1] + newY, z=pos[2] + trackedObj.view.height + newZ)
         self.robot.refresh()
         return True
 
@@ -296,25 +306,26 @@ class PickupObjectCommand(Command):
         coordCalib      = self.getVerifyCoordCalibrations(env)
         self.robot      = self.getVerifyRobot(env)
         self.vision     = self.getVerifyVision(env)
-        self.trackObj   = self.getVerifyObject(env, self.parameters["objectID"])
+        self.trackable  = self.getVerifyObject(env, self.parameters["objectID"])
         self.rbMarker   = self.getVerifyObject(env, "Robot Marker")
 
 
-
         if len(self.errors): return
-        self.ptPairs = coordCalib["ptPairs"]
+
+        self.ptPairs    = coordCalib["ptPairs"]
         self.grndHeight = coordCalib["groundPos"][2]
+
         # Turn on tracking for the relevant object
-        self.vision.addTargetSamples(self.trackObj)
-        self.vision.addTargetSamples(self.rbMarker)
+        self.vision.addTrackable(self.trackable)
+        self.vision.addTrackable(self.rbMarker)
         self.vision.startTracker()
 
     def run(self):
         if len(self.errors) > 0: return False
 
+        ret = rv.pickupObject(self.trackable, self.rbMarker, self.ptPairs, self.grndHeight, self.robot, self.vision)
 
-        return rv.pickupObject(self.trackObj, self.rbMarker, self.ptPairs, self.grndHeight, self.robot, self.vision)
-
+        return ret
 
 
 

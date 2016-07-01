@@ -47,6 +47,9 @@ class Environment:
             self.__vStream.setNewCamera(settings['cameraID'])
 
         if settings['robotID'] is not None:
+            # bestScore, bestPtPairs = self.pruneCalibrationSet(int(len(settings["coordCalibrations"]["ptPairs"])*.5), settings["coordCalibrations"]["ptPairs"])
+            # settings["coordCalibrations"]["ptPairs"] = bestPtPairs
+            # print("NEw len: ", len(bestPtPairs))
             self.__robot.setUArm(settings['robotID'])
 
         if settings['objectsDirectory'] is not None:
@@ -73,8 +76,6 @@ class Environment:
 
     def getObjectManager(self):
         return self.__objectMngr
-
-
 
 
 
@@ -111,25 +112,35 @@ class Interpreter:
 
         script = deepcopy(script)
 
-        errors = []  # Errors are returned from
+        errors = {}  # Errors are returned from
 
         # Create each event
         for _, eventSave in enumerate(script):
             eventType = getattr(Events, eventSave['typeLogic'])
             event     = eventType(env, self, parameters=eventSave['parameters'])
-            errors   += event.errors
+            # errors   += event.errors
             self.addEvent(event)
+
+            # Add any commands related to the creation of this event
+            for error in event.errors:
+                    if error not in errors: errors[error] = []
+                    errors[error].append(eventSave['typeLogic'])
+
 
             # Create the commandList for this event
             for _, commandSave in enumerate(eventSave['commandList']):
                 commandType = getattr(Commands, commandSave['typeLogic'])
                 command     = commandType(env, self, commandSave['parameters'])
-                errors     += command.errors
                 event.addCommand(command)
+
+                for error in command.errors:
+                    if error not in errors: errors[error] = []
+                    errors[error].append(commandSave['typeLogic'])
 
 
         # Get rid of repeat errors
-        errors = list(set(errors))
+        # errors = set(errors)
+        printf("Interpreter.loadScript(): The following errors occured during loading: ", errors)
         return errors
 
 

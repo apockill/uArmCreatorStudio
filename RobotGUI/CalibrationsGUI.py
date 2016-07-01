@@ -1,6 +1,8 @@
 import random
 import Paths
-import numpy as np
+import random  # TODO: Remove this after testing
+import numpy             as np
+import Logic.RobotVision as rv
 from PyQt5               import QtCore, QtWidgets, QtGui
 from CameraGUI           import CameraSelector
 from Logic.Global        import printf
@@ -517,7 +519,7 @@ class CWPage4(QtWidgets.QWizardPage):
         super(CWPage4, self).__init__(parent)
 
         # The final object is stored here:
-        self.newObject    = None
+        self.newRobotMrkr    = None
         self.hintLbl      = QtWidgets.QLabel("")  # This will tell the user how many points are on the object
 
 
@@ -596,7 +598,12 @@ class CWPage4(QtWidgets.QWizardPage):
 
 
         # Get the "target" object from the image and rectangle
-        target = self.vision.tracker.getTarget(frame, rect)
+        trackable = TrackableObject("Robot Marker")
+        trackable.addNewView(image      = frame,
+                             rect       = rect,
+                             pickupRect = None,
+                             height     = None)
+        target = self.vision.tracker.createTarget(trackable.getViews()[0])
 
         # Analyze it, and make sure it's a valid target. If not, return the camera to selection mode.
         if len(target.descrs) == 0 or len(target.keypoints) == 0:
@@ -605,13 +612,8 @@ class CWPage4(QtWidgets.QWizardPage):
 
 
         self.objManager.deleteObject("Robot Marker")  # Delete any previous end effector file
-        self.newObject = TrackableObject("Robot Marker")
-        self.newObject.addOrientation(image      = frame,
-                                      rect       = rect,
-                                      pickupRect = None,
-                                      height     = None)
-
-        self.objManager.saveNewObject(self.newObject)
+        self.newRobotMrkr = trackable
+        self.objManager.saveObject(self.newRobotMrkr)
         self.completeChanged.emit()
 
 
@@ -626,10 +628,10 @@ class CWPage4(QtWidgets.QWizardPage):
 
         # Turn on the camera, and start tracking
         self.cameraWidget.play()
-        self.vision.trackerAddStartTrack(self.newObject)
+        self.vision.trackerAddStartTrack(self.newRobotMrkr)
 
     def tryAgain(self):
-        self.newObject = None
+        self.newRobotMrkr = None
         self.completeChanged.emit()
         self.hintLbl.setText("")
         self.cameraWidget.play()
@@ -638,7 +640,7 @@ class CWPage4(QtWidgets.QWizardPage):
 
 
     def isComplete(self):
-        return self.newObject is not None
+        return self.newRobotMrkr is not None
 
     def close(self):
         self.cameraWidget.close()
@@ -803,21 +805,20 @@ class CWPage5(QtWidgets.QWizardPage):
             # Since the camera found the object, now read the robots location through camera, and record both results
             actCoord = robot.getCurrentCoord()
             dist = ((actCoord[0] - coord[0])**2 + (actCoord[1] - coord[1])**2 + (actCoord[2] - coord[2])**2)**.5
-            if dist < 2.75:
+            if dist < 2.5:
                 newCalibrations["ptPairs"].append([marker.center, coord])
             else:
                 print("Distance was too high: ", dist)
 
-
+        robot.setPos(**robot.home)
+        robot.refresh()
         # Prune the list down to 20 less than the original size, find the best set out of those
         minPointCount = 6
-        # prunedSize = int(len(newCalibrations["robPts"]) * .98)
+        # prunedSize = int(len(newCalibrations["ptPairs"]) * .90)
         # if prunedSize > minPointCount:
-        #     bestScore, bestCamPts, bestRobPts = self.getBestCalibrationSet(prunedSize, newCalibrations)
-        #     print("Got best score of ", bestScore)
-        #     newCalibrations["robPts"] = bestRobPts
-        #     newCalibrations["camPts"] = bestCamPts
-
+        #     bestScore, bestPtPairs = self.pruneCalibrationSet(prunedSize, newCalibrations["ptPairs"])
+        #     newCalibrations["ptPairs"] = bestPtPairs
+        #     print("Final calibrations: ", bestPtPairs)
 
         # Check the percent of points that were found vs amount of points that were in the testCoord array
         if len(newCalibrations["ptPairs"]) < minPointCount:
@@ -854,7 +855,7 @@ class CWPage5(QtWidgets.QWizardPage):
         else:
             hintText += "Calibration was successful, " + str(len(newCalibrations["ptPairs"])) + "/"  +\
                          str(totalPointCount) + " points were found.\nResults will be saved when you click Apply " +\
-                        "on the calibrations page. Feel free to try this calibration again.\n" +\
+                        "on the calibrations page. Feel free to try this again.\n" +\
                         "Make sure to repeat this calibration whenever you move your camera or move your robot."
             self.successComplete = True
             self.startBtn.setDisabled(True)
@@ -869,66 +870,105 @@ class CWPage5(QtWidgets.QWizardPage):
         if len(errors) == 0:
             self.newCalibrations = newCalibrations
 
-    def getBestCalibrationSet(self, minSize, newCalibration):
-        import random # TODO: Remove this after testing
-        import RobotGUI.Logic.RobotVision as rv
-        import numpy as np
+    def pruneCalibrationSet(self, newSize, ptPairs):
+        """
+        This function looks a bit complicated, but its purpose is simple: input a list of ptPairs, and it will return
+        an optimized set of size newSize. It does this by "scoring" how good each point is, then returning the set
+        with the best points.
 
-        def getRandomSet(length, robPts, camPts):
-            robPts = robPts[:]
-            camPts = camPts[:]
-            randRobPts = []
-            randCamPts = []
+        The way it does this is by generating many many different combinations of set newSize, and doing the following:
+            Create a camera->Robot transform
+            Create a Robot->Camera transform
+            input a point into the cam->rob transform then put it into rob->cam transform and see how different it is.
+
+            If its similar, then the transform is good.
+
+        It does this with many points and with many sets, and then adds an "error" to each point in each set, then
+        chooses the points with the lowest error.
+        :param newSize:
+        :param ptPairs:
+        :return:
+        """
+        import random  # TODO: Remove this after testing
+        import numpy             as np
+        import Logic.RobotVision as rv
+
+        def getRandomSet(length, ptPairs):
+            ptPairs     = ptPairs[:]
+            randPtPairs = []
+            chosenIndexes = []
             for i in range(0, length):
-                randIndex = random.randint(0, len(robPts) - 1)
-                randRobPts.append(robPts[randIndex])
-                randCamPts.append(camPts[randIndex])
-                del robPts[randIndex]
-                del camPts[randIndex]
+                randIndex = random.randint(0, len(ptPairs) - 1)
+                randPtPairs.append(ptPairs[randIndex])
+                chosenIndexes.append(randIndex)
+                del ptPairs[randIndex]
 
-            return randCamPts, randRobPts, camPts, robPts
+            return randPtPairs, ptPairs, chosenIndexes
 
-
-        def testTransformRMSError(transform, fromPtList, toPtList):
+        def testPointSetError(testPtPairs, testPoints):
             # Test the error for every point in the transform, return a root-mean-squared error value
-            errSqdSum = 0
-            for i, fromPt in enumerate(fromPtList):
-                pred       = transform(fromPt)
-                actual     = toPtList[i]
-                errSqdSum += ((actual[0]-pred[0])**2 +
-                             (actual[1]-pred[1])**2 +
-                             (actual[2]-pred[2])**2)
-            rms = (errSqdSum / float(len(fromPtList))) ** .5
-            return rms
+            camToRob = rv.createTransformFunc(testPtPairs, direction=1)
+            robToCam = rv.createTransformFunc(testPtPairs, direction=-1)
 
-        # Zip the two point sets into sets of ((camPt), (robPt))
-        ptPairs = newCalibration["ptPairs"]
-        for i in range(0, len(robPts)):
-            ptPair = (tuple(camPts[i]), tuple(robPts[i]))
-            ptPairs.append(ptPair)
+            errorSum = 0
+            for pt in testPoints:
+                # Transform to robot coordinates then back to camera coordinates and find the difference
+                posRob    = camToRob(pt)        # rv.getPositionTransform(pt, testPtPairs, direction=1)
+                posCam    = robToCam(posRob)  # rv.getPositionTransform(posRob, testPtPairs, direction=-1)
+                errorSum += sum((pt - posCam) ** 2) ** .5
+            return errorSum  / len(testPoints)
 
-        printf("CWPage5.getBestCalibrationSet.(): Pruning set to size ", minSize, " out of original ", len(ptPairs))
 
-        if len(robPts) + 5 < minSize:
+        printf("CWPage5.getBestCalibrationSet.(): Pruning set to size ", newSize, " out of original ", len(ptPairs))
+
+        if len(ptPairs) <= newSize:
             return newCalibration
 
+        # Get real points to test each random ptPair set on
+        testPoints  = np.asarray(random.sample(ptPairs, 10))[:, 0]
 
-        bestScore = -1
-        bestSet   = None
-        for i in range(0, 5000):
+        pointError = [[i, 0, 0] for i in range(0, len(ptPairs))]   # (point index, # samples, error sum)
+        bestScore  = -1
+        bestSet    = None
+        samples    = 500
+        avgError   = 0
+        for i in range(0, samples):
 
-            randCam, randRob, otherCam, otherRob = getRandomSet(minSize, robPts, camPts)
+            randPtPairs, leftoverPtPairs, chosenIndexes = getRandomSet(newSize, ptPairs)
 
-            transform = rv.createCameraToRobotTransformFunc(randCam, randRob)
-            error     = testTransformRMSError(transform, otherCam, otherRob)
+            error     = testPointSetError(randPtPairs, testPoints)
+            avgError += error
+
+            # Record the error from this set onto every point that was in the set.
+            for i in chosenIndexes:
+                pointError[i][1] += 1                   # Samples
+                pointError[i][2] += error            # Error sum
 
             if error < bestScore or bestScore == -1:
-                bestSet = (randCam, randRob)
+                bestSet = randPtPairs
                 bestScore = error
-                print("New best error: ", error)
-        bestCamPts = bestSet[0]
-        bestRobPts = bestSet[1]
-        return bestScore, bestCamPts, bestRobPts
+                print(bestScore)
+        avgError /= samples
+
+        bestIndexes = sorted(pointError, key=lambda pt:  pt[2] / pt[1] if pt[1] > 0 else 1000)
+        bestSet = []
+
+        for i in range(0, newSize):
+            bestSet.append(ptPairs[bestIndexes[i][0]])
+
+        error = testPointSetError(bestSet, testPoints)
+
+        printf("CWPage5.pruneCalibrationSet(): Average error: ", avgError, " bestSet ", bestScore, " der. set: ", error)
+        if error < avgError:
+            printf("CWPage5.pruneCalibrationSet(): Returning derived set")
+            return error, bestSet
+        else:
+
+            printf("CWPage5.pruneCalibrationSet(): Found set is worse than the average. Returning bestSet.")
+            return bestScore, bestSet
+
+
+
 
 
     def isComplete(self):

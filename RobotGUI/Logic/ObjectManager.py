@@ -1,8 +1,8 @@
 import cv2                   # For image saving
 import os
 import json
-from collections   import namedtuple
-from Logic.Global  import printf, ensurePathExists
+from collections            import namedtuple
+from RobotGUI.Logic.Global  import printf, ensurePathExists
 
 
 
@@ -24,8 +24,10 @@ class ObjectManager:
     """
 
 
+
     def __init__(self):
         self.__objects = []  # A list of the loaded objects
+        self.__groups  = []  #
         self.__directory = None
 
     def setDirectory(self, filename):
@@ -50,12 +52,11 @@ class ObjectManager:
                     self.__addObject(newObj)
 
 
-    def saveNewObject(self, newObject):
+    def saveObject(self, newObject):
         # If not new, replace self
         wasNew = self.__addObject(newObject)
         if not wasNew:
-            printf("ObjectManager.saveNewObject(): Tried to add object that already existed, ", newObject.name)
-            return
+            printf("ObjectManager.saveObject(): Tried to add object that already existed, ", newObject.name)
 
         newObject.save(self.__directory)
 
@@ -74,11 +75,18 @@ class ObjectManager:
 
         nameList = []
         for obj in self.__objects:
-            if objectType is None or objectType is type(obj):
+            if objectType is None:
                 nameList.append(obj.name)
 
         return nameList
 
+    def getForbiddenNames(self):
+        # Returns a list of strings that the user cannot use as the name of an object.
+        # This includes names of objects, names of tags, and names of objects like "Robot Marker" that are reserved
+        # It also includes things like "Trackable" or "TrackableObject" for good measure
+        forbidden = self.getObjectIDList()
+        forbidden += ['TrackerObject', 'Robot Marker', "Trackable"]
+        return forbidden
 
     def __addObject(self, newObject):
         # The reason this is private is because objects should only be added through self.saveNewObject or loadAllObj's
@@ -119,29 +127,42 @@ class ObjectManager:
         return False
 
 
-class TrackableObject:
-    Orientation = namedtuple('Orientation', 'name, image, rect, pickupRect, height')
+
+class Trackable:
+    def __init__(self):
+        self.views = []
+
+    def addView(self, view):
+        self.views.append(view)
+
+    def getViews(self):
+        return self.views
+
+
+class TrackableObject(Trackable):
+    View = namedtuple('View', 'name, viewID, height, pickupRect, rect, image')
 
     def __init__(self, name, loadFromDirectory = None):
+        super(TrackableObject, self).__init__()
         """
-        Name: A String of the objects unique name. It must be unique for file saving purposes.
+        Name: A String of the objects unique name. It must be unique for file saving and lookup purposes.
 
-        "Orientations" is a list [Orientation, Orientation, Orientation] of Orientations.
-        An Orientation is a dictionary that looks like this:
-                {   'image': cv2Frame,
+        "Views" is a list [View, View, View] of Views.
+        An View is a namedTuple that looks like this:
+                {
+                    'image': cv2Frame,
                     'rect': (x1,y1,x2,y2),
                     'pickupRect': (x1,y1,x2,y2),
                     'height': 3
                 }
 
-        Orientation are used to record objects at different orientations and help aid tracking in that way.
+        Views are used to record objects at different orientations and help aid tracking in that way.
         """
 
-        self.name        = name
-        self.height      = 0     # The height in cm of the object
-        self.orientations     = []
-        self.directory   = loadFromDirectory  # Used in objectmanager for deleting object. Set here, or in self.save
-        self.loadSuccess = False
+        self.name         = name
+        self.height       = 0     # The height in cm of the object
+        self.directory    = loadFromDirectory  # Used in objectmanager for deleting object. Set here, or in self.save
+        self.loadSuccess  = False
 
         if loadFromDirectory is not None:
             self.loadSuccess = self.__load(loadFromDirectory)
@@ -150,7 +171,7 @@ class TrackableObject:
         """
         Everything goes into a folder called TrackableObject_OBJECTNAMEHERE
 
-        Saves images for each Orientation, with the format Orientation_#,
+        Saves images for each View, with the format View#,
         and a data.txt folder is saved as a json, with this structure:
         {
             "Orientation_1": {
@@ -175,18 +196,16 @@ class TrackableObject:
 
         dataJson = {}
         # Save images and numpy arrays as seperate folders
-        for index, orientation in enumerate(self.orientations):
+        for index, view in enumerate(self.views):
             # Save the image
-            cv2.imwrite(filename + "Orientation_" + str(index) + "_Image.png", orientation.image)
+            cv2.imwrite(filename + "Orientation_" + str(index) + "_Image.png", view.image)
 
-            # Add any orientation data to the dataJson
-            dataJson["Orientation_" + str(index)] = {"rect":       orientation.rect,
-                                                "pickupRect": orientation.pickupRect,
-                                                "height":     orientation.height}
+            # Add any view data to the dataJson
+            dataJson["Orientation_" + str(index)] = {"rect":  view.rect,
+                                                "pickupRect": view.pickupRect,
+                                                "height":     view.height}
 
-        print("Opening ", filename + "data.txt")
         json.dump(dataJson, open(filename + "data.txt", 'w'), sort_keys=False, indent=3, separators=(',', ': '))
-
 
     def __load(self, directory):
         # Should only be called during initialization
@@ -209,7 +228,7 @@ class TrackableObject:
             printf("TrackableObject.__load(): ERROR: Object in ", directory, " is corrupted!")
             return False
 
-        # For each orientation, load the image associated with it, and build the appropriate orientation
+        # For each view, load the image associated with it, and build the appropriate view
         for key in loadedData:
             imageFile = directory + '\\' + key + "_Image.png"
             image     = cv2.imread(imageFile)
@@ -218,30 +237,26 @@ class TrackableObject:
                 printf("TrackableObject.__load() ERROR: Image File", imageFile, " was unable to be loaded!")
                 return False
 
-            self.addOrientation(image      = image,
-                                rect       = loadedData[key]["rect"],
-                                pickupRect = loadedData[key]["pickupRect"],
-                                height     = loadedData[key]["height"])
+            self.addNewView(image      = image,
+                            rect       = loadedData[key]["rect"],
+                            pickupRect = loadedData[key]["pickupRect"],
+                            height     = loadedData[key]["height"])
         return True
 
-    def addOrientation(self, image, rect, pickupRect, height):
-        newOrientation = self.Orientation(name       = self.name,
-                                          image      = image,
-                                          rect       = rect,
-                                          pickupRect = pickupRect,
-                                          height     = height)
-        self.orientations.append(newOrientation)
+    def addNewView(self, image, rect, pickupRect, height):
+        newView = self.View(name   = self.name, viewID      = len(self.views),
+                            height =    height, pickupRect  =      pickupRect,
+                            rect   =      rect, image       =           image)
+        self.views.append(newView)
 
-    def getOrientations(self):
-        return self.orientations
 
     def getIcon(self, maxWidth, maxHeight):
-        # Create an icon of a cropped image of the 1st Orientation, and resize it to the parameters.
+        # Create an icon of a cropped image of the 1st View, and resize it to the parameters.
 
 
         #  Get the cropped image of just the object
-        fullImage = self.orientations[0].image
-        rect      = self.orientations[0].rect
+        fullImage = self.views[0].image
+        rect      = self.views[0].rect
         image     = fullImage[rect[1]:rect[3], rect[0]:rect[2]]
 
 
@@ -260,5 +275,15 @@ class TrackableObject:
         return image.copy()
 
 
+class TrackableGroup(Trackable):
 
+    def __init__(self, name, loadFromDirectory = None):
+        super(TrackableGroup, self).__init__()
 
+        self.name         = name
+        self.height       = 0     # The height in cm of the object
+        self.directory    = loadFromDirectory  # Used in objectmanager for deleting object. Set here, or in self.save
+        self.loadSuccess  = False
+
+        if loadFromDirectory is not None:
+            self.loadSuccess = self.__load(loadFromDirectory)

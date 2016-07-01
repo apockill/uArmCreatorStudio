@@ -20,17 +20,18 @@ class Vision:
     # Wrappers for the VideoStream object
     def waitForNewFrames(self, numFrames=1):
         # Useful for situations when you need x amount of new frames after the robot moved, before doing vision
+        # printf("Vision.waitForNewFrames(): Waiting for ", numFrames, " frames!")
         for i in range(0, numFrames):
-            printf("Vision.waitForNewFrames(): Waiting for new frame! #", i)
+
             self.vStream.waitForNewFrame()
 
 
     # Object tracker control functions
-    def addTargetSamples(self, trackableObject):
-        orientations = trackableObject.getOrientations()
+    def addTrackable(self, trackable):
+        views = trackable.getViews()
         with self.workLock:
-            for o in orientations:
-                self.tracker.addTarget(o.name, o.image, o.rect, o.pickupRect, o.height)
+            for view in views:
+                self.tracker.addView(view)
 
     def clearTargets(self):
         with self.workLock:
@@ -46,7 +47,8 @@ class Vision:
 
 
     # Object recognition functions
-    def getObjectLatestRecognition(self, trackableObj):
+
+    def getObjectLatestRecognition(self, trackable):
         # Returns the latest successful recognition of objectID, so the user can pull the position from that
         # it also returns the age of the frame where the object was found (0 means most recently)
 
@@ -54,9 +56,9 @@ class Vision:
             trackHistory = self.tracker.trackedHistory[:]
 
         for frameID, historyFromFrame in enumerate(trackHistory):
-            for obj in historyFromFrame:
-                if obj.target.name == trackableObj.name:
-                    return frameID, obj
+            for tracked in historyFromFrame:
+                if tracked.view.name == trackable.name:
+                    return frameID, tracked
         return None, None
 
     def getObjectBruteAccurate(self, trackableObj, minPoints=-1, maxFrameAge=0, maxAttempts=1):
@@ -70,7 +72,7 @@ class Vision:
         :return:
         """
 
-
+        print("Getting ", trackableObj.name)
         # Get a super recent frame of the object
         for i in range(0, maxAttempts):
             # If the frame is too old or marker doesn't exist or doesn't have enough points, exit the function
@@ -103,8 +105,8 @@ class Vision:
         # Check if the object was recognized in the most recent frame. Check most recent frames first.
         for historyFromFrame in trackHistory:
 
-            for obj in historyFromFrame:
-                if obj.target.name == trackableObject.name:
+            for tracked in historyFromFrame:
+                if tracked.target.view.name == trackableObject.name:
                     return True
         return False
 
@@ -116,9 +118,9 @@ class Vision:
     def endTrackerFilter(self):
         self.vStream.removeFilter(self.tracker.drawTracked)
 
-    def trackerAddStartTrack(self, trackableObj):
+    def trackerAddStartTrack(self, trackable):
         # Convenience function that adds an object to the tracker, starts the tracker, and starts the filter
-        self.addTargetSamples(trackableObj)
+        self.addTrackable(trackable)
         self.startTracker()
         self.addTrackerFilter()
 
@@ -273,10 +275,10 @@ class PlaneTracker:
         H      - homography matrix from p0 to p1
         quad   - target bounary quad in input frame
     """
-    PlanarTarget  = namedtuple(  'PlaneTarget',   'name, image, rect, pickupRect, height, keypoints, descrs')
+    Target  = namedtuple('PlaneTarget', 'view, keypoints, descrs')
 
     # target: the "sample" object of the tracked object. Center: [x,y,z] Rotation[xr, yr, zr], ptCount: matched pts
-    TrackedTarget = namedtuple('TrackedTarget', 'target, quad, ptCount, center, rotation, p0, p1, H,')
+    TrackedTarget = namedtuple('TrackedTarget', 'view, target, quad, ptCount, center, rotation, p0, p1, H,')
 
     # Tracker parameters
     FLANN_INDEX_KDTREE = 1
@@ -290,7 +292,7 @@ class PlaneTracker:
 
     def __init__(self, focalLength):
         self.focalLength  = focalLength
-        self.detector     = cv2.ORB_create(nfeatures = 8000)
+        self.detector     = cv2.ORB_create(nfeatures = 8500)
         self.matcher      = cv2.FlannBasedMatcher(self.flanParams, {})  # bug : need to pass empty dict (#1329)
         self.targets      = []
         self.framePoints  = []
@@ -304,12 +306,12 @@ class PlaneTracker:
 
 
 
-    def getTarget(self, image, rect, name=None, pickupRect=None, height=None):
+    def createTarget(self, view):
         # Get the PlanarTarget object for any name, image, and rect. These can be added in self.addTarget()
-        x0, y0, x1, y1         = rect
+        x0, y0, x1, y1         = view.rect
         points, descs          = [], []
 
-        raw_points, raw_descrs = self.__detectFeatures(image)
+        raw_points, raw_descrs = self.__detectFeatures(view.image)
 
         for kp, desc in zip(raw_points, raw_descrs):
             x, y = kp.pt
@@ -319,19 +321,20 @@ class PlaneTracker:
 
 
         descs  = np.uint8(descs)
-        target = self.PlanarTarget(name=name, image = image, rect=rect, pickupRect=pickupRect,
-                                   keypoints = points, descrs=descs, height=height)
+        target = self.Target(view=view, keypoints=points, descrs=descs)
 
         # If it was possible to add the target
         return target
 
-    def addTarget(self, name, image, rect, pickupRect, height):
+    def addView(self, view):
+        # This function checks if a view is currently being tracked, and if not it generates a target and adds it
+
         for target in self.targets:
-            if name == target.name:
-                printf("PlaneTracker.addTarget(): ERROR: Attempted to add two targets of the same name: ", name)
+            if view == target.view:
+                printf("PlaneTracker.addTarget(): ERROR: Attempted to add two targets of the same name: ", view.name)
                 return
 
-        planarTarget = self.getTarget(image, rect, name=name, pickupRect=pickupRect, height=height)
+        planarTarget = self.createTarget(view)
 
         descrs = planarTarget.descrs
         self.matcher.add([descrs])
@@ -387,7 +390,7 @@ class PlaneTracker:
 
             p0, p1 = p0[status], p1[status]
 
-            x0, y0, x1, y1 = target.rect
+            x0, y0, x1, y1 = target.view.rect
             quad = np.float32([[x0, y0], [x1, y0], [x1, y1], [x0, y1]])
             quad = cv2.perspectiveTransform(quad.reshape(1, -1, 2), H).reshape(-1, 2)
 
@@ -401,9 +404,10 @@ class PlaneTracker:
             #     pickupQuad = None
 
             # Calculate the 3d coordinates of the object
-            center, rotation = self.get3DCoordinates(frame, target.rect, quad)
+            center, rotation = self.get3DCoordinates(frame, target.view.rect, quad)
 
             track = self.TrackedTarget(target=target,
+                                       view=target.view,
                                        quad=quad,
                                        ptCount=len(matches),
                                        center=center,
@@ -441,30 +445,30 @@ class PlaneTracker:
         filterFnt   = cv2.FONT_HERSHEY_PLAIN
         filterColor = (255, 255, 255)
 
-        for obj in self.trackedHistory[0]:
-            quad = np.int32(obj.quad)
+        for tracked in self.trackedHistory[0]:
+            quad = np.int32(tracked.quad)
             cv2.polylines(frame, [quad], True, (255, 255, 255), 2)
 
             # Figure out how much the text should be scaled (depends on the different in curr side len, and orig len)
-            rect          = obj.target.rect
+            rect          = tracked.view.rect
             origLength    = rect[2] - rect[0] + rect[3] - rect[1]
             currLength    = np.linalg.norm(quad[1] - quad[0]) + np.linalg.norm(quad[2] - quad[1])  # avg side len
             scaleFactor   = currLength / origLength
 
             # Draw the name of the object, and coordinates
-            cv2.putText(frame, obj.target.name, tuple(quad[1]),  filterFnt, scaleFactor, color=filterColor, thickness=1)
+            cv2.putText(frame, tracked.view.name, tuple(quad[1]),  filterFnt, scaleFactor, color=filterColor, thickness=1)
 
             # FOR DEUBGGING ONLY: TODO: Remove this when deploying final product
             try:
-                coordText = "X " + str(int(obj.center[0]))  + \
-                            " Y " + str(int(obj.center[1])) + \
-                            " Z " + str(int(obj.center[2])) + \
-                            " R " + str(round(obj.rotation[2], 2))
+                coordText =  "X " + str(int(tracked.center[0])) + \
+                            " Y " + str(int(tracked.center[1])) + \
+                            " Z " + str(int(tracked.center[2])) + \
+                            " R " + str(round(tracked.rotation[2], 2))
                 cv2.putText(frame, coordText, (quad[1][0], quad[1][1] + int(15*scaleFactor)),  filterFnt, scaleFactor, color=filterColor, thickness=1)
             except:
                 pass
 
-            for (x, y) in np.int32(obj.p1):
+            for (x, y) in np.int32(tracked.p1):
                 cv2.circle(frame, (x, y), 2, (255, 255, 255))
 
         return frame
@@ -511,36 +515,37 @@ class PlaneTracker:
 
 """
 # DEPRECATED VISION FUNCTIONS
-def getAverageObjectPosition(self, objectID, numFrames):
-    # Finds the object in the latest numFrames from the tracking history, and returns the average pos and rot
+    def getAverageObjectPosition(self, objectID, numFrames):
+        # Finds the object in the latest numFrames from the tracking history, and returns the average pos and rot
 
-    if numFrames >= self.tracker.historyLen:
-        printf("Vision.getAverageObjectPosition(): ERROR: Tried to look further in the history than was possible!")
-        numFrames = self.tracker.historyLen
+        if numFrames >= self.tracker.historyLen:
+            printf("Vision.getAverageObjectPosition(): ERROR: Tried to look further in the history than was possible!")
+            numFrames = self.tracker.historyLen
 
 
-    trackHistory = []
-    with self.workLock:
-        trackHistory = self.tracker.trackedHistory[:numFrames]
+        trackHistory = []
+        with self.workLock:
+            trackHistory = self.tracker.trackedHistory[:numFrames]
 
-    # Set up variables
-    samples       = 0
-    locationSum   = np.float32([0, 0, 0])
-    rotationSum   = np.float32([0, 0, 0])
+        # Set up variables
+        samples       = 0
+        locationSum   = np.float32([0, 0, 0])
+        rotationSum   = np.float32([0, 0, 0])
 
-    # Look through the history range and collect the object center and rotation
-    for frameID, historyFromFrame in enumerate(trackHistory):
+        # Look through the history range and collect the object center and rotation
+        for frameID, historyFromFrame in enumerate(trackHistory):
 
-        for obj in historyFromFrame:
+            for obj in historyFromFrame:
 
-            if obj.target.name == objectID:
-                locationSum += np.float32(obj.center)
-                rotationSum += np.float32(obj.rotation)
-                samples     += 1
+                if obj.target.name == objectID:
+                    locationSum += np.float32(obj.center)
+                    rotationSum += np.float32(obj.rotation)
+                    samples     += 1
 
-    # If object was not found, None will be returned for the frame and the object
-    if samples == 0:
-        return None, None
+        # If object was not found, None will be returned for the frame and the object
+        if samples == 0:
+            return None, None
 
-    return tuple(map(float, locationSum/samples)), tuple(map(float, rotationSum/samples))
+        return tuple(map(float, locationSum/samples)), tuple(map(float, rotationSum/samples))
+
 """

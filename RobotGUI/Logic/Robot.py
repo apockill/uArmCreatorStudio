@@ -174,6 +174,8 @@ class Robot:
         # Handle any wrist position changes. Don't wait for robot, since this movement is usually rare and one-off
         if self.__wristChanged:
             self.uArm.moveWrist(self.__wrist)
+            # Make sure that the wrist servo is marked down as attached. Robot does this automatically
+            self.__servoStatus[3], self.__newServoStatus[3] = True, True
             self.__wristChanged = False
 
 
@@ -199,6 +201,9 @@ class Robot:
         if self.__positionChanged:
             try:
                 self.uArm.moveToWithSpeed(self.pos['x'], self.pos['y'], self.pos['z'], self.__speed)
+                self.__servoStatus[0], self.__newServoStatus[0] = True, True
+                self.__servoStatus[1], self.__newServoStatus[1] = True, True
+                self.__servoStatus[2], self.__newServoStatus[2] = True, True
             except ValueError:
                 printf("Robot.refresh(): ERROR: Robot out of bounds and the uarm_python library crashed!")
 
@@ -219,6 +224,7 @@ class Robot:
                     # Detach the servo
                     self.uArm.servoDetach(i)
                     self.__servoStatus[i] = False
+
 
     def __newServoAttached(self):
         # Boolean value that determines if a servo has been attached but this has not been sent to robot

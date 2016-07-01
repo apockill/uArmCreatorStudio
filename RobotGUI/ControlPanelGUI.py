@@ -1,8 +1,8 @@
 import copy
-import CommandsGUI as CommandsGUI
-import EventsGUI   as EventsGUI
-from PyQt5         import QtCore, QtWidgets, QtGui
-from Logic.Global  import printf, FpsTimer
+import RobotGUI.CommandsGUI as CommandsGUI
+import RobotGUI.EventsGUI   as EventsGUI
+from PyQt5                  import QtCore, QtWidgets, QtGui
+from RobotGUI.Logic.Global  import printf, FpsTimer
 
 
 class ControlPanel(QtWidgets.QWidget):
@@ -558,10 +558,13 @@ class CommandList(QtWidgets.QListWidget):
         else:
             # If this is being added by the user, then prompt the user by opening the command window.
             accepted = newCommand.openWindow()  # Get information from user
-
-            # Re-make the widget that goes on the command, so it has the new information given by the user
-            newCommand.dressWidget(newWidget)     # Dress up the widget
-
+            if accepted:
+                # Re-make the widget that goes on the command, so it has the new information given by the user
+                newCommand.dressWidget(newWidget)     # Dress up the widget
+            else:
+                # If the user canceled, then delete the command
+                del self.commands[newWidget]
+                self.takeItem(self.row(listWidgetItem))
 
         # Update the width of the commandList to the widest element within it
         if not isLoading:

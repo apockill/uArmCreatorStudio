@@ -1,4 +1,4 @@
-from Resources import CompiledImages
+from RobotGUI.Resources import CompiledImages
 
 """
 This is for storing the location of directories that don't move

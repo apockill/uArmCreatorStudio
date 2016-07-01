@@ -1,10 +1,10 @@
-import cv2
-import Paths
-from PyQt5               import QtCore, QtWidgets, QtGui
-from CameraGUI           import CameraWidget, CameraSelector, cvToPixFrame
-from Logic.Global        import printf
-from Logic.ObjectManager import TrackableObject
-from Logic.RobotVision   import MIN_POINTS_TO_LEARN_OBJECT
+from PyQt5                        import QtCore, QtWidgets, QtGui
+from RobotGUI                     import Paths
+from RobotGUI.CameraGUI           import CameraWidget, CameraSelector, cvToPixFrame
+from RobotGUI.Logic.Global        import printf
+from RobotGUI.Logic.ObjectManager import TrackableObject
+from RobotGUI.Logic.RobotVision   import MIN_POINTS_TO_LEARN_OBJECT
+
 
 class ObjectManagerWindow(QtWidgets.QDialog):
 
@@ -18,14 +18,14 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         # Global UI Variables
         self.deleteBtn          = QtWidgets.QPushButton("Delete")
-        self.addSampleBtn       = QtWidgets.QPushButton("Add Sample")
+        self.addOrientationBtn  = QtWidgets.QPushButton("Add Orientation")
         self.objList            = QtWidgets.QListWidget()
         self.selDescLbl         = QtWidgets.QLabel("")   # Description of selected object
         self.selImgLbl          = QtWidgets.QLabel("")   # A small picture of the object
 
         self.objList.itemSelectionChanged.connect(self.refreshSelected)
         self.deleteBtn.clicked.connect(self.deleteSelected)
-        self.addSampleBtn.clicked.connect(self.addSample)
+        self.addOrientationBtn.clicked.connect(lambda: self.openObjectWizard(sampleMode=True))
 
         # Initialize the UI
         self.initUI()
@@ -39,12 +39,12 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
     def initUI(self):
         self.deleteBtn.hide()   # Only visible when an object is selected
-        self.addSampleBtn.hide()
+        self.addOrientationBtn.hide()
 
         # CREATE OBJECTS AND LAYOUTS FOR ROW 1 COLUMN (ALL)
-        createBtn    = QtWidgets.QPushButton("Create New")
-        createBtn.setFixedWidth(130)
-        createBtn.clicked.connect(self.openObjectWizard)
+        newObjBtn    = QtWidgets.QPushButton("New Object")
+        newObjBtn.setFixedWidth(130)
+        newObjBtn.clicked.connect(lambda: self.openObjectWizard(sampleMode=False))
         self.objList.setMinimumWidth(260)
 
 
@@ -61,7 +61,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         selObjVLayout.addWidget(self.selDescLbl)
         selObjVLayout.addWidget(self.selImgLbl)
         selObjVLayout.addWidget(self.deleteBtn)
-        selObjVLayout.addWidget(self.addSampleBtn)
+        selObjVLayout.addWidget(self.addOrientationBtn)
         selObjVLayout.addStretch(1)
         selectedGBox.setLayout(selObjVLayout)
 
@@ -72,7 +72,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         col2 = QtWidgets.QVBoxLayout()
         col3 = QtWidgets.QVBoxLayout()
 
-        row1.addWidget(createBtn)
+        row1.addWidget(newObjBtn)
         row1.addStretch(1)
 
         col1.addWidget(listGBox)
@@ -125,7 +125,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         def hideLabels():
             # If something breaks, hide all the "selected object" labels
             self.deleteBtn.hide()
-            self.addSampleBtn.hide()
+            self.addOrientationBtn.hide()
             self.selDescLbl.hide()
             self.selImgLbl.hide()
 
@@ -151,51 +151,42 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         self.vision.clearTargets()
         self.vision.trackerAddStartTrack(obj)
 
-        samples = obj.getOrientations()
-        if len(samples) == 0:
+        views = obj.getViews()
+        if len(views) == 0:
             printf("ObjectManager.refreshSelectedObjMenu(): ERROR: Object returned ZERO samples!")
             hideLabels()
             return
 
         # Create a pretty icon for the object, so it's easily recognizable. Use the first sample in the objectt
-        sample                 = samples[0]
         icon = cvToPixFrame(obj.getIcon(150, 350))
         self.selImgLbl.setPixmap(icon)
 
 
         # Get the "Average" number of keypoints for this object
         totalPoints = 0
-        for sample in samples:
-            target = self.vision.tracker.getTarget(sample.image, sample.rect)
+        for view in views:
+            target = self.vision.tracker.createTarget(view)
             totalPoints += len(target.descrs)
-        avgPoints = int(totalPoints / len(samples))
+        avgPoints = int(totalPoints / len(views))
 
 
         # Create and set the description for this object
-        self.selDescLbl.setText("Name:\n"         + obj.name          + "\n\n"
-                                "# of Points: \n"   + str(avgPoints)    + "\n\n"
-                                "Samples:\n"      + str(len(samples)) + "\n\n\n\n"
+        self.selDescLbl.setText("Name:\n"          + obj.name               + "\n\n"
+                                "# of Points: \n"  + str(avgPoints)         + "\n\n"
+                                "Orientations: \n" + str(len(views)) + "\n\n\n\n"
                                 "Image:")
 
         # Show all the labels
         self.deleteBtn.show()
-        self.addSampleBtn.show()
+        self.addOrientationBtn.show()
         self.selDescLbl.show()
         self.selImgLbl.show()
-
-    def addSample(self):
-        # Add samples to an already created object
-        pass
 
 
     def deleteSelected(self):
         # Get the selected object
-        selectedObjects = self.objList.selectedItems()
-        if not len(selectedObjects):
-            printf("ObjectManager.deleteSelected(): ERROR: Delete button was pressed but no objects were selected!")
-            return
-        selObject = selectedObjects[0].text()
-
+        selObject = self.getSelected()
+        if selObject is None: return
 
         # Warn the user of the consequences of continuing
         reply = QtWidgets.QMessageBox.question(self, 'Warning',
@@ -208,15 +199,27 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         self.refreshObjectList()
 
-    def openObjectWizard(self):
-        # Close the objectManager and open the ObjectWizard.
+    def getSelected(self):
+        # Returns the selected object
+        selectedObjects = self.objList.selectedItems()
+        if not len(selectedObjects): return None
+        selObject = selectedObjects[0].text()
+        return selObject
+
+    def openObjectWizard(self, sampleMode):
+
+        vStream = self.env.getVStream()
+        if not vStream.connected():
+            message = "A camera must be connected to add new objects"
+            QtWidgets.QMessageBox.question(self, 'Error', message, QtWidgets.QMessageBox.Ok)
+            return
 
         printf("ObjectManager.openObjectWizard(): Opening Object Wizard!")
 
         self.cameraWidget.pause()
 
         # Get the object information from the user using the Object Wizard
-        oWizard = ObjectWizard(self.env, self)
+        oWizard = ObjectWizard(sampleMode, self.env, self)
         oWizard.exec_()
 
 
@@ -226,8 +229,33 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         # If the user finished the wizard, then extract the information from the objectWizard to build a new object
         if oWizard.result():
-            oWizard.addNewObject()
-            self.refreshObjectList(selectedItem=oWizard.getNewObject().name)
+            # Here is where the objectWizard will add a new object to the ObjectManager
+
+
+
+            image       = oWizard.page2.object.view.image.copy()
+            rect        = oWizard.page2.object.view.rect
+            pickupRect  = oWizard.page4.pickupRect
+            height      = float(oWizard.page3.heightTxt.text())
+
+            # Create an actual TrackableObject with this information
+            if sampleMode:
+                name        = self.getSelected()
+                trackObject = self.objManager.getObject(name)
+                if trackObject is None:
+                    printf("ObjectManager.openObjectWizard(): ERROR: Could not find object to add sample to!")
+                    return
+            else:
+                name = oWizard.page1.nameTxt.text()
+                trackObject = TrackableObject(name)
+
+            trackObject.addNewView(image      = image,
+                                   rect       = rect,
+                                   pickupRect = pickupRect,
+                                   height     = height)
+
+            self.objManager.saveObject(trackObject)
+            self.refreshObjectList(selectedItem=trackObject.name)
 
 
         self.cameraWidget.play()
@@ -241,8 +269,10 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
 # Object WIZARD
 class ObjectWizard(QtWidgets.QWizard):
-    def __init__(self, environment, parent):
+    def __init__(self, sampleMode, environment, parent):
         super(ObjectWizard, self).__init__(parent)
+        # If sampleMode is on, then this will not ask the user for the name of the object
+        self.sampleMode = sampleMode
 
         # Since there are camera modules in the wizard, make sure that all tracking is off
         vision = environment.getVision()
@@ -252,68 +282,43 @@ class ObjectWizard(QtWidgets.QWizard):
 
         self.newObject  = None  # Is set in self.close()
 
-        self.page1 = OWPage1(self.objManager.getObjectIDList(), parent=self)
+        if not self.sampleMode:
+            self.page1 = OWPage1(self.objManager.getForbiddenNames(), parent=self)
+            self.addPage(self.page1)
+
         self.page2 = OWPage2(environment, parent=self)
         self.page3 = OWPage3(parent=self)
         self.page4 = OWPage4(environment, parent=self)
 
-        self.page2.newObject.connect(lambda: self.page4.setObject(self.page2.object))  # Link page3 to page2's object
-
-
-        self.addPage(self.page1)
         self.addPage(self.page2)
         self.addPage(self.page3)
         self.addPage(self.page4)
 
+        self.page2.newObject.connect(lambda: self.page4.setObject(self.page2.object))  # Link page3 to page2's object
+
         self.setWindowTitle("Object Wizard")
         self.setWindowIcon(QtGui.QIcon(Paths.objectWizard))
 
-    def addNewObject(self):
-        # Call this after the wizard has been run, to generate and add the new object to the objectManager
-
-        # Here is where the objectWizard will add a new object to the ObjectManager
-        name        = self.page1.nameTxt.text()
-        image       = self.page2.object.image.copy()
-        rect        = self.page2.object.rect
-        pickupRect  = self.page4.pickupRect
-        height      = float(self.page3.heightTxt.text())
-
-
-
-        # finalSample = self.vision.tracker.getTarget(image, rect, name=objName, pickupRect=pickupRect, height=objHeight)
-
-        # Create an actual TrackableObject with this information
-        self.newObject   = TrackableObject(name)
-        self.newObject.addOrientation(image      = image,
-                                      rect       = rect,
-                                      pickupRect = pickupRect,
-                                      height     = height)
-
-        self.objManager.saveNewObject(self.newObject)
-
-    def getNewObject(self):
-        # Call this after self.addNewObject() has been run, to get a reference to the object
-        return self.newObject
 
     def closeEvent(self, event):
         # Close any pages that have active widgets, such as the cameraWidget. This will trigger each page's close func.
-        self.page1.close()
+        if not self.sampleMode: self.page1.close()
         self.page2.close()
         self.page3.close()
         self.page4.close()
 
-
 class OWPage1(QtWidgets.QWizardPage):
-    def __init__(self, objNameLst, parent):
+    def __init__(self, forbiddenNames, parent):
         super(OWPage1, self).__init__(parent)
 
         # Create GUI objects
-        self.forbiddenNames = ['TrackerObject', 'Robot Marker'] + objNameLst
+        self.forbiddenNames = forbiddenNames
         self.errorLbl       = QtWidgets.QLabel("")  # Tells the user why the name is invalid
         self.nameTxt        = QtWidgets.QLineEdit()
 
         self.nameTxt.textChanged.connect(self.completeChanged)
 
+        self.forbiddenNames = [name.lower() for name in self.forbiddenNames]
         self.initUI()
 
     def initUI(self):
@@ -382,15 +387,14 @@ class OWPage1(QtWidgets.QWizardPage):
                                   ''.join(invalidChars))
             return False
 
-        if name in self.forbiddenNames:
+        print(self.forbiddenNames, name.lower())
+        if name.lower() in self.forbiddenNames:
             self.errorLbl.setText('There is already an object named ' + name + '! \n'
                                   ' If you want to replace it, delete the objects folder and reload the program!')
             return False
         # If there were no errors, then turn the "next" button enabled, and make the error message dissapear
         self.errorLbl.setText('')
         return True
-
-
 
 class OWPage2(QtWidgets.QWizardPage):
     newObject = QtCore.pyqtSignal()  # This emits when a valid object is selected, so that KPWPage3 can update
@@ -495,7 +499,9 @@ class OWPage2(QtWidgets.QWizardPage):
 
 
         # Get the "target" object from the image and rectangle
-        target = self.vision.tracker.getTarget(frame, rect)
+        trackable = TrackableObject("")
+        trackable.addNewView(frame, rect, None, None)
+        target    = self.vision.tracker.createTarget(trackable.getViews()[0])
 
         # Analyze it, and make sure it's a valid target. If not, return the camera to selection mode.
         if len(target.descrs) == 0 or len(target.keypoints) == 0:
@@ -503,8 +509,13 @@ class OWPage2(QtWidgets.QWizardPage):
             self.cameraWidget.takeAnother()
             return
 
+        # Turn on the camera, and start tracking
         self.object = target
         self.completeChanged.emit()
+        self.cameraWidget.play()
+        self.vision.trackerAddStartTrack(trackable)
+        self.newObject.emit()
+
 
 
         # Do all the necessary things: Change the instructions, the step
@@ -529,12 +540,7 @@ class OWPage2(QtWidgets.QWizardPage):
             self.hintLbl.setText("Tracking " + str(len(self.object.descrs)) + " Points")
 
 
-        # Turn on the camera, and start tracking
-        self.cameraWidget.play()
-        self.vision.tracker.addTarget(self.object.name, self.object.image, self.object.rect, pickupRect=None, height=None)
-        self.vision.startTracker()
-        self.vision.addTrackerFilter()
-        self.newObject.emit()
+
 
     def tryAgain(self):
         self.object = None
@@ -554,7 +560,6 @@ class OWPage2(QtWidgets.QWizardPage):
         self.vision.clearTargets()
         self.vision.endTracker()
         self.vision.endTrackerFilter()
-
 
 class OWPage3(QtWidgets.QWizardPage):
     def __init__(self, parent):
@@ -619,7 +624,6 @@ class OWPage3(QtWidgets.QWizardPage):
 
         self.errorLbl.setText('')
         return True
-
 
 class OWPage4(QtWidgets.QWizardPage):
     """
@@ -705,10 +709,10 @@ class OWPage4(QtWidgets.QWizardPage):
         self.setLayout(mainHLayout)
 
 
-    def setObject(self, object):
+    def setObject(self, target):
         # Crop the image of just the object and display it on the Camera widget
-        r       = object.rect
-        cropped = object.image[r[1]:r[3], r[0]:r[2]]
+        r       = target.view.rect
+        cropped = target.view.image[r[1]:r[3], r[0]:r[2]]
 
         self.cameraWidget.setFrame(cropped)
 

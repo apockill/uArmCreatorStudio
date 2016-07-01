@@ -59,7 +59,7 @@ class Uarm:
         return self.__send(cmnd)
 
     def servoDetach(self, servo_number):
-        print("Detaching")
+        print("uarm com: Detaching")
         servo_number = str(int(servo_number))
         cmnd = "detachS" + servo_number
         return self.__send(cmnd)
@@ -102,7 +102,6 @@ class Uarm:
 
         response  = self.__send("gtip")
         parsedArgs = self.__parseArgs(response, "tip", ["v"])
-
         return (True, False)[int(parsedArgs['v'])]  # Flip the value and turn it into a boolean
 
 
