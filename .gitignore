@@ -13,6 +13,7 @@ $RECYCLE.BIN/
 *.msi
 *.msm
 *.msp
+*.exe
 
 # Windows shortcuts
 *.lnk
@@ -49,8 +50,12 @@ Temporary Items
 # Python precompiled files
 *.pyc
 
+# Icons
+*.png
+
+
 # Config files
-Settings.p
+Settings.txt
 
 # Vim
 *.swp

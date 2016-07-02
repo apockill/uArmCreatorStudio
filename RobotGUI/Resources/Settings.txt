@@ -1,5 +1,4 @@
 {
-   "lastOpenedFile": "C:/Users/AlexThiel/Desktop/UF Presentation/uArm Creator Studio/Resources/Saves/SimplePickup.task",
    "coordCalibrations": {
       "failPts": [
          [
@@ -4484,10 +4483,11 @@
       ]
    },
    "objectsDirectory": "Resources\\Objects\\",
-   "motionCalibrations": {
-      "stationaryMovement": null,
-      "activeMovement": null
-   },
    "robotID": "COM3",
-   "cameraID": 1
+   "cameraID": 1,
+   "motionCalibrations": {
+      "activeMovement": null,
+      "stationaryMovement": null
+   },
+   "lastOpenedFile": "F:/Google Drive/Projects/Git Repositories/RobotGUIProgramming/Saves/Recognition_Example.task"
 }
