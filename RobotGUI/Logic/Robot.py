@@ -1,10 +1,10 @@
 import math
 import serial
 import serial.tools.list_ports
-from threading                     import Thread
-from time                          import sleep  #Only use in refresh() command while querying robot if it's done moving
-from Logic.Global                  import printf
-from Logic.UArmTextCommunication_1 import Uarm
+from threading                              import Thread
+from time                                   import sleep  #Only use in refresh() command while querying robot if it's done moving
+from RobotGUI.Logic.Global                  import printf
+from RobotGUI.Logic.UArmTextCommunication_1 import Uarm
 
 
 
@@ -182,6 +182,7 @@ class Robot:
         # Wait for robot to be done moving before doing anything
         if not override:
             self.wait()
+
 
 
         # Handle any gripper changes. Make sure it happens after the wait command

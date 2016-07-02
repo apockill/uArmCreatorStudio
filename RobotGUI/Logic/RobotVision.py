@@ -16,7 +16,7 @@ MIN_POINTS_TO_LEARN_OBJECT = 150  # Minimum number of points to decide an object
 MAX_FRAME_AGE_MOVE         = 5    # Maximum age of a tracked object to move the robot towards it
 MIN_POINTS_PICKUP_OBJECT   = 50   # Minimum points on an object for the robot to see an object and pick it up
 MIN_POINTS_PICKUP_MARKER   = 25   # Minimum tracking to find the robot marker, when picking up an object
-MIN_POINTS_FOCUS           = 15   # Minimum tracking points to just move the robot over an object
+MIN_POINTS_FOCUS           = 40   # Minimum tracking points to just move the robot over an object
 MAX_FRAME_FAIL             = 30   # Maximum times a function will get a new frame to recognize an object before quitting
 MAX_PICKUP_DIST_THRESHOLD  = 15   # Maximum "camera distance" from an object to allow the pickup to continue
 
@@ -222,6 +222,7 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision):
 
     # Move to the objects position
     pos = getPositionTransform(targetCamPos, ptPairs, direction=1)
+    if pos[2] + 5 < groundHeight: pos[2] = groundHeight - 5  # TODO: Fix this bug
     robot.setPos(x=pos[0], y=pos[1], z=pos[2] + 5)
     robot.refresh()
     robot.wait()
@@ -236,6 +237,7 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision):
     camPos  = getPositionCorrection(targetCamPos, lastCoord)
     jumpPos = getPositionTransform(camPos, ptPairs, 1)
     print("Jumping to ", jumpPos, "from ", robot.pos)
+    if jumpPos[2] < groundHeight: jumpPos[2] = groundHeight  # TODO: Fix this bug
     robot.setPos(x=jumpPos[0], y=jumpPos[1])  # z=pos[2])
     robot.refresh()
     robot.wait()
@@ -274,25 +276,32 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision):
 
 
         # Get the robots marker through the camera by taking the average position of 5 recognitions
-        newCoord = getRobotAccurate(rbMarker, vision)
-        if newCoord is None:
-            printf("RobotVision.pickupObject(): Camera was unable to see marker. Moving anyways!")
-            failTrackCount += 1
-        else:
-            lastCoord = newCoord
-            failTrackCount = 0
-
         if failTrackCount >= 3:
             printf("RobotVision.pickupObject(): Could not find robot for too many down-steps. Exiting pickup")
             robot.setGripper(False)
             robot.refresh()
             return False
 
+        newCoord = getRobotAccurate(rbMarker, vision)
+        if newCoord is None:
+            printf("RobotVision.pickupObject(): Camera was unable to see marker. Moving anyways!")
+            failTrackCount += 1
+            if lastCoord is None:
+                robot.setPos(z=-1, relative=True)
+                robot.refresh()
+                robot.wait()
+        else:
+            lastCoord = newCoord
+            failTrackCount = 0
+
+
+
 
 
         # If its still moving down, then perform a down-move
         # print("Aiming for camz ", targetCamPos[2], "currently at ", coord[2])
         relMove = getRelativeMoveTowards(lastCoord, targetCamPos, 2, ptPairs)
+        if robot.pos['z'] < groundHeight - 1.25: break
         robot.setPos(x=relMove[0], y=relMove[1], z=-1.25, relative=True)
         print("Moving to  z: ", robot.pos["z"])
         robot.refresh()

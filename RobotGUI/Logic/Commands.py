@@ -59,7 +59,7 @@ class MoveXYZCommand(Command):
         if successX and successY and successZ:
             self.robot.setPos(x=newX, y=newY, z=newZ,
                                   relative=self.parameters['relative'])
-            self.robot.refresh(override=self.parameters['override'])
+            self.robot.refresh(override=False)
             return True
         else:
             printf("MoveXYZCommand.run(): ERROR in parsing either X Y or Z: ", successX, successY, successZ)

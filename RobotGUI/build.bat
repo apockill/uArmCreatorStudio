@@ -1,7 +1,6 @@
 REM Compile all the icons into the the CompiledImages.py 
 pyrcc5 "Resources/Images.qrc" -o "Resources/CompiledImages.py"
 
-PAUSE
 
 
 REM Get the PyInstaller path
@@ -36,6 +35,4 @@ REM Delete the '__pycache__' folder after building
 RD /S /Q "__pycache__"
  
 
-
-PAUSE
  

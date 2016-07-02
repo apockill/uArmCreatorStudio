@@ -156,7 +156,7 @@ class CalibrateWindow(QtWidgets.QDialog):
         direction   = 1  #If the robot is going right or left next
 
         # Start position
-        robot.setSpeed(10)
+        robot.setSpeed(18)
         robot.setServos(all=True)
         robot.setPos( x=-15, y=-15, z=20)
         robot.refresh()
@@ -792,7 +792,7 @@ class CWPage5(QtWidgets.QWizardPage):
                 newCalibrations['failPts'].append(coord)
                 continue
 
-            if marker.ptCount < 50:
+            if marker.ptCount < 30:
                 printf("CWPage5.runCalibration(): Disregarding frame. Only ", marker.ptCount, "tracker pts were found")
                 continue
 
