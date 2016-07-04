@@ -185,9 +185,8 @@ class EventPromptWindow(QtWidgets.QDialog):
         newRecognizeBtn = lambda params: self.btnClicked(RecognizeEventGUI, params=params)
         recognizeMnu    = QtWidgets.QMenu()
         trackableList   = self.objManager.getObjectIDList(objFilter=self.objManager.TRACKABLE)
+
         for name in trackableList:
-            customIcon  = self.objManager.getObject(name).getIcon(32, 32)
-            customIcon  = cvToPixFrame(customIcon)
             recognizeMnu.addAction(name, lambda name=name: newRecognizeBtn({'objectID': name}))
 
         self.recognizeBtn.setMenu(recognizeMnu)

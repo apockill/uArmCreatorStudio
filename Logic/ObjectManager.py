@@ -36,8 +36,6 @@ class ObjectManager:
         self.PICKUP         = "PICKUP"        # Any trackable object + group, NOT incuding the Robot Marker object
 
 
-        self.refreshGroups()
-
     def loadAllObjects(self):
         # Load all objects into the ObjectManager
 
@@ -53,6 +51,8 @@ class ObjectManager:
                 if newObj.loadSuccess:
                     self.__addObject(newObj)
 
+        self.refreshGroups()
+
     def saveObject(self, newObject):
         # If not new, replace self
         wasNew = self.__addObject(newObject)
@@ -63,27 +63,31 @@ class ObjectManager:
 
     def refreshGroups(self):
         # Creates a TrackableGroup for every tag that every object has, and replaces old TrackableGroups
+        printf("ObjectManager.refreshGroups(): Refreshing Groups!")
 
-        # Delete existing groups
-        print("Before refresh: ", self.__objects)
+        # Remove existing groups from self.__objects
         for obj in self.__objects:
-            if isinstance(obj, TrackableGroup): self.deleteObject(obj.name)
-        print("After deleting: ", self.__objects)
+            if isinstance(obj, TrackableGroup): self.__objects.remove(obj)
 
-        groups = {}  # Example: {"someTag": [TrackableObj, TrackableObj, TrackableObj], "otherTag": [TrackableObj]}
+        # Use a temporary dictionary to record which objs belong to which groups
+        groups = {}  # Example: {"tag": [obj, obj, obj], "tag2":[obj]}
 
+        # Go through all objects and record which objects belong in which groups
         for obj in self.__objects:
+            # Only TrackableObjects can be in TrackableGroups
+            if not isinstance(obj, TrackableObject): continue
+
             tags = obj.getTags()
-
 
             for tag in tags:
                 # Make sure groups has the appropriate keys with arrays for each tag
                 if not tag in groups: groups[tag] = []
 
                 # Add the object to each tag
-                groups[tag].append(obj.name)  # Change to be "obj"
+                groups[tag].append(obj)  # Change to be "obj"
 
-        print("Final Groups array: : ", groups)
+
+        # Create the TrackableGroup objects and add them
         for group in groups:
             print("Adding new group", group)
             newGroupObj = TrackableGroup(name=group, members=groups[group])
@@ -146,7 +150,7 @@ class ObjectManager:
 
         # If the object doesn't already exist, adds the object to the pool of loaded objects.
         self.__objects.append(newObject)
-        self.refreshGroups()
+
         return True
 
     def deleteObject(self, objectID):
@@ -158,25 +162,28 @@ class ObjectManager:
 
             # If the object is a TrackableObject, then deleete the directory
             if isinstance(obj, TrackableObject):
-                # Make sure nothing weird is going on...
-                if obj.directory is None:
-                    return False
-
+                objDirectory = self.__directory + "TrackerObject " + obj.name + "\\"
                 # Get all the items in the objects folder, and delete them one by one
-                foldersAndItems = os.listdir(obj.directory)
+                foldersAndItems = os.listdir(objDirectory)
                 for item in foldersAndItems:
-                    os.remove(obj.directory + "\\" + item)
+                    os.remove(objDirectory + item)
 
                 # Now that the folder is empty, delete it too
-                os.rmdir(obj.directory)
+                os.rmdir(objDirectory)
 
                 self.__objects.remove(obj)
                 return True
 
+            if isinstance(obj, TrackableGroup):
+                for taggedObj in obj.getMembers():
+                    taggedObj.removeTag(obj.name)
+                    taggedObj.save(self.__directory)
+                self.__objects.remove(obj)
+                return True
             # Delete the object from the objects array
-            self.__objects.remove(obj)
 
-        printf("ObjectManager.deleteObject(): ERROR: Could not find object ", objectID, " in order to delete it!")
+
+        printf("ObjectManager.deleteObject(): Could not find object ", objectID, " in order to delete it!")
         return False
 
 
@@ -213,9 +220,9 @@ class TrackableObject(Trackable):
         Views are used to record objects at different orientations and help aid tracking in that way.
         """
 
-        self.directory    = loadFromDirectory  # Used in objectmanager for deleting object. Set here, or in self.save
+        # self.directory    = loadFromDirectory  # Used in objectmanager for deleting object. Set here, or in self.save
         self.loadSuccess  = False
-        self.tags         = []                 # A list of strings. This determines what groups the object is placed in.
+        self.__tags       = []                 # A list of strings. This determines what groups the object is placed in.
 
         if loadFromDirectory is not None:
             self.loadSuccess = self.__load(loadFromDirectory)
@@ -241,23 +248,23 @@ class TrackableObject(Trackable):
         """
 
         printf("TrackableObject.save(): Saving self to directory ", directory)
+
         # Make sure the "objects" directory exists
         filename                    = directory + "TrackerObject " + self.name + "\\"
-        self.directory              = filename
         ensurePathExists(filename)
 
 
 
-        dataJson = {}
+        dataJson = {"tags": self.__tags, "Orientations": {}}
         # Save images and numpy arrays as seperate folders
         for index, view in enumerate(self.views):
             # Save the image
             cv2.imwrite(filename + "Orientation_" + str(index) + "_Image.png", view.image)
 
             # Add any view data to the dataJson
-            dataJson["Orientation_" + str(index)] = {"rect":  view.rect,
-                                                "pickupRect": view.pickupRect,
-                                                "height":     view.height}
+            dataJson["Orientations"]["Orientation_" + str(index)] = {"rect":  view.rect,
+                                                                     "pickupRect": view.pickupRect,
+                                                                     "height":     view.height}
 
         json.dump(dataJson, open(filename + "data.txt", 'w'), sort_keys=False, indent=3, separators=(',', ': '))
 
@@ -283,18 +290,23 @@ class TrackableObject(Trackable):
             return False
 
         # For each view, load the image associated with it, and build the appropriate view
-        for key in loadedData:
+        orientationData = loadedData["Orientations"]
+        for key in orientationData:
             imageFile = directory + '\\' + key + "_Image.png"
             image     = cv2.imread(imageFile)
 
             if image is None:
-                printf("TrackableObject.__load() ERROR: Image File", imageFile, " was unable to be loaded!")
+                printf("TrackableObject.__load(): ERROR: Image File ", imageFile, " was unable to be loaded!")
                 return False
 
             self.addNewView(image      = image,
-                            rect       = loadedData[key]["rect"],
-                            pickupRect = loadedData[key]["pickupRect"],
-                            height     = loadedData[key]["height"])
+                            rect       = orientationData[key]["rect"],
+                            pickupRect = orientationData[key]["pickupRect"],
+                            height     = orientationData[key]["height"])
+
+
+        for tag in loadedData["tags"]:
+            self.addTag(tag)
         return True
 
 
@@ -305,8 +317,13 @@ class TrackableObject(Trackable):
         self.views.append(newView)
 
     def addTag(self, tagString):
-        self.tags.append(tagString)
+        # Make sure there's never duplicates
+        if tagString not in self.__tags:
+            printf("TrackableObject.addTag(): Adding new tag: ", tagString, " to ", self.name)
+            self.__tags.append(tagString)
 
+    def removeTag(self, tagString):
+        self.__tags.remove(tagString)
 
     def getIcon(self, maxWidth, maxHeight):
         # Create an icon of a cropped image of the 1st View, and resize it to the parameters.
@@ -333,7 +350,7 @@ class TrackableObject(Trackable):
         return image.copy()
 
     def getTags(self):
-        return self.tags
+        return self.__tags
 
 
 class TrackableGroup(Trackable):
@@ -344,14 +361,15 @@ class TrackableGroup(Trackable):
         self.name    = name
         self.members = members  # List of Trackable objects that belong to the group
 
-        self.memberIDs = [obj.name for obj in self.members]
+        # self.memberIDs = [obj.name for obj in members]
 
     def getViews(self):
         views = []
         for obj in self.members:
             views += obj.getViews()
+
         return views
 
-    def getMemberIDs(self):
-        return self.memberIDs
+    def getMembers(self):
+        return self.members
 

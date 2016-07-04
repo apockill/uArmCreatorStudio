@@ -445,7 +445,7 @@ class CommandList(QtWidgets.QListWidget):
     def __init__(self, environment, parent):  # Todo: make commandList have a parent
         super(CommandList, self).__init__()
 
-        self.env = environment # Should just be used in addCommand
+        self.env = environment  # Should just be used in addCommand
 
         # GLOBALS
         self.commands = {}  # Dictionary of commands. Ex: {QListItem: MoveXYZCommand, QListItem: PickupCommand}

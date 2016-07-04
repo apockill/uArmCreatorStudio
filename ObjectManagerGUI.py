@@ -19,7 +19,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         # Global UI Variables
         self.selLayout          = QtWidgets.QVBoxLayout()
-        self.objList            = QtWidgets.QListWidget()
+        self.objTree            = QtWidgets.QTreeWidget()
 
 
 
@@ -29,6 +29,9 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         self.refreshObjectList()
 
     def initUI(self):
+        self.objTree.setIndentation(10)
+        self.objTree.setHeaderLabels([""])
+        self.objTree.header().close()
 
         # CREATE OBJECTS AND LAYOUTS FOR ROW 1 COLUMN (ALL)
         newObjBtn    = QtWidgets.QPushButton("New Object")
@@ -36,12 +39,12 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         newObjBtn.setFixedWidth(130)
         newGrpBtn.setFixedWidth(130)
-        self.objList.setMinimumWidth(260)
+        self.objTree.setMinimumWidth(260)
 
         # Connect everything up
         newObjBtn.clicked.connect(lambda: self.openObjectWizard(sampleMode=False))
         newGrpBtn.clicked.connect(lambda: self.openGroupMenu())
-        self.objList.itemSelectionChanged.connect(self.refreshSelected)
+        self.objTree.itemSelectionChanged.connect(self.refreshSelected)
 
 
 
@@ -49,12 +52,12 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         # CREATE OBJECTS AND LAYOUTS FOR COLUMN 1
         listGBox     = QtWidgets.QGroupBox("Loaded Objects")
         listVLayout  = QtWidgets.QVBoxLayout()
-        listVLayout.addWidget(self.objList)
+        listVLayout.addWidget(self.objTree)
         listGBox.setLayout(listVLayout)
 
 
         # CREATE OBJECTS AND LAYOUTS FOR COLUMN 2
-        selectedGBox   = QtWidgets.QGroupBox("Selected Object")
+        selectedGBox   = QtWidgets.QGroupBox("Information")
         selectedGBox.setLayout(self.selLayout)
 
 
@@ -98,18 +101,28 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         # Clear the objectList, and reload all object names from the environment
         # If selectedItem is a string, it will try to select the item. This is for obj's added through the ObjWizard
         # Clear the current objectList
-        self.objList.clear()
-
-
-        # Iterate through all the loaded objects and create a list item with their name on it
-        objNames = self.objManager.getObjectIDList(self.objManager.TRACKABLE)
-        objNames.sort()  # Make it in alphabetical order
+        self.objTree.clear()
         self.vision.trackerEndStopClear()
-        for i, name in enumerate(objNames):
-            self.objList.addItem(name)
 
-            if name == selectedItem:
-                self.objList.item(i).setSelected(True)
+
+        # Get a list for each section of the QTreeWidget that there will be
+        visObjs = self.objManager.getObjectIDList(self.objManager.TRACKABLEOBJ)
+        visObjs.sort()
+
+        grpObjs = self.objManager.getObjectIDList(self.objManager.TRACKABLEGROUP)
+        grpObjs.sort()
+
+        tree = [["Vision Objects", visObjs], ["Vision Groups", grpObjs]]
+
+        for section in tree:
+
+            # Create the Title
+            title = QtWidgets.QTreeWidgetItem(self.objTree)
+            title.setText(0, section[0])
+            for name in section[1]:
+                QtWidgets.QTreeWidgetItem(title, [name])
+
+        self.objTree.expandAll()
 
     def refreshSelected(self):
         # Modifies self.selectedObjVLayout to show the currently selected object, it's name, description, etc.
@@ -117,28 +130,32 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         self.clearSelectedLayout()
 
         # Get the selected object
-        selectedObjects = self.objList.selectedItems()
-        if not len(selectedObjects):
+        selObject = self.getSelected()
+        if selObject is None:
+            self.clearSelectedLayout()
             return
 
-        selObject = selectedObjects[0].text()
         obj = self.objManager.getObject(selObject)
 
 
         if obj is None:
-            printf("ObjectManager.refreshSelectedObjMenu(): ERROR: ObjectManager returned None for ", selObject)
             self.vision.trackerEndStopClear()
             self.clearSelectedLayout()
             return
 
+        self.vision.clearTargets()
 
         # Make the SelectedObject window reflect the information about the object (and it's type) that is curr. selected
         if isinstance(obj, self.objManager.TRACKABLEOBJ):
             self.setSelectionTrackable(obj)
+            self.vision.trackerAddStartTrack(obj)
+            return
 
         if isinstance(obj, self.objManager.TRACKABLEGROUP):
             print(obj)
             self.setSelectionGroup(obj)
+            self.vision.trackerAddStartTrack(obj)
+            return
 
 
     def setSelectionTrackable(self, trackableObj):
@@ -173,30 +190,40 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
 
         # Create and set the description for this object
-        selDescLbl.setText("Name:\n"          + trackableObj.name      + "\n\n"
-                           "# of Points: \n"  + str(avgPoints)         + "\n\n"
-                           "Orientations: \n" + str(len(views)) + "\n\n\n\n"
+        selDescLbl.setText("Name: \n\t"           + trackableObj.name + "\n\n"
+                           "Detail Points: \n\t"  + str(avgPoints)    + "\n\n"
+                           "Orientations: \n\t"   + str(len(views))   + "\n\n"
+                           "Belongs To Groups:\n" + ''.join(['\t'+tag+'\n' for tag in trackableObj.getTags()]) + "\n"
                            "Image:")
 
         self.selLayout.addWidget(selDescLbl)
         self.selLayout.addWidget(selImgLbl)
-        self.selLayout.addWidget(deleteBtn)
         self.selLayout.addWidget(addOrientationBtn)
+        self.selLayout.addWidget(deleteBtn)
         self.selLayout.addStretch(1)
 
     def setSelectionGroup(self, trackableGrp):
         # Start Tracking the selected object
-        self.vision.clearTargets()
-        self.vision.trackerAddStartTrack(trackableGrp)
-
         selDescLbl = QtWidgets.QLabel("")   # Description of selected object
         deleteBtn  = QtWidgets.QPushButton("Delete")
         editGrpBtn = QtWidgets.QPushButton("Edit Group")
 
-
         # Connect any buttons
         deleteBtn.clicked.connect(self.deleteSelected)
         editGrpBtn.clicked.connect(lambda: self.openGroupMenu(groupObj=trackableGrp))
+
+
+        # Create the appropriate description
+        groupMembers = ['\t' + obj.name + '\n' for obj in trackableGrp.getMembers()]
+        selDescLbl.setText("Name: \n\t"        + trackableGrp.name+ "\n\n"
+                           "Group Members: \n" + ''.join(groupMembers) + "\n")
+
+
+        self.selLayout.addWidget(selDescLbl)
+        self.selLayout.addWidget(editGrpBtn)
+        self.selLayout.addWidget(deleteBtn)
+        self.selLayout.addStretch(1)
+
 
     def clearSelectedLayout(self):
         for cnt in reversed(range(self.selLayout.count())):
@@ -209,7 +236,6 @@ class ObjectManagerWindow(QtWidgets.QDialog):
                 widget.deleteLater()
 
 
-
     def deleteSelected(self):
         # Get the selected object
         selObject = self.getSelected()
@@ -217,8 +243,8 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         # Warn the user of the consequences of continuing
         reply = QtWidgets.QMessageBox.question(self, 'Warning',
-                                       "Deleting this object will delete it's object files permanently.\n"
-                                       "Do you want to continue??",
+                                       "Deleting this object will delete it permanently.\n"
+                                       "Do you want to continue?",
                                        QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
 
         if reply == QtWidgets.QMessageBox.Yes:
@@ -228,9 +254,9 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
     def getSelected(self):
         # Returns the selected object
-        selectedObjects = self.objList.selectedItems()
+        selectedObjects = self.objTree.selectedItems()
         if not len(selectedObjects): return None
-        selObject = selectedObjects[0].text()
+        selObject = selectedObjects[0].text(0)
         return selObject
 
 
@@ -289,9 +315,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         self.cameraWidget.play()
 
     def openGroupMenu(self, groupObj=None):
-        # """
-        # :type groupObj: Logic.ObjectManager.TrackableGroup
-        # """
+        """ :type groupObj: Logic.ObjectManager.TrackableGroup """
 
         # Opens a menu that lets people choose what objects to put into a group
         choosableObjects = self.objManager.getObjectIDList(objFilter=self.objManager.TRACKABLEOBJ)
@@ -299,9 +323,27 @@ class ObjectManagerWindow(QtWidgets.QDialog):
             groupMenu = EditGroupWindow(choosableObjects, [], "New Group Name", self)
         else:
             print(groupObj)
-            groupMenu = EditGroupWindow(choosableObjects, groupObj.getMemberIDs(), groupObj.name, self)
+            groupMenu = EditGroupWindow(choosableObjects, groupObj.getMembers(), groupObj.name, self)
 
-        groupMenu.exec_()
+        accepted = groupMenu.exec_()
+
+
+
+        if accepted:
+            # Delete the tags of the original version (if there is one) before adding a new one
+            self.objManager.deleteObject(groupMenu.getName())
+
+            # Add the appropriate tags to every object
+            for objID in groupMenu.getSelected():
+                obj = self.objManager.getObject(objID)
+                obj.addTag(groupMenu.getName())
+                self.objManager.saveObject(obj)
+
+            self.objManager.refreshGroups()
+            self.refreshObjectList()
+        else:
+            printf("ObjectManager.openGroupMenu(): User rejected prompt. Ignoring changes!")
+
         groupMenu.close()
         groupMenu.deleteLater()
 
@@ -319,31 +361,37 @@ class EditGroupWindow(QtWidgets.QDialog):
         This opens up when "New Group" button is clicked or when "add objects to group" is clicked in ObjectManager
     """
 
-    def __init__(self, trackableObjs, chosenObjs, currentName, parent):
+    def __init__(self, trackableObjs, previouslyChosen, currentName, parent):
         super(EditGroupWindow, self).__init__(parent)
 
-        self.chosenObjs  = chosenObjs     # A list of previously chosen objects for this group. Put [] if new group
         self.objNames    = trackableObjs  # A list of strings of trackable objects
 
         # Init Global UI objects
         self.grpNameEdit = QtWidgets.QLineEdit(currentName)
         self.objList     = QtWidgets.QListWidget()
 
+
+        self.objList.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+
         # Add trackablObjs to the objList
+        prevChosenIDs = [obj.name for obj in previouslyChosen]
         for i, objID in enumerate(trackableObjs):
             self.objList.addItem(objID)
-            if objID in self.chosenObjs:
+            if objID in prevChosenIDs:
                 self.objList.item(i).setSelected(True)
 
         self.initUI()
 
     def initUI(self):
-        nameLbl = QtWidgets.QLabel("Group Name: ")
-        okBtn   = QtWidgets.QPushButton("Ok", self)
+
+
+
+        nameLbl   = QtWidgets.QLabel("Group Name: ")
+        applyBtn  = QtWidgets.QPushButton("Apply", self)
         cancelBtn = QtWidgets.QPushButton("Cancel", self)
 
 
-        okBtn.clicked.connect(self.accept)
+        applyBtn.clicked.connect(self.accept)
         cancelBtn.clicked.connect(self.reject)
 
 
@@ -359,7 +407,7 @@ class EditGroupWindow(QtWidgets.QDialog):
 
         row3.addWidget(cancelBtn)
         row3.addStretch(1)
-        row3.addWidget(okBtn)
+        row3.addWidget(applyBtn)
 
         mainVLayout = QtWidgets.QVBoxLayout()
         mainVLayout.addLayout(row1)
@@ -370,6 +418,17 @@ class EditGroupWindow(QtWidgets.QDialog):
         self.setMinimumHeight(400)
         self.setWindowTitle('Add Objects to Group')
 
+    def getName(self):
+        return self.grpNameEdit.text()
+
+    def getSelected(self):
+        selectedItems = self.objList.selectedItems()
+        selectedObjs  = []
+
+        for item in selectedItems:
+            selectedObjs.append(item.text())
+        print("Selected objects!")
+        return selectedObjs
 
 
 # Object WIZARD
@@ -492,7 +551,6 @@ class OWPage1(QtWidgets.QWizardPage):
                                   ''.join(invalidChars))
             return False
 
-        print(self.forbiddenNames, name.lower())
         if name.lower() in self.forbiddenNames:
             self.errorLbl.setText('There is already an object named ' + name + '! \n'
                                   ' If you want to replace it, delete the objects folder and reload the program!')

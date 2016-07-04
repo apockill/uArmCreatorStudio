@@ -331,7 +331,7 @@ class PlaneTracker:
 
         for target in self.targets:
             if view == target.view:
-                printf("PlaneTracker.addTarget(): ERROR: Attempted to add two targets of the same name: ", view.name)
+                printf("PlaneTracker.addTarget(): Rejected: Attempted to add two targets of the same name: ", view.name)
                 return
 
         planarTarget = self.createTarget(view)

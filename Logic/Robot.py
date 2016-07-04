@@ -81,14 +81,14 @@ class Robot:
     def connected(self):
         if self.uArm is None:         return False  # If the communication protocol class hasn't been created,
         if not self.uArm.connected(): return False  # If the Serial is not connected
-        if self.__threadRunning:        return False  # If the setupThread is running
+        if self.__threadRunning:      return False  # If the setupThread is running
         return True
 
 
 
     def setPos(self, **kwargs):
         if not self.connected():
-            printf("Robot.setPos(): ERROR: Robot not found or setupThread is running, canceling position change")
+            printf("Robot.setPos(): Robot not found or setupThread is running, canceling position change")
             return
 
         relative = kwargs.get('relative', False)
@@ -107,7 +107,7 @@ class Robot:
 
     def setWrist(self, angle, relative=False):
         if not self.connected():
-            printf("Robot.setWrist(): ERROR: Robot not found or setupThread is running, canceling wrist change")
+            printf("Robot.setWrist(): Robot not found or setupThread is running, canceling wrist change")
             return
 
         newWrist = self.__wrist
@@ -122,7 +122,7 @@ class Robot:
 
     def setServos(self, all=None, servo1=None, servo2=None, servo3=None, servo4=None):
         if not self.connected():
-            printf("Robot.setServos(): ERROR: Robot not found or setupThread is running, canceling servo change")
+            printf("Robot.setServos(): Robot not found or setupThread is running, canceling servo change")
             return
 
         # If anything changed, set the appropriate newServoStatus to reflect that
@@ -136,7 +136,7 @@ class Robot:
 
     def setGripper(self, status):
         if not self.connected():
-            printf("Robot.setGripper(): ERROR: Robot not found or setupThread is running, canceling gripper change")
+            printf("Robot.setGripper(): Robot not found or setupThread is running, canceling gripper change")
             return
 
         if not self.__gripperStatus == status:
@@ -145,14 +145,14 @@ class Robot:
 
     def setBuzzer(self, frequency, duration):
         if not self.connected():
-            printf("Robot.setGripper(): ERROR: Robot not found or setupThread is running, canceling buzzer change")
+            printf("Robot.setGripper(): Robot not found or setupThread is running, canceling buzzer change")
             return
 
         self.uArm.setBuzzer(frequency, duration)
 
     def setSpeed(self, speed):
         # Changes a class wide variable that affects the move commands in self.refresh()
-        printf("Robot.setSpeed(): ERROR: Setting speed to ", speed)
+        printf("Robot.setSpeed(): Setting speed to ", speed)
         self.__speed = speed
 
 
@@ -166,7 +166,7 @@ class Robot:
 
         # Check that the robot is connected
         if not self.connected():
-            printf("Robot.refresh(): ERROR: Tried sending command while uArm not connected, or while setting up.")
+            printf("Robot.refresh(): Tried sending command while uArm not connected, or while setting up.")
             return
 
 
@@ -211,7 +211,7 @@ class Robot:
 
     def __updateServos(self):
         if not self.connected():
-            printf("Robot.setServos(): ERROR: Robot not found or setupThread is running, canceling servo update")
+            printf("Robot.setServos(): Robot not found or setupThread is running, canceling servo update")
             return
 
         for i, servoVal in enumerate(self.__servoStatus):

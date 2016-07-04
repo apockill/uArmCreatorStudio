@@ -82,7 +82,6 @@ class Uarm:
 
     def getIsMoving(self):
         # Returns a 0 or a 1, depending on whether or not the robot is moving.
-
         response  = self.__send("gmoving")
 
         parsedArgs = self.__parseArgs(response, "moving", ["m"])
