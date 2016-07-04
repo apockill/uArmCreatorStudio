@@ -62,7 +62,7 @@ class ObjectManager:
         newObject.save(self.__directory)
 
     def refreshGroups(self):
-        # Creates a TrackableGroup for every tag that every object has, and replaces old TrackableGroups
+        # Creates a TrackableGroup for every uniqe tag every object has, and replaces old TrackableGroups
         printf("ObjectManager.refreshGroups(): Refreshing Groups!")
 
         # Remove existing groups from self.__objects
@@ -89,7 +89,6 @@ class ObjectManager:
 
         # Create the TrackableGroup objects and add them
         for group in groups:
-            print("Adding new group", group)
             newGroupObj = TrackableGroup(name=group, members=groups[group])
             self.__addObject(newGroupObj)
 
@@ -107,11 +106,12 @@ class ObjectManager:
 
         """
         Notes for Future Me:
-            type(obj) == TrackableObject      # Works
-            isinstance(obj, TrackableObject)  # Works
-            issubclass(type(obj), Trackable)  # Works
+            type(obj) == TrackableObject               # Works
+            isinstance(trackable, TrackableObject)  # Works
+            issubclass(type(trackable), Trackable)        # Works
 
         """
+
         nameList = []
         for obj in self.__objects:
             # If None, then just add every object
@@ -119,7 +119,8 @@ class ObjectManager:
                 nameList.append(obj.name)
                 continue
 
-            if objFilter == self.PICKUP and not obj.name == "Robot Marker":
+            if objFilter == self.PICKUP and issubclass(type(obj), Trackable):
+                if obj.name == "Robot Marker": continue
                 nameList.append(obj.name)
                 continue
 
@@ -199,6 +200,8 @@ class Trackable:
     def getViews(self):
         return self.views
 
+    def equalTo(self, otherObjectID):
+        return self.name == otherObjectID
 
 class TrackableObject(Trackable):
     View = namedtuple('View', 'name, viewID, height, pickupRect, rect, image')
@@ -359,17 +362,19 @@ class TrackableGroup(Trackable):
     def __init__(self, name, members):
         super(TrackableGroup, self).__init__(name)
         self.name    = name
-        self.members = members  # List of Trackable objects that belong to the group
+        self.__members = members  # List of Trackable objects that belong to the group
+        self.__memberIDs = [obj.name for obj in self.__members]
 
-        # self.memberIDs = [obj.name for obj in members]
 
     def getViews(self):
         views = []
-        for obj in self.members:
+        for obj in self.__members:
             views += obj.getViews()
 
         return views
 
     def getMembers(self):
-        return self.members
+        return self.__members
 
+    def equalTo(self, otherObjectID):
+        return otherObjectID in self.__memberIDs

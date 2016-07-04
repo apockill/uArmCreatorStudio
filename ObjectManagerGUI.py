@@ -152,7 +152,6 @@ class ObjectManagerWindow(QtWidgets.QDialog):
             return
 
         if isinstance(obj, self.objManager.TRACKABLEGROUP):
-            print(obj)
             self.setSelectionGroup(obj)
             self.vision.trackerAddStartTrack(obj)
             return
@@ -322,7 +321,6 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         if groupObj is None:
             groupMenu = EditGroupWindow(choosableObjects, [], "New Group Name", self)
         else:
-            print(groupObj)
             groupMenu = EditGroupWindow(choosableObjects, groupObj.getMembers(), groupObj.name, self)
 
         accepted = groupMenu.exec_()
@@ -427,7 +425,6 @@ class EditGroupWindow(QtWidgets.QDialog):
 
         for item in selectedItems:
             selectedObjs.append(item.text())
-        print("Selected objects!")
         return selectedObjs
 
 
@@ -551,8 +548,8 @@ class OWPage1(QtWidgets.QWizardPage):
                                   ''.join(invalidChars))
             return False
 
-        if name.lower() in self.forbiddenNames:
-            self.errorLbl.setText('There is already an object named ' + name + '! \n'
+        if name.lower().strip() in self.forbiddenNames:
+            self.errorLbl.setText('There is already an object named ' + name.strip() + '! \n'
                                   ' If you want to replace it, delete the objects folder and reload the program!')
             return False
         # If there were no errors, then turn the "next" button enabled, and make the error message dissapear

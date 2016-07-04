@@ -47,9 +47,7 @@ class Environment:
             self.__vStream.setNewCamera(settings['cameraID'])
 
         if settings['robotID'] is not None:
-            # bestScore, bestPtPairs = self.pruneCalibrationSet(int(len(settings["coordCalibrations"]["ptPairs"])*.5), settings["coordCalibrations"]["ptPairs"])
             # settings["coordCalibrations"]["ptPairs"] = bestPtPairs
-            # print("NEw len: ", len(bestPtPairs))
             self.__robot.setUArm(settings['robotID'])
 
         if settings['objectsDirectory'] is not None:
@@ -102,7 +100,7 @@ class Interpreter:
     # Functions for GUI to use
     def loadScript(self, env, script):
         """
-        # Creates each event, loads it with its appropriate commandList, and then adds that event to self.events
+        Creates each event, loads it with its appropriate commandList, and then adds that event to self.events
 
         :param      env: Environment object
         :param      script: a loaded script from a .task file
@@ -193,20 +191,20 @@ class Interpreter:
     def addEvent(self, event):
         self.events.append(event)
 
+
     def isRunning(self):
-        """
-        The interpreter will now check comprehensively every function you have, if it requires a camera, if it requires
-        a robot, if it requires an object, and check if all of those things are ready (query the robot, check the
-        vStream, check the objects saved in the Environment. If everything is ready, it will start a thread and begin
-        running.
-        :return:
-        """
         return not self.killApp or self.mainThread is not None
+
+    def isExiting(self):
+        # Commands that have the potential to take a long time (wait, pickup, that sort of thing) will use this to check
+        # if they should exit immediately
+
+        return self.killApp
 
     def getStatus(self):
         # Returns an index of the (event, command) that is currently being run
 
-        if self.killApp:
+        if self.isExiting():
             return False
 
         currRunning = self.currRunning
@@ -280,9 +278,8 @@ class Interpreter:
             self.currRunning = {}
 
             for index, event in enumerate(self.events):
-                if self.killApp: break
+                if self.isExiting(): break
                 if not event.isActive(): continue
-
                 self.__interpretEvent(event)
 
 
@@ -301,7 +298,7 @@ class Interpreter:
 
         # Check each command, run the ones that should be run
         while index < len(event.commandList):
-            if self.killApp and not overrideKillApp: break  # THis might be overrun for things like DestroyEvent
+            if self.isExiting() and not overrideKillApp: break  # THis might be overrun for things like DestroyEvent
 
             command    = commandList[index]
 

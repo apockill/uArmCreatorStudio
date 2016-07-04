@@ -1,6 +1,7 @@
 import math
 import cv2
 import numpy as np
+from time         import time, sleep
 from Logic.Global import printf
 
 """
@@ -19,12 +20,27 @@ MIN_POINTS_FOCUS           = 40   # Minimum tracking points to just move the rob
 MAX_FRAME_FAIL             = 30   # Maximum times a function will get a new frame to recognize an object before quitting
 MAX_PICKUP_DIST_THRESHOLD  = 15   # Maximum "camera distance" from an object to allow the pickup to continue
 
+# General Use Functions (May or may not use vision or robot)
+def wait(waitTime, exitFunc):
+    """
+    This is a convenience function for waiting a certain amount of time. The idea is that the exitFunc will
+    quit the wait at any point that it returns True. This is so that when the interpreter is stopped, all
+    commands will exit quickly and easily.
+    """
+
+    waitedTime = 0
+
+    # While sleeping, make sure that the script has not been shut down
+    start = time()
+    while time() - start < waitTime - .05:
+        if exitFunc(): return False
+        sleep(.05)
+
+    # Sleep the last little bit, for extra accuracy
+    sleep(waitTime - (time() - start))
 
 
-def dist(p1, p2):
-    return ((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2 + (p2[2] - p1[2])**2)**.5
-
-
+# Transform math
 def createTransformFunc(ptPairs, direction):
     # Returns a function that takes a point (x,y,z) of a camera coordinate, and returns the robot (x,y,z) for that point
     # Direction is either 1 or -1. If -1, then it will go backwards on the ptPairs, create a Robot-->Camera transform
@@ -49,7 +65,6 @@ def createTransformFunc(ptPairs, direction):
 
     return transformFunc
 
-
 def getPositionTransform(posToTransform, ptPairs, direction):
     transform = createTransformFunc(ptPairs, direction)
     return transform(posToTransform)
@@ -60,7 +75,27 @@ def getPositionCorrection(destPos, actualPos):
     newPos =  np.asarray(destPos) + offset
     return newPos.tolist()
 
+def getRelativePosition(camPos, robRelative, ptPairs):
 
+    posRob    = getPositionTransform((camPos[0], camPos[1], camPos[2]), ptPairs, direction=1)
+    posCam    = getPositionTransform(posRob, ptPairs, direction=-1)
+    staticErr = camPos - posCam
+
+    posRob    = getPositionTransform((camPos[0], camPos[1], camPos[2]), ptPairs, direction=1)
+    posRob[0] += robRelative[0]
+    posRob[1] += robRelative[1]
+    posRob[2] += robRelative[2]
+
+    posCam  = getPositionTransform(posRob, ptPairs, direction=-1)
+    posCam += staticErr
+
+    return posCam
+
+
+
+# Coordinate math
+def dist(p1, p2):
+    return ((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2 + (p2[2] - p1[2])**2)**.5
 
 def findCentroid(points):
     # For any array of format [[x, y], [x, y], [x,y], ... [x, y]]
@@ -131,22 +166,7 @@ def pointInPolygon(point, poly):
 
 
 
-def getRelativePosition(camPos, robRelative, ptPairs):
 
-    posRob    = getPositionTransform((camPos[0], camPos[1], camPos[2]), ptPairs, direction=1)
-    posCam    = getPositionTransform(posRob, ptPairs, direction=-1)
-    staticErr = camPos - posCam
-
-    posRob    = getPositionTransform((camPos[0], camPos[1], camPos[2]), ptPairs, direction=1)
-    posRob[0] += robRelative[0]
-    posRob[1] += robRelative[1]
-    posRob[2] += robRelative[2]
-
-    posCam  = getPositionTransform(posRob, ptPairs, direction=-1)
-    posCam += staticErr
-
-    return posCam
-    
 # Long form functions with lots of steps
 def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision):
     def getRobotAccurate(rbMarker, vision):

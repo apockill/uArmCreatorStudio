@@ -59,7 +59,6 @@ class Uarm:
         return self.__send(cmnd)
 
     def servoDetach(self, servo_number):
-        print("uarm com: Detaching")
         servo_number = str(int(servo_number))
         cmnd = "detachS" + servo_number
         return self.__send(cmnd)

@@ -1,4 +1,3 @@
-from time              import sleep  # For WaitCommand
 from Logic             import RobotVision as rv
 from Logic.Global      import printf
 from Logic.LogicObject import LogicObject
@@ -175,7 +174,8 @@ class WaitCommand(Command):
         # Split the wait into incriments of 0.1 seconds each, and check if the thread has been stopped at each incriment
         if success:
             printf("WaitCommand.run(): Waiting for", waitTime, "seconds")
-            sleep(waitTime)
+            rv.wait(waitTime, self.interpreter.isExiting)
+
             return True
         else:
             printf("WaitCommand.run(): ERROR: Expression ", self.parameters['time'], " failed to evaluate correctly!")
@@ -232,7 +232,7 @@ class BuzzerCommand(Command):
 
             # If the user wants to sleep while the buzzer is running, then sleep.
             if self.parameters["waitForBuzzer"]:
-                sleep(duration)
+                rv.wait(duration, self.interpreter.isExiting)
 
             return True
         else:

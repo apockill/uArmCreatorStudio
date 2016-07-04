@@ -57,7 +57,7 @@ class Vision:
 
         for frameID, historyFromFrame in enumerate(trackHistory):
             for tracked in historyFromFrame:
-                if tracked.view.name == trackable.name:
+                if trackable.equalTo(tracked.view.name):
                     return frameID, tracked
         return None, None
 
@@ -72,7 +72,7 @@ class Vision:
         :return:
         """
 
-        print("Getting ", trackableObj.name)
+
         # Get a super recent frame of the object
         for i in range(0, maxAttempts):
             # If the frame is too old or marker doesn't exist or doesn't have enough points, exit the function
@@ -106,7 +106,7 @@ class Vision:
         for historyFromFrame in trackHistory:
 
             for tracked in historyFromFrame:
-                if tracked.target.view.name == trackableObject.name:
+                if trackableObject.equalTo(tracked.target.view.name):
                     return True
         return False
 

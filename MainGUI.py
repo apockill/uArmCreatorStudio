@@ -189,7 +189,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # If a calibration of type Motion has been changed, reflect this in the settings
         if isNew("motionCalibrations"):
             settingsChanged = True
-            print("MainWindow.setSettings(): Updating Motion Calibrations!")
+            printf("MainWindow.setSettings(): Updating Motion Calibrations!")
             self.settings["motionCalibrations"] = newSettings["motionCalibrations"]
 
         if isNew("coordCalibrations"):
@@ -382,7 +382,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def newTask(self, promptSave):
         if promptSave:
-            print("About to prompt save!")
             self.promptSave()
 
         self.dashboardView.controlPanel.loadData([])
@@ -719,7 +718,6 @@ class Application(QtWidgets.QApplication):
         super(Application, self).__init__(args)
 
     def notify(self, receiver, event):
-        # print(receiver, '\t', event)
         # Add any keys that are pressed to keysPressed
         if event.type() == QtCore.QEvent.KeyPress:
             if event.key() not in Global.keysPressed:
