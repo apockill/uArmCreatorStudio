@@ -1,6 +1,7 @@
 import time
 import cv2
 import numpy as np
+from time         import sleep  # Used in waitForNewFrames
 from collections  import namedtuple
 from Logic.Global import printf
 
@@ -11,6 +12,7 @@ class Vision:
 
         self.vStream    = vStream
         self.tracker    = PlaneTracker(25.0)
+        self.exiting    = False
 
         # Use these on any work functions that are intended for threading
         self.filterLock = self.vStream.filterLock
@@ -20,10 +22,19 @@ class Vision:
     # Wrappers for the VideoStream object
     def waitForNewFrames(self, numFrames=1):
         # Useful for situations when you need x amount of new frames after the robot moved, before doing vision
-        # printf("Vision.waitForNewFrames(): Waiting for ", numFrames, " frames!")
+
         for i in range(0, numFrames):
 
-            self.vStream.waitForNewFrame()
+            lastFrame = self.vStream.frameCount
+            while self.vStream.frameCount == lastFrame:
+                if self.exiting:
+                    printf("Vision.waitForNewFrames(): Exiting early!")
+                    break
+
+                sleep(.05)
+
+
+
 
 
     # Object tracker control functions
@@ -75,6 +86,10 @@ class Vision:
 
         # Get a super recent frame of the object
         for i in range(0, maxAttempts):
+            if self.exiting:
+                printf("Vision.getObjectBruteAccurate(): Exiting early!")
+                break
+
             # If the frame is too old or marker doesn't exist or doesn't have enough points, exit the function
             frameAge, trackedObj = self.getObjectLatestRecognition(trackableObj)
 
@@ -258,6 +273,13 @@ class Vision:
         # Just pass an image, and a tuple/list of (x1,y1, x2,y2)
         return image[rect[1]:rect[3], rect[0]:rect[2]]
 
+
+    def setExiting(self, exiting):
+        # Used for closing threads quickly, when this is true any time-taking functions will skip through quickly
+        # and return None or False or whatever their usual failure mode is. ei, waitForFrames() would exit immediately
+        if exiting:
+            printf("Vision.setExiting(): Setting Vision to Exiting mode. All frame commands should exit quickly.")
+        self.exiting = exiting
 
 class PlaneTracker:
     """

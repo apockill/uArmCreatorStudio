@@ -1,4 +1,4 @@
-from RobotGUI.Logic import Robot
+from Logic import Robot
 from time import sleep
 import sys
 
@@ -24,17 +24,17 @@ robot.setUArm(connecteduArms[0][0])
 # Wait for the thread to finish.
 while not robot.connected(): sleep(.1)
 print("Robot connected! ")
+robot.uArm.printResponses = True  # Print responses from the robot
 
 # Prepare a move. Nothing will happen until robot.Refresh() is called
 robot.setSpeed(10)
 robot.setPos(x=0, y=-15, z=15)
-robot.setWrist(90)
+robot.setServoAngles(servo2=90)
 robot.setGripper(True)
 robot.refresh()
 
 
 robot.setPos(x=10, relative=True)
-robot.refresh()
 robot.setPos(x=-20, relative=True)
 robot.refresh()
 robot.setPos(x=0, y=-15, z=15)

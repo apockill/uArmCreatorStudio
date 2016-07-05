@@ -80,13 +80,15 @@ class Environment:
     # Close system objects
     def close(self):
         # This will try to safely shut down any objects that are capable of running threads.
+        self.__robot.setExiting(True)
+        self.__vision.setExiting(True)
         self.__vStream.endThread()
 
 
 class Interpreter:
     def __init__(self):
         self.mainThread   = None    # The thread on which the script runs on. Is None while thread is not running.
-        self.killApp      = True    # When True, the script thread will attempt to close ASAP
+        self.__exiting      = True    # When True, the script thread will attempt to close ASAP
         self.scriptFPS    = 10      # Speed at which events are checked
         self.events       = []      # A list of events, and their corresponding commands
 
@@ -143,63 +145,78 @@ class Interpreter:
 
 
     # Generic Functions for API and GUI to use
-    def startThread(self):
+    def startThread(self, robot, vision):
         # Start the program thread
         if self.mainThread is None:
-            self.killApp     = False
+            # Make sure vision and robot are not in exiting mode
+            vision.setExiting(False)
+            robot.setExiting(False)
+            robot.setActiveServos(all=True)
+            robot.setSpeed(10)
+
+            self.__exiting     = False
             self.mainThread  = Thread(target=self.__programThread)
             self.currRunning = {}
             self.mainThread.start()
         else:
             printf("Interpreter.startThread(): ERROR: Tried to run programThread, but there was already one running!")
 
-    def endThread(self, vision):
+    def endThread(self, robot, vision):
         # Close the thread that is currently running at the first chance it gets. Return True or False
         printf("Interpreter.endThread(): Closing program thread.")
 
-        self.killApp = True
+        self.__exiting = True
 
         if self.mainThread is not None:
+            # DeActivate Vision and the Robot so that exiting the thread will be very fast
+            vision.setExiting(True)
+            robot.setExiting(True)
 
             self.mainThread.join(3000)
 
             if self.mainThread.is_alive():
                 printf("Interpreter.endThread(): ERROR: Thread was told to close but did not")
                 return False
-            else:
 
-                self.mainThread = None
-                self.events     = []
-                vision.clearTargets()
-                vision.endTracker()
+            # Re-Activate the Robot and Vision, for any future uses
+            vision.setExiting(False)
+            robot.setExiting(False)
+            vision.clearTargets()
+            vision.endTracker()
 
-                ##### Reset self.__variables with the default values/functions #####
-                safeList = ['math', 'acos', 'asin', 'atan', 'atan2', 'ceil', 'cos', 'cosh', 'degrees',
-                            'e', 'exp', 'fabs', 'floor', 'fmod', 'frexp', 'hypot', 'ldexp', 'log', 'log10',
-                            'modf', 'pi', 'pow', 'radians', 'sin', 'sinh', 'sqrt', 'tan', 'tanh']
-
-                # Use the list to filter the local namespace
-                self.__variables        = {}
-                self.__variables        = dict([(k, locals().get(k, None)) for k in safeList])
-
-                # Add any needed builtins back in.
-                self.__variables['abs'] = abs
+            # Clean up interpreter variables
+            self.mainThread = None
+            self.events     = []
 
 
-                return True
+            # Reset self.__variables with the default values/functions #
+            safeList = ['math', 'acos', 'asin', 'atan', 'atan2', 'ceil', 'cos', 'cosh', 'degrees',
+                        'e', 'exp', 'fabs', 'floor', 'fmod', 'frexp', 'hypot', 'ldexp', 'log', 'log10',
+                        'modf', 'pi', 'pow', 'radians', 'sin', 'sinh', 'sqrt', 'tan', 'tanh']
+
+
+            # Use the list to filter the local namespace
+            self.__variables        = {}
+            self.__variables        = dict([(k, locals().get(k, None)) for k in safeList])
+
+
+            # Add any needed builtins back in.
+            self.__variables['abs'] = abs
+
+
+            return True
 
     def addEvent(self, event):
         self.events.append(event)
 
 
     def isRunning(self):
-        return not self.killApp or self.mainThread is not None
+        return not self.__exiting or self.mainThread is not None
 
     def isExiting(self):
         # Commands that have the potential to take a long time (wait, pickup, that sort of thing) will use this to check
         # if they should exit immediately
-
-        return self.killApp
+        return self.__exiting
 
     def getStatus(self):
         # Returns an index of the (event, command) that is currently being run
@@ -269,7 +286,7 @@ class Interpreter:
 
         timer = FpsTimer(fps=self.scriptFPS)
 
-        while not self.killApp:
+        while not self.__exiting:
             timer.wait()
             if not timer.ready(): continue
 
@@ -285,6 +302,7 @@ class Interpreter:
 
         # Check if a DestroyEvent exists, if so, run it's commandList
         destroyEvent = list(filter(lambda event: type(event) == Events.DestroyEvent, self.events))
+
         if len(destroyEvent): self.__interpretEvent(destroyEvent[0], overrideKillApp=True)
 
     def __interpretEvent(self, event, overrideKillApp=False,):

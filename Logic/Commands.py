@@ -57,7 +57,6 @@ class MoveXYZCommand(Command):
         if successX and successY and successZ:
             self.robot.setPos(x=newX, y=newY, z=newZ,
                                   relative=self.parameters['relative'])
-            self.robot.refresh(override=False)
             return True
         else:
             printf("MoveXYZCommand.run(): ERROR in parsing either X Y or Z: ", successX, successY, successZ)
@@ -78,9 +77,10 @@ class MoveWristCommand(Command):
         newAngle, success = self.interpreter.evaluateExpression(self.parameters['angle'])
 
         if success:
+            # If relative, get the current wrist angle then add that to newAngle
+
             printf("MoveWristCommand.run(): Moving robot wrist to ", newAngle)
-            self.robot.setWrist(newAngle, relative=self.parameters['relative'])
-            self.robot.refresh()
+            self.robot.setServoAngles(servo3=newAngle, relative=self.parameters['relative'])
             return True
         else:
             print("MoveWristCommand.run(): ERROR in parsing new wrist angle. Expression: ", self.parameters['angle'])
@@ -127,12 +127,11 @@ class DetachCommand(Command):
 
 
         printf("DetachCommand.run(): Detaching certain servos")
-        if self.parameters['servo1']: self.robot.setServos(servo1=False)
-        if self.parameters['servo2']: self.robot.setServos(servo2=False)
-        if self.parameters['servo3']: self.robot.setServos(servo3=False)
-        if self.parameters['servo4']: self.robot.setServos(servo4=False)
+        if self.parameters['servo1']: self.robot.setActiveServos(servo0=False)
+        if self.parameters['servo2']: self.robot.setActiveServos(servo1=False)
+        if self.parameters['servo3']: self.robot.setActiveServos(servo2=False)
+        if self.parameters['servo4']: self.robot.setActiveServos(servo3=False)
 
-        self.robot.refresh()
         return True
 
 
@@ -150,12 +149,11 @@ class AttachCommand(Command):
                                                          self.parameters['servo4'])
 
         printf("AttachCommand.run(): Attaching certain servos")
-        if self.parameters['servo1']: self.robot.setServos(servo1=True)
-        if self.parameters['servo2']: self.robot.setServos(servo2=True)
-        if self.parameters['servo3']: self.robot.setServos(servo3=True)
-        if self.parameters['servo4']: self.robot.setServos(servo4=True)
+        if self.parameters['servo1']: self.robot.setActiveServos(servo0=True)
+        if self.parameters['servo2']: self.robot.setActiveServos(servo1=True)
+        if self.parameters['servo3']: self.robot.setActiveServos(servo2=True)
+        if self.parameters['servo4']: self.robot.setActiveServos(servo3=True)
 
-        self.robot.refresh()
         return True
 
 
@@ -192,7 +190,6 @@ class GripCommand(Command):
     def run(self):
         printf("GripCommand.run(): Setting gripper to True")
         self.robot.setGripper(True)
-        self.robot.refresh()
         return True
 
 
@@ -206,7 +203,6 @@ class DropCommand(Command):
     def run(self):
         printf("DropCommand.run(): Setting gripper to False")
         self.robot.setGripper(False)
-        self.robot.refresh()
         return True
 
 
@@ -273,11 +269,14 @@ class MoveRelativeToObjectCommand(Command):
         newY, successY = self.interpreter.evaluateExpression(self.parameters['y'])
         newZ, successZ = self.interpreter.evaluateExpression(self.parameters['z'])
 
-        printf("MoveXYZCommand.run(): Moving robot to ", newX, " ", newY, " ", newZ, " ")
 
+        # If X Y and Z could not be evaluated correctly, quit
         if not (successX and successY and successZ):
             printf("MoveXYZCommand.run(): ERROR in parsing either X Y or Z: ", successX, successY, successZ)
             return False
+
+        printf("MoveXYZCommand.run(): Moving robot to obj, relative XYZ is:  ", newX, " ", newY, " ", newZ)
+
 
         # Get a super recent frame of the object
         trackedObj = self.vision.getObjectBruteAccurate(self.trackable,
@@ -292,7 +291,6 @@ class MoveRelativeToObjectCommand(Command):
 
         # Set the robots position
         self.robot.setPos(x=pos[0] + newX, y=pos[1] + newY, z=pos[2] + trackedObj.view.height + newZ)
-        self.robot.refresh()
         return True
 
 
@@ -307,7 +305,7 @@ class PickupObjectCommand(Command):
         self.vision     = self.getVerifyVision(env)
         self.trackable  = self.getVerifyObject(env, self.parameters["objectID"])
         self.rbMarker   = self.getVerifyObject(env, "Robot Marker")
-
+        self.exitFunc   = interpreter.isExiting
 
         if len(self.errors): return
 
@@ -322,7 +320,7 @@ class PickupObjectCommand(Command):
     def run(self):
         if len(self.errors) > 0: return False
 
-        ret = rv.pickupObject(self.trackable, self.rbMarker, self.ptPairs, self.grndHeight, self.robot, self.vision)
+        ret = rv.pickupObject(self.trackable, self.rbMarker, self.ptPairs, self.grndHeight, self.robot, self.vision, self.exitFunc)
 
         return ret
 

@@ -254,6 +254,11 @@ class MainWindow(QtWidgets.QMainWindow):
         printf("MainWindow.setScript(): Interpreter is ready. Loading script and starting program")
 
 
+        # Make sure the vision filters are activated
+        vision = self.env.getVision()
+        vision.clearTargets()
+        vision.addTrackerFilter()
+
         # Load the script, and get any relevant errors
         errors = self.interpreter.loadScript(self.env, self.controlPanel.getSaveData())
 
@@ -279,18 +284,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 printf("MainWindow.startScript(): Script run canceled by user before starting.")
                 return
 
-
         # Stop you from moving stuff around while script is running, and activate the visual cmmnd highlighting
-        robot = self.env.getRobot()
-        robot.setServos(all=True)
-        robot.setSpeed(10)
-        robot.refresh()
         self.controlPanel.setScriptModeOn(self.interpreter.getStatus, self.endScript)
-        self.interpreter.startThread()
+        self.interpreter.startThread(self.env.getRobot(), self.env.getVision())
 
-        # Make sure the vision filters are activated
-        vision = self.env.getVision()
-        vision.addTrackerFilter()
+
 
         # Make sure the UI matches the state of the script
         self.scriptToggleBtn.setIcon(QtGui.QIcon(Paths.pause_script))
@@ -300,11 +298,11 @@ class MainWindow(QtWidgets.QMainWindow):
         vision = self.env.getVision()
 
         robot = self.env.getRobot()
-        robot.setGripper(False)
-        robot.refresh()
-
-        self.interpreter.endThread(vision)
+        self.interpreter.endThread(robot, vision)
         self.controlPanel.setScriptModeOff()
+
+        # Turn off the gripper, just in case. Do this AFTER interpreter ends, so as to not use Serial twice...
+        robot.setGripper(False)
 
         # Make sure vision filters are stopped
 
@@ -509,9 +507,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
 
         robot = self.env.getRobot()
-        robot.refresh()  # Finish any moves
-        robot.setServos(all=False)
-        robot.refresh()
+        robot.setActiveServos(all=False)
 
         # Close and delete GUI objects, to stop their events from running
         self.dashboardView.close()

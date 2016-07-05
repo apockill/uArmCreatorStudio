@@ -1,6 +1,6 @@
 import serial
 import serial.tools.list_ports
-from time         import sleep
+from time         import sleep, time  # Used only in connecting to the robot, while waiting for serial to connect.
 from Logic.Global import printf
 
 # This is a library for controlling uArms that have Alex Thiel's Arduino communication protocol uploaded
@@ -21,7 +21,9 @@ class Uarm:
         self.__connectToRobot(port)
 
         # For debug logs
-        self.responseLog = []  # An array of tuples, of what was sent and what was recieved [(sent, recieved), ..(s, r)]
+        # An array of tuples, of what was sent, what was recieved
+        # [(sent, recieved), (sent, recieved), (sent, recieved)]
+        self.communicationLog = []
 
     def connected(self):
         # if self.serial is None:     return False
@@ -39,18 +41,17 @@ class Uarm:
         cmnd = "moveX" + x + "Y" + y + "Z" + z + "S" + t
         return self.__send(cmnd)
 
-    def moveWrist(self, angle):
-        angle = str(round(angle, 3))
-        cmnd = "handV" + angle
+    def setServo(self, servo, angle):
+        # Set a servo to an angle #
+        angle = str(float(round(angle, 3)))
+        cmnd = "setS" + str(int(servo)) + "V" + angle
         return self.__send(cmnd)
 
-    def gripperOn(self):
-        cmnd = "pumpV1"
+    def setGripper(self, onOff):
+        # Set the gripper to a value 1 or 0, where 1 means "gripping" and 0 mean "off"
+        cmnd = "pumpV" + str(int(onOff))
         return self.__send(cmnd)
 
-    def gripperOff(self):
-        cmnd = "pumpV0"
-        return self.__send(cmnd)
 
     def servoAttach(self, servo_number):
         print("Attaching")
@@ -69,38 +70,66 @@ class Uarm:
 
 
     # Get commands
+    def getIK(self, x, y, z):
+        # Gets the servo1, servo2, and servo3 calculated positions for the XYZ position
+
+        x = str(round(    x, 2))
+        y = str(round(    y, 2))
+        z = str(round(    z, 2))
+        cmnd = "gikX" + x + "Y" + y + "Z" + z
+        response = self.__send(cmnd)
+        parsedArgs = self.__parseArgs(response, "ik", ["A", "B", "C"])
+
+        # Return (servo1Angle, servo2Angle, servo3Angle)
+        return parsedArgs["A"], parsedArgs["B"], parsedArgs["C"]
+
+    def getFK(self, servo0, servo1, servo2):
+        # Gets the X, Y, and Z calculated positions for the servo angles servo0, servo1, servo2
+
+        servo0 = str(round(servo0, 2))
+        servo1 = str(round(servo1, 2))
+        servo2 = str(round(servo2, 2))
+        cmnd = "gfkA" + servo0 + "B" + servo1 + "C" + servo2
+        response = self.__send(cmnd)
+        parsedArgs = self.__parseArgs(response, "fk", ["X", "Y", "Z"])
+
+        # Return (X, Y, Z)
+        return parsedArgs["X"], parsedArgs["Y"], parsedArgs["Z"]
+
     def getCurrentCoord(self):
         # Returns an array of the format [x, y, z] of the robots current location
+        response  = self.__send("gcrd")
+        parsedArgs = self.__parseArgs(response, "crd", ["X", "Y", "Z"])
 
-        response  = self.__send("gcoords")
-
-        parsedArgs = self.__parseArgs(response, "coords", ["x", "y", "z"])
-        coordinate = [parsedArgs["x"], parsedArgs["y"], parsedArgs["z"]]
-
-        return coordinate
+        # Return (currX, currY, currZ)
+        return parsedArgs["X"], parsedArgs["Y"], parsedArgs["Z"]
 
     def getIsMoving(self):
-        # Returns a 0 or a 1, depending on whether or not the robot is moving.
-        response  = self.__send("gmoving")
+        # Find out if the robot is currently moving
+        response  = self.__send("gmov")
+        parsedArgs = self.__parseArgs(response, "mov", ["M"])
 
-        parsedArgs = self.__parseArgs(response, "moving", ["m"])
-        return parsedArgs["m"]
 
-    def getServoAngle(self, servo_number):
-        # Returns an angle in degrees, of the servo
+        # Return True if moving, False if not moving
+        return (False, True)[int(parsedArgs['M'])]
 
-        cmnd = "gAngleS" + str(servo_number)
+    def getServoAngles(self):
+        # Get the angles of each servo
+
+        cmnd = "gang"
         response = self.__send(cmnd)
-        parsedArgs = self.__parseArgs(response, "angle", ["a"])
+        parsedArgs = self.__parseArgs(response, "ang", ["A", "B", "C", "D"])
 
-        return parsedArgs["a"]
+        # Return angles of each servo in order
+        return parsedArgs["A"], parsedArgs["B"], parsedArgs["C"], parsedArgs["D"]
 
     def getTipSensor(self):
-        # Returns 0 or 1, whether or not the tip sensor is currently activated
-
+        # Find out if the robot is currently moving
         response  = self.__send("gtip")
-        parsedArgs = self.__parseArgs(response, "tip", ["v"])
-        return (True, False)[int(parsedArgs['v'])]  # Flip the value and turn it into a boolean
+        parsedArgs = self.__parseArgs(response, "tip", ["V"])
+
+        # Returns 0 or 1, whether or not the tip sensor is currently activated
+        return (True, False)[int(parsedArgs['V'])]  # Return True or False
 
 
     # Not to be used outside of library
@@ -123,9 +152,9 @@ class Uarm:
         # This command will send a command and recieve the robots response. There must always be a response!
         if not self.connected(): return None
 
-
+        start = time()
         # Prepare and send the command to the robot
-        cmndString = bytes("[" + cmnd + "]>", encoding='ascii')
+        cmndString = bytes("[" + cmnd + "]\n", encoding='ascii')
         try:
             self.serial.write(cmndString)
         except serial.serialutil.SerialException as e:
@@ -150,7 +179,7 @@ class Uarm:
                 break
 
         # Save the response to a log variable, in case it's needed for debugging
-        self.responseLog.append((cmnd, response))
+        self.communicationLog.append((cmnd, response))
 
         # Make sure the respone has the valid start and end characters
         if not (response.count('[') == 1 and response.count(']') == 1):
@@ -160,7 +189,7 @@ class Uarm:
         # Clean up the response
         response = response.replace("[", "")
         response = response.replace("]", "")
-        response = response.lower()
+
 
 
         # If the robot returned an error, print that out
@@ -181,7 +210,7 @@ class Uarm:
             return responseDict
 
         if command not in message:
-            printf("Uarm.__parseArgs(): ERROR: The message did not come with the appropriate command!")
+            printf("Uarm.__parseArgs(): ERROR: The message did not come with the appropriate command: ", command)
             return responseDict
 
 

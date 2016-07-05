@@ -548,7 +548,7 @@ class MoveWristCommandGUI(CommandGUI):
 
 
         if self.parameters is None:
-            currentWrist = env.getRobot().getServoAngle(3)
+            currentWrist = env.getRobot().getServoAngles()[3]
             self.parameters = {"angle": str(currentWrist),
                                "relative": False}
 

@@ -42,7 +42,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         self.objTree.setMinimumWidth(260)
 
         # Connect everything up
-        newObjBtn.clicked.connect(lambda: self.openObjectWizard(sampleMode=False))
+        newObjBtn.clicked.connect(lambda: self.openObjectWizard())
         newGrpBtn.clicked.connect(lambda: self.openGroupMenu())
         self.objTree.itemSelectionChanged.connect(self.refreshSelected)
 
@@ -114,13 +114,18 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         tree = [["Vision Objects", visObjs], ["Vision Groups", grpObjs]]
 
-        for section in tree:
 
+        for section in tree:
             # Create the Title
             title = QtWidgets.QTreeWidgetItem(self.objTree)
             title.setText(0, section[0])
             for name in section[1]:
-                QtWidgets.QTreeWidgetItem(title, [name])
+                newItem = QtWidgets.QTreeWidgetItem(title, [name])
+
+                # Select the item specified in selectedItem arg
+                if name == selectedItem:
+                    self.objTree.setCurrentItem(newItem)
+
 
         self.objTree.expandAll()
 
@@ -172,7 +177,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         # Connect any buttons
         deleteBtn.clicked.connect(self.deleteSelected)
-        addOrientationBtn.clicked.connect(lambda: self.openObjectWizard(sampleMode=True))
+        addOrientationBtn.clicked.connect(lambda: self.openObjectWizard(self.getSelected()))
 
 
         # Create a pretty icon for the object, so it's easily recognizable. Use the first sample in the objectt
@@ -259,7 +264,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         return selObject
 
 
-    def openObjectWizard(self, sampleMode):
+    def openObjectWizard(self, objNameToModify=None):
 
         vStream = self.env.getVStream()
         if not vStream.connected():
@@ -272,46 +277,15 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         self.cameraWidget.pause()
 
         # Get the object information from the user using the Object Wizard
-        oWizard = ObjectWizard(sampleMode, self.env, self)
+        oWizard = ObjectWizard(objNameToModify, self.env, self)
         oWizard.exec_()
-
 
         # Close objectWizard, make sure that even if "cancel" was pressed, the window still closes
         oWizard.close()
         oWizard.deleteLater()
 
-        # If the user finished the wizard, then extract the information from the objectWizard to build a new object
-        if oWizard.result():
-            # Here is where the objectWizard will add a new object to the ObjectManager
-
-
-
-            image       = oWizard.page2.object.view.image.copy()
-            rect        = oWizard.page2.object.view.rect
-            pickupRect  = oWizard.page4.pickupRect
-            height      = float(oWizard.page3.heightTxt.text())
-
-            # Create an actual TrackableObject with this information
-            if sampleMode:
-                name        = self.getSelected()
-                trackObject = self.objManager.getObject(name)
-                if trackObject is None:
-                    printf("ObjectManager.openObjectWizard(): ERROR: Could not find object to add sample to!")
-                    return
-            else:
-                name = oWizard.page1.nameTxt.text()
-                trackObject = TrackableObject(name)
-
-            trackObject.addNewView(image      = image,
-                                   rect       = rect,
-                                   pickupRect = pickupRect,
-                                   height     = height)
-
-            self.objManager.saveObject(trackObject)
-            self.refreshObjectList(selectedItem=trackObject.name)
-
-
         self.cameraWidget.play()
+        self.refreshObjectList(selectedItem=oWizard.newObject.name)
 
     def openGroupMenu(self, groupObj=None):
         """ :type groupObj: Logic.ObjectManager.TrackableGroup """
@@ -338,7 +312,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
                 self.objManager.saveObject(obj)
 
             self.objManager.refreshGroups()
-            self.refreshObjectList()
+            self.refreshObjectList(selectedItem=groupMenu.getName())
         else:
             printf("ObjectManager.openGroupMenu(): User rejected prompt. Ignoring changes!")
 
@@ -430,20 +404,19 @@ class EditGroupWindow(QtWidgets.QDialog):
 
 # Object WIZARD
 class ObjectWizard(QtWidgets.QWizard):
-    def __init__(self, sampleMode, environment, parent):
+    def __init__(self, objNameToModify, environment, parent):
         super(ObjectWizard, self).__init__(parent)
-        # If sampleMode is on, then this will not ask the user for the name of the object
-        self.sampleMode = sampleMode
+        # If objToModifyName is None, then this will not ask the user for the name of the object
+        self.objToModifyName = objNameToModify
 
         # Since there are camera modules in the wizard, make sure that all tracking is off
         vision = environment.getVision()
         vision.trackerEndStopClear()
         self.objManager = environment.getObjectManager()
         self.vision     = environment.getVision()
-
         self.newObject  = None  # Is set in self.close()
 
-        if not self.sampleMode:
+        if objNameToModify is None:
             self.page1 = OWPage1(self.objManager.getForbiddenNames(), parent=self)
             self.addPage(self.page1)
 
@@ -460,10 +433,38 @@ class ObjectWizard(QtWidgets.QWizard):
         self.setWindowTitle("Object Wizard")
         self.setWindowIcon(QtGui.QIcon(Paths.objectWizard))
 
+    def createNewObject(self):
+
+        image       = self.page2.object.view.image.copy()
+        rect        = self.page2.object.view.rect
+        pickupRect  = self.page4.pickupRect
+        height      = float(self.page3.heightTxt.text())
+
+        # Create an actual TrackableObject with this information
+        if self.objToModifyName is not None:
+            name        = self.objToModifyName
+            trackObject = self.objManager.getObject(name)
+            if trackObject is None:
+                printf("ObjectManager.openObjectWizard(): ERROR: Could not find object to add sample to!")
+                return
+        else:
+            name = self.page1.nameTxt.text()
+            trackObject = TrackableObject(name)
+
+        trackObject.addNewView(image      = image,
+                               rect       = rect,
+                               pickupRect = pickupRect,
+                               height     = height)
+
+        self.objManager.saveObject(trackObject)
+        self.newObject = trackObject
 
     def closeEvent(self, event):
+        if self.Accepted:
+            self.createNewObject()
+
         # Close any pages that have active widgets, such as the cameraWidget. This will trigger each page's close func.
-        if not self.sampleMode: self.page1.close()
+        if self.objToModifyName is None: self.page1.close()
         self.page2.close()
         self.page3.close()
         self.page4.close()
@@ -564,8 +565,7 @@ class OWPage2(QtWidgets.QWizardPage):
 
         # Detach the robots servos so that the user can move the robot out of the way
         robot = environment.getRobot()
-        robot.setServos(all=False)
-        robot.refresh()
+        robot.setActiveServos(all=False)
 
         # The final object is stored here:
         self.object       = None

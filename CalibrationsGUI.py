@@ -143,7 +143,7 @@ class CalibrateWindow(QtWidgets.QDialog):
         totalMotion = 0.0
         samples     = 75
         for i in range(0, samples):
-            vStream.waitForNewFrame()
+            vision.waitForNewFrames()
             totalMotion += vision.getMotion()
         noMovement = totalMotion / samples
 
@@ -156,18 +156,16 @@ class CalibrateWindow(QtWidgets.QDialog):
 
         # Start position
         robot.setSpeed(18)
-        robot.setServos(all=True)
+        robot.setActiveServos(all=True)
         robot.setPos( x=-15, y=-15, z=20)
-        robot.refresh()
 
         # Move robot left and right while getting new frames for "moves" amount of samples
         for move in range(0, moves):
 
             robot.setPos(x=30 * direction, y=0, z=0, relative=True, wait=False)   #end position
-            robot.refresh(override=True)
             sleep(.1)
             while robot.getMoving():
-                vStream.waitForNewFrame()
+                vision.waitForNewFrames()
                 newMotion = vision.getMotion()
                 if newMotion > noMovement:
                     totalMotion += vision.getMotion()
@@ -263,11 +261,9 @@ class CoordWizard(QtWidgets.QWizard):
 
         # Set the robot to the home position
         robot = environment.getRobot()
-        robot.setServos(all=True)
+        robot.setActiveServos(all=True)
         robot.setPos(x=0, y=-15, z=15)
-        robot.refresh()
-        robot.setServos(all=False)
-        robot.refresh()
+        robot.setActiveServos(all=False)
 
         # Create the wizard pages and add them to the sequence
         if self.allPages:
@@ -723,13 +719,11 @@ class CWPage5(QtWidgets.QWizardPage):
 
 
         # Set the robot to the home position, set the speed, and other things for the calibration
-        robot.setServos(all=True)
+        robot.setActiveServos(all=True)
         robot.setSpeed(15)
-        robot.refresh()
 
         zLower = self.getGroundCoord()[2] + 1.5
         robot.setPos(x=robot.home["x"], y=robot.home["y"], z=zLower)
-        robot.refresh()
         sleep(1)
 
 
@@ -782,12 +776,11 @@ class CWPage5(QtWidgets.QWizardPage):
 
             # Move the robot to the coordinate
             robot.setPos(x=coord[0], y=coord[1], z=coord[2])
-            robot.refresh()
             robot.wait()
             sleep(.2)
 
             # Now that the robot is at the desired position, get the avg location
-            vStream.waitForNewFrame()
+            vision.waitForNewFrames()
             frameAge, marker = vision.getObjectLatestRecognition(rbMarker)
 
             # Make sure the object was found in a recent frame
@@ -816,7 +809,7 @@ class CWPage5(QtWidgets.QWizardPage):
                 print("Distance was too high: ", dist)
 
         robot.setPos(**robot.home)
-        robot.refresh()
+
         # Prune the list down to 20 less than the original size, find the best set out of those
         minPointCount = 6
         # prunedSize = int(len(newCalibrations["ptPairs"]) * .90)
@@ -842,7 +835,6 @@ class CWPage5(QtWidgets.QWizardPage):
         # Return the robot to home and turn off tracking
         vision.trackerEndStopClear()
         robot.setPos(**robot.home)
-        robot.refresh()
 
 
         self.endCalibration(errors, newCalibrations, len(testCoords))

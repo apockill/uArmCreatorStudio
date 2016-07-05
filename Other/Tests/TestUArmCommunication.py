@@ -1,4 +1,5 @@
-from RobotGUI.Logic import UArmTextCommunication_1 as UArmLibrary
+from Logic import UArmTextCommunication_1 as UArmLibrary
+from collections import Counter  # For debugging
 from time import sleep
 import sys
 
@@ -22,9 +23,9 @@ if not uarm.connected():
 print("Starting various tests!")
 
 # Pump commands
-uarm.gripperOn()
+uarm.setGripper(True)
 sleep(1)
-uarm.gripperOff()
+uarm.setGripper(False)
 
 
 
@@ -47,22 +48,43 @@ uarm.moveToWithSpeed( 0, -10, 20, 20)
 
 
 # Turn on the buzzer for .5 seconds, at a frequency of 500 Hz
-print("Turning on buzzer")
-uarm.setBuzzer(500, .5)
+uarm.setBuzzer(500, .05)
 
 
-# "Get" commands
-print("Current XYZ:        ", uarm.getCurrentCoord())
-print("Tip Sensor Pressed: ", uarm.getTipSensor())
-print("Servo 0 angle:      ", uarm.getServoAngle(0))
-print("Servo 1 angle:      ", uarm.getServoAngle(1))
-print("Servo 2 angle:      ", uarm.getServoAngle(2))
-print("Servo 3 angle:      ", uarm.getServoAngle(3))
-
-
-print("Moving wrist")
-uarm.moveWrist(180)
+# Test gripper on/off commands
+uarm.setGripper(True)
 sleep(1)
-uarm.moveWrist(0)
+uarm.setGripper(False)
+
+# Test attach/detach commands
+uarm.servoDetach(0)
+uarm.servoDetach(1)
+uarm.servoDetach(2)
+uarm.servoDetach(3)
 sleep(1)
-uarm.moveWrist(90)
+uarm.servoAttach(0)
+uarm.servoAttach(1)
+uarm.servoAttach(2)
+uarm.servoAttach(3)
+sleep(.5)
+
+# Test "Get" commands
+print("IK for X0Y-15Z15:        ", uarm.getIK(0, -15, 15))
+print("FK for A90B85.15Z43.45:  ", uarm.getFK(90, 85.15, 43.45))
+print("Current XYZ:             ", uarm.getCurrentCoord())
+print("Is Moving:               ", uarm.getIsMoving())
+print("Tip Sensor Pressed:      ", uarm.getTipSensor())
+print("Servo angles:            ", uarm.getServoAngles())
+
+
+
+# Test "setServo" command by moving the wrist around a bit
+uarm.setServo(3, 180)
+sleep(1)
+uarm.setServo(3, 0)
+sleep(1)
+uarm.setServo(3, 90)
+
+
+# Print a list of "Call" and "Response" for this test
+print("Response Log: ", uarm.communicationLog)

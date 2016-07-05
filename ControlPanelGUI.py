@@ -125,10 +125,10 @@ class ControlPanel(QtWidgets.QWidget):
                 self.setColor(eventItem, False)
                 commandList = self.eventList.getEventFromItem(eventItem).commandList
 
-            # Decolor every command
-            for index in range(0, commandList.count()):
-                commandItem = commandList.item(index)
-                self.setColor(commandItem, False)
+                # Decolor every command
+                for index in range(0, commandList.count()):
+                    commandItem = commandList.item(index)
+                    self.setColor(commandItem, False)
 
     def setScriptModeOn(self, interpreterStatusFunction, mainWindowEndScriptFunc):
         """

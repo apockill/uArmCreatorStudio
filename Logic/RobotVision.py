@@ -15,9 +15,9 @@ This combines with things like calibrations as well.
 MIN_POINTS_TO_LEARN_OBJECT = 150  # Minimum number of points to decide an object is valid for creating
 MAX_FRAME_AGE_MOVE         = 5    # Maximum age of a tracked object to move the robot towards it
 MIN_POINTS_PICKUP_OBJECT   = 50   # Minimum points on an object for the robot to see an object and pick it up
-MIN_POINTS_PICKUP_MARKER   = 25   # Minimum tracking to find the robot marker, when picking up an object
+MIN_POINTS_PICKUP_MARKER   = 20   # Minimum tracking to find the robot marker, when picking up an object
 MIN_POINTS_FOCUS           = 40   # Minimum tracking points to just move the robot over an object
-MAX_FRAME_FAIL             = 30   # Maximum times a function will get a new frame to recognize an object before quitting
+MAX_FRAME_FAIL             = 15   # Maximum times a function will get a new frame to recognize an object before quitting
 MAX_PICKUP_DIST_THRESHOLD  = 15   # Maximum "camera distance" from an object to allow the pickup to continue
 
 # General Use Functions (May or may not use vision or robot)
@@ -61,6 +61,7 @@ def createTransformFunc(ptPairs, direction):
     if not ret: printf("RobotVision.createCameraToRobotTransformFunc(): ERROR: Transform failed!")
 
     # Returns a function that will perform the transformation between pointset 1 and pointset 2 (if direction is == 1)
+
     transformFunc = lambda x: np.array((M * np.vstack((np.matrix(x).reshape(3, 1), 1)))[0:3, :].reshape(1, 3))[0]
 
     return transformFunc
@@ -168,7 +169,7 @@ def pointInPolygon(point, poly):
 
 
 # Long form functions with lots of steps
-def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision):
+def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exitFunc):
     def getRobotAccurate(rbMarker, vision):
         # A little convenience function that is used several times in the pickup
         avgPos = np.float64([0, 0, 0])
@@ -185,7 +186,7 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision):
                 else:
                     return avgPos / samples
             avgPos += trackRob.center
-        return avgPos/samples
+        return avgPos / samples
 
 
     # If the object hasn't been seen recently, then don't even start the pickup procedure
@@ -214,7 +215,7 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision):
     print("StaticErr", staticErr, "\n\n")
     posRob    = getPositionTransform((center[0], center[1], center[2]), ptPairs, direction=1)
     print("NewPosRob", posRob)
-    posRob[2] += trackedObj.view.height
+    posRob[2] += trackedObj.view.height + 5
     print("WithHeight", posRob)
     posCam    = getPositionTransform(posRob, ptPairs, direction=-1)
     print("NewPosCam", posCam)
@@ -241,9 +242,8 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision):
 
     # Move to the objects position
     pos = getPositionTransform(targetCamPos, ptPairs, direction=1)
-    if pos[2] + 5 < groundHeight: pos[2] = groundHeight - 5  # TODO: Fix this bug
-    robot.setPos(x=pos[0], y=pos[1], z=pos[2] + 5)
-    robot.refresh()
+    # if pos[2] + 5 < groundHeight: pos[2] = groundHeight - 5  # TODO: Fix this bug
+    robot.setPos(x=pos[0], y=pos[1], z=pos[2])
 
 
 
@@ -252,13 +252,11 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision):
     if lastCoord is None:
         printf("RobotVision.pickupObject(): Could not find robot before jump! Exiting pickup")
         return False
-    print("Before jump, robots coord: ", lastCoord, " target is still: ", targetCamPos)
+
     camPos  = getPositionCorrection(targetCamPos, lastCoord)
     jumpPos = getPositionTransform(camPos, ptPairs, 1)
-    print("Jumping to ", jumpPos, "from ", robot.pos)
     if jumpPos[2] < groundHeight: jumpPos[2] = groundHeight  # TODO: Fix this bug
-    robot.setPos(x=jumpPos[0], y=jumpPos[1])  # z=pos[2])
-    robot.refresh()
+    robot.setPos(x=jumpPos[0], y=jumpPos[1], z=jumpPos[2])
 
 
 
@@ -268,10 +266,9 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision):
     lastCoord      = None
     failTrackCount = 0
     robot.setGripper(True)
-    robot.refresh()
+    robot.setSpeed(25)
     for i in range(0, 15):
         print("DownMove ", i)
-        # targetCamPos[2] -= 30
 
         # Check the robots tip to make sure that the robot hasn't hit the object or ground and is pressing down on it
         if robot.getTipSensor():
@@ -279,10 +276,11 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision):
             break
         print("smallstepcount: ", smallStepCount)
 
+        # Height Method: Original
         # Check if the robot has hit the object by seeing if the robots height is less than before, as per the camera
         robCoord = robot.getCurrentCoord()
         heightDiff = robCoord[2] - lastHeight
-        print("heightdiff", heightDiff, "lastHeight", lastHeight, "currheight", robCoord[2], vision.vStream.frameCount)
+        print("heightdiff", heightDiff, "lastHeight", lastHeight, "currheight", robCoord[2])
         if heightDiff >= -1.1 and i > 4:
             smallStepCount += 1
         else:
@@ -301,42 +299,66 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision):
             robot.refresh()
             return False
 
+        # Actually find the robot using the camera
         newCoord = getRobotAccurate(rbMarker, vision)
+
+
+        # Get the robots current height
         if newCoord is None:
             printf("RobotVision.pickupObject(): Camera was unable to see marker. Moving anyways!")
             failTrackCount += 1
             if lastCoord is None:
-                robot.setPos(z=-1, relative=True)
-                robot.refresh()
+                robot.setPos(z=-1.25, relative=True)
+                continue
         else:
             lastCoord = newCoord
             failTrackCount = 0
 
 
+        # # TEST 1
+        # Try to "Jump" towards the object by measuring the desired pos and the offset
+        # camPos  = getPositionCorrection(targetCamPos, lastCoord)
+        # jumpPos = getPositionTransform(camPos, ptPairs, 1)
+        # if jumpPos[2] < groundHeight: jumpPos[2] = groundHeight  # TODO: Fix this bug
+        # robot.setPos(x=jumpPos[0], y=jumpPos[1])  # z=pos[2])
+        # robot.setPos(z=-1.25, relative=True)
 
 
+        # # Height Test
+        # beforeHeight = robot.getCurrentCoord()[2]
+        # # Get the robots height after moving down, with height servo detached
+        # robot.setActiveServos(servo1=False, servo2=False)
+        # wait(1, exitFunc)
+        # afterHeight = robot.getCurrentCoord()[2]
+        # print("BeforeHeight: ", beforeHeight, "afterHeight", afterHeight)
+        # robot.setActiveServos(servo1=True, servo2=True)
+        # wait(1, exitFunc)
+        # if afterHeight >= beforeHeight:
+        #     print("my new mothod worked!!! Exiting pickup")
+        #     break
 
+        # TEST 2
         # If its still moving down, then perform a down-move
-        # print("Aiming for camz ", targetCamPos[2], "currently at ", coord[2])
-        relMove = getRelativeMoveTowards(lastCoord, targetCamPos, 2, ptPairs)
-        if robot.pos['z'] < groundHeight - 1.25: break
-        robot.setPos(x=relMove[0], y=relMove[1], z=-1.25, relative=True)
+        relMove = getRelativeMoveTowards(lastCoord, targetCamPos, 1.75, ptPairs)
+        # if robot.pos['z'] < groundHeight - 1.25:
+        #     printf("RobotVision.pickupObject(): Robot is below groundHeight. Quiing downmoves")
+        #     break
+        robot.setPos(x=relMove[0], y=relMove[1], relative=True)
+        robot.setPos(z=-1.25, relative=True)
         print("Moving to  z: ", robot.pos["z"])
         robot.refresh()
 
 
     # Since the robot may be potentially pressing on the ground right now, lift the robots head b4 checking for success
     robot.setPos(z=8, relative=True)
-    robot.refresh()
 
 
-    if pointInPolygon(lastCoord, pickupRect):
+    if not lastCoord is None and pointInPolygon(lastCoord, pickupRect):
         print("PICKUP WAS SUCCESSFUL!!!")
         return True
     else:
         print("PICKUP WAS NOT SUCCESSFUL!")
         robot.setGripper(False)
-        robot.refresh()
         return False
 
 def getRelativeMoveTowards(robotCamCoord, destCamCoord, distance, ptPairs):
