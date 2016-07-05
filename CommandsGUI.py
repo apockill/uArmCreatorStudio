@@ -962,11 +962,11 @@ class MoveRelativeToObjectCommandGUI(CommandGUI):
         # If there are no objects, place a nice label to let the user know
         if len(objectList) == 0:
             hintText = "You have not created any trackable objects yet." + \
-                       "\nTry adding new objects in the Object Manager!"
+                       "\nTry adding new objects in the Resource Manager!"
             self._addHint(prompt, hintText)
         elif len(objectList) == 1:
             hintText = "It looks like you've only created one object." + \
-                       " Feel free to add new objects in the Object Manager!"
+                       " Feel free to add new objects in the Resource Manager!"
             self._addHint(prompt, hintText)
 
         return prompt
@@ -1035,11 +1035,11 @@ class PickupObjectCommandGUI(CommandGUI):
         # If there are no objects, place a nice label to let the user know
         if len(objectList) == 0:
             hintText = "You have not created any trackable objects yet." + \
-                       "\nTry adding new objects in the Object Manager!"
+                       "\nTry adding new objects in the Resource Manager!"
             self._addHint(prompt, hintText)
         elif len(objectList) == 1:
             hintText = "It looks like you've only created one object(s)." + \
-                       " Feel free to add new objects in the Object Manager!"
+                       " Feel free to add new objects in the Resource Manager!"
             self._addHint(prompt, hintText)
 
         return prompt

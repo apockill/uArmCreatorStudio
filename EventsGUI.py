@@ -212,6 +212,9 @@ class EventPromptWindow(QtWidgets.QDialog):
 
 
 class EventGUI:
+    # Priority determines how the events will be sorted. 0 means the event will be at the top. 10000 is last.
+    priority = 5000
+
     def __init__(self, parameters):
         """
         self.parameters is used for events like KeyPressEvent where one class can handle multiple types of events
@@ -258,6 +261,7 @@ class InitEventGUI(EventGUI):
     tooltip   = 'Activates once each time the program is run'
     icon      = Paths.creation_event
     logicPair = 'InitEvent'
+    priority  = 0
 
     def __init__(self, parameters):
         super(InitEventGUI, self).__init__(parameters)
@@ -268,6 +272,7 @@ class DestroyEventGUI(EventGUI):
     tooltip   = 'Activates once, when the program is ended'
     icon      = Paths.destroy_event
     logicPair = 'DestroyEvent'
+    priority  = 10000
 
     def __init__(self, parameters):
         super(DestroyEventGUI, self).__init__(parameters)
@@ -278,6 +283,7 @@ class StepEventGUI(EventGUI):
     tooltip   = 'Activates every time the events are refreshed'
     icon      = Paths.step_event
     logicPair = 'StepEvent'
+    priority  = 10
 
     def __init__(self, parameters):
         super(StepEventGUI, self).__init__(parameters)
@@ -292,6 +298,7 @@ class TipEventGUI(EventGUI):
     tooltip   = 'Activates when the sensor on the tip of the arm is pressed'
     icon      = Paths.tip_event
     logicPair = 'TipEvent'
+    priority  = 200
 
     def __init__(self, parameters):
         super(TipEventGUI, self).__init__(parameters)
@@ -306,8 +313,7 @@ class KeypressEventGUI(EventGUI):
 
     def __init__(self, parameters):
         super(KeypressEventGUI, self).__init__(parameters)
-
-
+        self.priority = 300 + ord(parameters["checkKey"]) / 1000
     def dressWidget(self, widget):
         widget.setIcon(self.icon)
         widget.setTitle('Keypress ' + self.parameters["checkKey"])
@@ -320,8 +326,9 @@ class MotionEventGUI(EventGUI):
     This event activates when the sensor on the tip of the robots sucker is pressed/triggered
     """
 
-    icon = Paths.motion_event
+    icon      = Paths.motion_event
     logicPair = 'MotionEvent'
+    priority  = 400
 
     def __init__(self, parameters):
         super(MotionEventGUI, self).__init__(parameters)
@@ -337,6 +344,7 @@ class MotionEventGUI(EventGUI):
 class RecognizeEventGUI(EventGUI):
     icon      = Paths.recognize_event
     logicPair = 'RecognizeEvent'
+    priority  = 100
 
     def __init__(self, parameters):
         super(RecognizeEventGUI, self).__init__(parameters)

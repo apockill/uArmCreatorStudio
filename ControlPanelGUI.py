@@ -309,19 +309,34 @@ class EventList(QtWidgets.QListWidget):
         newCommandList.loadData(commandListSave)
         newEvent.commandList =  newCommandList
 
-        # newEvent.commandList = kwargs.get('commandListData', CommandList(self.__shared, parent=self))
+        # Figure out where the event will be placed in the list by looking at the "priority" of the other events
+        placeIndex = 0
+        for index, event in enumerate(self.getEventsOrdered()):
+            if newEvent.priority < event.priority:
+                break
+            placeIndex = index + 1
+
 
         # Create the widget item to visualize the event
         blankWidget = EventsGUI.EventWidget(self)
         eventWidget = newEvent.dressWidget(blankWidget)
 
+
         # Create the list item to put the widget item inside of
         listWidgetItem = QtWidgets.QListWidgetItem(self)
         listWidgetItem.setSizeHint(eventWidget.sizeHint())  # Widget will not appear without this line
+
+
+        # Do some finagling so pyQt will let me insert an item at 'placeIndex' row
         self.addItem(listWidgetItem)
+        lastRow = self.indexFromItem(listWidgetItem).row()
+        takenlistWidgetItem = self.takeItem(lastRow)
+        self.insertItem(placeIndex, takenlistWidgetItem)
+
 
         # Add the widget to the list item
         self.setItemWidget(listWidgetItem, eventWidget)
+
 
         self.events[eventWidget] = newEvent
 

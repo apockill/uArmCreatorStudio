@@ -41,9 +41,6 @@ robot.setPos(x=0, y=-15, z=15)
 robot.refresh()
 
 
-# Wait for robot to finish
-robot.wait()
-
 # Turn off the gripper
 robot.setGripper(False)
 robot.refresh()

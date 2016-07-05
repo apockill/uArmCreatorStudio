@@ -244,7 +244,7 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision):
     if pos[2] + 5 < groundHeight: pos[2] = groundHeight - 5  # TODO: Fix this bug
     robot.setPos(x=pos[0], y=pos[1], z=pos[2] + 5)
     robot.refresh()
-    robot.wait()
+
 
 
     # Try to "Jump" towards the object by measuring the desired pos and the offset
@@ -259,7 +259,7 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision):
     if jumpPos[2] < groundHeight: jumpPos[2] = groundHeight  # TODO: Fix this bug
     robot.setPos(x=jumpPos[0], y=jumpPos[1])  # z=pos[2])
     robot.refresh()
-    robot.wait()
+
 
 
     # Slowly move onto the target moving 1 cm towards it per move
@@ -308,7 +308,6 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision):
             if lastCoord is None:
                 robot.setPos(z=-1, relative=True)
                 robot.refresh()
-                robot.wait()
         else:
             lastCoord = newCoord
             failTrackCount = 0
@@ -324,7 +323,7 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision):
         robot.setPos(x=relMove[0], y=relMove[1], z=-1.25, relative=True)
         print("Moving to  z: ", robot.pos["z"])
         robot.refresh()
-        robot.wait()
+
 
     # Since the robot may be potentially pressing on the ground right now, lift the robots head b4 checking for success
     robot.setPos(z=8, relative=True)

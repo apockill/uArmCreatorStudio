@@ -69,7 +69,6 @@ def ensurePathExists(path):
     '''
     try:
         dir = os.path.dirname(path)
-        print("path", path, "dir", dir)
         os.makedirs(dir)
     except OSError as exception:
         if exception.errno != errno.EEXIST:

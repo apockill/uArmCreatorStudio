@@ -114,13 +114,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
         settingsBtn  = QtWidgets.QAction(QtGui.QIcon(Paths.settings), 'Settings', self)
         calibrateBtn = QtWidgets.QAction(QtGui.QIcon(Paths.calibrate), 'Calibrate', self)
-        objMngrBtn   = QtWidgets.QAction(QtGui.QIcon(Paths.objectManager), 'Objects', self)
+        objMngrBtn   = QtWidgets.QAction(QtGui.QIcon(Paths.objectManager), 'Resources', self)
 
         self.scriptToggleBtn.setToolTip('Run/Pause the command script (Ctrl+R)')
         self.videoToggleBtn.setToolTip('Play/Pause the video stream (Ctrl+P)')
         settingsBtn.setToolTip('Open Camera and Robot settings (Ctrl+T)',)
         calibrateBtn.setToolTip('Open Robot and Camera Calibration Center')
-        objMngrBtn.setToolTip('Open Computer Vision Object Manager')
+        objMngrBtn.setToolTip('Open Resource Manager')
 
         self.scriptToggleBtn.setShortcut('Ctrl+R')
         self.videoToggleBtn.setShortcut( 'Ctrl+P')

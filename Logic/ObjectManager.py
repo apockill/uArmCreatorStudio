@@ -257,8 +257,9 @@ class TrackableObject(Trackable):
         ensurePathExists(filename)
 
 
-
         dataJson = {"tags": self.__tags, "Orientations": {}}
+
+
         # Save images and numpy arrays as seperate folders
         for index, view in enumerate(self.views):
             # Save the image

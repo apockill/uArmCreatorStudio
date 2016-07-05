@@ -91,7 +91,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         # Set the layout and customize the window
         self.setLayout(mainVLayout)
-        self.setWindowTitle('Object Manager')
+        self.setWindowTitle('Resource Manager')
         self.setWindowIcon(QtGui.QIcon(Paths.objectManager))
 
         # self.refreshSelectedObjMenu()

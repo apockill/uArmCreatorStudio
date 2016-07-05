@@ -86,24 +86,44 @@ class Robot:
 
 
 
-    def setPos(self, **kwargs):
+    def setPos(self, x=None, y=None, z=None, relative=False, wait=True):
         if not self.connected():
             printf("Robot.setPos(): Robot not found or setupThread is running, canceling position change")
             return
 
-        relative = kwargs.get('relative', False)
-        posBefore = dict(self.pos)
-
-        for name, value in kwargs.items():  # Cycles through any variable that might have been in the kwargs. This is any position command!
-            if name in self.pos:  #If it is a position statement.
-                if self.pos[name] is "": continue
+        def setVal(value, name, relative):
+            if value is not None:
                 if relative:
                     self.pos[name] += value
                 else:
                     self.pos[name] = value
 
+
+        posBefore = dict(self.pos)
+
+        setVal(x, 'x', relative)
+        setVal(y, 'y', relative)
+        setVal(z, 'z', relative)
+
+
         # If this command has changed the position, or if the position was changed earlier
         self.__positionChanged = (not (posBefore == self.pos)) or self.__positionChanged
+
+
+        if self.__positionChanged:
+            try:
+                self.uArm.moveToWithSpeed(self.pos['x'], self.pos['y'], self.pos['z'], self.__speed)
+                self.__servoStatus[0], self.__newServoStatus[0] = True, True
+                self.__servoStatus[1], self.__newServoStatus[1] = True, True
+                self.__servoStatus[2], self.__newServoStatus[2] = True, True
+            except ValueError:
+                printf("Robot.refresh(): ERROR: Robot out of bounds and the uarm_python library crashed!")
+
+            self.__positionChanged = False
+
+        if wait:
+            while self.getMoving(): sleep(.1)
+
 
     def setWrist(self, angle, relative=False):
         if not self.connected():
@@ -120,6 +140,13 @@ class Robot:
             self.__wrist        = newWrist
             self.__wristChanged = True
 
+
+        if self.__wristChanged:
+            self.uArm.moveWrist(self.__wrist)
+            # Make sure that the wrist servo is marked down as attached. Robot does this automatically
+            self.__servoStatus[3], self.__newServoStatus[3] = True, True
+            self.__wristChanged = False
+
     def setServos(self, all=None, servo1=None, servo2=None, servo3=None, servo4=None):
         if not self.connected():
             printf("Robot.setServos(): Robot not found or setupThread is running, canceling servo change")
@@ -134,6 +161,8 @@ class Robot:
         if servo3 is not None: self.__newServoStatus[2] = servo3
         if servo4 is not None: self.__newServoStatus[3] = servo4
 
+        self.__updateServos()
+
     def setGripper(self, status):
         if not self.connected():
             printf("Robot.setGripper(): Robot not found or setupThread is running, canceling gripper change")
@@ -142,6 +171,14 @@ class Robot:
         if not self.__gripperStatus == status:
             self.__gripperStatus  = status
             self.__gripperChanged = True
+
+
+        if self.__gripperChanged:
+            if self.__gripperStatus:
+                self.uArm.gripperOn()
+            else:
+                self.uArm.gripperOff()
+            self.__gripperChanged = False
 
     def setBuzzer(self, frequency, duration):
         if not self.connected():
@@ -157,13 +194,8 @@ class Robot:
 
 
 
-
-    def wait(self):
-        # Waits until the robot completes its move or whatever it's doing
-        while self.getMoving(): sleep(.1)
-
     def refresh(self, override=False):
-
+        return
         # Check that the robot is connected
         if not self.connected():
             printf("Robot.refresh(): Tried sending command while uArm not connected, or while setting up.")
@@ -180,7 +212,7 @@ class Robot:
 
         # Wait for robot to be done moving before doing anything
         if not override:
-            self.wait()
+            while self.getMoving(): sleep(.1)
 
 
 

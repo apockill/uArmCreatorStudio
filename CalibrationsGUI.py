@@ -163,19 +163,25 @@ class CalibrateWindow(QtWidgets.QDialog):
         # Move robot left and right while getting new frames for "moves" amount of samples
         for move in range(0, moves):
 
-            robot.setPos(x=30 * direction, y=0, z=0, relative=True)   #end position
+            robot.setPos(x=30 * direction, y=0, z=0, relative=True, wait=False)   #end position
             robot.refresh(override=True)
             sleep(.1)
             while robot.getMoving():
                 vStream.waitForNewFrame()
-
-                totalMotion += vision.getMotion()
-
-                samples += 1
+                newMotion = vision.getMotion()
+                if newMotion > noMovement:
+                    totalMotion += vision.getMotion()
+                    samples += 1
 
             direction *= -1
 
+
+        # Make sure samples were retrieved. If not, discard the calib information and exit.
+        if samples == 0: return
+
+
         # Calculate average amount of motion when robot is moving rapidly
+
         highMovement = totalMotion / samples
 
 
@@ -184,7 +190,7 @@ class CalibrateWindow(QtWidgets.QDialog):
 
 
         self.updateLabels()
-        printf("CalibrateView.calibrateMotion(): Function complete! New motion settings: ", noMovement, highMovement)
+        printf("CalibrateView.calibrateMotion(): Function complete! New settings: ", noMovement, ", ", highMovement)
 
     def calibrateCoordinates(self):
         vStream      = self.env.getVStream()
