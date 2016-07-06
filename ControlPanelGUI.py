@@ -23,13 +23,21 @@ class ControlPanel(QtWidgets.QWidget):
         self.env               = environment
         self.scriptTimer       = None       # Used to light up events/commands as they are run when the script is active
 
+
         # Set up GUI Globals
-        self.eventList         = EventList(environment, self.refresh, parent=self)
-        self.commandMenuWidget = CommandsGUI.CommandMenuWidget(parent=self)
-        self.commandListStack  = QtWidgets.QStackedWidget()
+        # For Event List
         self.addEventBtn       = QtWidgets.QPushButton()
         self.deleteEventBtn    = QtWidgets.QPushButton()
         self.changeEventBtn    = QtWidgets.QPushButton()
+        self.eventList         = EventList(environment, self.refresh, parent=self)
+
+        # For Command List
+        self.commandGBox       = QtWidgets.QGroupBox("Command List")
+        self.commandListStack  = QtWidgets.QStackedWidget()
+
+        # For Command Menu
+        self.commandMenuWidget = CommandsGUI.CommandMenuWidget(parent=self)
+
 
         # Set up resources for self.refreshScript()
         self.color             = QtGui.QColor(150, 255, 150)
@@ -45,29 +53,36 @@ class ControlPanel(QtWidgets.QWidget):
         self.deleteEventBtn.setText('Delete')
         self.changeEventBtn.setText('Change')
 
+
         # Connect Button Events
         self.addEventBtn.clicked.connect(self.eventList.promptUser)
         self.deleteEventBtn.clicked.connect(self.eventList.deleteEvent)
         self.changeEventBtn.clicked.connect(self.eventList.replaceEvent)
+
 
         # Create the button horizontal layout for the 'delete' and 'change' buttons
         btnRowHLayout = QtWidgets.QHBoxLayout()
         btnRowHLayout.addWidget(self.deleteEventBtn)
         btnRowHLayout.addWidget(self.changeEventBtn)
 
-        # Create a vertical layout for the buttons (top) and the eventList (bottom)
+
+        # Create a layout to hold the 'addCommand' button and the 'commandList'
         eventVLayout = QtWidgets.QVBoxLayout()
         eventVLayout.addWidget(self.addEventBtn)
         eventVLayout.addLayout(btnRowHLayout)
         eventVLayout.addWidget(self.eventList)
 
-        # Create a layout to hold the 'addCommand' button and the 'commandList'
+
+
         # Do not set a minimum size for the commandListStack. This will screw up automatic resizing for CommandList
+        # Place the commandVLayout inside of commandGBox, which is used for labeling which event the list is for
         commandVLayout = QtWidgets.QVBoxLayout()
         commandVLayout.addWidget(self.commandListStack)
-        addCmndVLayout = QtWidgets.QVBoxLayout()
+        self.commandGBox.setLayout(commandVLayout)
+
 
         # Add the addCommand button and a placeholder commandLIst
+        addCmndVLayout = QtWidgets.QVBoxLayout()
         addCmndVLayout.addWidget(self.commandMenuWidget)
 
         # self.commandListStack.addWidget(CommandList(self.__shared, parent=self))
@@ -75,7 +90,7 @@ class ControlPanel(QtWidgets.QWidget):
         # Put the eventLIst layout and the commandLayout next to eachother
         mainHLayout = QtWidgets.QHBoxLayout()
         mainHLayout.addLayout(eventVLayout)
-        mainHLayout.addLayout(commandVLayout)
+        mainHLayout.addWidget(self.commandGBox)
         mainHLayout.addLayout(addCmndVLayout)
 
         # self.setMinimumWidth(500)
@@ -90,69 +105,37 @@ class ControlPanel(QtWidgets.QWidget):
         # Get the currently selected event on the eventList
         selectedEvent = self.eventList.getSelectedEvent()
 
+        # If user has no event selected, make a clear commandList to view
+        if selectedEvent is None:
+            printf('ControlPanel.refresh():ERROR: no event selected!')
+            return
+
+        print("Selected event: ", selectedEvent.title)
+
+        eventTitle = selectedEvent.title + " Command List"
+        self.commandGBox.setTitle(eventTitle)
+
         # Remove all widgets on the commandList stack (not delete, though!)
         for c in range(0, self.commandListStack.count()):
             widget = self.commandListStack.widget(c)
             self.commandListStack.removeWidget(widget)
 
 
-        # If user has no event selected, make a clear commandList to view
-        if selectedEvent is None:
-            printf('ControlPanel.refresh():ERROR: no event selected!')
-            # clearList = CommandList(self.__shared, parent=self)
-            # self.commandListStack.addWidget(clearList)
-            # self.commandListStack.setCurrentWidget(clearList)
-            return
+
 
         # Add and display the correct widget
         self.commandListStack.addWidget(selectedEvent.commandList)
         self.commandListStack.setCurrentWidget(selectedEvent.commandList)
 
 
-    def setScriptModeOff(self):
-        self.addEventBtn.setEnabled(True)
-        self.deleteEventBtn.setEnabled(True)
-        self.changeEventBtn.setEnabled(True)
-        self.eventList.setLocked(False)
-
-        if self.scriptTimer is not None:
-            self.scriptTimer.stop()
-            self.scriptTimer = None
-
-            # Decolor every event
-            for index in range(0, self.eventList.count()):
-                eventItem = self.eventList.item(index)
-                self.setColor(eventItem, False)
-                commandList = self.eventList.getEventFromItem(eventItem).commandList
-
-                # Decolor every command
-                for index in range(0, commandList.count()):
-                    commandItem = commandList.item(index)
-                    self.setColor(commandItem, False)
-
-    def setScriptModeOn(self, interpreterStatusFunction, mainWindowEndScriptFunc):
-        """
-        When the script is running:
-            - Add/Delete/Change event buttons will be disabled
-            - All CommandMenuWidget buttons will be disabled
-            - CommandList will not allow deleting of widgets
-            - CommandList will not allow rearranging of widgets
-        """
-
-        # Enable or disable buttons according to whether or not the script is starting or stopping
-        self.addEventBtn.setEnabled(False)
-        self.deleteEventBtn.setEnabled(False)
-        self.changeEventBtn.setEnabled(False)
-        self.eventList.setLocked(True)
-
-
-        self.scriptTimer = QtCore.QTimer()
-        self.scriptTimer.timeout.connect(lambda: self.refreshDrawScript(interpreterStatusFunction, mainWindowEndScriptFunc))
-        self.scriptTimer.start(1000.0 / 50)  # Update at same rate as the script checks events
-
-
 
     def refreshDrawScript(self, getStatusFunc, mainWindowEndScriptFunc):
+        """
+        This command runs while the script runs, and highlights which Event and Command is currently running.
+        It also checks to see if the script has finished running (since it runs in another thread), and once it's
+        seen that its finished running, it calls "mainWindowEndScriptFunc()" which calls the mainWindow to end the
+        script.
+        """
         currRunning = getStatusFunc()
 
         if currRunning is False:
@@ -198,6 +181,47 @@ class ControlPanel(QtWidgets.QWidget):
             #         self.setColor(commandItem, (commandIndex in commandsRun))
             #         print(commandsRun)
 
+    def setScriptModeOff(self):
+        self.addEventBtn.setEnabled(True)
+        self.deleteEventBtn.setEnabled(True)
+        self.changeEventBtn.setEnabled(True)
+        self.eventList.setLocked(False)
+
+        if self.scriptTimer is not None:
+            self.scriptTimer.stop()
+            self.scriptTimer = None
+
+            # Decolor every event
+            for index in range(0, self.eventList.count()):
+                eventItem = self.eventList.item(index)
+                self.setColor(eventItem, False)
+                commandList = self.eventList.getEventFromItem(eventItem).commandList
+
+                # Decolor every command
+                for index in range(0, commandList.count()):
+                    commandItem = commandList.item(index)
+                    self.setColor(commandItem, False)
+
+    def setScriptModeOn(self, interpreterStatusFunction, mainWindowEndScriptFunc):
+        """
+        When the script is running:
+            - Add/Delete/Change event buttons will be disabled
+            - All CommandMenuWidget buttons will be disabled
+            - CommandList will not allow deleting of widgets
+            - CommandList will not allow rearranging of widgets
+        """
+
+        # Enable or disable buttons according to whether or not the script is starting or stopping
+        self.addEventBtn.setEnabled(False)
+        self.deleteEventBtn.setEnabled(False)
+        self.changeEventBtn.setEnabled(False)
+        self.eventList.setLocked(True)
+
+
+        self.scriptTimer = QtCore.QTimer()
+        self.scriptTimer.timeout.connect(lambda: self.refreshDrawScript(interpreterStatusFunction, mainWindowEndScriptFunc))
+        self.scriptTimer.start(1000.0 / 50)  # Update at same rate as the script checks events
+
 
 
     def getSaveData(self):
@@ -223,10 +247,6 @@ class EventList(QtWidgets.QListWidget):
         # IMPORTANT This makes sure the ControlPanel refreshes whenever you click on an item in the list,
         # in order to display the correct commandList for the event that was clicked on.
         self.itemSelectionChanged.connect(self.refreshControlPanel)
-
-        # The following is a function that returns a dictionary of the events, in the correct order
-        # self.getEventsOrdered = lambda: [self.getEvent(self.item(index)) for index in range(self.count())]
-        # self.getItemsOrdered  = lambda: [self.item(index) for index in range(self.count())]
 
         self.setFixedWidth(200)
 
@@ -341,7 +361,7 @@ class EventList(QtWidgets.QListWidget):
         self.events[eventWidget] = newEvent
 
         if not isLoading:
-            self.setCurrentRow(self.count() - 1)  # Select the newly added event
+            self.setCurrentRow(placeIndex)  # Select the newly added event
             self.refreshControlPanel()  # Call for a refresh of the ControlPanel so it shows the commandList
 
 
@@ -455,7 +475,7 @@ class EventList(QtWidgets.QListWidget):
 
 class CommandList(QtWidgets.QListWidget):
     minimumWidth = 250
-    maximumWidth = 1300  # This isn't actually the max width. This is the most that it will adjust for content inside it
+    maximumWidth = 700  # This isn't actually the max width. This is the most that it will adjust for content inside it
 
     def __init__(self, environment, parent):  # Todo: make commandList have a parent
         super(CommandList, self).__init__()
@@ -470,12 +490,16 @@ class CommandList(QtWidgets.QListWidget):
         self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.setAcceptDrops(True)
 
+        # self.itemSelectionChanged.connect(self.setFocusedCommand)
+
         self.itemDoubleClicked.connect(self.doubleClickEvent)  # For opening the widget's window
-        self.itemClicked.connect(self.clickEvent)
+        self.itemSelectionChanged.connect(self.selectionChangedEvent)
 
         # The following defines a function that returns a dictionary of the commands, in the correct order
         # self.getCommandsOrdered = lambda: [self.getCommand(self.item(index)) for index in range(self.count())]
+
         self.setMinimumWidth(250)
+        # self.setMaximumWidth(600)
 
     def deleteSelected(self):
         # Delete all highlighted commands
@@ -485,6 +509,7 @@ class CommandList(QtWidgets.QListWidget):
             self.takeItem(self.row(item))
 
         self.refresh()  # This will update indents, which can change when you delete a command
+
 
     def refresh(self):
         # Refreshes the order and indenting of the CommandList
@@ -504,10 +529,12 @@ class CommandList(QtWidgets.QListWidget):
             if type(command) is CommandsGUI.EndBlockCommandGUI:
                 indent -= 1
 
+
         # Update the width of the commandList to the widest element within it
         # This occurs whenever items are changed, or added, to the commandList
         if self.minimumWidth < self.sizeHintForColumn(0) + 10 < self.maximumWidth:
             self.setMinimumWidth(self.sizeHintForColumn(0) + 10)
+
 
 
     def getCommand(self, listWidgetItem):
@@ -582,6 +609,7 @@ class CommandList(QtWidgets.QListWidget):
 
         # Update the width of the commandList to the widest element within it
         if not isLoading:
+            # self.setCurrentRow(index - 1)
             self.refresh()
 
 
@@ -634,6 +662,17 @@ class CommandList(QtWidgets.QListWidget):
         self.refresh()
 
 
+    def selectionChangedEvent(self):
+        # Clear all items
+        for i in range(self.count()):
+            selectedWidget = self.itemWidget(self.item(i))
+            if selectedWidget is not None:
+                selectedWidget.setFocused(False)
+
+        # Select the highest item that has been selected
+        if len(self.selectedItems()):
+            self.itemWidget(self.selectedItems()[0]).setFocused(True)
+
     def doubleClickEvent(self, clickedItem):
         # Open the command window for the command that was just double clicked
         printf('CommandList.doubleClickEvent(): Opening double clicked command')
@@ -645,14 +684,6 @@ class CommandList(QtWidgets.QListWidget):
         currentWidget = self.itemWidget(clickedItem)  # Get the current itemWidget
         command.dressWidget(currentWidget)
 
-        self.refresh()
-
-    def clickEvent(self, clickedItem):
-        for i in range(self.count()):
-            item = self.item(i)
-            self.itemWidget(item).setFocused(False)
-
-        self.itemWidget(clickedItem).setFocused(True)
         self.refresh()
 
 

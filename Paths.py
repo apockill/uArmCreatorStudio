@@ -66,6 +66,7 @@ set_var_command    = imageLoc + "command_set_var.png"
 test_var_command   = imageLoc + "command_test_var.png"
 exit_event_command = imageLoc + "command_exit_event.png"
 end_prgrm_command  = imageLoc + "command_end_program.png"
+see_obj_command    = imageLoc + "command_test_see_object.png"
 
 # Tutorial
 robot_lower_head   = imageLoc + "tutorial_robot_lowering_head.gif"

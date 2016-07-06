@@ -106,10 +106,10 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
 
         # Get a list for each section of the QTreeWidget that there will be
-        visObjs = self.objManager.getObjectIDList(self.objManager.TRACKABLEOBJ)
+        visObjs = self.objManager.getObjectNameList(self.objManager.TRACKABLEOBJ)
         visObjs.sort()
 
-        grpObjs = self.objManager.getObjectIDList(self.objManager.TRACKABLEGROUP)
+        grpObjs = self.objManager.getObjectNameList(self.objManager.TRACKABLEGROUP)
         grpObjs.sort()
 
         tree = [["Vision Objects", visObjs], ["Vision Groups", grpObjs]]
@@ -278,20 +278,24 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         # Get the object information from the user using the Object Wizard
         oWizard = ObjectWizard(objNameToModify, self.env, self)
-        oWizard.exec_()
+        finished = oWizard.exec_()
 
         # Close objectWizard, make sure that even if "cancel" was pressed, the window still closes
         oWizard.close()
         oWizard.deleteLater()
 
+        if finished:
+            oWizard.createNewObject()
+            self.refreshObjectList(selectedItem=oWizard.newObject.name)
+
         self.cameraWidget.play()
-        self.refreshObjectList(selectedItem=oWizard.newObject.name)
+
 
     def openGroupMenu(self, groupObj=None):
         """ :type groupObj: Logic.ObjectManager.TrackableGroup """
 
         # Opens a menu that lets people choose what objects to put into a group
-        choosableObjects = self.objManager.getObjectIDList(objFilter=self.objManager.TRACKABLEOBJ)
+        choosableObjects = self.objManager.getObjectNameList(objFilter=self.objManager.TRACKABLEOBJ)
         if groupObj is None:
             groupMenu = EditGroupWindow(choosableObjects, [], "New Group Name", self)
         else:
@@ -428,13 +432,14 @@ class ObjectWizard(QtWidgets.QWizard):
         self.addPage(self.page3)
         self.addPage(self.page4)
 
+
         self.page2.newObject.connect(lambda: self.page4.setObject(self.page2.object))  # Link page3 to page2's object
 
         self.setWindowTitle("Object Wizard")
         self.setWindowIcon(QtGui.QIcon(Paths.objectWizard))
 
-    def createNewObject(self):
 
+    def createNewObject(self):
         image       = self.page2.object.view.image.copy()
         rect        = self.page2.object.view.rect
         pickupRect  = self.page4.pickupRect
@@ -460,8 +465,6 @@ class ObjectWizard(QtWidgets.QWizard):
         self.newObject = trackObject
 
     def closeEvent(self, event):
-        if self.Accepted:
-            self.createNewObject()
 
         # Close any pages that have active widgets, such as the cameraWidget. This will trigger each page's close func.
         if self.objToModifyName is None: self.page1.close()
@@ -516,9 +519,9 @@ class OWPage1(QtWidgets.QWizardPage):
         mainHLayout = QtWidgets.QHBoxLayout()
         mainHLayout.addLayout(col1)
 
+        self.setLayout(mainHLayout)
         self.setMinimumHeight(750)
         self.setMinimumWidth(700)
-        self.setLayout(mainHLayout)
 
     def isComplete(self):
         # Check if the user entered a valid name name is valid

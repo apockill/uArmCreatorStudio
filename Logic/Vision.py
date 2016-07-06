@@ -1,7 +1,6 @@
-import time
+from time import sleep
 import cv2
 import numpy as np
-from time         import sleep  # Used in waitForNewFrames
 from collections  import namedtuple
 from Logic.Global import printf
 
@@ -58,6 +57,51 @@ class Vision:
 
 
     # Object recognition functions
+    def getObjectSpeedDirectionAvg(self, trackable, samples=3, maxAge=20, isSameObjThresh=50):
+                # TEST CODE FOR VISION
+        with self.workLock:
+            trackHistory = self.tracker.trackedHistory[:maxAge]
+
+        hst      = []
+        # Get 'samples' amount of tracked object from history, and the first sample has to be maxAge less then the last
+        for frameAge, historyFromFrame in enumerate(trackHistory):
+            #
+            # # If the first finding of the object is older than maxAge
+            # if len(hst) == 0 and frameAge > maxAge - samples: return None, None, None
+
+            for tracked in historyFromFrame:
+                if trackable.equalTo(tracked.view.name):
+                    # If it's the first object
+                    if len(hst) == 0:
+                        hst.append(tracked.center)
+                        break
+
+                    c = tracked.center
+                    dist = ((hst[0][0] - c[0]) ** 2 + (hst[0][1] - c[1]) ** 2 + (hst[0][2] - c[2]) ** 2) ** .5
+
+
+                    if dist < isSameObjThresh:
+                        hst.append(tracked.center)
+                        break
+            if len(hst) >= samples: break
+
+        if len(hst) == 0: return None, None, None
+
+        # Get the "noise" of the sample
+        hst     = np.float32(hst)
+        avgPos  = hst[0]
+        avgDir  = np.float32([0, 0, 0])
+        for i, pt in enumerate(hst[1:]):
+            avgDir += np.float32(hst[i]) - pt
+            avgPos += pt
+
+        avgDir /= samples - 1
+        avgMag  = sum(avgDir ** 2) ** .5
+        avgPos /= samples
+        return avgPos, avgMag, avgDir
+        print("Avg mag: ", avgMag)
+        print("Avg dir: ", avgDir)
+        print("Avg pos: ", avgPos)
 
     def getObjectLatestRecognition(self, trackable):
         # Returns the latest successful recognition of objectID, so the user can pull the position from that
@@ -126,13 +170,7 @@ class Vision:
         return False
 
 
-    # vStream related functions
-    def addTrackerFilter(self):
-        self.vStream.addFilter(self.tracker.drawTracked)
-
-    def endTrackerFilter(self):
-        self.vStream.removeFilter(self.tracker.drawTracked)
-
+    # vStream Work functions
     def trackerAddStartTrack(self, trackable):
         # Convenience function that adds an object to the tracker, starts the tracker, and starts the filter
         self.addTrackable(trackable)
@@ -146,8 +184,17 @@ class Vision:
         self.endTrackerFilter()
         self.clearTargets()
 
+    # vStream Filter functions
+    def addTrackerFilter(self):
+        self.vStream.addFilter(self.tracker.drawTracked)
+
+    def endTrackerFilter(self):
+        self.vStream.removeFilter(self.tracker.drawTracked)
 
     # General use computer vision functions
+
+
+
     def getMotion(self):
 
         # GET TWO CONSECUTIVE FRAMES
@@ -281,6 +328,7 @@ class Vision:
             printf("Vision.setExiting(): Setting Vision to Exiting mode. All frame commands should exit quickly.")
         self.exiting = exiting
 
+
 class PlaneTracker:
     """
     PlanarTarget:
@@ -305,16 +353,21 @@ class PlaneTracker:
     # Tracker parameters
     FLANN_INDEX_KDTREE = 1
     FLANN_INDEX_LSH    = 6
-    MIN_MATCH_COUNT    = 10
+    MIN_MATCH_COUNT    = 15
+
+    # Check Other\Notes\FlanParams Test Data to see test data for many other parameters I tested for speed and matching
     flanParams         = dict(algorithm         = FLANN_INDEX_LSH,
-                              table_number      =               6,  # 12
-                              key_size          =              12,  # 20
-                              multi_probe_level =               1)  #  2
+                              table_number      =              6,  #  3,  #  6,  # 12,
+                              key_size          =             12,  # 19,  # 12,  # 20,
+                              multi_probe_level =              1)  # 1)   #  1)  #  2)
 
 
     def __init__(self, focalLength):
         self.focalLength  = focalLength
-        self.detector     = cv2.ORB_create(nfeatures = 8500)
+
+        self.detector     = cv2.ORB_create(nfeatures = 8000)
+
+        # For ORB
         self.matcher      = cv2.FlannBasedMatcher(self.flanParams, {})  # bug : need to pass empty dict (#1329)
         self.targets      = []
         self.framePoints  = []
@@ -371,7 +424,6 @@ class PlaneTracker:
     def track(self, frame):
         # updates self.tracked with a list of detected TrackedTarget objects
         self.framePoints, frame_descrs = self.__detectFeatures(frame)
-
         tracked = []
 
 
@@ -393,8 +445,8 @@ class PlaneTracker:
         for m in matches:
             matches_by_id[m.imgIdx].append(m)
 
-
         tracked = []
+
         for imgIdx, matches in enumerate(matches_by_id):
 
             if len(matches) < self.MIN_MATCH_COUNT:
@@ -406,24 +458,18 @@ class PlaneTracker:
             p1 = [self.framePoints[m.queryIdx].pt for m in matches]
             p0, p1 = np.float32((p0, p1))
             H, status = cv2.findHomography(p0, p1, cv2.RANSAC, 3.0)
-            status = status.ravel() != 0
 
+            status = status.ravel() != 0
             if status.sum() < self.MIN_MATCH_COUNT: continue
+
 
             p0, p1 = p0[status], p1[status]
 
             x0, y0, x1, y1 = target.view.rect
+
             quad = np.float32([[x0, y0], [x1, y0], [x1, y1], [x0, y1]])
             quad = cv2.perspectiveTransform(quad.reshape(1, -1, 2), H).reshape(-1, 2)
 
-
-            # if target.pickupRect is not None:
-            #     pickRect = target.pickupRect
-            #     x0, y0, x1, y1 = x0 + pickRect[0], y0 + pickRect[1], x0 + pickRect[2], y0 + pickRect[3]
-            #     pickupQuad = np.float32([[x0, y0], [x1, y0], [x1, y1], [x0, y1]])
-            #     pickupQuad = cv2.perspectiveTransform(pickupQuad.reshape(1, -1, 2), H).reshape(-1, 2)
-            # else:
-            #     pickupQuad = None
 
             # Calculate the 3d coordinates of the object
             center, rotation = self.get3DCoordinates(frame, target.view.rect, quad)
@@ -445,7 +491,6 @@ class PlaneTracker:
     def __addTracked(self, trackedArray):
         # Add an array of detected objects to the self.trackedHistory array, and shorten the trackedHistory array
         # so that it always remains self.historyLength long
-        start = time.time()
 
 
         self.trackedHistory.insert(0, trackedArray)
@@ -467,6 +512,8 @@ class PlaneTracker:
         filterFnt   = cv2.FONT_HERSHEY_PLAIN
         filterColor = (255, 255, 255)
 
+
+        # Draw the Name and XYZ of the object
         for tracked in self.trackedHistory[0]:
             quad = np.int32(tracked.quad)
             cv2.polylines(frame, [quad], True, (255, 255, 255), 2)
@@ -478,7 +525,8 @@ class PlaneTracker:
             scaleFactor   = currLength / origLength
 
             # Draw the name of the object, and coordinates
-            cv2.putText(frame, tracked.view.name, tuple(quad[1]),  filterFnt, scaleFactor, color=filterColor, thickness=1)
+            cv2.putText(frame, str(tracked.ptCount) + " " + tracked.view.name, tuple(quad[1]),
+                        filterFnt, scaleFactor, color=filterColor, thickness=1)
 
             # FOR DEUBGGING ONLY: TODO: Remove this when deploying final product
             try:
@@ -532,7 +580,6 @@ class PlaneTracker:
     #     cv2.imshow("window", copyframe)
     #     cv2.waitKey(1)
     #     return avg
-
 
 
 """

@@ -1,7 +1,7 @@
 import cv2
+from time         import time
 from threading    import Thread, RLock
 from Logic.Global import printf, FpsTimer
-
 
 def getConnectedCameras():
     tries = 10
@@ -133,11 +133,12 @@ class VideoStream:
             ret, newFrame = self.cap.read()
 
             if not ret:  # If a frame was not successfully returned
-                printf("VideoStream.videoThread(): ERROR while reading frame from Camera: ", self.cameraID)
+                printf("VideoStream.videoThread(): ERROR: while reading frame from Cam. Setting camera again...")
                 self.__setNewCamera(self.cameraID)
                 cv2.waitKey(1000)
                 continue
 
+            if newFrame is None: print("Ayy")
 
             # Do frame related work
             with self.frameLock:
@@ -170,14 +171,15 @@ class VideoStream:
                     filterFrame = self.getFrame()
                     for filterFunc in self.filterList:
                         filterFrame = filterFunc(filterFrame)
+
+                    # Draw FPS on the screen
+                    cv2.putText(filterFrame, str(int(round(fpsTimer.currentFPS, 0))), (10, 20),  cv2.FONT_HERSHEY_PLAIN, 1.25, color=(255, 255, 255), thickness=2)
+
                     self.filterFrame = filterFrame
 
-                    # cv2.imshow('myframe', self.filterFrame )
-                    # cv2.waitKey(1)
+
             else:
                 self.filterFrame = self.frame
-
-
 
         printf("VideoStream.videoThread(): VideoStream Thread has ended")
 
@@ -216,7 +218,7 @@ class VideoStream:
             self.setCamera  = None
             return False
 
-        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 3)
+       #  self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 0)
 
 
         # Since everything worked, save the new cameraID

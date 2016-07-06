@@ -184,7 +184,7 @@ class EventPromptWindow(QtWidgets.QDialog):
         ######################   RECOGNIZE MENU    ######################
         newRecognizeBtn = lambda params: self.btnClicked(RecognizeEventGUI, params=params)
         recognizeMnu    = QtWidgets.QMenu()
-        trackableList   = self.objManager.getObjectIDList(objFilter=self.objManager.TRACKABLE)
+        trackableList   = self.objManager.getObjectNameList(objFilter=self.objManager.TRACKABLE)
 
         for name in trackableList:
             recognizeMnu.addAction(name, lambda name=name: newRecognizeBtn({'objectID': name}))
@@ -214,7 +214,7 @@ class EventPromptWindow(QtWidgets.QDialog):
 class EventGUI:
     # Priority determines how the events will be sorted. 0 means the event will be at the top. 10000 is last.
     priority = 5000
-
+    title = ""
     def __init__(self, parameters):
         """
         self.parameters is used for events like KeyPressEvent where one class can handle multiple types of events
@@ -294,7 +294,7 @@ class TipEventGUI(EventGUI):
     This event activates when the sensor on the tip of the robots sucker is pressed/triggered
     """
 
-    title     = 'Tip'
+    title     = 'Tip Pressed'
     tooltip   = 'Activates when the sensor on the tip of the arm is pressed'
     icon      = Paths.tip_event
     logicPair = 'TipEvent'
@@ -314,7 +314,9 @@ class KeypressEventGUI(EventGUI):
     def __init__(self, parameters):
         super(KeypressEventGUI, self).__init__(parameters)
         self.priority = 300 + ord(parameters["checkKey"]) / 1000
+
     def dressWidget(self, widget):
+        self.title = 'KeyPress ' + self.parameters["checkKey"]
         widget.setIcon(self.icon)
         widget.setTitle('Keypress ' + self.parameters["checkKey"])
         widget.setTip('Activates when the letter ' + self.parameters["checkKey"] + " is pressed")
@@ -325,7 +327,6 @@ class MotionEventGUI(EventGUI):
     """
     This event activates when the sensor on the tip of the robots sucker is pressed/triggered
     """
-
     icon      = Paths.motion_event
     logicPair = 'MotionEvent'
     priority  = 400
@@ -334,6 +335,7 @@ class MotionEventGUI(EventGUI):
         super(MotionEventGUI, self).__init__(parameters)
 
     def dressWidget(self, widget):
+        self.title = 'Motion Detected ' + self.parameters["low"] + ' to ' + self.parameters["high"]
         widget.setIcon(self.icon)
         widget.setTitle('Motion ' + self.parameters["low"] + "-" + self.parameters["high"])
         widget.setTip('Activates when there is motion detected')
@@ -349,8 +351,9 @@ class RecognizeEventGUI(EventGUI):
     def __init__(self, parameters):
         super(RecognizeEventGUI, self).__init__(parameters)
 
-
     def dressWidget(self, widget):
+        self.title = "Object '" + self.parameters["objectID"] + "' Recognized"
+
         # Format the widget that will show up to make it unique. Not necessary in non-parameter events
         widget.setIcon(self.icon)
         # widget.setSecondIcon(self.parameters["customIcon"])

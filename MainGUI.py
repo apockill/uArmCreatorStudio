@@ -303,7 +303,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Turn off the gripper, just in case. Do this AFTER interpreter ends, so as to not use Serial twice...
         robot.setGripper(False)
-
+        robot.setActiveServos(all=False)
         # Make sure vision filters are stopped
 
         vision.endTrackerFilter()

@@ -66,8 +66,11 @@ class ObjectManager:
         printf("ObjectManager.refreshGroups(): Refreshing Groups!")
 
         # Remove existing groups from self.__objects
-        for obj in self.__objects:
-            if isinstance(obj, TrackableGroup): self.__objects.remove(obj)
+        for obj in self.__objects[:]:
+            # Since multiple objects are being deleted in the same array, use [:] to copy it so it doesnt change size
+            if isinstance(obj, TrackableGroup):
+                printf("ObjectManager.refreshGroups(): Removing ", obj.name, " from self.__objects")
+                self.__objects.remove(obj)
 
         # Use a temporary dictionary to record which objs belong to which groups
         groups = {}  # Example: {"tag": [obj, obj, obj], "tag2":[obj]}
@@ -89,6 +92,7 @@ class ObjectManager:
 
         # Create the TrackableGroup objects and add them
         for group in groups:
+            printf("ObjectManager.refreshGroups(): Adding group ", group)
             newGroupObj = TrackableGroup(name=group, members=groups[group])
             self.__addObject(newGroupObj)
 
@@ -100,7 +104,7 @@ class ObjectManager:
 
         return None
 
-    def getObjectIDList(self, objFilter=None):
+    def getObjectNameList(self, objFilter=None):
         # Returns a list of object names. This is used in ObjectManager, or any situation when you need to know if a
         # particular object is loaded. If objFilter is not None, then only return objects of that type
 
@@ -134,7 +138,7 @@ class ObjectManager:
         # Returns a list of strings that the user cannot use as the name of an object.
         # This includes names of objects, names of tags, and names of objects like "Robot Marker" that are reserved
         # It also includes things like "Trackable" or "TrackableObject" for good measure
-        forbidden = self.getObjectIDList()
+        forbidden = self.getObjectNameList()
         forbidden += ['TrackerObject', 'Robot Marker', "Trackable"]
         return forbidden
 
@@ -145,7 +149,7 @@ class ObjectManager:
         # Checks if the object already exists. If it does, then replace the existing object with the new one.
         for obj in self.__objects:
             if newObject.name == obj.name:
-                printf("Environment.addObject(): ERROR: Tried adding an object that already existed")
+                printf("ObjectManager.addObject(): ERROR: Tried adding an object that already existed: ", obj.name)
                 return False
 
 
@@ -154,10 +158,11 @@ class ObjectManager:
 
         return True
 
+
     def deleteObject(self, objectID):
         printf("ObjectManager.deleteObject(): Deleting ", objectID, " permanently")
 
-        for obj in self.__objects[:]:
+        for obj in self.__objects:
             if not objectID == obj.name: continue
 
 
@@ -173,6 +178,9 @@ class ObjectManager:
                 os.rmdir(objDirectory)
 
                 self.__objects.remove(obj)
+
+                # If a TrackableObject is deleted, make sure that all references in groups are deleted as well
+                self.refreshGroups()
                 return True
 
             if isinstance(obj, TrackableGroup):
@@ -201,6 +209,8 @@ class Trackable:
         return self.views
 
     def equalTo(self, otherObjectID):
+        # Test if two objects are are the same (used when seeing if something was recognized)
+        # This method is overrided in TrackableGroup
         return self.name == otherObjectID
 
 class TrackableObject(Trackable):
@@ -225,7 +235,7 @@ class TrackableObject(Trackable):
 
         # self.directory    = loadFromDirectory  # Used in objectmanager for deleting object. Set here, or in self.save
         self.loadSuccess  = False
-        self.__tags       = []                 # A list of strings. This determines what groups the object is placed in.
+        self.__tags       = []              # A list of strings. This determines what groups the object is placed in.
 
         if loadFromDirectory is not None:
             self.loadSuccess = self.__load(loadFromDirectory)
@@ -329,6 +339,7 @@ class TrackableObject(Trackable):
     def removeTag(self, tagString):
         self.__tags.remove(tagString)
 
+
     def getIcon(self, maxWidth, maxHeight):
         # Create an icon of a cropped image of the 1st View, and resize it to the parameters.
 
@@ -356,9 +367,16 @@ class TrackableObject(Trackable):
     def getTags(self):
         return self.__tags
 
-
 class TrackableGroup(Trackable):
-    # self.name is the Group name
+    """
+    A group of TrackableObjects that works just like any other Trackable and can be used for detection purposes.
+    EqualTo will look to see if the said TrackableObject is inside of the group
+
+    GetViews returns every view of every object in the group, and is how the trackableGroup is tracked.
+
+    self.name is the Group name
+    """
+
 
     def __init__(self, name, members):
         super(TrackableGroup, self).__init__(name)

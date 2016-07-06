@@ -733,15 +733,15 @@ class CWPage5(QtWidgets.QWizardPage):
 
         # Test the z on 4 xy points
         zTest = int(round(zLower, 0))  # Since range requires an integer, round zLower just for this case
-        for z in range(zTest, 25, 1): testCoords += [[0,  -15, z]]
-        for z in range(zTest, 25, 2): testCoords += [[-8, -11, z]]
-        for z in range(zTest, 25, 2): testCoords += [[-5, -13, z]]
-        for z in range(zTest, 25, 2): testCoords += [[-5, -17, z]]
-        for z in range(zTest, 25, 2): testCoords += [[-8, -19, z]]
-        for z in range(zTest, 25, 2): testCoords += [[ 8, -11, z]]
-        for z in range(zTest, 25, 2): testCoords += [[ 5, -13, z]]
-        for z in range(zTest, 25, 2): testCoords += [[ 5, -17, z]]
-        for z in range(zTest, 25, 2): testCoords += [[ 8, -19, z]]
+        for z in range(zTest, 26, 1): testCoords += [[0,  -15, z]]
+        for z in range(zTest, 19, 1): testCoords += [[-8, -11, z]]
+        for z in range(zTest, 20, 1): testCoords += [[-5, -13, z]]
+        for z in range(zTest, 20, 1): testCoords += [[-5, -17, z]]
+        for z in range(zTest, 19, 1): testCoords += [[-8, -19, z]]
+        for z in range(zTest, 19, 1): testCoords += [[ 8, -11, z]]
+        for z in range(zTest, 20, 1): testCoords += [[ 5, -13, z]]
+        for z in range(zTest, 20, 1): testCoords += [[ 5, -17, z]]
+        for z in range(zTest, 19, 1): testCoords += [[ 8, -19, z]]
 
 
         # Test very near the base of the robot, but avoid the actual base
@@ -776,7 +776,6 @@ class CWPage5(QtWidgets.QWizardPage):
 
             # Move the robot to the coordinate
             robot.setPos(x=coord[0], y=coord[1], z=coord[2])
-            robot.wait()
             sleep(.2)
 
             # Now that the robot is at the desired position, get the avg location

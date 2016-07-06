@@ -265,12 +265,16 @@ class Interpreter:
         # If it crashes, it returns None, but some expressions might return none, so 'success' variable is still needed.
         # Side note: I would have to do ~66,000 eval operations to lag the program by one second.
 
-        answer = 0.0
+        answer = None
         try:
             answer = eval(expression, {"__builtins__": None}, self.__variables)
 
         except:
             printf('Interpreter.__evaluateExpression(): ERROR: Expression "', expression, '" crashed!')
+            return None, False
+
+        if answer is None:
+
             return None, False
 
         return answer, True

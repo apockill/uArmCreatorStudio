@@ -24,6 +24,8 @@ class Robot:
 
         self.pos   = {'x': None, 'y': None, 'z': None}
 
+        # Convenience function for clamping a number to a range
+        self.clamp = lambda lower, num, higher: max(lower, min(num, higher))
 
         # Keep track of the robots gripper status
         self.__gripperStatus   = False
@@ -41,8 +43,11 @@ class Robot:
         self.__threadRunning   = False
 
         # Set up some constants for other functions to use
-        self.home      = {'x': 0.0, 'y': -15.0, 'z': 15.0}
+        self.home      = {'x': 0.0, 'y': -15.0, 'z': 25.0}
 
+        self.xMin, self.xMax = -30, 30
+        self.yMin, self.yMax = -30, -5
+        self.zMin, self.zMax =  -5, 25
 
 
     def getMoving(self):
@@ -69,7 +74,7 @@ class Robot:
     def getServoAngles(self):
         if not self.connected() or self.exiting:
             printf("Robot.getServoAngle(): Robot not found or setupThread is running, returning 0 for angle")
-            return 0
+            return [0, 0, 0, 0]
         else:
             return self.uArm.getServoAngles()
 
@@ -87,19 +92,31 @@ class Robot:
                 else:
                     self.pos[name] = value
 
-
-        posBefore = dict(self.pos)
+        posBefore = dict(self.pos)  # Make a copy of the pos right now
 
         setVal(x, 'x', relative)
         setVal(y, 'y', relative)
         setVal(z, 'z', relative)
 
 
-        # If this command has changed the position, or if the position was changed earlier
-        positionChanged = (not (posBefore == self.pos))
+        # Make sure all X, Y, and Z values are within a reachable range (very primitive- need a permanent solution soon)
+        if self.pos['x'] is not None and self.pos['y'] is not None and self.pos['z'] is not None:
+            if self.xMin > self.pos['x'] or self.pos['x'] > self.xMax:
+                printf("Robot.robot.setPos(): ERROR: X is out of bounds!", self.pos['x'])
+                self.pos['x'] = self.clamp(self.xMin, self.pos['x'], self.xMax)
+
+            if self.yMin > self.pos['y'] or self.pos['y'] > self.yMax:
+                printf("Robot.robot.setPos(): ERROR: Y is out of bounds!", self.pos['y'])
+                self.pos['y'] = self.clamp(self.yMin, self.pos['y'], self.yMax)
+
+            if self.zMin > self.pos['z'] or self.pos['z'] > self.zMax:
+                printf("Robot.robot.setPos(): ERROR: Z is out of bounds!", self.pos['z'])
+                self.pos['z'] = self.clamp(self.zMin, self.pos['z'], self.zMax)
 
 
-        if positionChanged:
+
+        # If this command has changed the position, then move the robot
+        if not posBefore == self.pos:
             try:
                 self.uArm.moveToWithSpeed(self.pos['x'], self.pos['y'], self.pos['z'], self.__speed)
                 self.__servoAngleCache = list(self.uArm.getIK(self.pos['x'], self.pos['y'], self.pos['z'])) + [self.__servoAngleCache[3]]
@@ -109,7 +126,7 @@ class Robot:
             except ValueError:
                 printf("Robot.refresh(): ERROR: Robot out of bounds and the uarm_python library crashed!")
 
-
+            # Wait for robot to finish move, but if exiting, just continue
             if wait:
                 while self.getMoving():
                     if self.exiting:
@@ -208,12 +225,15 @@ class Robot:
             # Check if the uArm was able to connect successfully
             if self.uArm.connected():
                 printf("Robot.setupThread(): uArm successfully connected")
+                self.__threadRunning = False
+                self.setPos(wait=False, **self.home)
+                return
             else:
                 printf("Robot.setupThread(): uArm was unable to connect!")
                 self.uArm = None
 
         except serial.SerialException:
-            printf("Robot.setupThread(): ERROR SerialException while setting uArm to ", com)
+            printf("Robot.setupThread(): ERROR: SerialException while setting uArm to ", com)
 
         self.__threadRunning = False
 

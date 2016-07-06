@@ -54,7 +54,7 @@ class Uarm:
 
 
     def servoAttach(self, servo_number):
-        print("Attaching")
+
         servo_number = str(int(servo_number))
         cmnd = "attachS" + servo_number
         return self.__send(cmnd)
@@ -197,7 +197,7 @@ class Uarm:
             printf("Uarm.read(): ERROR: Recieved error from robot: ", response)
 
         if self.printResponses:
-            print(response)
+            printf("uArm.__send(): Got: ", response)
         return response
 
     def __parseArgs(self, message, command, arguments):

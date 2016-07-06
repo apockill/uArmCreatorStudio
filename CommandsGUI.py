@@ -158,7 +158,7 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
 
         add(MoveRelativeToObjectCommandGUI)
         add(PickupObjectCommandGUI)
-
+        add(TestObjectSeenCommandGUI)
 
         return tabWidget
 
@@ -379,7 +379,10 @@ class CommandGUI:
 
 
     # The following are helper functions for modifying the prompt window in a consistent way
+
     def _addRow(self, prompt, leftWidget, rightItem):
+        if isinstance(rightItem, QtWidgets.QLineEdit) or isinstance(rightItem, QtWidgets.QComboBox):
+            rightItem.setFixedWidth(self.defaultTextBoxWidth)
         # Creates and adds a row to prompt.content, with proper formatting
         row = QtWidgets.QHBoxLayout()
         row.addStretch(1)
@@ -404,8 +407,20 @@ class CommandGUI:
         # Add it to the prompt
         prompt.mainVLayout.addLayout(hintRow)
 
-
-
+    def _addObjectHint(self, prompt, numResources):
+        """
+        This is a hint that goes onto any command that asks the user to choose from a vision object. It tells them
+        that they can create objects in the Resource Manager
+        """
+        # If there are no objects, place a nice label to let the user know
+        if numResources == 0:
+            hintText = "You have not created any trackable objects yet." + \
+                       "\nTry adding new objects in the Resource Manager!"
+            self._addHint(prompt, hintText)
+        elif numResources == 1:
+            hintText = "It looks like you've only created one object." + \
+                       " Feel free to add new objects in the Resource Manager!"
+            self._addHint(prompt, hintText)
 
 ########## COMMANDS ##########
 """
@@ -435,7 +450,7 @@ Example of a fully filled out class:
 class NameCommandGUI(CommandGUI):
     title     = "Example Title"
     tooltip   = "This tool does X Y and Z"
-    icon      = Icons.some_icon
+    icon      = Paths.some_icon
     logicPair = "NameCommand"
 
     def __init__(self, env, parameters=None):
@@ -832,10 +847,6 @@ class BuzzerCommandGUI(CommandGUI):
         prompt.tmeEdit   = QtWidgets.QLineEdit()  # "value" edit
         prompt.waitCheck = QtWidgets.QCheckBox()  # "override" CheckBox
 
-
-        prompt.frqEdit.setFixedWidth(self.defaultTextBoxWidth)
-        prompt.tmeEdit.setFixedWidth(self.defaultTextBoxWidth)
-
         # Set up all the labels for the inputs
         frqLabel = QtWidgets.QLabel('Frequency: ')
         tmeLabel = QtWidgets.QLabel('Duration: ')
@@ -906,7 +917,7 @@ class MoveRelativeToObjectCommandGUI(CommandGUI):
         objManager = env.getObjectManager()
 
         # Save a list that gets all loaded objects. This is used only when the window is opened, to populate the objlist
-        self.getObjectList  = lambda: objManager.getObjectIDList(objFilter=objManager.PICKUP)
+        self.getObjectList  = lambda: objManager.getObjectNameList(objFilter=objManager.PICKUP)
 
         if self.parameters is None:
             self.parameters = {"objectID": "",
@@ -929,7 +940,6 @@ class MoveRelativeToObjectCommandGUI(CommandGUI):
 
         # Create a QComboBox
         prompt.objChoices = QtWidgets.QComboBox()
-        prompt.objChoices.setMinimumWidth(150)
 
         # Add an empty item at the top if no object has ever been selected
         prompt.objChoices.addItem(self.parameters["objectID"])
@@ -959,15 +969,7 @@ class MoveRelativeToObjectCommandGUI(CommandGUI):
 
 
 
-        # If there are no objects, place a nice label to let the user know
-        if len(objectList) == 0:
-            hintText = "You have not created any trackable objects yet." + \
-                       "\nTry adding new objects in the Resource Manager!"
-            self._addHint(prompt, hintText)
-        elif len(objectList) == 1:
-            hintText = "It looks like you've only created one object." + \
-                       " Feel free to add new objects in the Resource Manager!"
-            self._addHint(prompt, hintText)
+        self._addObjectHint(prompt, len(objectList))
 
         return prompt
 
@@ -1004,23 +1006,18 @@ class PickupObjectCommandGUI(CommandGUI):
         objManager = env.getObjectManager()
 
         # Save a list that gets all loaded objects. This is used only when the window is opened, to populate the objlist
-        self.getObjectList  = lambda: objManager.getObjectIDList(objFilter=objManager.PICKUP)
+        self.getObjectList  = lambda: objManager.getObjectNameList(objFilter=objManager.PICKUP)
 
         if self.parameters is None:
             self.parameters = {"objectID": ""}
 
     def dressWindow(self, prompt):
         # Define what happens when the user changes the object selection
-
         choiceLbl = QtWidgets.QLabel("Choose an object: ")
 
         # Create a QComboBox
         prompt.objChoices = QtWidgets.QComboBox()
-        prompt.objChoices.setMinimumWidth(150)
-
-
-        # Add an empty item at the top if no object has ever been selected
-        prompt.objChoices.addItem(self.parameters["objectID"])
+        prompt.objChoices.addItem(self.parameters["objectID"])  # Add an empty item at the top
 
 
         # Populate the comboBox with a list of all trackable objects, and select the self.parameters one if it exists
@@ -1030,17 +1027,7 @@ class PickupObjectCommandGUI(CommandGUI):
 
 
         self._addRow(prompt, choiceLbl, prompt.objChoices)
-
-
-        # If there are no objects, place a nice label to let the user know
-        if len(objectList) == 0:
-            hintText = "You have not created any trackable objects yet." + \
-                       "\nTry adding new objects in the Resource Manager!"
-            self._addHint(prompt, hintText)
-        elif len(objectList) == 1:
-            hintText = "It looks like you've only created one object(s)." + \
-                       " Feel free to add new objects in the Resource Manager!"
-            self._addHint(prompt, hintText)
+        self._addObjectHint(prompt, len(objectList))
 
         return prompt
 
@@ -1055,6 +1042,9 @@ class PickupObjectCommandGUI(CommandGUI):
 
     def _updateDescription(self):
         self.description = "Find " + self.parameters["objectID"] + " and move the robot over it"
+
+
+
 
 
 
@@ -1118,8 +1108,6 @@ class SetVariableCommandGUI(CommandGUI):
         prompt.namEdit = QtWidgets.QLineEdit()  # "Name" edit
         prompt.valEdit = QtWidgets.QLineEdit()  # "value" edit
 
-        prompt.namEdit.setFixedWidth(self.defaultTextBoxWidth)
-        prompt.valEdit.setFixedWidth(self.defaultTextBoxWidth)
 
         # Set up all the labels for the inputs
         namLabel = QtWidgets.QLabel('Variable Name: ')
@@ -1168,11 +1156,6 @@ class TestVariableCommandGUI(CommandGUI):
         prompt.varEdit = QtWidgets.QLineEdit()  # "Variable" edit
         prompt.tstMenu = QtWidgets.QComboBox()
         prompt.valEdit = QtWidgets.QLineEdit()
-        # prompt.notCheck = QtWidgets.QCheckBox()  # "Not" CheckBox
-
-        prompt.varEdit.setFixedWidth(self.defaultTextBoxWidth)
-        prompt.tstMenu.setFixedWidth(self.defaultTextBoxWidth)
-        prompt.valEdit.setFixedWidth(self.defaultTextBoxWidth)
 
         prompt.tstMenu.addItem('Equal To')
         prompt.tstMenu.addItem('Not Equal To')
@@ -1183,7 +1166,6 @@ class TestVariableCommandGUI(CommandGUI):
         varLabel = QtWidgets.QLabel('Variable: ')
         tstLabel = QtWidgets.QLabel('Test: ')
         valLabel = QtWidgets.QLabel('Value: ')
-        # notLabel = QtWidgets.QLabel('Not')
 
         # Fill the textboxes with the default parameters
         prompt.varEdit.setText(str(self.parameters['variable']))
@@ -1211,6 +1193,82 @@ class TestVariableCommandGUI(CommandGUI):
                            ' ' + self.parameters['expression'] + ' then'
 
 
+class TestObjectSeenCommandGUI(CommandGUI):
+    title     = "Test Sight"
+    tooltip   = "This command will allow code in blocked brackets below it to run IF the specified object has been " \
+                "recognized."
+    icon      = Paths.see_obj_command
+    logicPair = "TestObjectSeenCommand"
+
+    def __init__(self, env, parameters=None):
+        super(TestObjectSeenCommandGUI, self).__init__(parameters)
+
+        objManager = env.getObjectManager()
+        self.getObjectList   = lambda: objManager.getObjectNameList(objFilter=objManager.TRACKABLE)
+        self.ageChoices      = ["just now", "very recently", "recently", "since script began"]
+        self.accChoices      = ["high", "medium", "low"]
+
+        # If parameters do not exist, then set up the default parameters
+        if self.parameters is None:
+            # Anything done with env should be done here. Try not to save env as a class variable whenever possible
+            self.parameters = {"objectID": "",
+                               "age": 0,
+                               "acc": 0,
+                               "not": False}
+
+    def dressWindow(self, prompt):
+        # Define what happens when the user changes the object selection
+        choiceLbl         = QtWidgets.QLabel("If recognized: ")
+        ageLbl            = QtWidgets.QLabel("How recently: ")
+        accLbl            = QtWidgets.QLabel("Confidence level: ")
+        notLbl            = QtWidgets.QLabel("NOT")
+
+        prompt.objChoices = QtWidgets.QComboBox()
+        prompt.ageChoices = QtWidgets.QComboBox()
+        prompt.accChoices = QtWidgets.QComboBox()
+        prompt.notCheck   = QtWidgets.QCheckBox()  # "Not" CheckBox
+
+
+        # Populate the comboBox with a list of all trackable objects, and select the self.parameters one if it exists
+        prompt.objChoices.addItem(self.parameters["objectID"])  # Add an empty item at the top
+        objectList = self.getObjectList()
+        for index, objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
+
+        # Populate the ageChoices with a list of different possible ages
+        for choice in self.ageChoices: prompt.ageChoices.addItem(choice)
+
+
+        # Populate the accuracayChoices with a list of different possible accuracies
+        for choice in self.accChoices: prompt.accChoices.addItem(choice)
+
+
+
+        self._addRow(prompt, choiceLbl, prompt.objChoices)
+        self._addRow(prompt, ageLbl, prompt.ageChoices)
+        self._addRow(prompt, accLbl, prompt.accChoices)
+        self._addRow(prompt,    notLbl,   prompt.notCheck)
+
+        self._addObjectHint(prompt, len(objectList))
+
+        return prompt
+
+    def _extractPromptInfo(self, prompt):
+        age = self.ageChoices.index(prompt.ageChoices.currentText())
+        acc = self.accChoices.index(prompt.accChoices.currentText())
+        newParameters = {"objectID": prompt.objChoices.currentText(),
+                              "age": age,
+                              "acc": acc,
+                              "not": prompt.notCheck.isChecked()}
+
+        print(newParameters)
+        self.parameters.update(newParameters)
+
+        return self.parameters
+
+    def _updateDescription(self):
+        self.description = "If " + self.parameters["objectID"] + " was seen " + \
+                           self.ageChoices[self.parameters["acc"]] + \
+                           " with " + self.accChoices[self.parameters["acc"]] + " confidence"
 
 
 ########### NON-UPDATED COMMANDS ########
