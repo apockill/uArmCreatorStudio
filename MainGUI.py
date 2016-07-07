@@ -80,32 +80,50 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def initUI(self):
         # Create "File" Menu
-        menuBar      = self.menuBar()
-        fileMenu     = menuBar.addMenu('File')
+        menuBar       = self.menuBar()
 
-        newAction    = QtWidgets.QAction(QtGui.QIcon(Paths.new_file), "New Task", self)
-        saveAction   = QtWidgets.QAction(QtGui.QIcon(Paths.save_file), "Save Task", self)
-        saveAsAction = QtWidgets.QAction(QtGui.QIcon(Paths.save_file), "Save Task As", self)
-        loadAction   = QtWidgets.QAction(QtGui.QIcon(Paths.load_file), "Load Task", self)
-        forumAction  = QtWidgets.QAction(QtGui.QIcon(Paths.taskbar), "Visit the forum!", self)
-        redditAction = QtWidgets.QAction(QtGui.QIcon(Paths.reddit_link), "Visit our subreddit!", self)
 
+
+        # Create File Menu and actions
+        fileMenu      = menuBar.addMenu('File')
+        newAction     = QtWidgets.QAction(QtGui.QIcon(Paths.new_file), "New Task", self)
+        saveAction    = QtWidgets.QAction(QtGui.QIcon(Paths.save_file), "Save Task", self)
+        saveAsAction  = QtWidgets.QAction(QtGui.QIcon(Paths.save_file), "Save Task As", self)
+        loadAction    = QtWidgets.QAction(QtGui.QIcon(Paths.load_file), "Load Task", self)
+
+        # Connect file menu actions
         newAction.triggered.connect(    lambda: self.newTask(promptSave=True))
         saveAction.triggered.connect(   self.saveTask)
         saveAsAction.triggered.connect( lambda: self.saveTask(True))
         loadAction.triggered.connect(   self.loadTask)
-        forumAction.triggered.connect(  lambda: webbrowser.open("https://forum.ufactory.cc/", new=0, autoraise=True))
-        redditAction.triggered.connect(lambda: webbrowser.open("https://www.reddit.com/r/uArm/", new=0, autoraise=True))
 
-
-
+        # Add file menu actions
         fileMenu.addAction(newAction)
         fileMenu.addAction(saveAction)
         fileMenu.addAction(saveAsAction)
         fileMenu.addAction(loadAction)
-        fileMenu.addAction(forumAction)
-        fileMenu.addAction(redditAction)
+
+
+
+        # Create Community Menu
+        communityMenu = menuBar.addMenu('Community')
+        forumAction   = QtWidgets.QAction(QtGui.QIcon(Paths.taskbar), "Visit the forum!", self)
+        redditAction  = QtWidgets.QAction(QtGui.QIcon(Paths.reddit_link), "Visit our subreddit!", self)
+
+        # Connect community menu actions
+        forumAction.triggered.connect(  lambda: webbrowser.open("https://forum.ufactory.cc/", new=0, autoraise=True))
+        redditAction.triggered.connect(lambda: webbrowser.open("https://www.reddit.com/r/uArm/", new=0, autoraise=True))
+
+        # Add community menu actions
+        communityMenu.addAction(forumAction)
+        communityMenu.addAction(redditAction)
+
+
+
+        # Add menus to menuBar
         menuBar.addMenu(fileMenu)
+        menuBar.addMenu(communityMenu)
+
 
 
         # Create Toolbar
@@ -140,8 +158,11 @@ class MainWindow(QtWidgets.QMainWindow):
         toolbar.addAction(calibrateBtn)
         toolbar.addAction(objMngrBtn)
 
+
+
         # Create the main layout
         self.setCentralWidget(self.dashboardView)
+
 
 
         # Final touches
@@ -447,7 +468,7 @@ class MainWindow(QtWidgets.QMainWindow):
             printf("Mainwindow.loadTask(): ERROR: Could not load task: ", e)
             self.newTask(promptSave=False)
             QtWidgets.QMessageBox.question(self, 'Warning', "The program was unable to load the following script:\n" +
-                                           filename, QtWidgets.QMessageBox.Ok)
+                                    filename + "\n\n The following error occured: " + str(e), QtWidgets.QMessageBox.Ok)
 
 
     def saveSettings(self):

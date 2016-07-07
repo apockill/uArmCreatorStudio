@@ -778,7 +778,7 @@ class WaitCommandGUI(CommandGUI):
         super(WaitCommandGUI, self).__init__(parameters)
 
         if self.parameters is None:
-            self.parameters = {'time': 1.0}
+            self.parameters = {'time': 0.5}
             pass
 
     def dressWindow(self, prompt):
@@ -975,7 +975,7 @@ class MoveRelativeToObjectCommandGUI(CommandGUI):
 
     def _extractPromptInfo(self, prompt):
         # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
-        newParameters = {"objectID": prompt.objChoices.currentText(),
+        newParameters = {"objectID": str(prompt.objChoices.currentText()),
                          'x': self._sanitizeEval(prompt.xEdit, self.parameters["x"]),
                          'y': self._sanitizeEval(prompt.yEdit, self.parameters["y"]),
                          'z': self._sanitizeEval(prompt.zEdit, self.parameters["z"])}
@@ -1033,7 +1033,7 @@ class PickupObjectCommandGUI(CommandGUI):
 
     def _extractPromptInfo(self, prompt):
         # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
-        newParameters = {"objectID": prompt.objChoices.currentText()}
+        newParameters = {"objectID": str(prompt.objChoices.currentText())}
 
         print(newParameters)
         self.parameters.update(newParameters)
@@ -1044,6 +1044,105 @@ class PickupObjectCommandGUI(CommandGUI):
         self.description = "Find " + self.parameters["objectID"] + " and move the robot over it"
 
 
+class TestObjectSeenCommandGUI(CommandGUI):
+    title     = "Test If Object Seen"
+    tooltip   = "This command will allow code in blocked brackets below it to run IF the specified object has been " \
+                "recognized."
+    icon      = Paths.see_obj_command
+    logicPair = "TestObjectSeenCommand"
+
+    def __init__(self, env, parameters=None):
+        super(TestObjectSeenCommandGUI, self).__init__(parameters)
+
+        objManager = env.getObjectManager()
+        vision     = env.getVision()
+        self.maxAge          = vision.historyLen - 1
+        self.getObjectList   = lambda: objManager.getObjectNameList(objFilter=objManager.TRACKABLE)
+        self.ageChoices      = ["latest frame", "last 5 frames", "last 15 frames", "last 30 frames", "last 60 frames"]
+        self.accChoices      = ["low", "medium", "high"]
+
+        # If parameters do not exist, then set up the default parameters
+        if self.parameters is None:
+            # Anything done with env should be done here. Try not to save env as a class variable whenever possible
+            self.parameters = {"objectID":    "",
+                                    "age":     0,
+                                "ptCount":     0,  # A number from 0 to 3, which incriments by MIN_MATCH_COUNT points
+                                    "not": False}
+
+    def dressWindow(self, prompt):
+        # Define what happens when the user changes the object selection
+        choiceLbl         = QtWidgets.QLabel("If recognized: ")
+        accLbl            = QtWidgets.QLabel("Confidence level: ")
+        prompt.ageLbl     = QtWidgets.QLabel("How recently :")
+        notLbl            = QtWidgets.QLabel("NOT")
+
+        prompt.objChoices = QtWidgets.QComboBox()
+        prompt.accChoices = QtWidgets.QComboBox()
+        prompt.ageSlider  = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        prompt.notCheck   = QtWidgets.QCheckBox()  # "Not" CheckBox
+
+
+        # Populate the comboBox with a list of all trackable objects, and select the self.parameters one if it exists
+        prompt.objChoices.addItem(self.parameters["objectID"])  # Add the previously selected item at the top
+        objectList = self.getObjectList()
+        for index, objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
+
+
+        # Populate the accuracayChoices with a list of different possible accuracies
+
+        for choice in self.accChoices: prompt.accChoices.addItem(choice)
+        prompt.accChoices.setCurrentIndex(self.parameters["ptCount"])
+
+
+        # Set up the Age slider
+        def updateAgeSliderLabel():
+            # Create the text next to the "How Recently" label
+            newText = "How Recently: "
+            if prompt.ageSlider.value() == 1:
+                newText += "Just now"
+            else:
+                newText += "< " + str(prompt.ageSlider.value()) + " frames ago"
+            prompt.ageLbl.setText(newText)
+        prompt.ageSlider.valueChanged.connect(updateAgeSliderLabel)
+        prompt.ageSlider.setMinimum(1)
+        prompt.ageSlider.setMaximum(self.maxAge)
+        prompt.ageSlider.setValue(self.parameters["age"])
+        updateAgeSliderLabel()
+
+        # Set up the "NOT" Check
+        prompt.notCheck.setChecked(self.parameters["not"])
+
+        self._addRow(prompt,     choiceLbl, prompt.objChoices)
+        self._addRow(prompt,        accLbl, prompt.accChoices)
+        self._addRow(prompt, prompt.ageLbl, prompt.ageSlider)
+        self._addRow(prompt,        notLbl,   prompt.notCheck)
+
+        self._addObjectHint(prompt, len(objectList))
+
+        return prompt
+
+    def _extractPromptInfo(self, prompt):
+        age = int(prompt.ageSlider.value())
+        acc = self.accChoices.index(prompt.accChoices.currentText())
+        newParameters = {"objectID": str(prompt.objChoices.currentText()),
+                              "age": age,
+                              "ptCount": acc,
+                              "not": prompt.notCheck.isChecked()}
+
+        print("new params", newParameters)
+        self.parameters.update(newParameters)
+
+        return self.parameters
+
+    def _updateDescription(self):
+        objName = (self.parameters["objectID"], "Object")[len(self.parameters["objectID"]) == 0]
+        self.title = "Test If " + objName + " Seen"
+
+        confidenceText = ["slightly", "fairly", "highly"]
+
+        self.description = "If"
+        if self.parameters["not"]: self.description += " NOT"
+        self.description += " " + confidenceText[self.parameters["ptCount"]] + " confident object was seen"
 
 
 
@@ -1193,82 +1292,6 @@ class TestVariableCommandGUI(CommandGUI):
                            ' ' + self.parameters['expression'] + ' then'
 
 
-class TestObjectSeenCommandGUI(CommandGUI):
-    title     = "Test Sight"
-    tooltip   = "This command will allow code in blocked brackets below it to run IF the specified object has been " \
-                "recognized."
-    icon      = Paths.see_obj_command
-    logicPair = "TestObjectSeenCommand"
-
-    def __init__(self, env, parameters=None):
-        super(TestObjectSeenCommandGUI, self).__init__(parameters)
-
-        objManager = env.getObjectManager()
-        self.getObjectList   = lambda: objManager.getObjectNameList(objFilter=objManager.TRACKABLE)
-        self.ageChoices      = ["just now", "very recently", "recently", "since script began"]
-        self.accChoices      = ["high", "medium", "low"]
-
-        # If parameters do not exist, then set up the default parameters
-        if self.parameters is None:
-            # Anything done with env should be done here. Try not to save env as a class variable whenever possible
-            self.parameters = {"objectID": "",
-                               "age": 0,
-                               "acc": 0,
-                               "not": False}
-
-    def dressWindow(self, prompt):
-        # Define what happens when the user changes the object selection
-        choiceLbl         = QtWidgets.QLabel("If recognized: ")
-        ageLbl            = QtWidgets.QLabel("How recently: ")
-        accLbl            = QtWidgets.QLabel("Confidence level: ")
-        notLbl            = QtWidgets.QLabel("NOT")
-
-        prompt.objChoices = QtWidgets.QComboBox()
-        prompt.ageChoices = QtWidgets.QComboBox()
-        prompt.accChoices = QtWidgets.QComboBox()
-        prompt.notCheck   = QtWidgets.QCheckBox()  # "Not" CheckBox
-
-
-        # Populate the comboBox with a list of all trackable objects, and select the self.parameters one if it exists
-        prompt.objChoices.addItem(self.parameters["objectID"])  # Add an empty item at the top
-        objectList = self.getObjectList()
-        for index, objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
-
-        # Populate the ageChoices with a list of different possible ages
-        for choice in self.ageChoices: prompt.ageChoices.addItem(choice)
-
-
-        # Populate the accuracayChoices with a list of different possible accuracies
-        for choice in self.accChoices: prompt.accChoices.addItem(choice)
-
-
-
-        self._addRow(prompt, choiceLbl, prompt.objChoices)
-        self._addRow(prompt, ageLbl, prompt.ageChoices)
-        self._addRow(prompt, accLbl, prompt.accChoices)
-        self._addRow(prompt,    notLbl,   prompt.notCheck)
-
-        self._addObjectHint(prompt, len(objectList))
-
-        return prompt
-
-    def _extractPromptInfo(self, prompt):
-        age = self.ageChoices.index(prompt.ageChoices.currentText())
-        acc = self.accChoices.index(prompt.accChoices.currentText())
-        newParameters = {"objectID": prompt.objChoices.currentText(),
-                              "age": age,
-                              "acc": acc,
-                              "not": prompt.notCheck.isChecked()}
-
-        print(newParameters)
-        self.parameters.update(newParameters)
-
-        return self.parameters
-
-    def _updateDescription(self):
-        self.description = "If " + self.parameters["objectID"] + " was seen " + \
-                           self.ageChoices[self.parameters["acc"]] + \
-                           " with " + self.accChoices[self.parameters["acc"]] + " confidence"
 
 
 ########### NON-UPDATED COMMANDS ########

@@ -1,5 +1,6 @@
 import json
 import os
+import sys   # For getting size of oan object
 import cv2   # For image saving
 from collections  import namedtuple
 from Logic.Global import printf, ensurePathExists
@@ -32,24 +33,37 @@ class ObjectManager:
         # Set different filters that can be used in self.getObjectIDList(objFilter=[One of the following])
         self.TRACKABLE      = Trackable
         self.TRACKABLEOBJ   = TrackableObject
-        self.TRACKABLEGROUP = TrackableGroup
+        self.TRACKABLEGROUP = TrackableGroupObject
         self.PICKUP         = "PICKUP"        # Any trackable object + group, NOT incuding the Robot Marker object
-
+        self.MOTIONPATH     = MotionPath
 
     def loadAllObjects(self):
         # Load all objects into the ObjectManager
 
         foldersAndItems = os.listdir(self.__directory)
 
-        newTrackable = lambda folder, directory: TrackableObject(folder.replace("TrackerObject ", ""), directory)
+
+
         for folder in foldersAndItems:
             path = self.__directory + "\\" + folder
+            newObj    = None
+            createObj = lambda objType, prefix, directory: objType(folder.replace(prefix + " ", ""), path)
+
+            if not os.path.isdir(path):
+                printf("ObjectManager.loadAllObjects(): ERROR: Could not find directory ", path)
+                continue
+
 
             # Handle any TrackableObject loading
-            if "TrackerObject" in folder and os.path.isdir(path):
-                newObj = newTrackable(folder, path)
-                if newObj.loadSuccess:
-                    self.__addObject(newObj)
+            if "Trackable"  in folder: newObj = createObj(TrackableObject, "Trackable", folder)
+            if "MotionPath" in folder: newObj = createObj(MotionPath, "MotionPath", folder)
+
+            # Check that loading is complete and add the object if it was created successfully
+            if newObj is None:
+                printf("ObjectManager.loadAllObjects(): ERROR: Could not find relevant object for folder: ", folder)
+                continue
+
+            if newObj.loadSuccess: self.__addObject(newObj)
 
         self.refreshGroups()
 
@@ -59,7 +73,7 @@ class ObjectManager:
         if not wasNew:
             printf("ObjectManager.saveObject(): Tried to add object that already existed, ", newObject.name)
 
-        newObject.save(self.__directory)
+        newObject.save(self.__getDirectory(newObject))
 
     def refreshGroups(self):
         # Creates a TrackableGroup for every uniqe tag every object has, and replaces old TrackableGroups
@@ -68,7 +82,7 @@ class ObjectManager:
         # Remove existing groups from self.__objects
         for obj in self.__objects[:]:
             # Since multiple objects are being deleted in the same array, use [:] to copy it so it doesnt change size
-            if isinstance(obj, TrackableGroup):
+            if isinstance(obj, TrackableGroupObject):
                 printf("ObjectManager.refreshGroups(): Removing ", obj.name, " from self.__objects")
                 self.__objects.remove(obj)
 
@@ -93,7 +107,7 @@ class ObjectManager:
         # Create the TrackableGroup objects and add them
         for group in groups:
             printf("ObjectManager.refreshGroups(): Adding group ", group)
-            newGroupObj = TrackableGroup(name=group, members=groups[group])
+            newGroupObj = TrackableGroupObject(name=group, members=groups[group])
             self.__addObject(newGroupObj)
 
 
@@ -139,12 +153,12 @@ class ObjectManager:
         # This includes names of objects, names of tags, and names of objects like "Robot Marker" that are reserved
         # It also includes things like "Trackable" or "TrackableObject" for good measure
         forbidden = self.getObjectNameList()
-        forbidden += ['TrackerObject', 'Robot Marker', "Trackable"]
+        forbidden += ['Trackable', 'Robot Marker', "Trackable", "TrackableGroup"]
         return forbidden
+
 
     def __addObject(self, newObject):
         # The reason this is private is because objects should only be added through self.saveNewObject or loadAllObj's
-
 
         # Checks if the object already exists. If it does, then replace the existing object with the new one.
         for obj in self.__objects:
@@ -156,7 +170,22 @@ class ObjectManager:
         # If the object doesn't already exist, adds the object to the pool of loaded objects.
         self.__objects.append(newObject)
 
+
+        # Sort in alphabetical order, by name, for simplicity in GUI functions that display objects
+        self.__objects = sorted(self.__objects, key=lambda obj: obj.name)
         return True
+
+    def __getDirectory(self, object):
+        # Creates the directory name for the object with the propper formatting
+        directory = self.__directory
+        if isinstance(object, TrackableObject):
+            directory += "Trackable"
+
+        if isinstance(object, MotionPath):
+            directory += "MotionPath"
+
+        directory += " " + object.name + "\\"
+        return directory
 
 
     def deleteObject(self, objectID):
@@ -168,24 +197,24 @@ class ObjectManager:
 
             # If the object is a TrackableObject, then deleete the directory
             if isinstance(obj, TrackableObject):
-                objDirectory = self.__directory + "TrackerObject " + obj.name + "\\"
                 # Get all the items in the objects folder, and delete them one by one
+                objDirectory = self.__getDirectory(obj)
                 foldersAndItems = os.listdir(objDirectory)
                 for item in foldersAndItems:
                     os.remove(objDirectory + item)
 
                 # Now that the folder is empty, delete it too
                 os.rmdir(objDirectory)
-
                 self.__objects.remove(obj)
 
                 # If a TrackableObject is deleted, make sure that all references in groups are deleted as well
                 self.refreshGroups()
                 return True
 
-            if isinstance(obj, TrackableGroup):
+            if isinstance(obj, TrackableGroupObject):
                 for taggedObj in obj.getMembers():
                     taggedObj.removeTag(obj.name)
+
                     taggedObj.save(self.__directory)
                 self.__objects.remove(obj)
                 return True
@@ -196,11 +225,64 @@ class ObjectManager:
         return False
 
 
+class Resource:
+    def __init__(self, name, loadFromDirectory):
+        self.name        = name
+        self.loadSuccess = False
+        self.dataJson    = {}
 
-class Trackable:
-    def __init__(self, name):
-        self.name  = name
+        if loadFromDirectory is not None:
+            self.loadSuccess = self._load(loadFromDirectory)
+
+    def save(self, directory):
+        ensurePathExists(directory)
+
+        # Long form (human readable:
+        json.dump(self.dataJson, open(directory + "data.txt", 'w'), sort_keys=False, indent=0, separators=(',', ': '))
+
+
+    def _load(self, directory):
+        print("Loading data!")
+        # Check if the directory exists (just in case)
+        if not os.path.isdir(directory):
+            printf("Resource._load(): ERROR: Could not find directory", directory)
+            return False
+
+
+        # Try to load the data.txt json
+        dataFile   = directory + "\data.txt"
+        try:
+            loadedData = json.load( open(dataFile))
+            self.dataJson = loadedData
+        except IOError:
+            printf("Resource._load(): ERROR: Data file ", dataFile, " was not found!")
+            return False
+        except ValueError:
+            printf("Resource._load(): ERROR: Object in ", directory, " is corrupted!")
+            return False
+        return True
+
+
+class MotionPath(Resource):
+    def __init__(self, name, loadFromDirectory=None):
+        self.__motionPath = []
+
+        # Unpacked motionPath data looks like this [time, gripper, anglea, angleb, anglec, angled]
+        super(MotionPath, self).__init__(name, loadFromDirectory)
+
+    def setMotionPath(self, motionPath):
+        self.dataJson["motionPath"] = motionPath
+
+    def getMotionPath(self):
+        return self.dataJson["motionPath"]
+
+class Trackable(Resource):
+    """
+    Any "Trackable" should be capable of being put into a vision/tracking function and track an object or objects.
+    """
+    def __init__(self, name, loadFromDirectory):
         self.views = []
+        super(Trackable, self).__init__(name, loadFromDirectory)
 
     def addView(self, view):
         self.views.append(view)
@@ -217,7 +299,6 @@ class TrackableObject(Trackable):
     View = namedtuple('View', 'name, viewID, height, pickupRect, rect, image')
 
     def __init__(self, name, loadFromDirectory = None):
-        super(TrackableObject, self).__init__(name)
         """
         Name: A String of the objects unique name. It must be unique for file saving and lookup purposes.
 
@@ -232,14 +313,8 @@ class TrackableObject(Trackable):
 
         Views are used to record objects at different orientations and help aid tracking in that way.
         """
-
-        # self.directory    = loadFromDirectory  # Used in objectmanager for deleting object. Set here, or in self.save
-        self.loadSuccess  = False
-        self.__tags       = []              # A list of strings. This determines what groups the object is placed in.
-
-        if loadFromDirectory is not None:
-            self.loadSuccess = self.__load(loadFromDirectory)
-
+        self.__tags       = []
+        super(TrackableObject, self).__init__(name, loadFromDirectory)
 
     def save(self, directory):
         """
@@ -263,8 +338,7 @@ class TrackableObject(Trackable):
         printf("TrackableObject.save(): Saving self to directory ", directory)
 
         # Make sure the "objects" directory exists
-        filename                    = directory + "TrackerObject " + self.name + "\\"
-        ensurePathExists(filename)
+        ensurePathExists(directory)
 
 
         dataJson = {"tags": self.__tags, "Orientations": {}}
@@ -273,21 +347,21 @@ class TrackableObject(Trackable):
         # Save images and numpy arrays as seperate folders
         for index, view in enumerate(self.views):
             # Save the image
-            cv2.imwrite(filename + "Orientation_" + str(index) + "_Image.png", view.image)
+            cv2.imwrite(directory + "Orientation_" + str(index) + "_Image.png", view.image)
 
             # Add any view data to the dataJson
             dataJson["Orientations"]["Orientation_" + str(index)] = {"rect":  view.rect,
                                                                      "pickupRect": view.pickupRect,
                                                                      "height":     view.height}
 
-        json.dump(dataJson, open(filename + "data.txt", 'w'), sort_keys=False, indent=3, separators=(',', ': '))
+        json.dump(dataJson, open(directory + "data.txt", 'w'), sort_keys=False, indent=3, separators=(',', ': '))
 
-    def __load(self, directory):
+    def _load(self, directory):
         # Should only be called during initialization
 
         # Check if the directory exists (just in case)
         if not os.path.isdir(directory):
-            printf("TrackableObject.__load(): ERROR: Could not find directory", directory)
+            printf("TrackableObject._load(): ERROR: Could not find directory", directory)
             return False
 
 
@@ -297,10 +371,10 @@ class TrackableObject(Trackable):
             loadedData = json.load( open(dataFile))
 
         except IOError:
-            printf("TrackableObject.__load(): ERROR: Data file ", dataFile, " was not found!")
+            printf("TrackableObject._load(): ERROR: Data file ", dataFile, " was not found!")
             return False
         except ValueError:
-            printf("TrackableObject.__load(): ERROR: Object in ", directory, " is corrupted!")
+            printf("TrackableObject._load(): ERROR: Object in ", directory, " is corrupted!")
             return False
 
         # For each view, load the image associated with it, and build the appropriate view
@@ -310,7 +384,7 @@ class TrackableObject(Trackable):
             image     = cv2.imread(imageFile)
 
             if image is None:
-                printf("TrackableObject.__load(): ERROR: Image File ", imageFile, " was unable to be loaded!")
+                printf("TrackableObject._load(): ERROR: Image File ", imageFile, " was unable to be loaded!")
                 return False
 
             self.addNewView(image      = image,
@@ -333,7 +407,6 @@ class TrackableObject(Trackable):
     def addTag(self, tagString):
         # Make sure there's never duplicates
         if tagString not in self.__tags:
-            printf("TrackableObject.addTag(): Adding new tag: ", tagString, " to ", self.name)
             self.__tags.append(tagString)
 
     def removeTag(self, tagString):
@@ -354,11 +427,11 @@ class TrackableObject(Trackable):
         #  Resize it to fit within maxWidth and maxHeight
         height, width, _ = image.shape
         if height > maxHeight:
-            image = cv2.resize(image, (int(float(maxHeight)/height*width), maxHeight))
+            image = cv2.resize(image, (int(float(maxHeight)/height * width), maxHeight))
 
         height, width, _ = image.shape
         if width > maxWidth:
-            image = cv2.resize(image, (maxWidth, int(float(maxWidth)/width*height)))
+            image = cv2.resize(image, (maxWidth, int(float(maxWidth) / width * height)))
 
         height, width, _ = image.shape
 
@@ -367,7 +440,7 @@ class TrackableObject(Trackable):
     def getTags(self):
         return self.__tags
 
-class TrackableGroup(Trackable):
+class TrackableGroupObject(Trackable):
     """
     A group of TrackableObjects that works just like any other Trackable and can be used for detection purposes.
     EqualTo will look to see if the said TrackableObject is inside of the group
@@ -379,11 +452,9 @@ class TrackableGroup(Trackable):
 
 
     def __init__(self, name, members):
-        super(TrackableGroup, self).__init__(name)
-        self.name    = name
+        super(TrackableGroupObject, self).__init__(name, None)
         self.__members = members  # List of Trackable objects that belong to the group
         self.__memberIDs = [obj.name for obj in self.__members]
-
 
     def getViews(self):
         views = []
@@ -397,3 +468,9 @@ class TrackableGroup(Trackable):
 
     def equalTo(self, otherObjectID):
         return otherObjectID in self.__memberIDs
+
+
+
+
+
+

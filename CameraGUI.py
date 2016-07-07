@@ -1,6 +1,8 @@
 import cv2
+import Paths
 from PyQt5        import QtWidgets, QtCore, QtGui
 from Logic.Global import printf
+
 
 
 def cvToPixFrame(image):
@@ -23,7 +25,7 @@ class CameraWidget(QtWidgets.QWidget):
         """
 
 
-    def __init__(self, getFrameFunction, parent, fps=50):
+    def __init__(self, getFrameFunction, parent, fps=24):
         super(CameraWidget, self).__init__(parent)
 
         # Set up globals
@@ -34,19 +36,21 @@ class CameraWidget(QtWidgets.QWidget):
 
         self.timer.timeout.connect(self.nextFrameSlot)
 
+
+        # Initialize UI Variables
+        self.frameLbl    = QtWidgets.QLabel()
+        self.mainVLayout = QtWidgets.QVBoxLayout(self)  # Global because subclasses need it
+
         # Reference to the last object frame. Used to make sure that a frame is new, before repainting
-        self.lastFrameID      = None
+        self.lastFrameID = None
 
-        # Initialize the UI
-        self.frameLbl         = QtWidgets.QLabel("No camera data.\nConnect a camera in Settings")
 
-        # MainVLayout must be global so that its subclasses can use it to add buttons
-        self.mainVLayout = QtWidgets.QVBoxLayout(self)
+        # Initialize the UI (Don't make a function, that'll overwrite subclass UI create functions)
+        self.frameLbl.setPixmap(QtGui.QPixmap(Paths.video_not_connected))
         self.mainVLayout.addWidget(self.frameLbl)
         self.setLayout(self.mainVLayout)
 
-        # Get one frame and display it, and wait for play to be pressed
-        # self.nextFrameSlot()
+
 
 
     def play(self):
@@ -102,10 +106,7 @@ class CameraSelector(CameraWidget):
         :param hideRectangle: If True, then when something is selected, the rubber band won't go away.
         :param parent: The GUI Parent of this widget
         """
-
-
         super(CameraSelector, self).__init__(getFrameFunction, parent)
-
 
         # Set up the rubberBand specific variables (for rectangle drawing)
         self.rectangle     = QtWidgets.QRubberBand(QtWidgets.QRubberBand.Rectangle, self)
@@ -125,10 +126,9 @@ class CameraSelector(CameraWidget):
 
         self.initUI()
 
+
     def initUI(self):
         # Create the buttons for 'selecting' the picture, or 'throwing it away' and returning to the videostream
-
-
 
         # Disable the buttons, only enable them when the user has selected from the picture
         self.declinePicBtn.setDisabled(True)

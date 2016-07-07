@@ -9,14 +9,16 @@ class Vision:
 
     def __init__(self, vStream):
 
+        # How long the "tracker history" array is (how many frames of tracked data are kept)
+        self.historyLen = 60
+
         self.vStream    = vStream
-        self.tracker    = PlaneTracker(25.0)
         self.exiting    = False
+        self.tracker    = PlaneTracker(25.0, self.historyLen)
 
         # Use these on any work functions that are intended for threading
         self.filterLock = self.vStream.filterLock
         self.workLock   = self.vStream.workLock
-
 
     # Wrappers for the VideoStream object
     def waitForNewFrames(self, numFrames=1):
@@ -31,9 +33,6 @@ class Vision:
                     break
 
                 sleep(.05)
-
-
-
 
 
     # Object tracker control functions
@@ -116,11 +115,11 @@ class Vision:
                     return frameID, tracked
         return None, None
 
-    def getObjectBruteAccurate(self, trackableObj, minPoints=-1, maxFrameAge=0, maxAttempts=1):
+    def getObjectBruteAccurate(self, trackable, minPoints=-1, maxFrameAge=0, maxAttempts=1):
         """
         This will brute-force the object finding process somewhat, and ensure a good recognition, or nothing at all.
 
-        :param trackableObj: The TrackableObject you intend to find
+        :param trackable: The TrackableObject you intend to find
         :param minPoints:    Minimum amount of recognition points that must be found in order to track. -1 means ignore
         :param maxFrameAge:  How recent the recognition was, in "frames gotten from camera"
         :param maxAttempts:  How many frames it should wait for before quitting the search.
@@ -135,7 +134,7 @@ class Vision:
                 break
 
             # If the frame is too old or marker doesn't exist or doesn't have enough points, exit the function
-            frameAge, trackedObj = self.getObjectLatestRecognition(trackableObj)
+            frameAge, trackedObj = self.getObjectLatestRecognition(trackable)
 
             if trackedObj is None or frameAge > maxFrameAge or trackedObj.ptCount < minPoints:
                 if i == maxAttempts - 1: break
@@ -148,26 +147,35 @@ class Vision:
 
         return None
 
-    def isRecognized(self, trackableObject, numFrames=1):
-        # numFrames is the amount of frames to check in the history
-        if numFrames >= self.tracker.historyLen:
-            printf("Vision.isRecognized(): ERROR: Tried to look further in the history than was possible!")
-            numFrames = self.tracker.historyLen
+    def searchTrackedHistory(self, trackable=None, maxFrame=None, minPtCount=None):
+        """
+        Search through trackedHistory to find an object that meets the criteria
 
+        :param trackableObject: Specify if you want to find a particular object
+        :param maxFrame:        Specify if you wannt to find an object that was found within X frames ago
+        :param minPtCount:      Specify if you want to find an object with a minimum amount of tracking points
+        """
+
+
+        if maxFrame is None or maxFrame >= self.historyLen:
+            printf("Vision.isRecognized(): ERROR: Tried to look further in the history than was possible!")
+            maxFrame = self.historyLen
 
         # Safely pull the relevant trackedHistory from the tracker object
-        trackHistory = []
         with self.workLock:
-            trackHistory = self.tracker.trackedHistory[:numFrames]
+            trackHistory = self.tracker.trackedHistory[:maxFrame]
 
 
         # Check if the object was recognized in the most recent frame. Check most recent frames first.
         for historyFromFrame in trackHistory:
-
             for tracked in historyFromFrame:
-                if trackableObject.equalTo(tracked.target.view.name):
-                    return True
-        return False
+                # If the object meets the criteria
+                if trackable is not None and not trackable.equalTo(tracked.view.name): continue
+
+                if minPtCount is not None and not tracked.ptCount > minPtCount: continue
+                print("Found object ", tracked.view.name, " with pts, ", tracked.ptCount, "maxFrames", maxFrame)
+                return tracked
+        return None
 
 
     # vStream Work functions
@@ -362,7 +370,7 @@ class PlaneTracker:
                               multi_probe_level =              1)  # 1)   #  1)  #  2)
 
 
-    def __init__(self, focalLength):
+    def __init__(self, focalLength, historyLength):
         self.focalLength  = focalLength
 
         self.detector     = cv2.ORB_create(nfeatures = 8000)
@@ -376,7 +384,7 @@ class PlaneTracker:
         # trackHistory is an array of arrays, that keeps track of tracked objects in each frame, for hstLen # of frames
         # Format example [[PlanarTarget, PlanarTarget], [PlanarTarget], [PlanarTarget...]...]
         # Where trackedHistory[0] is the most recent frame, and trackedHistory[-1] is about to be deleted.
-        self.historyLen = 30
+        self.historyLen = historyLength
         self.trackedHistory = [[] for i in range(self.historyLen)]
 
 

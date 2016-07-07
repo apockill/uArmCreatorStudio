@@ -18,7 +18,10 @@ class NameCommand(Command):
         self.robot   = self.getVerifyRobot(env)
         self.vision  = self.getVerifyVision(env)
 
+        if len(self.errors): return
 
+        # Here, start tracking if your command requires it
+        # Add any objects to be tracked
 
     def run(self):
         printf("NameCommand.run(): A quick description, usually using parameters, of the command that is running")
@@ -323,6 +326,39 @@ class PickupObjectCommand(Command):
         ret = rv.pickupObject(self.trackable, self.rbMarker, self.ptPairs, self.grndHeight, self.robot, self.vision, self.exitFunc)
 
         return ret
+
+
+class TestObjectSeenCommand(Command):
+
+    def __init__(self, env, interpreter, parameters=None):
+        super(TestObjectSeenCommand, self).__init__(parameters)
+
+        # Load any objects, modules, calibrations, etc  that will be used in the run Section here. Use getVerifyXXXX()
+        self.vision  = self.getVerifyVision(env)
+        self.trackable = self.getVerifyObject(env, self.parameters["objectID"])
+
+
+        if len(self.errors): return
+
+        self.vision.addTrackable(self.trackable)
+        self.vision.startTracker()
+
+
+        self.maxAge = self.parameters["age"]
+        self.minPts = self.vision.tracker.MIN_MATCH_COUNT * (self.parameters["ptCount"] + 1)
+        print("Requiring at least ", self.minPts, " pts with an age less than ", self.maxAge, " for objectID ", self.parameters["objectID"], "NOT?", self.parameters["not"])
+
+    def run(self):
+        printf("NameCommand.run(): A quick description, usually using parameters, of the command that is running")
+        tracked = self.vision.searchTrackedHistory(trackable  = self.trackable,
+                                                   maxFrame   = self.maxAge,
+                                                   minPtCount = self.minPts)
+
+        # Return if an object that matched that criteria was tracked
+        if self.parameters["not"]:
+            return tracked is None
+        else:
+            return tracked is not None
 
 
 

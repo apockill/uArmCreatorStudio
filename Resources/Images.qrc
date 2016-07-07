@@ -10,6 +10,7 @@
     <file>Icons/script_pause.png</file>
     <file>Icons/video_pause.png</file>
     <file>Icons/video_play.png</file>
+    <file>Icons/video_not_connected.png</file>
     <file>Icons/window_ufactory_logo.png</file>
     <file>Icons/window_settings.png</file>
     <file>Icons/window_calibrate.png</file>
@@ -50,5 +51,7 @@
     <file>Icons/tutorial_robot_cam_overview.png</file>
     <file>Icons/tutorial_make_sticker.png</file>
     <file>Icons/tutorial_sticker_on_robot_head.png</file>
+    <file>Icons/record_start.png</file>
+    <file>Icons/record_end.png</file>
   </qresource>
 </RCC>

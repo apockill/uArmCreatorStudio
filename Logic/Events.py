@@ -160,9 +160,11 @@ class RecognizeEvent(Event):
         # Make sure the event won't crash if there were errors
         if len(self.errors): return False  # If it did not compile without errors, don't run
 
-        recognized = self.vision.isRecognized(self.object)
+        tracked = self.vision.searchTrackedHistory(trackable=self.object, maxFrame=0)
 
-        return recognized
+        # Return if the object was found
+        return tracked is not None
+
 
 
 class TipEvent(Event):

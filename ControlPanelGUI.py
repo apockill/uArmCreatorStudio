@@ -102,24 +102,32 @@ class ControlPanel(QtWidgets.QWidget):
         Refresh which commandList is currently being displayed to the one the user has highlighted. It basically just
         goes over certain things and makes sure that everything that should be displaying, is displaying.
         '''
-        # Get the currently selected event on the eventList
-        selectedEvent = self.eventList.getSelectedEvent()
 
-        # If user has no event selected, make a clear commandList to view
-        if selectedEvent is None:
-            printf('ControlPanel.refresh():ERROR: no event selected!')
-            return
 
-        print("Selected event: ", selectedEvent.title)
-
-        eventTitle = selectedEvent.title + " Command List"
-        self.commandGBox.setTitle(eventTitle)
-
-        # Remove all widgets on the commandList stack (not delete, though!)
+        # Remove all widgets on the commandList stack (not delete, though!) The chosen event will be added later.
         for c in range(0, self.commandListStack.count()):
             widget = self.commandListStack.widget(c)
             self.commandListStack.removeWidget(widget)
 
+
+        # Get the currently selected event on the eventList
+        selectedEvent = self.eventList.getSelectedEvent()
+
+
+
+        # If user has no event selected, make a clear commandList to view
+        if selectedEvent is None:
+            self.deleteEventBtn.hide()
+            self.changeEventBtn.hide()
+            printf('ControlPanel.refresh(): No event selected. Hiding buttons...')
+            return
+        else:
+            self.deleteEventBtn.show()
+            self.changeEventBtn.show()
+
+
+        eventTitle = selectedEvent.title + " Command List"
+        self.commandGBox.setTitle(eventTitle)
 
 
 
@@ -474,8 +482,7 @@ class EventList(QtWidgets.QListWidget):
 
 
 class CommandList(QtWidgets.QListWidget):
-    minimumWidth = 250
-    maximumWidth = 700  # This isn't actually the max width. This is the most that it will adjust for content inside it
+    minimumWidth  = 400
 
     def __init__(self, environment, parent):  # Todo: make commandList have a parent
         super(CommandList, self).__init__()
@@ -495,11 +502,7 @@ class CommandList(QtWidgets.QListWidget):
         self.itemDoubleClicked.connect(self.doubleClickEvent)  # For opening the widget's window
         self.itemSelectionChanged.connect(self.selectionChangedEvent)
 
-        # The following defines a function that returns a dictionary of the commands, in the correct order
-        # self.getCommandsOrdered = lambda: [self.getCommand(self.item(index)) for index in range(self.count())]
-
-        self.setMinimumWidth(250)
-        # self.setMaximumWidth(600)
+        self.setMinimumWidth(self.minimumWidth)
 
     def deleteSelected(self):
         # Delete all highlighted commands
@@ -532,9 +535,9 @@ class CommandList(QtWidgets.QListWidget):
 
         # Update the width of the commandList to the widest element within it
         # This occurs whenever items are changed, or added, to the commandList
-        if self.minimumWidth < self.sizeHintForColumn(0) + 10 < self.maximumWidth:
-            self.setMinimumWidth(self.sizeHintForColumn(0) + 10)
-
+        # print(self.sizeHintForColumn(0))
+        # if self.minimumWidth < self.sizeHintForColumn(0) + 10 < self.maximumWidth:
+        #     self.setMinimumWidth(self.sizeHintForColumn(0) + 10)
 
 
     def getCommand(self, listWidgetItem):
@@ -649,8 +652,9 @@ class CommandList(QtWidgets.QListWidget):
             self.addCommand(commandType, index=dropIndex)
 
             # For easy usability, when you drop a Test command, a StartBlock and EndBlock will drop right after it.
-            if commandType is CommandsGUI.TestVariableCommandGUI or \
-               commandType is CommandsGUI.ElseCommandGUI:
+            if commandType is CommandsGUI.TestVariableCommandGUI    or \
+               commandType is CommandsGUI.ElseCommandGUI            or \
+               commandType is CommandsGUI.TestObjectSeenCommandGUI:
 
                 self.addCommand(CommandsGUI.StartBlockCommandGUI, index=dropIndex + 1)
                 self.addCommand(CommandsGUI.EndBlockCommandGUI, index=dropIndex + 2)
