@@ -86,7 +86,7 @@ def playMotionPath(motionPath, robot, exitFunc):
     for i, action in enumerate(motionPath[1:-1]):
         if exitFunc(): return
         actTime = action[TIME]
-        print("ACTION 1: ", action)
+
         now = time() - startTime
 
         lastTime  = motionPath[i][TIME]                 # Previous move time
@@ -296,23 +296,16 @@ def smoothListGaussian(list1, degree):
 
         weightGauss.append(gauss)
 
-    # print(weightGauss)
+
     weight = np.array(weightGauss) * weight
-    # print(weight)
-    # print(len(list1) - window)
 
 
     smoothed = [0.0] * (len(list1) - window)
-    # print(smoothed)
-
 
 
     for i in range(len(smoothed)):
         smoothing = [0.0 for i in range(len(list1[i]))] # [0.0, 0.0, 0.0]
-
-        # print("Examining: ", list1[i], "smoothing: ", smoothing)
         for e, w in zip(list1[i:i + window], weight):
-            # print("E", e, "W", w)
             smoothing = smoothing + np.multiply(e, w)
 
         smoothed[i] = smoothing / sum(weight)

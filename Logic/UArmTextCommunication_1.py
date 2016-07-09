@@ -13,7 +13,7 @@ def getConnectedRobots():
 
 class Uarm:
 
-    def __init__(self, port, printCommands=True, printResponses=True):
+    def __init__(self, port, printCommands=False, printResponses=False):
         self.printCommands  = printCommands
         self.printResponses = printResponses
         self.isConnected    = False
