@@ -1,6 +1,6 @@
 import os
 import errno
-import json
+import inspect
 from time import time, sleep
 
 """
@@ -9,30 +9,95 @@ It also holds the actual global variable "keysPressed".
 """
 
 
-# Initiate the keysPressed global variable
+
+
+# Initiate Global Variables (called from
 def init():
     global keysPressed
-    keysPressed    = []        #Used in keyboardEvent. Updated through Main.Application.notify()
+
+    # Used in keyboardEvent. Updated through Main.Application.notify() Format: ['a', 'b', '5', 'z']
+    # Characters are stored while key is pressed, and removed when key is released
+    keysPressed        = []
+
+    # When True, Global.printf function will print function name
+    printFunctionName  = True
 
 
 
-spaceFunc = lambda n: ''.join(' ' for _ in range(n)) # For printf
+# Gets the name of the caller of a function in a neatly formatted string
+def caller_name(skip=2, printModule=True, printClass=True, printFunction=True):
+    """Get a name of a caller in the format module.class.method
+
+       `skip` specifies how many levels of stack to skip while getting caller
+       name. skip=1 means "who calls me", skip=2 "who calls my caller" etc.
+
+       An empty string is returned if skipped levels exceed stack height
+    """
+    stack = inspect.stack()
+    start = 0 + skip
+    if len(stack) < start + 1:
+        return ''
+    parentframe = stack[start][0]
+
+    name = []
+    if printModule:
+
+        module = inspect.getmodule(parentframe)
+        # `modname` can be None when frame is executed directly in console
+        # TODO(techtonik): consider using __main__
+        if module:
+            name.append(module.__name__)
+
+    # detect classname
+    if printClass:
+        if 'self' in parentframe.f_locals:
+            # I don't know any way to detect call from the object method
+            # XXX: there seems to be no way to detect static method call - it will
+            #      be just a function call
+            name.append(parentframe.f_locals['self'].__class__.__name__)
+
+
+    if printFunction:
+        codename = parentframe.f_code.co_name
+        if codename != '<module>':  # top level usually
+            name.append( codename)  # function or a method
+    del parentframe
+
+    return ".".join(name)
+
+
+
+spaceFunc = lambda n: ''.join(' ' for _ in range(n))  # For printf
 def printf(*args):
+    # Create settings for the boilerplate information
+    printModule   = False
+    printFunction = True    # If false, no boilerplate will be printed
+    printClass    = True
+    printFunction = True
+    indentLength  = 40      # Length of indent between boilerplate and content
+
+
+    # Start building the printString
     buildString = ""
 
+
+    # Concatenate arguments, same as normal print statements
     for i in args:
         buildString += str(i)
 
-    buildString = buildString.lstrip()  #Strip whitespace from beginning of string
 
-    # Do string formatting
+    # Strip whitespace from beginning of string
+    buildString = buildString.lstrip()
+
+
+    # Format the space between the boilerplate and content
     if ':' in buildString:
         splitIndex = buildString.index(':')
 
-        boilerPlate = buildString[:splitIndex].lstrip()
+        boilerPlate = caller_name(printModule=printModule, printClass=printClass, printFunction=printFunction) + "()"
         content     = buildString[splitIndex + 1:].lstrip()
 
-        spaces = int((35 - len(boilerPlate)))       #How many spaces ahead the content column should be
+        spaces = int((indentLength - len(boilerPlate)))       #How many spaces ahead the content column should be
         if spaces > 0:
 
             spacesString = spaceFunc(spaces)

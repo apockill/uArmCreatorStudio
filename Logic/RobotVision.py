@@ -15,10 +15,8 @@ This combines with things like calibrations as well.
 MIN_POINTS_TO_LEARN_OBJECT = 150  # Minimum number of points to decide an object is valid for creating
 MAX_FRAME_AGE_MOVE         = 5    # Maximum age of a tracked object to move the robot towards it
 MIN_POINTS_PICKUP_OBJECT   = 50   # Minimum points on an object for the robot to see an object and pick it up
-MIN_POINTS_PICKUP_MARKER   = 20   # Minimum tracking to find the robot marker, when picking up an object
 MIN_POINTS_FOCUS           = 40   # Minimum tracking points to just move the robot over an object
 MAX_FRAME_FAIL             = 15   # Maximum times a function will get a new frame to recognize an object before quitting
-MAX_PICKUP_DIST_THRESHOLD  = 15   # Maximum "camera distance" from an object to allow the pickup to continue
 
 # General Use Functions (May or may not use vision or robot)
 def wait(waitTime, exitFunc):
@@ -33,11 +31,116 @@ def wait(waitTime, exitFunc):
     # While sleeping, make sure that the script has not been shut down
     start = time()
     while time() - start < waitTime - .05:
-        if exitFunc(): return False
+        if exitFunc(): return
         sleep(.05)
 
-    # Sleep the last little bit, for extra accuracy
+
     sleep(waitTime - (time() - start))
+
+def waitUntilTime(timeMS, exitFunc):
+    # Waits until a certain time is reached, where timeMS is the time in miliseconds since some 1970
+
+    if exitFunc(): return
+
+    while time() < timeMS - 0.055:
+        if exitFunc(): return
+        sleep(.05)
+
+
+    # Sleep the last little bit, for extra accuracy
+    now = time()
+    if now < timeMS:
+        sleep(timeMS - now)
+
+
+
+def playMotionPath(motionPath, robot, exitFunc):
+    TIME    = 0
+    GRIPPER = 1
+    SERVO0  = 2
+    SERVO1  = 3
+    SERVO2  = 4
+    SERVO3  = 5
+
+
+    setServo = lambda num, val: (lambda: robot.setServoAngles(servo0=val),
+                                 lambda: robot.setServoAngles(servo1=val),
+                                 lambda: robot.setServoAngles(servo2=val),
+                                 lambda: robot.setServoAngles(servo3=val))[num]()
+
+
+
+    # On the first iteration, move to the start position using a slow move
+    action = motionPath[0]
+
+    lastVal = [action[SERVO0], action[SERVO1], action[SERVO2], action[SERVO3]]
+    setServo(0, lastVal[0])
+    setServo(1, lastVal[1])
+    setServo(2, lastVal[2])
+    setServo(3, lastVal[3])
+
+
+    # Start running through motionPath
+    startTime = time() + action[TIME]
+
+    for i, action in enumerate(motionPath[1:-1]):
+        if exitFunc(): return
+        actTime = action[TIME]
+        print("ACTION 1: ", action)
+        now = time() - startTime
+
+        lastTime  = motionPath[i][TIME]                 # Previous move time
+        nextTime  = motionPath[i + 2][TIME]             # Next move time
+        startMove = (actTime - lastTime) / 2 + lastTime     # When to start sending this move
+        endMove   = (nextTime   - actTime)  / 2 + actTime  # When to no longer send this move
+        tSpan     = endMove - startMove
+
+        # If its too late to even start, skip it
+        if now > nextTime: continue
+
+
+        # If its absolutely not time to start moving yet, wait.
+        if now < startMove:
+            waitUntilTime(startMove + startTime, exitFunc)
+
+
+        # Get a list of how far each servo is from its desired position, then sort it by furthest to closest
+        diffS = [(abs(lastVal[0] - action[SERVO0]), 0),
+                 (abs(lastVal[1] - action[SERVO1]), 1),
+                 (abs(lastVal[2] - action[SERVO2]), 2),
+                 (abs(lastVal[3] - action[SERVO3]), 3)]
+        diffS = sorted(diffS, key=lambda d: d[0], reverse=True)
+
+
+        # Update each servo, in order of most needy to least needy
+        for difference, servo in diffS:
+
+            # Adjust the servo position for a derived position between now and endTime
+            servoIndex = 2 + servo
+            now       = time() - startTime
+            tIn       = now - startMove
+            if tIn < 0: tIn = 0
+            percentIn = tIn / tSpan
+
+            pastPos   = motionPath[i][servoIndex]
+            nextPos   = motionPath[i + 2][servoIndex]
+            diff      = nextPos - pastPos
+            modified  = diff * percentIn + pastPos
+            modified  = round(modified, 1)
+
+            # Make sure there's still time to send another servo command
+            if now > endMove: break
+
+
+            # Send the command as long as there's actually a difference in the old position and the new position
+            if abs(modified - lastVal[servo]) > 0:
+                setServo(servo, modified)
+                lastVal[servo] = modified
+
+
+
+
+
 
 
 # Transform math
@@ -91,6 +194,8 @@ def getRelativePosition(camPos, robRelative, ptPairs):
     posCam += staticErr
 
     return posCam
+
+
 
 
 
@@ -165,8 +270,54 @@ def pointInPolygon(point, poly):
 
     return inside
 
+def smoothListGaussian(list1, degree):
 
 
+    window = degree * 2 - 1
+
+
+    if len(list1) < window:
+        printf("RobotVision.smoothListGaussian(): ERROR: Attempted to smooth list that was too small to be smoothed")
+        return None
+
+
+    weight = np.array([1.0] * window)
+    # print(weight)
+
+    weightGauss = []
+
+    for i in range(window):
+
+        i = i - degree + 1
+
+        frac = i / float(window)
+
+        gauss = 1 / (np.exp((4 * frac) ** 2))
+
+        weightGauss.append(gauss)
+
+    # print(weightGauss)
+    weight = np.array(weightGauss) * weight
+    # print(weight)
+    # print(len(list1) - window)
+
+
+    smoothed = [0.0] * (len(list1) - window)
+    # print(smoothed)
+
+
+
+    for i in range(len(smoothed)):
+        smoothing = [0.0 for i in range(len(list1[i]))] # [0.0, 0.0, 0.0]
+
+        # print("Examining: ", list1[i], "smoothing: ", smoothing)
+        for e, w in zip(list1[i:i + window], weight):
+            # print("E", e, "W", w)
+            smoothing = smoothing + np.multiply(e, w)
+
+        smoothed[i] = smoothing / sum(weight)
+
+    return smoothed
 
 # Long form functions with lots of steps
 def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exitFunc):
@@ -390,7 +541,17 @@ def getRelativeMoveTowards(robotCamCoord, destCamCoord, distance, ptPairs):
 
 
 
-# NOT USED (YET)
+
+
+
+
+
+
+
+
+
+
+# DEPRECATED
 # def searchForNearestCamPt(robCoord, ptPairs):
 #
 #     closestDist  = -1

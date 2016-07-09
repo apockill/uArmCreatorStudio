@@ -533,15 +533,15 @@ class PlaneTracker:
             scaleFactor   = currLength / origLength
 
             # Draw the name of the object, and coordinates
-            cv2.putText(frame, str(tracked.ptCount) + " " + tracked.view.name, tuple(quad[1]),
+            cv2.putText(frame, tracked.view.name, tuple(quad[1]),
                         filterFnt, scaleFactor, color=filterColor, thickness=1)
 
             # FOR DEUBGGING ONLY: TODO: Remove this when deploying final product
             try:
                 coordText =  "X " + str(int(tracked.center[0])) + \
                             " Y " + str(int(tracked.center[1])) + \
-                            " Z " + str(int(tracked.center[2])) + \
-                            " R " + str(round(tracked.rotation[2], 2))
+                            " Z " + str(int(tracked.center[2]))
+                            # " R " + str(round(tracked.rotation[2], 2))
                 cv2.putText(frame, coordText, (quad[1][0], quad[1][1] + int(15*scaleFactor)),  filterFnt, scaleFactor, color=filterColor, thickness=1)
             except:
                 pass

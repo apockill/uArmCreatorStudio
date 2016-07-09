@@ -13,11 +13,11 @@ def getConnectedRobots():
 
 class Uarm:
 
-    def __init__(self, port, printResponses=False):
+    def __init__(self, port, printCommands=True, printResponses=True):
+        self.printCommands  = printCommands
         self.printResponses = printResponses
         self.isConnected    = False
         self.serial         = None
-
         self.__connectToRobot(port)
 
         # For debug logs
@@ -41,17 +41,16 @@ class Uarm:
         cmnd = "moveX" + x + "Y" + y + "Z" + z + "S" + t
         return self.__send(cmnd)
 
-    def setServo(self, servo, angle):
-        # Set a servo to an angle #
-        angle = str(float(round(angle, 3)))
-        cmnd = "setS" + str(int(servo)) + "V" + angle
-        return self.__send(cmnd)
-
     def setGripper(self, onOff):
         # Set the gripper to a value 1 or 0, where 1 means "gripping" and 0 mean "off"
         cmnd = "pumpV" + str(int(onOff))
         return self.__send(cmnd)
 
+    def setServo(self, servo, angle):
+        # Set a servo to an angle #
+        angle = str(float(round(angle, 3)))
+        cmnd = "ssS" + str(int(servo)) + "V" + angle
+        return self.__send(cmnd)
 
     def servoAttach(self, servo_number):
 
@@ -142,6 +141,7 @@ class Uarm:
                                         bytesize = serial.EIGHTBITS,
                                         timeout  = .1)
             self.isConnected = True
+            self.__uploadCode()
         except serial.SerialException as e:
             printf("Uarm.connectToRobot(): Could not connect to robot on port ", port)
             self.serial = None
@@ -152,9 +152,9 @@ class Uarm:
         # This command will send a command and recieve the robots response. There must always be a response!
         if not self.connected(): return None
 
-        start = time()
         # Prepare and send the command to the robot
         cmndString = bytes("[" + cmnd + "]\n", encoding='ascii')
+
         try:
             self.serial.write(cmndString)
         except serial.serialutil.SerialException as e:
@@ -178,6 +178,14 @@ class Uarm:
                 response = response[:-1]
                 break
 
+        if self.printCommands and self.printResponses:
+            print("[" + cmnd + "]" + "  \t" + response)
+        elif self.printCommands:
+            print(cmndString)
+        elif self.printResponses:
+            print(response)
+
+
         # Save the response to a log variable, in case it's needed for debugging
         self.communicationLog.append((cmnd, response))
 
@@ -196,8 +204,7 @@ class Uarm:
         if "error" in response:
             printf("Uarm.read(): ERROR: Recieved error from robot: ", response)
 
-        if self.printResponses:
-            printf("uArm.__send(): Got: ", response)
+
         return response
 
     def __parseArgs(self, message, command, arguments):
@@ -229,6 +236,11 @@ class Uarm:
 
         return responseDict
 
+    def __strAndRound(self, num, roundTo):
+        # Parses a number so it takes the fewest amount of bits (Trailing zero's are removed
+        num = float(round(num, roundTo))
 
-
-
+    def __uploadCode(self):
+        self.serial.setDTR(0)
+        sleep(0.1)
+        self.serial.setDTR(1)

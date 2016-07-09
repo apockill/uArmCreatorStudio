@@ -1,3 +1,4 @@
+import numpy as np
 from Logic             import RobotVision as rv
 from Logic.Global      import printf
 from Logic.LogicObject import LogicObject
@@ -27,7 +28,6 @@ class NameCommand(Command):
         printf("NameCommand.run(): A quick description, usually using parameters, of the command that is running")
         return True
 """
-
 
 
 
@@ -88,6 +88,58 @@ class MoveWristCommand(Command):
         else:
             print("MoveWristCommand.run(): ERROR in parsing new wrist angle. Expression: ", self.parameters['angle'])
             return False
+
+
+class PlayRobotRecordingCommand(Command):
+
+    def __init__(self, env, interpreter, parameters=None):
+        super(PlayRobotRecordingCommand, self).__init__(parameters)
+
+        # Load any objects, modules, calibrations, etc  that will be used in the run Section here. Use getVerifyXXXX()
+        self.robot       = self.getVerifyRobot(env)
+        self.pathObj     = self.getVerifyObject(env, self.parameters["objectID"])
+        self.interpreter = interpreter
+        self.exitFunc    = interpreter.isExiting
+
+        if len(self.errors): return
+
+        self.motionPath = self.pathObj.getMotionPath()
+
+    def run(self):
+        if len(self.errors): return
+
+        printf("PlayRobotRecordingCommand.run(): Playing motionPath ", self.parameters["objectID"])
+
+        # Evaluate the "Speed" variable
+        newSpeed, success = self.interpreter.evaluateExpression(self.parameters['speed'])
+
+
+        if not success or newSpeed <= 0:
+            printf("PlayRobotRecordingCommand.run(): ERROR: In evaluating 'speed' parameter for motionpath")
+            return False
+
+        # Since x2 should mean twice as fast, and .5 should mean twice as slow, inverse the speed
+        newSpeed /= 1
+
+
+        # Multiply the motionPath by newSpeed, to change how fast it replays
+        mp = np.asarray(self.motionPath)
+        time = mp[:, [0]] * newSpeed
+        actions = mp[:, 1:]
+
+        # If reversed, flip the "actions" array
+        if self.parameters["reversed"]:
+            actions = actions.tolist()
+            actions = np.flipud(actions)  # Reverse the actions
+
+        # Put the "time" and "actions" array back together and return it to a list
+        mp = np.hstack((time, actions))
+        self.motionPath = mp.tolist()
+
+
+        # Send the path to the "path player"
+        rv.playMotionPath(self.motionPath, self.robot, self.exitFunc)
+        return True
 
 
 class SpeedCommand(Command):

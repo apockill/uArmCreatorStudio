@@ -120,6 +120,7 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
 
         add(MoveXYZCommandGUI)
         add(MoveWristCommandGUI)
+        add(PlayRobotRecordingCommandGUI)
         add(SpeedCommandGUI)
         add(AttachCommandGUI)
         add(DetachCommandGUI)
@@ -422,6 +423,14 @@ class CommandGUI:
                        " Feel free to add new objects in the Resource Manager!"
             self._addHint(prompt, hintText)
 
+    def _addRecordingHint(self, prompt, numResources):
+        if numResources == 0:
+            hintText = "You have not created any Robot Recordings yet. " + \
+                       "Try creating new recordings in the Resource Manager!"
+            self._addHint(prompt, hintText)
+
+
+
 ########## COMMANDS ##########
 """
 Commands must have:
@@ -469,14 +478,14 @@ class NameCommandGUI(CommandGUI):
 
         return prompt
 
-    def extractPromptInfo(self, prompt):
+    def _extractPromptInfo(self, prompt):
         newParameters = {} # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
 
         self.parameters.update(newParameters)
 
         return self.parameters
 
-    def updateDescription(self):
+    def _updateDescription(self):
         self.description = ""  # Some string that uses your parameters to describe the object.
 
 """
@@ -599,6 +608,66 @@ class MoveWristCommandGUI(CommandGUI):
         self.description = "Set the wrist position to " + self.parameters["angle"] + " degrees"
 
         if self.parameters['relative']: self.description += '   Relative'
+
+
+class PlayRobotRecordingCommandGUI(CommandGUI):
+    title     = "Play Robot Recording"
+    tooltip   = "This will play back a 'robot recording' at a playback speed of your choosing. To create robot\n" + \
+                "robot recordings, simply click on 'Resources' on the toolbar and add a new recording."
+    icon      = Paths.play_path_command
+    logicPair = "PlayRobotRecordingCommand"
+
+    def __init__(self, env, parameters=None):
+        super(PlayRobotRecordingCommandGUI, self).__init__(parameters)
+
+        objManager = env.getObjectManager()
+        self.getObjectList = lambda: objManager.getObjectNameList(objFilter=objManager.MOTIONPATH)
+
+
+        if self.parameters is None:
+            self.parameters = {"objectID": "",
+                               "reversed": False,
+                               "speed": "1.0"}
+
+    def dressWindow(self, prompt):
+
+        # Choose a recording
+        choiceLbl = QtWidgets.QLabel("Choose a Recording: ")
+        prompt.recChoices = QtWidgets.QComboBox()
+        prompt.recChoices.addItem(self.parameters["objectID"])
+        recList = self.getObjectList()
+        for index, objectID in enumerate(recList): prompt.recChoices.addItem(objectID)
+        self._addRow(prompt, choiceLbl, prompt.recChoices)
+
+
+        # PlaybackSpeed
+        speedLbl = QtWidgets.QLabel("Playback Speed: ")
+        prompt.speedEdit = QtWidgets.QLineEdit()
+        prompt.speedEdit.setText(self.parameters["speed"])
+        self._addRow(prompt, speedLbl, prompt.speedEdit)
+
+
+        # Reversed?
+        reversedLbl = QtWidgets.QLabel("Play in reverse?")
+        prompt.reverseCheck = QtWidgets.QCheckBox()
+        prompt.reverseCheck.setChecked(self.parameters["reversed"])
+        self._addRow(prompt, reversedLbl, prompt.reverseCheck)
+
+        self._addRecordingHint(prompt, len(recList))
+        return prompt
+
+    def _extractPromptInfo(self, prompt):
+        newParameters = {"objectID": str(prompt.recChoices.currentText()),
+                         "reversed": prompt.reverseCheck.isChecked(),
+                         "speed": self._sanitizeEval(prompt.speedEdit, self.parameters["speed"])}
+
+        self.parameters.update(newParameters)
+
+        return self.parameters
+
+    def _updateDescription(self):
+        self.description = "Play robot recording " + self.parameters["objectID"] + " x" + str(self.parameters["speed"])
+        if self.parameters["reversed"]: self.description += " reversed"
 
 
 class SpeedCommandGUI(CommandGUI):
@@ -938,16 +1007,11 @@ class MoveRelativeToObjectCommandGUI(CommandGUI):
         zLabel    = QtWidgets.QLabel('Z ')
 
 
-        # Create a QComboBox
-        prompt.objChoices = QtWidgets.QComboBox()
-
-        # Add an empty item at the top if no object has ever been selected
-        prompt.objChoices.addItem(self.parameters["objectID"])
-
         # Populate the comboBox with a list of all trackable objects, and select the self.parameters one if it exists
+        prompt.objChoices = QtWidgets.QComboBox()
+        prompt.objChoices.addItem(self.parameters["objectID"])
         objectList = self.getObjectList()
-        for index, objectID in enumerate(objectList):
-            prompt.objChoices.addItem(objectID)
+        for index, objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
 
 
         prompt.xEdit = QtWidgets.QLineEdit()
@@ -1016,14 +1080,14 @@ class PickupObjectCommandGUI(CommandGUI):
         choiceLbl = QtWidgets.QLabel("Choose an object: ")
 
         # Create a QComboBox
-        prompt.objChoices = QtWidgets.QComboBox()
-        prompt.objChoices.addItem(self.parameters["objectID"])  # Add an empty item at the top
+
 
 
         # Populate the comboBox with a list of all trackable objects, and select the self.parameters one if it exists
+        prompt.objChoices = QtWidgets.QComboBox()
+        prompt.objChoices.addItem(self.parameters["objectID"])  # Add an empty item at the top
         objectList = self.getObjectList()
-        for index, objectID in enumerate(objectList):
-            prompt.objChoices.addItem(objectID)
+        for index, objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
 
 
         self._addRow(prompt, choiceLbl, prompt.objChoices)
@@ -1111,7 +1175,6 @@ class TestObjectSeenCommandGUI(CommandGUI):
 
         # Set up the "NOT" Check
         prompt.notCheck.setChecked(self.parameters["not"])
-
         self._addRow(prompt,     choiceLbl, prompt.objChoices)
         self._addRow(prompt,        accLbl, prompt.accChoices)
         self._addRow(prompt, prompt.ageLbl, prompt.ageSlider)

@@ -802,7 +802,7 @@ class CWPage5(QtWidgets.QWizardPage):
             # Since the camera found the object, now read the robots location through camera, and record both results
             actCoord = robot.getCurrentCoord()
             dist = ((actCoord[0] - coord[0])**2 + (actCoord[1] - coord[1])**2 + (actCoord[2] - coord[2])**2)**.5
-            if dist < 2.5:
+            if dist < 2:
                 newCalibrations["ptPairs"].append([marker.center, coord])
             else:
                 print("Distance was too high: ", dist)

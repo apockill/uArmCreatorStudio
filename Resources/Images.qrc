@@ -26,6 +26,7 @@
     <file>Icons/command_xyz.png</file>
     <file>Icons/command_speed.png</file>
     <file>Icons/command_move_wrist.png</file>
+    <file>Icons/command_robot_recording.png</file>
     <file>Icons/command_detach.png</file>
     <file>Icons/command_attach.png</file>
     <file>Icons/command_refresh.png</file>

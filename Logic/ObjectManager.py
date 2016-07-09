@@ -130,18 +130,24 @@ class ObjectManager:
 
         """
 
+        # Returns true if 'obj' is of any type inside of typeList
+        isType = lambda obj, typeList: any(isinstance(obj, t) for t in typeList)
+
         nameList = []
         for obj in self.__objects:
-            # If None, then just add every object
+            # If the user just wants a list of every object
             if objFilter is None:
                 nameList.append(obj.name)
                 continue
 
-            if objFilter == self.PICKUP and issubclass(type(obj), Trackable):
+            # If object is capable of being picked up by the robot with any pickup function
+            if objFilter == self.PICKUP:
                 if obj.name == "Robot Marker": continue
-                nameList.append(obj.name)
+                if isType(obj, (TrackableObject, TrackableGroupObject)):
+                    nameList.append(obj.name)
                 continue
 
+            # A catch-all filter for filtering by "Type"
             if isinstance(obj, objFilter):
                 nameList.append(obj.name)
                 continue
@@ -195,8 +201,8 @@ class ObjectManager:
             if not objectID == obj.name: continue
 
 
-            # If the object is a TrackableObject, then deleete the directory
-            if isinstance(obj, TrackableObject):
+            # If the object is a Resource, then deleete the directory
+            if issubclass(type(obj), Resource) and not isinstance(obj, TrackableGroupObject):
                 # Get all the items in the objects folder, and delete them one by one
                 objDirectory = self.__getDirectory(obj)
                 foldersAndItems = os.listdir(objDirectory)
@@ -208,7 +214,8 @@ class ObjectManager:
                 self.__objects.remove(obj)
 
                 # If a TrackableObject is deleted, make sure that all references in groups are deleted as well
-                self.refreshGroups()
+                if isinstance(obj, TrackableObject):
+                    self.refreshGroups()
                 return True
 
             if isinstance(obj, TrackableGroupObject):
@@ -225,6 +232,9 @@ class ObjectManager:
         return False
 
 
+
+
+
 class Resource:
     def __init__(self, name, loadFromDirectory):
         self.name        = name
@@ -238,11 +248,10 @@ class Resource:
         ensurePathExists(directory)
 
         # Long form (human readable:
-        json.dump(self.dataJson, open(directory + "data.txt", 'w'), sort_keys=False, indent=0, separators=(',', ': '))
+        json.dump(self.dataJson, open(directory + "data.txt", 'w'), sort_keys=False, separators=(',', ': '))
 
 
     def _load(self, directory):
-        print("Loading data!")
         # Check if the directory exists (just in case)
         if not os.path.isdir(directory):
             printf("Resource._load(): ERROR: Could not find directory", directory)
@@ -274,7 +283,9 @@ class MotionPath(Resource):
         self.dataJson["motionPath"] = motionPath
 
     def getMotionPath(self):
-        return self.dataJson["motionPath"]
+        # Return a copy of the motionPath
+        return self.dataJson["motionPath"][:]
+
 
 class Trackable(Resource):
     """

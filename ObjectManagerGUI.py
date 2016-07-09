@@ -1,4 +1,6 @@
 import Paths
+import numpy as np
+import Logic.RobotVision as rv
 from CameraGUI           import CameraWidget, CameraSelector, cvToPixFrame
 from PyQt5               import QtCore, QtWidgets, QtGui
 from Logic.Global        import printf
@@ -37,11 +39,12 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         # CREATE OBJECTS AND LAYOUTS FOR ROW 1 COLUMN (ALL)
         newObjBtn    = QtWidgets.QPushButton("New Trackable Object")
         newGrpBtn    = QtWidgets.QPushButton("New Trackable Group")
-        newRecBtn    = QtWidgets.QPushButton("New Motion Recording")
+        newRecBtn    = QtWidgets.QPushButton("New Robot Recording")
 
 
-        newObjBtn.setFixedWidth(130)
-        newGrpBtn.setFixedWidth(130)
+        newObjBtn.setFixedWidth(150)
+        newGrpBtn.setFixedWidth(150)
+        newRecBtn.setFixedWidth(150)
         self.objTree.setMinimumWidth(260)
 
         # Connect everything up
@@ -96,7 +99,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         self.setLayout(mainVLayout)
         self.setWindowTitle('Resource Manager')
         self.setWindowIcon(QtGui.QIcon(Paths.objectManager))
-        self.setMinimumHeight(500)
+        self.setMinimumHeight(700)
 
 
     def refreshObjectList(self, selectedItem=None):
@@ -239,7 +242,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         selDescLbl = QtWidgets.QLabel("")   # Description of selected object
         deleteBtn  = QtWidgets.QPushButton("Delete")
-        editBtn    = QtWidgets.QPushButton("Edit Group")
+        editBtn    = QtWidgets.QPushButton("Edit Recording")
 
         # Connect any buttons
         deleteBtn.clicked.connect(self.deleteSelected)
@@ -248,10 +251,12 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         # Create the appropriate description
         motionPath = pathObj.getMotionPath()
+        totalTime  = round(motionPath[-1][0], 1)
         if len(motionPath) == 0: return  # That would be weird, but you never know...
         selDescLbl.setText("Name: \n"        + pathObj.name + "\n\n"
                            "Move Count: \n"  + str(len(motionPath)) + "\n\n"
-                           "Length: \n"      + str(round(motionPath[-1][0], 1)) + " seconds")
+                           "Length: \n"      + str(totalTime) + " seconds\n\n"
+                           "Moves/Second:\n"  + str(round(len(motionPath) / totalTime, 1)))
 
 
         self.selLayout.addWidget(selDescLbl)
@@ -636,7 +641,7 @@ class MotionRecordWindow(QtWidgets.QDialog):
         row = self.motionTbl.rowCount()
 
         time    = str(round(action[0], 2))
-        gripper = str(action[1])
+        gripper = str((False, True)[action[1]])
         servos  = str(round(action[2], 1)) + ", " + \
                   str(round(action[3], 1)) + ", " + \
                   str(round(action[4], 1)) + ", " + \
@@ -690,17 +695,51 @@ class MotionRecordWindow(QtWidgets.QDialog):
         # This is where a point is recorded from the robot
         now = time()
         if now - self.lastTime < 0.01: return  # If 10 ms havent passed, ignore
-        # print("Curr FPS: ", 1.0 / (now - self.lastTime))
+        print("Curr FPS: ", 1.0 / (now - self.lastTime))
         self.lastTime = now
 
 
         t         = now - self.startTime + self.baseTime
         angles    = self.robot.getServoAngles()
-        tip       = self.robot.getTipSensor()
-        newAction = (t, tip, angles[0], angles[1], angles[2], angles[3])
+        tip       = False  # self.robot.getTipSensor()
+        newAction = (round(t, 3), int(tip), angles[0], angles[1], angles[2], angles[3])
         self.motionPath.append(newAction)
         self.addActionToTable(newAction)
 
+
+    def optimizeMotionPath(self):
+        TIME    = 0
+        GRIPPER = 1
+        SERVO0  = 2
+        SERVO1  = 3
+        SERVO2  = 4
+        SERVO3  = 5
+
+        print("Before: ", self.motionPath[:10], len(self.motionPath))
+        # Run the motion path through a gausian smoother
+        # Smooth the Time values, and all the servo values
+        degree = 10
+        toSmooth = np.asarray(self.motionPath[:])[:, [TIME, SERVO0, SERVO1, SERVO2, SERVO3]].tolist()
+        smooth = rv.smoothListGaussian(toSmooth, degree)
+
+        window    = degree * 2 - 1
+        otherData = np.asarray(self.motionPath)[:, [GRIPPER]]
+
+        cutData   = otherData[int(window / 2):-(int(window / 2) + 1), :]
+        # print("CutData: ", cutData[:10], "length: ", len(cutData), "cut from/to: ", int(window / 2), (int(window / 2) + 1))
+
+        smooth         = np.asarray(smooth)
+        timeAndGripper = np.hstack((smooth[:, [0]], np.asarray(cutData)))
+        undrounded     = np.hstack((timeAndGripper, smooth[:, 1:])).tolist()
+        final          = list(map(lambda a: [float(round(a[0], 3)),
+                                             int(a[1]),
+                                             float(round(a[2], 1)),
+                                             float(round(a[3], 1)),
+                                             float(round(a[4], 1)),
+                                             float(round(a[5], 1))], undrounded))
+
+        self.motionPath = final
+        print("After: ", self.motionPath[:10], len(self.motionPath))
 
     def createNewObject(self):
         # Create an actual TrackableObject with this information
@@ -714,6 +753,7 @@ class MotionRecordWindow(QtWidgets.QDialog):
             name = self.nameEdit.text()
             motionObj = MotionPath(name)
 
+        self.optimizeMotionPath()
         motionObj.setMotionPath(self.motionPath)
 
         self.objManager.saveObject(motionObj)
@@ -729,8 +769,7 @@ class MotionRecordWindow(QtWidgets.QDialog):
         self.hintLbl.setText(newHintText)
 
         # Set the apply button enabled if everything is filled out correctly
-        print("Trying", self.recording, len(newHintText) == 0, len(self.motionPath))
-        setEnabled = len(newHintText) == 0 and len(self.motionPath) > 0 and not self.recording
+        setEnabled = len(newHintText) == 0 and len(self.motionPath) > 5 and not self.recording
         self.applyBtn.setEnabled(setEnabled)
 
     def close(self):

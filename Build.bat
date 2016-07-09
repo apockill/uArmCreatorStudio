@@ -9,7 +9,7 @@ set PYINSTALLER=C:\Python34\Scripts\pyinstaller.exe
 
 REM Create the executable
 REM python %PIP%Makespec.py --onefile --noconsole --upx MainGUI.py
-%PYINSTALLER% --onefile --name "uArmCreatorStudio" --icon="exe_icon.ico" MainGUI.py
+%PYINSTALLER% --onefile --name "uArmCreatorStudio" MainGUI.py
  
 
 REM Check if the build finished, if it did, delete "Latest Build" before renaming "dist"

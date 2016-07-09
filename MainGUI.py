@@ -76,7 +76,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # If there is no settings File, then open the settings window first thing
         if not configExists:
-            self.openSettingsWindow()
+            self.openSettings()
 
     def initUI(self):
         # Create "File" Menu
@@ -148,9 +148,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.scriptToggleBtn.triggered.connect( lambda: self.setScript("toggle"))
         self.videoToggleBtn.triggered.connect(  lambda: self.setVideo("toggle"))
-        settingsBtn.triggered.connect(self.openSettingsWindow)
-        calibrateBtn.triggered.connect(self.openCalibrationsWindow)
-        objMngrBtn.triggered.connect(self.openObjectManagerWindow)
+        settingsBtn.triggered.connect(self.openSettings)
+        calibrateBtn.triggered.connect(self.openCalibrations)
+        objMngrBtn.triggered.connect(self.openObjectManager)
 
         toolbar.addAction(self.scriptToggleBtn)
         toolbar.addAction(self.videoToggleBtn)
@@ -334,7 +334,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.scriptToggleBtn.setText("Run")
 
 
-    def openSettingsWindow(self):
+    def openSettings(self):
         # This handles the opening and closing of the Settings window.
         printf("MainWindow.openSettings(): Opening Settings Window")
 
@@ -365,7 +365,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.setVideo("play")
 
-    def openCalibrationsWindow(self):
+    def openCalibrations(self):
         # This handles the opening and closing of the Calibrations window
         printf("MainWindow.openCalibrations(): Opening Calibrations Window")
 
@@ -383,7 +383,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.setVideo("play")
 
-    def openObjectManagerWindow(self):
+    def openObjectManager(self):
         # This handles the opening and closing of the ObjectManager window
         printf("MainWindow.openCalibrations(): Opening ObjectManager Window")
 
@@ -753,7 +753,6 @@ class Application(QtWidgets.QApplication):
 
 
 if __name__ == '__main__':
-    Global.init()
 
     # Install a global exception hook to catch pyQt errors that fall through (helps with debugging a ton)
     # TODO: Remove this when development is finished.

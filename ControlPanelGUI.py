@@ -116,14 +116,14 @@ class ControlPanel(QtWidgets.QWidget):
 
 
         # If user has no event selected, make a clear commandList to view
+        self.deleteEventBtn.setDisabled(selectedEvent is None)
+        self.changeEventBtn.setDisabled(selectedEvent is None)
+        self.commandMenuWidget.setDisabled(selectedEvent is None)
+        self.commandGBox.setTitle("Command List")
         if selectedEvent is None:
-            self.deleteEventBtn.hide()
-            self.changeEventBtn.hide()
             printf('ControlPanel.refresh(): No event selected. Hiding buttons...')
             return
-        else:
-            self.deleteEventBtn.show()
-            self.changeEventBtn.show()
+
 
 
         eventTitle = selectedEvent.title + " Command List"

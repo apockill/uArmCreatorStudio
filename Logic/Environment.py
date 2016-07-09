@@ -1,8 +1,9 @@
+
 from copy         import deepcopy
 from threading    import Thread
 from Logic.Global import printf, FpsTimer
 from Logic.Vision import Vision
-from Logic        import Video, Events, Commands, ObjectManager, Robot
+from Logic        import Video, Events, Commands, ObjectManager, Robot, Global
 
 """
     Rules of thumb:
@@ -33,6 +34,9 @@ class Environment:
     """
 
     def __init__(self, settings):
+        # Initialize Global Variables
+        Global.init()
+
 
         # Set up environment objects
         self.__vStream    = Video.VideoStream()           # Gets frames constantly
@@ -47,11 +51,11 @@ class Environment:
             self.__vStream.setNewCamera(settings['cameraID'])
 
         if settings['robotID'] is not None:
-            # settings["coordCalibrations"]["ptPairs"] = bestPtPairs
             self.__robot.setUArm(settings['robotID'])
 
         if settings['objectsDirectory'] is not None:
             self.__objectMngr.loadAllObjects()
+
 
 
         # This keeps track of objects that have been self.addObject()'d, so self.saveObjects() actually saves them.
@@ -88,8 +92,8 @@ class Environment:
 class Interpreter:
     def __init__(self):
         self.mainThread   = None    # The thread on which the script runs on. Is None while thread is not running.
-        self.__exiting      = True    # When True, the script thread will attempt to close ASAP
-        self.scriptFPS    = 10      # Speed at which events are checked
+        self.__exiting    = True    # When True, the script thread will attempt to close ASAP
+        self.scriptFPS    = 50      # Speed at which events are checked
         self.events       = []      # A list of events, and their corresponding commands
 
         # For self.getStatus()
@@ -115,9 +119,9 @@ class Interpreter:
 
         # Create each event
         for _, eventSave in enumerate(script):
+            # Get the "Logic" code for this event, stored in Events.py
             eventType = getattr(Events, eventSave['typeLogic'])
             event     = eventType(env, self, parameters=eventSave['parameters'])
-            # errors   += event.errors
             self.addEvent(event)
 
             # Add any commands related to the creation of this event
@@ -128,6 +132,7 @@ class Interpreter:
 
             # Create the commandList for this event
             for _, commandSave in enumerate(eventSave['commandList']):
+                # Get the "Logic" code command, stored in Commands.py
                 commandType = getattr(Commands, commandSave['typeLogic'])
                 command     = commandType(env, self, commandSave['parameters'])
                 event.addCommand(command)
