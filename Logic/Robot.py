@@ -246,7 +246,12 @@ class Robot:
         if any(attached):
             curr = self.getCurrentCoord()
             oldPos = dict(self.pos)
+            print("old")
             self.pos['x'], self.pos['y'], self.pos['z'] =  curr
+            print("new", self.pos)
+            print("old servo pos: ", self.__servoAngleCache)
+            self.__servoAngleCache = list(self.uArm.getServoAngles())
+            print("new servo pos: ", self.__servoAngleCache)
 
     def setGripper(self, status):
         if not self.connected() or self.exiting:

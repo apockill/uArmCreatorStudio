@@ -3,7 +3,7 @@ import re   # For variable santization
 import Paths
 from PyQt5        import QtGui, QtCore, QtWidgets
 from Logic.Global import printf
-
+from WidgetsGUI   import ScriptWidget
 
 # This should only be used once, in CommandList.addCommand
 class CommandWidget(QtWidgets.QWidget):
@@ -31,9 +31,9 @@ class CommandWidget(QtWidgets.QWidget):
         self.deleteBtn.setIcon(QtGui.QIcon(Paths.delete))
         self.deleteBtn.setVisible(False)
 
-        font = QtGui.QFont()
-        font.setBold(True)
-        self.title.setFont(font)
+        bold = QtGui.QFont()
+        bold.setBold(True)
+        self.title.setFont(bold)
 
         leftLayout = QtWidgets.QVBoxLayout()
         midLayout = QtWidgets.QVBoxLayout()
@@ -132,24 +132,6 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
 
         return tabWidget
 
-    def generateLogicTab(self):
-        tabWidget = QtWidgets.QWidget()
-        vBox = QtWidgets.QVBoxLayout()
-        vBox.setAlignment(QtCore.Qt.AlignTop)
-        tabWidget.setLayout(vBox)
-        add  = lambda btnType: vBox.addWidget(self.getButton(btnType))
-
-        add(SetVariableCommandGUI)
-        add(TestVariableCommandGUI)
-        add(ElseCommandGUI)
-        add(StartBlockCommandGUI)
-        add(EndBlockCommandGUI)
-        add(EndEventCommandGUI)
-        add(EndProgramCommandGUI)
-
-
-        return tabWidget
-
     def generateVisionTab(self):
         tabWidget = QtWidgets.QWidget()
         vBox = QtWidgets.QVBoxLayout()
@@ -162,6 +144,27 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         add(TestObjectSeenCommandGUI)
 
         return tabWidget
+
+    def generateLogicTab(self):
+        tabWidget = QtWidgets.QWidget()
+        vBox = QtWidgets.QVBoxLayout()
+        vBox.setAlignment(QtCore.Qt.AlignTop)
+        tabWidget.setLayout(vBox)
+        add  = lambda btnType: vBox.addWidget(self.getButton(btnType))
+
+        add(ScriptCommandGUI)
+        add(SetVariableCommandGUI)
+        add(TestVariableCommandGUI)
+        add(ElseCommandGUI)
+        add(StartBlockCommandGUI)
+        add(EndBlockCommandGUI)
+        add(EndEventCommandGUI)
+        add(EndProgramCommandGUI)
+
+
+
+        return tabWidget
+
 
     def getButton(self, commandType):
         newButton = self.DraggableButton(str(commandType.__name__), self)
@@ -259,15 +262,15 @@ class CommandGUI:
         ##### Create the base window #####
         prompt = QtWidgets.QDialog()
 
-        applyBtn = QtWidgets.QPushButton('Apply')
+        prompt.applyBtn = QtWidgets.QPushButton('Apply')
         cancelBtn = QtWidgets.QPushButton('Cancel')
 
-        applyBtn.setMaximumWidth(100)
+        prompt.applyBtn.setMaximumWidth(100)
         cancelBtn.setMaximumWidth(100)
         prompt.applyClicked = True
-        applyBtn.clicked.connect(prompt.accept)
+        prompt.applyBtn.clicked.connect(prompt.accept)
         cancelBtn.clicked.connect(prompt.reject)
-        applyBtn.setDefault(True)
+        prompt.applyBtn.setDefault(True)
 
         # Create a content box for the command to fill out parameters and GUI elements
         prompt.content    = QtWidgets.QVBoxLayout()
@@ -275,24 +278,21 @@ class CommandGUI:
         contentGroupBox = QtWidgets.QGroupBox("Parameters")
         contentGroupBox.setLayout(prompt.content)
 
-        # Create the main vertical layout, add the contentBox to it
-        prompt.mainVLayout = QtWidgets.QVBoxLayout()
-        prompt.mainVLayout.addWidget(contentGroupBox)
-        prompt.mainVLayout.addStretch(1)
-
-        # Dress the base window (this is where the child actually puts the content into the widget)
-        prompt = self.dressWindow(prompt)
-
 
         # Now that the window is 'dressed', add "Cancel" and "Apply" buttons
         buttonRow = QtWidgets.QHBoxLayout()
         buttonRow.addWidget(cancelBtn)
         buttonRow.addStretch(1)
-        buttonRow.addWidget(applyBtn)
+        buttonRow.addWidget(prompt.applyBtn)
+
+        # Create the main vertical layout, add everything to it
+        prompt.mainVLayout = QtWidgets.QVBoxLayout()
+        prompt.mainVLayout.addWidget(contentGroupBox)
+        prompt.mainVLayout.addStretch(1)
         prompt.mainVLayout.addLayout(buttonRow)
 
         # Set the main layout and general window parameters
-        prompt.setFixedWidth(350)
+        prompt.setMinimumWidth(350)
         prompt.setMinimumHeight(350)
         prompt.setLayout(prompt.mainVLayout)
         prompt.setWindowTitle(self.title)
@@ -300,7 +300,8 @@ class CommandGUI:
         prompt.setWhatsThis(self.tooltip)  # This makes the "Question Mark" button on the window show the tooltip msg
 
 
-
+        # Dress the base window (this is where the child actually puts the content into the widget)
+        prompt = self.dressWindow(prompt)
 
 
         # Run the info window and prevent other windows from being clicked while open:
@@ -380,7 +381,6 @@ class CommandGUI:
 
 
     # The following are helper functions for modifying the prompt window in a consistent way
-
     def _addRow(self, prompt, leftWidget, rightItem):
         if isinstance(rightItem, QtWidgets.QLineEdit) or isinstance(rightItem, QtWidgets.QComboBox):
             rightItem.setFixedWidth(self.defaultTextBoxWidth)
@@ -431,6 +431,7 @@ class CommandGUI:
 
 
 
+
 ########## COMMANDS ##########
 """
 Commands must have:
@@ -453,6 +454,8 @@ Commands must have:
 Special Cases:
     -StartBlockCommand and EndBlockCommand are used directly in ControlPanelGUI.py to indent code blocks correctly
     -ElseCommand is used directly in the Interpreter for processing code
+    -Test commands should be entered in ControlPanelGUI.CommandList.dropEvent() so that when it is dropped, a
+        StartBlockCommand and EndBlockCommand is placed after it, for the users convenience
 
 Example of a fully filled out class:
 
@@ -1355,6 +1358,39 @@ class TestVariableCommandGUI(CommandGUI):
                            ' ' + self.parameters['expression'] + ' then'
 
 
+class ScriptCommandGUI(CommandGUI):
+    title     = "Run Python Code"
+    tooltip   = "This tool will execute a script made by the user. DO NOT RUN PROGRAMS WITH SCRIPTS WRITTEN BY OTHER"+\
+                " USERS UNLESS YOU HAVE CHECKED THE SCRIPT AND KNOW WHAT YOU ARE DOING!"
+    icon      = Paths.script_command
+    logicPair = "ScriptCommand"
+
+    def __init__(self, env, parameters=None):
+        super(ScriptCommandGUI, self).__init__(parameters)
+
+        # If parameters do not exist, then set up the default parameters
+        if self.parameters is None:
+            # Anything done with env should be done here. Try not to save env as a class variable whenever possible
+            self.parameters = {"script": ""}
+
+    def dressWindow(self, prompt):
+        # Do some GUI code setup
+        # Put all the objects into horizontal layouts called Rows
+        prompt.IDE = ScriptWidget(self.parameters["script"], prompt)
+
+        prompt.content.addWidget(prompt.IDE)  # and so on for all of the rows
+
+        return prompt
+
+    def _extractPromptInfo(self, prompt):
+        newParameters = {"script": prompt.IDE.getCode()} # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
+
+        self.parameters.update(newParameters)
+
+        return self.parameters
+
+    def _updateDescription(self):
+        self.description = ""  # Some string that uses your parameters to describe the object.
 
 
-########### NON-UPDATED COMMANDS ########
+

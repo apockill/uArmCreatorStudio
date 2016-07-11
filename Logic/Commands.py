@@ -119,11 +119,11 @@ class PlayRobotRecordingCommand(Command):
             return False
 
         # Since x2 should mean twice as fast, and .5 should mean twice as slow, inverse the speed
-        newSpeed /= 1
+        newSpeed = 1.0 / newSpeed
 
 
         # Multiply the motionPath by newSpeed, to change how fast it replays
-        mp = np.asarray(self.motionPath)
+        mp = np.asarray(self.motionPath[:])
         time = mp[:, [0]] * newSpeed
         actions = mp[:, 1:]
 
@@ -134,11 +134,11 @@ class PlayRobotRecordingCommand(Command):
 
         # Put the "time" and "actions" array back together and return it to a list
         mp = np.hstack((time, actions))
-        self.motionPath = mp.tolist()
+        mp.tolist()
 
 
         # Send the path to the "path player"
-        rv.playMotionPath(self.motionPath, self.robot, self.exitFunc)
+        rv.playMotionPath(mp.tolist(), self.robot, self.exitFunc)
         return True
 
 
