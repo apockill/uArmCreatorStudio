@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 from collections  import namedtuple
 from Logic.Global import printf
-
+from Logic        import Paths
 
 class Vision:
 
@@ -12,13 +12,14 @@ class Vision:
         # How long the "tracker history" array is (how many frames of tracked data are kept)
         self.historyLen = 60
 
-        self.vStream    = vStream
-        self.exiting    = False
-        self.tracker    = PlaneTracker(25.0, self.historyLen)
+        self.vStream        = vStream
+        self.exiting        = False
+        self.planeTracker   = PlaneTracker(25.0, self.historyLen)
+        self.cascadeTracker = CascadeTracker(self.historyLen)
 
         # Use these on any work functions that are intended for threading
-        self.filterLock = self.vStream.filterLock
-        self.workLock   = self.vStream.workLock
+        self.filterLock  = self.vStream.filterLock
+        self.workLock    = self.vStream.workLock
 
     # Wrappers for the VideoStream object
     def waitForNewFrames(self, numFrames=1):
@@ -35,79 +36,47 @@ class Vision:
                 sleep(.05)
 
 
-    # Object tracker control functions
+    # All tracker control functions
+    def endAllTrackers(self):
+        # End all trackers and clear targets
+
+
+        # Shut down and reset any cascade tracking
+        self.vStream.removeWork(self.cascadeTracker.track)
+        self.vStream.removeWork(self.cascadeTracker.drawTracked)
+
+        # Shut down and reset any planeTracking
+        self.clearTargets()
+        self.vStream.removeWork(self.planeTracker.track)
+        self.vStream.removeFilter(self.planeTracker.drawTracked)
+
+
+    # PlaneTracker tracker control functions
+    def startTracker(self):
+        # Adds a worker function to the videoStream to track all the time
+        self.vStream.addWork(self.planeTracker.track)
+        self.vStream.addFilter(self.planeTracker.drawTracked)
+
     def addTrackable(self, trackable):
         views = trackable.getViews()
         with self.workLock:
             for view in views:
-                self.tracker.addView(view)
+                self.planeTracker.addView(view)
 
     def clearTargets(self):
         with self.workLock:
-            self.tracker.clear()
-
-    def startTracker(self):
-        # Adds a worker function to the videoStream to track all the time
-        self.vStream.addWork(self.tracker.track)
-
-    def endTracker(self):
-        # Removes a worker function from the videoStream, to stop any ongoing tracking
-        self.vStream.removeWork(self.tracker.track)
+            self.planeTracker.clear()
 
 
-    # Object recognition functions
-    def getObjectSpeedDirectionAvg(self, trackable, samples=3, maxAge=20, isSameObjThresh=50):
-                # TEST CODE FOR VISION
-        with self.workLock:
-            trackHistory = self.tracker.trackedHistory[:maxAge]
-
-        hst      = []
-        # Get 'samples' amount of tracked object from history, and the first sample has to be maxAge less then the last
-        for frameAge, historyFromFrame in enumerate(trackHistory):
-            #
-            # # If the first finding of the object is older than maxAge
-            # if len(hst) == 0 and frameAge > maxAge - samples: return None, None, None
-
-            for tracked in historyFromFrame:
-                if trackable.equalTo(tracked.view.name):
-                    # If it's the first object
-                    if len(hst) == 0:
-                        hst.append(tracked.center)
-                        break
-
-                    c = tracked.center
-                    dist = ((hst[0][0] - c[0]) ** 2 + (hst[0][1] - c[1]) ** 2 + (hst[0][2] - c[2]) ** 2) ** .5
 
 
-                    if dist < isSameObjThresh:
-                        hst.append(tracked.center)
-                        break
-            if len(hst) >= samples: break
-
-        if len(hst) == 0: return None, None, None
-
-        # Get the "noise" of the sample
-        hst     = np.float32(hst)
-        avgPos  = hst[0]
-        avgDir  = np.float32([0, 0, 0])
-        for i, pt in enumerate(hst[1:]):
-            avgDir += np.float32(hst[i]) - pt
-            avgPos += pt
-
-        avgDir /= samples - 1
-        avgMag  = sum(avgDir ** 2) ** .5
-        avgPos /= samples
-        return avgPos, avgMag, avgDir
-        print("Avg mag: ", avgMag)
-        print("Avg dir: ", avgDir)
-        print("Avg pos: ", avgPos)
-
+    # PlaneTracker search functions
     def getObjectLatestRecognition(self, trackable):
         # Returns the latest successful recognition of objectID, so the user can pull the position from that
         # it also returns the age of the frame where the object was found (0 means most recently)
 
         with self.workLock:
-            trackHistory = self.tracker.trackedHistory[:]
+            trackHistory = self.planeTracker.trackedHistory[:]
 
         for frameID, historyFromFrame in enumerate(trackHistory):
             for tracked in historyFromFrame:
@@ -147,23 +116,66 @@ class Vision:
 
         return None
 
-    def searchTrackedHistory(self, trackable=None, maxFrame=None, minPtCount=None):
+    def getObjectSpeedDirectionAvg(self, trackable, samples=3, maxAge=20, isSameObjThresh=50):
+                # TEST CODE FOR VISION
+        with self.workLock:
+            trackHistory = self.planeTracker.trackedHistory[:maxAge]
+
+        hst      = []
+        # Get 'samples' amount of tracked object from history, and the first sample has to be maxAge less then the last
+        for frameAge, historyFromFrame in enumerate(trackHistory):
+            #
+            # # If the first finding of the object is older than maxAge
+            # if len(hst) == 0 and frameAge > maxAge - samples: return None, None, None
+
+            for tracked in historyFromFrame:
+                if trackable.equalTo(tracked.view.name):
+                    # If it's the first object
+                    if len(hst) == 0:
+                        hst.append(tracked.center)
+                        break
+
+                    c = tracked.center
+                    dist = ((hst[0][0] - c[0]) ** 2 + (hst[0][1] - c[1]) ** 2 + (hst[0][2] - c[2]) ** 2) ** .5
+
+
+                    if dist < isSameObjThresh:
+                        hst.append(tracked.center)
+                        break
+            if len(hst) >= samples: break
+
+        if len(hst) == 0: return None, None, None
+
+        # Get the "noise" of the sample
+        hst     = np.float32(hst)
+        avgPos  = hst[0]
+        avgDir  = np.float32([0, 0, 0])
+        for i, pt in enumerate(hst[1:]):
+            avgDir += np.float32(hst[i]) - pt
+            avgPos += pt
+
+        avgDir /= samples - 1
+        avgMag  = sum(avgDir ** 2) ** .5
+        avgPos /= samples
+        return avgPos, avgMag, avgDir
+
+    def searchTrackedHistory(self, trackable=None, maxAge=None, minPtCount=None):
         """
         Search through trackedHistory to find an object that meets the criteria
 
         :param trackableObject: Specify if you want to find a particular object
-        :param maxFrame:        Specify if you wannt to find an object that was found within X frames ago
+        :param maxAge:        Specify if you wannt to find an object that was found within X frames ago
         :param minPtCount:      Specify if you want to find an object with a minimum amount of tracking points
         """
 
-
+        maxFrame = maxAge + 1
         if maxFrame is None or maxFrame >= self.historyLen:
             printf("Vision.isRecognized(): ERROR: Tried to look further in the history than was possible!")
             maxFrame = self.historyLen
 
         # Safely pull the relevant trackedHistory from the tracker object
         with self.workLock:
-            trackHistory = self.tracker.trackedHistory[:maxFrame]
+            trackHistory = self.planeTracker.trackedHistory[:maxFrame]
 
 
         # Check if the object was recognized in the most recent frame. Check most recent frames first.
@@ -173,36 +185,32 @@ class Vision:
                 if trackable is not None and not trackable.equalTo(tracked.view.name): continue
 
                 if minPtCount is not None and not tracked.ptCount > minPtCount: continue
-                print("Found object ", tracked.view.name, " with pts, ", tracked.ptCount, "maxFrames", maxFrame)
+                # print("Found object ", tracked.view.name, " with pts, ", tracked.ptCount, "maxFrames", maxFrame)
                 return tracked
         return None
 
 
-    # vStream Work functions
-    def trackerAddStartTrack(self, trackable):
-        # Convenience function that adds an object to the tracker, starts the tracker, and starts the filter
-        self.addTrackable(trackable)
-        self.startTracker()
-        self.addTrackerFilter()
+    # Face Tracker Control Functions
+    def startCascadeTracker(self):
+        self.vStream.addWork(self.cascadeTracker.track)
+        self.vStream.addFilter(self.cascadeTracker.drawTracked)
 
-    def trackerEndStopClear(self):
-        # Convenience function to clear the tracked objects, stop tracking, and stop the tracking filter
 
-        self.endTracker()
-        self.endTrackerFilter()
-        self.clearTargets()
+    # FaceTracker search functions
+    def isFaceDetected(self):
+        # Safely pull the relevant trackedHistory from the tracker object
+        with self.workLock:
+            trackHistory = self.cascadeTracker.trackedHistory[0]
 
-    # vStream Filter functions
-    def addTrackerFilter(self):
-        self.vStream.addFilter(self.tracker.drawTracked)
+        if len(trackHistory) > 0:
+            return True
+        return None
 
-    def endTrackerFilter(self):
-        self.vStream.removeFilter(self.tracker.drawTracked)
+
+
+
 
     # General use computer vision functions
-
-
-
     def getMotion(self):
 
         # GET TWO CONSECUTIVE FRAMES
@@ -329,15 +337,33 @@ class Vision:
         return image[rect[1]:rect[3], rect[0]:rect[2]]
 
 
+    # Vision specific functions
     def setExiting(self, exiting):
         # Used for closing threads quickly, when this is true any time-taking functions will skip through quickly
         # and return None or False or whatever their usual failure mode is. ei, waitForFrames() would exit immediately
         if exiting:
             printf("Vision.setExiting(): Setting Vision to Exiting mode. All frame commands should exit quickly.")
+            self.endAllTrackers()
+
         self.exiting = exiting
 
 
-class PlaneTracker:
+class Tracker:
+    def __init__(self, historyLength):
+        self.historyLen = historyLength
+        self.targets      = []
+        self.trackedHistory = [[] for i in range(self.historyLen)]
+
+    def _addTracked(self, trackedArray):
+        # Add an array of detected objects to the self.trackedHistory array, and shorten the trackedHistory array
+        # so that it always remains self.historyLength long
+        self.trackedHistory.insert(0, trackedArray)
+
+        while len(self.trackedHistory) > self.historyLen:
+            del self.trackedHistory[-1]
+
+
+class PlaneTracker(Tracker):
     """
     PlanarTarget:
         image     - image to track
@@ -353,10 +379,10 @@ class PlaneTracker:
         H      - homography matrix from p0 to p1
         quad   - target bounary quad in input frame
     """
-    Target  = namedtuple('PlaneTarget', 'view, keypoints, descrs')
+    PlaneTarget  = namedtuple('PlaneTarget', 'view, keypoints, descrs')
 
     # target: the "sample" object of the tracked object. Center: [x,y,z] Rotation[xr, yr, zr], ptCount: matched pts
-    TrackedTarget = namedtuple('TrackedTarget', 'view, target, quad, ptCount, center, rotation, p0, p1, H,')
+    TrackedPlane = namedtuple('TrackedPlane', 'view, target, quad, ptCount, center, rotation, p0, p1, H,')
 
     # Tracker parameters
     FLANN_INDEX_KDTREE = 1
@@ -371,23 +397,18 @@ class PlaneTracker:
 
 
     def __init__(self, focalLength, historyLength):
+        super(PlaneTracker, self).__init__(historyLength)
         self.focalLength  = focalLength
-
         self.detector     = cv2.ORB_create(nfeatures = 8000)
 
         # For ORB
         self.matcher      = cv2.FlannBasedMatcher(self.flanParams, {})  # bug : need to pass empty dict (#1329)
-        self.targets      = []
         self.framePoints  = []
 
 
         # trackHistory is an array of arrays, that keeps track of tracked objects in each frame, for hstLen # of frames
         # Format example [[PlanarTarget, PlanarTarget], [PlanarTarget], [PlanarTarget...]...]
         # Where trackedHistory[0] is the most recent frame, and trackedHistory[-1] is about to be deleted.
-        self.historyLen = historyLength
-        self.trackedHistory = [[] for i in range(self.historyLen)]
-
-
 
     def createTarget(self, view):
         # Get the PlanarTarget object for any name, image, and rect. These can be added in self.addTarget()
@@ -404,7 +425,7 @@ class PlaneTracker:
 
 
         descs  = np.uint8(descs)
-        target = self.Target(view=view, keypoints=points, descrs=descs)
+        target = self.PlaneTarget(view=view, keypoints=points, descrs=descs)
 
         # If it was possible to add the target
         return target
@@ -437,7 +458,7 @@ class PlaneTracker:
 
         # If no keypoints were detected, then don't update the self.trackedHistory array
         if len(self.framePoints) < self.MIN_MATCH_COUNT:
-            self.__addTracked(tracked)
+            self._addTracked(tracked)
             return
 
 
@@ -445,7 +466,7 @@ class PlaneTracker:
         matches = [m[0] for m in matches if len(m) == 2 and m[0].distance < m[1].distance * 0.75]
 
         if len(matches) < self.MIN_MATCH_COUNT:
-            self.__addTracked(tracked)
+            self._addTracked(tracked)
             return
 
 
@@ -482,29 +503,19 @@ class PlaneTracker:
             # Calculate the 3d coordinates of the object
             center, rotation = self.get3DCoordinates(frame, target.view.rect, quad)
 
-            track = self.TrackedTarget(target=target,
-                                       view=target.view,
-                                       quad=quad,
-                                       ptCount=len(matches),
-                                       center=center,
-                                       rotation=rotation,
-                                       p0=p0, p1=p1, H=H,)
+            track = self.TrackedPlane(target=target,
+                                      view=target.view,
+                                      quad=quad,
+                                      ptCount=len(matches),
+                                      center=center,
+                                      rotation=rotation,
+                                      p0=p0, p1=p1, H=H, )
             tracked.append(track)
 
 
         tracked.sort(key = lambda t: len(t.p0), reverse=True)
 
-        self.__addTracked(tracked)
-
-    def __addTracked(self, trackedArray):
-        # Add an array of detected objects to the self.trackedHistory array, and shorten the trackedHistory array
-        # so that it always remains self.historyLength long
-
-
-        self.trackedHistory.insert(0, trackedArray)
-
-        while len(self.trackedHistory) > self.historyLen:
-            del self.trackedHistory[-1]
+        self._addTracked(tracked)
 
 
     def __detectFeatures(self, frame):
@@ -573,6 +584,42 @@ class PlaneTracker:
         return list(map(float,center)), list(map(float,rotation))
 
 
+class CascadeTracker(Tracker):
+    # This tracker is intended for tracking Haar cascade objects that are loaded with the program
+    CascadeTarget  = namedtuple('CascadeTarget', 'name, classifier')
+
+    def __init__(self, historyLength):
+        super(CascadeTracker, self).__init__(historyLength)
+
+        self.cascades = [self.CascadeTarget(name= "Face", classifier=cv2.CascadeClassifier(Paths.face_cascade)),
+                         self.CascadeTarget(name="Smile", classifier=cv2.CascadeClassifier(Paths.smile_cascade))]
+
+    def addTarget(self, targetName):
+        for target in self.cascades:
+            if targetName == target.name:
+                if target not in self.targets:
+                    self.targets.append(target)
+                else:
+                    printf("CascadeTracker.addTarget(): ERROR: Tried to add a target that was already there!")
+
+
+    def track(self, frame):
+        gray  = cv2.cvtColor(frame.copy(), cv2.COLOR_BGR2GRAY)
+
+        tracked = []
+        # Track any cascades that have been added to self.targets
+        for target in self.targets:
+            tracked.append(target.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=15, minSize=(30, 30)))
+
+
+        self._addTracked(tracked)
+
+
+
+    def drawTracked(self, frame):
+
+        for (x, y, w, h) in self.trackedHistory[0]:
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 255, 255), 2)
 
 # def getMotionDirection(self):
     #     frameList = self.vStream.getFrameList()

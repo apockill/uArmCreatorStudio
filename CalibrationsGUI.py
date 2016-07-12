@@ -1,12 +1,10 @@
-import Paths
-import random
+from time                import sleep  # Used only for waiting for robot in CoordCalibrations, page 5
 import numpy             as np
-import Logic.RobotVision as rv
 from PyQt5               import QtCore, QtWidgets, QtGui
 from CameraGUI           import CameraSelector
+from Logic               import Paths
 from Logic.Global        import printf
 from Logic.ObjectManager import TrackableObject
-from time                import sleep  # Used only for waiting for robot in CoordCalibrations, page 5
 
 
 class CalibrateWindow(QtWidgets.QDialog):
@@ -157,7 +155,7 @@ class CalibrateWindow(QtWidgets.QDialog):
         # Start position
         robot.setSpeed(18)
         robot.setActiveServos(all=True)
-        robot.setPos( x=-15, y=-15, z=20)
+        robot.setPos( x=-15, y=robot.home["y"], z=robot.home["z"])
 
         # Move robot left and right while getting new frames for "moves" amount of samples
         for move in range(0, moves):
@@ -262,7 +260,7 @@ class CoordWizard(QtWidgets.QWizard):
         # Set the robot to the home position
         robot = environment.getRobot()
         robot.setActiveServos(all=True)
-        robot.setPos(x=0, y=-15, z=15)
+        robot.setPos(**robot.home)
         robot.setActiveServos(all=False)
 
         # Create the wizard pages and add them to the sequence
@@ -311,7 +309,7 @@ class CoordWizard(QtWidgets.QWizard):
         self.page5.close()
 
         vision = self.env.getVision()
-        vision.trackerEndStopClear()
+        vision.endAllTrackers()
 
 class CWPage1(QtWidgets.QWizardPage):
     def __init__(self, parent):
@@ -381,7 +379,7 @@ class CWPage2(QtWidgets.QWizardPage):
 
 
         # This is set in self.nextPressed
-        self.getRobotCoords = robot.getCurrentCoord
+        self.robot = robot
         self.groundCoords = None
         self.initUI()
 
@@ -436,6 +434,7 @@ class CWPage2(QtWidgets.QWizardPage):
         # If next is pressed, warn the user about placing the robots head on the ground
 
         if currentID == 2:
+            self.robot.setActiveServos(all=False)
             warn = QtWidgets.QMessageBox()
             warn.setWindowTitle("Getting Height of Ground")
             warn.addButton(QtWidgets.QPushButton('Yes, the end effector is touching the ground'),
@@ -449,10 +448,11 @@ class CWPage2(QtWidgets.QWizardPage):
             samples = 10
             sumCoords = np.float32([0, 0, 0])
             for i in range(0, samples):
-                coord = self.getRobotCoords()
+                coord = self.robot.getCurrentCoord()
                 sumCoords += np.float32(coord)
             self.groundCoords = list(map(float, sumCoords / samples))
-
+            self.robot.setPos(z=self.groundCoords[2] + .5)
+            self.robot.setActiveServos(servo0=False)
             printf("CWPage2.nextPressed(): New ground coordinates set: ", self.groundCoords)
 
 class CWPage3(QtWidgets.QWizardPage):
@@ -526,6 +526,7 @@ class CWPage4(QtWidgets.QWizardPage):
 
         # Get the Environment objects that will be used
         self.vision       = environment.getVision()
+        self.robot        = environment.getRobot()
         self.objManager   = environment.getObjectManager()
 
         # Create the camera widget and set it up
@@ -595,6 +596,8 @@ class CWPage4(QtWidgets.QWizardPage):
             selection mode.
         """
 
+
+
         frame, rect = self.cameraWidget.getSelected()
 
 
@@ -611,6 +614,11 @@ class CWPage4(QtWidgets.QWizardPage):
             self.cameraWidget.takeAnother()
             return
 
+        if len(target.descrs) < 300:
+            self.hintLbl.setText("Your selected marker does not have enough detail. Only " + str(len(target.descrs)) +
+                                 " points were found.\nAdd detail to your marker and try again.")
+            self.cameraWidget.takeAnother()
+            return
 
         self.objManager.deleteObject("Robot Marker")  # Delete any previous end effector file
         self.newRobotMrkr = trackable
@@ -619,7 +627,7 @@ class CWPage4(QtWidgets.QWizardPage):
 
 
         # If the object was not very good, warn the user. Otherwise, state the # of points on the object
-        if len(target.descrs) < 350:
+        if len(target.descrs) < 600:
             self.hintLbl.setText("Your selected marker is not very detailed, or is too small, only " +
                                  str(len(target.descrs)) + " points were found.\n"
                                  "Tracking may not be very accurate.")
@@ -629,7 +637,9 @@ class CWPage4(QtWidgets.QWizardPage):
 
         # Turn on the camera, and start tracking
         self.cameraWidget.play()
-        self.vision.trackerAddStartTrack(self.newRobotMrkr)
+        self.vision.addTrackable(self.newRobotMrkr)
+        self.vision.startTracker()
+
 
     def tryAgain(self):
         self.newRobotMrkr = None
@@ -637,7 +647,7 @@ class CWPage4(QtWidgets.QWizardPage):
         self.hintLbl.setText("")
         self.cameraWidget.play()
         self.cameraWidget.takeAnother()
-        self.vision.trackerEndStopClear()
+        self.vision.endAllTrackers()
 
 
     def isComplete(self):
@@ -645,7 +655,7 @@ class CWPage4(QtWidgets.QWizardPage):
 
     def close(self):
         self.cameraWidget.close()
-        self.vision.trackerEndStopClear()
+        self.vision.endAllTrackers()
 
 class CWPage5(QtWidgets.QWizardPage):
 
@@ -653,16 +663,19 @@ class CWPage5(QtWidgets.QWizardPage):
     def __init__(self, environment, getGroundCoord, parent):
         super(CWPage5, self).__init__(parent)
 
-        # Initialize GUI globals
+        # Initialize Globals
         self.env             = environment
-        self.getGroundCoord  = getGroundCoord  # This is used once runCalibration is started
-        self.startBtn        = QtWidgets.QPushButton("Start Calibration")
-        self.hintLbl         = QtWidgets.QLabel("\n\n\n\n\n\t\t\t\t")  # Add newlines since window resizing is broken
-        self.progressBar     = QtWidgets.QProgressBar()
+        self.getGroundCoord  = getGroundCoord  # This is used to pull a value from a previous QWizard page
+        self.testRunning     = False  # Keeps track if there's a test currently running, to not have multiple ongoing
+        self.cancelTest      = True   # Used when dialog is closed to stop the calibration
+        self.newCalibrations = None   # The final caibration JSON to go into settings. Set in endCalibration.
 
-        # self.newCalibrations is only set once everything has completed successfully
-        self.successComplete = False
-        self.newCalibrations = None
+
+        # Initialize GUI globals
+        self.startBtn       = QtWidgets.QPushButton("Start Calibration")
+        self.hintLbl        = QtWidgets.QLabel("\n\n\n\n\n\t\t\t\t")  # Add newlines since window resizing is broken
+        self.testLbl        = QtWidgets.QLabel()        # Updates during calibration to notify user of progress
+        self.progressBar    = QtWidgets.QProgressBar()  # Tells the user how far the calibration is from completion
 
 
         self.startBtn.clicked.connect(self.startCalibration)
@@ -670,6 +683,9 @@ class CWPage5(QtWidgets.QWizardPage):
 
     def initUI(self):
         self.startBtn.setMaximumWidth(130)
+        self.progressBar.setMinimum(0)
+        self.progressBar.hide()
+        self.testLbl.hide()
 
         prompt = "When you press the Start Calibration button, the robot will go through a set of predefined moves\n"+\
                  "and record the information that it needs. The program will freeze for a minute. " \
@@ -693,9 +709,12 @@ class CWPage5(QtWidgets.QWizardPage):
         col1  = QtWidgets.QVBoxLayout()
         col1.addWidget(step1Lbl)
         col1.addWidget(promptLbl)
+        col1.addStretch(1)
+        col1.addWidget(self.testLbl)
+        col1.addWidget(self.progressBar)
         col1.addWidget(self.hintLbl)
         col1.addWidget(self.startBtn)
-        col1.addStretch(1)
+
 
         mainHLayout = QtWidgets.QHBoxLayout()
         mainHLayout.addLayout(col1)
@@ -705,6 +724,10 @@ class CWPage5(QtWidgets.QWizardPage):
 
     def startCalibration(self):
 
+        if self.testRunning is True:
+            print("Cancelign start calibration!")
+            return
+
         # Pull from the environment and start the tracking
         robot      = self.env.getRobot()
         vision     = self.env.getVision()
@@ -713,8 +736,9 @@ class CWPage5(QtWidgets.QWizardPage):
 
         #   Start tracking the robots marker
         rbMarker = objManager.getObject("Robot Marker")
-        vision.clearTargets()   # Make sure there are no duplicate objects being tracked
-        vision.trackerAddStartTrack(rbMarker)
+        vision.endAllTrackers()
+        vision.addTrackable(rbMarker)
+        vision.startTracker()
 
 
         # A list of robot Coord and camera Coords, where each index of robPts corresponds to the cameraPoint index
@@ -734,50 +758,59 @@ class CWPage5(QtWidgets.QWizardPage):
 
         # Test the z on 4 xy points
         zTest = int(round(zLower, 0))  # Since range requires an integer, round zLower just for this case
-        # for z in range(zTest, 26, 1): testCoords += [[0,  -15, z]]
-        # for z in range(zTest, 19, 1): testCoords += [[-8, -11, z]]
-        # for z in range(zTest, 20, 1): testCoords += [[-5, -13, z]]
-        # for z in range(zTest, 20, 1): testCoords += [[-5, -17, z]]
-        # for z in range(zTest, 19, 1): testCoords += [[-8, -19, z]]
-        # for z in range(zTest, 19, 1): testCoords += [[ 8, -11, z]]
-        # for z in range(zTest, 20, 1): testCoords += [[ 5, -13, z]]
-        # for z in range(zTest, 20, 1): testCoords += [[ 5, -17, z]]
-        # for z in range(zTest, 19, 1): testCoords += [[ 8, -19, z]]
-        #
-        #
+        for z in range(zTest, 26, 1): testCoords += [[0,  -15, z]]
+        for z in range(zTest, 19, 2): testCoords += [[-8, -11, z]]
+        for z in range(zTest, 20, 2): testCoords += [[-5, -13, z]]
+        for z in range(zTest, 20, 2): testCoords += [[-5, -17, z]]
+        for z in range(zTest, 19, 2): testCoords += [[-8, -19, z]]
+        for z in range(zTest, 19, 2): testCoords += [[ 8, -11, z]]
+        for z in range(zTest, 20, 2): testCoords += [[ 5, -13, z]]
+        for z in range(zTest, 20, 2): testCoords += [[ 5, -17, z]]
+        for z in range(zTest, 19, 2): testCoords += [[ 8, -19, z]]
+
+
         # # Test very near the base of the robot, but avoid the actual base
-        # for x in range(-20, -10,  1): testCoords += [[x, -5, zLower]] # Anything lower than -10x will hit the robot legs
-        # for x in range( 10,  20,  1): testCoords += [[x, -5, zLower]]
-        # for x in range( 20,   7, -1): testCoords += [[x, -6, zLower]]
-        # for x in range( -7, -20, -1): testCoords += [[x, -6, zLower]]
-        # for x in range(-20,  -6,  1): testCoords += [[x, -7, zLower]]
-        # for x in range(  6,  20,  1): testCoords += [[x, -7, zLower]]
+        for x in range(-20, -10,  1): testCoords += [[x, -5, zLower]] # Anything lower than -10x will hit the robot legs
+        for x in range( 10,  20,  1): testCoords += [[x, -5, zLower]]
+        for x in range( 20,   9, -1): testCoords += [[x, -6, zLower]]
+        for x in range( -9, -20, -1): testCoords += [[x, -6, zLower]]
+        for x in range(-20,  -6,  1): testCoords += [[x, -7, zLower]]
+        for x in range(  6,  20,  1): testCoords += [[x, -7, zLower]]
         direction  = True
 
-        # # Scan the entire board row by row
-        # for y in range(-8, -25, -1):  # [-8, -11, -15, -19, -25]:
-        #     if direction:
-        #         for x in range(20, -20, -1): testCoords += [[x, y, zLower]]
-        #     else:
-        #         for x in range(-20, 20,  1): testCoords += [[x, y, zLower]]
-        #     direction = not direction
+        # Scan the entire board row by row
+        for y in range(-8, -25, -1):  # [-8, -11, -15, -19, -25]:
+            if direction:
+                for x in range(20, -20, -1): testCoords += [[x, y, zLower]]
+            else:
+                for x in range(-20, 20,  1): testCoords += [[x, y, zLower]]
+            direction = not direction
 
-
-        for x in range(  6,  20,  1): testCoords += [[x, -7, 11]]
 
         printf("CWPage5.runCalibration(): Testing ", len(testCoords), " coordinate points")
 
 
         # Begin testing every coordinate in the testCoords array, and recording the results into newCalibrations
-        self.timer = QtCore.QTimer.singleShot(10, lambda: self.getPoint(0, [], {"ptPairs": [], "failPts": []},
-                                                                        testCoords))
-
-
+        self.cancelTest  = False
+        self.testRunning = True
+        self.hintLbl.setText("")
+        self.testLbl.setText("")
+        self.progressBar.setMaximum(len(testCoords))
+        self.progressBar.setValue(0)
+        self.progressBar.show()
+        self.testLbl.show()
+        self.startBtn.hide()
+        getFirstPoint = lambda: self.getPoint(0, [], {"ptPairs": [], "failPts": []}, testCoords)
+        self.timer    = QtCore.QTimer.singleShot(10, getFirstPoint)
 
     def endCalibration(self, errors, newCalibrations, testCoords):
         robot      = self.env.getRobot()
         vision     = self.env.getVision()
-
+        self.testRunning = False
+        self.cancelTest  = True
+        self.startBtn.show()
+        self.testLbl.hide()
+        self.progressBar.hide()
 
         robot.setPos(**robot.home)
 
@@ -793,18 +826,23 @@ class CWPage5(QtWidgets.QWizardPage):
         if len(newCalibrations["ptPairs"]) < minPointCount:
             # If not enough points were found, append an error to the error array
             if len(newCalibrations["ptPairs"]) == 0:
-                errors.append("The marker was never seen! Try restarting the calibration and setting the marker "
-                            "again,\n\t\tand making sure that the robot's head is, in fact, in view of the camera")
+                errors.append("The robot marker was never seen! Try restarting the calibration and creating the"
+                        "\n\t  marker again, making sure that the robot's head is in view of the camera."
+                        "\n\n\t  Also make sure that the area in the camera view is clear, blank, without too much"
+                        "\n\t  detail around it- try having a clear workspace with white paper as a background.")
             else:
                 errors.append("The marker was not recognized in enough points- it was only seen "           +
-                          str(len(newCalibrations["ptPairs"])) + " time(s)!\n\t\tIt must be seen at least " +
-                          str(minPointCount) + " times.\n" +
-                          "\t\tTry making sure that the robot's head is centered in the middle of the cameras view,\n"
-                          "\t\tor try placing the camera in a higher location.")
+                          str(len(newCalibrations["ptPairs"])) + " time(s)!"
+                          "\n\t  It must be seen at least " +
+                          str(minPointCount) + " times." +
+                          "\n\n\t  Try making sure that the robot's head is centered in the middle of the cameras"
+                          "\n\t  view in the previous step, and try placing the camera in a higher location."
+                          "\n\n\t  Also make sure that the area around the camera view is clear, blank, without too"
+                          "\n\t  much detail around it- try having a clear workspace with white paper as a background.")
 
 
         # Return the robot to home and turn off tracking
-        vision.trackerEndStopClear()
+        vision.endAllTrackers()
         robot.setPos(**robot.home)
 
 
@@ -815,14 +853,14 @@ class CWPage5(QtWidgets.QWizardPage):
             hintText += "Calibration did not complete successfully. The following errors occured:\n"
             for error in errors:
                 hintText += "\t- " + error + "\n"
-            self.successComplete = False
-            self.startBtn.setText("Restart Calibration")
+            self.newCalibrations = None
+            self.startBtn.setText("Try Again")
         else:
             hintText += "Calibration was successful, " + str(len(newCalibrations["ptPairs"])) + "/"  +\
                      str(len(testCoords)) + " points were found.\nResults will be saved when you click Apply " +\
                      "on the calibrations page. Feel free to try this again.\n" +\
                      "Make sure to repeat this calibration whenever you move your camera or move your robot."
-            self.successComplete = True
+            self.newCalibrations = newCalibrations
             self.startBtn.setDisabled(True)
 
         self.hintLbl.setText(hintText)
@@ -833,30 +871,49 @@ class CWPage5(QtWidgets.QWizardPage):
         self.completeChanged.emit()
 
 
-        # Now, update the settings if the calibration ran correctly
-        if len(errors) == 0:
-            self.newCalibrations = newCalibrations
-
 
 
     def getPoint(self, currentPoint, errors, newCalibrations, testCoords):
+        self.testRunning = True
+        if self.cancelTest:
+            self.testRunning = False
+            return
+
+        # Here we update the GUI element for telling the user how many valid points have been tested, and progress
+        successCount = len(newCalibrations["ptPairs"])
+        recFailCount = len(newCalibrations["failPts"])
+        print("failcoutn: ", recFailCount)
+        text  = "Calibration Progress: \n"
+        if currentPoint > len(testCoords) * .25:
+            if recFailCount / currentPoint > .5:
+                text += "    Progress Report: The robot marker has failed to be recognized " + \
+                        str(recFailCount) + " times!\n"
+            else:
+                text += "    Progress Report: The calibration is going well.\n"
+
+
+        text += "    Testing Point:\t" + str(currentPoint) + "/" + str(len(testCoords)) + "\n"
+        text += "    Correct Points:\t" + str(successCount) + "\n"
+        text += "    Failed Points:\t" + str(currentPoint - successCount) + "\n"
+
+        self.testLbl.setText(text)
+
+
+        # Get variables that will be used
         robot      = self.env.getRobot()
         vision     = self.env.getVision()
         rbMarker   = self.env.getObjectManager().getObject("Robot Marker")
         singleShot = lambda: QtCore.QTimer.singleShot(10, lambda: self.getPoint(currentPoint, errors,
                                                                         newCalibrations, testCoords))
-        currentPoint += 1
 
 
         if currentPoint >= len(testCoords):
             self.endCalibration(errors, newCalibrations, testCoords)
             return
-
-
-
-        print("Current: ", currentPoint, "len", len(testCoords))
+        self.progressBar.setValue(currentPoint)
         coord = testCoords[currentPoint]
         currentPoint += 1
+
 
         printf("CWPage5.runCalibration(): Testing point ", coord)
 
@@ -868,6 +925,14 @@ class CWPage5(QtWidgets.QWizardPage):
         vision.waitForNewFrames()
         frameAge, marker = vision.getObjectLatestRecognition(rbMarker)
 
+
+        # Make sure the robot is still connected before checking anything else
+        if not robot.connected():
+            errors.append("Robot was disconnected during calibration")
+            self.endCalibration(errors, newCalibrations, testCoords)
+            return
+
+
         # Make sure the object was found in a recent frame
         if not frameAge == 0 or marker.center is None:
             printf("CWPage5.runCalibration(): Marker was not recognized.")
@@ -875,16 +940,13 @@ class CWPage5(QtWidgets.QWizardPage):
             self.timer = singleShot()
             return
 
-        if marker.ptCount < 30:
-            printf("CWPage5.runCalibration(): Disregarding frame. Only ", marker.ptCount, "tracker pts were found")
-            self.timer = singleShot()
-            return
+        # if marker.ptCount < 20:
+        #     printf("CWPage5.runCalibration(): Disregarding point. Only ", marker.ptCount, "tracker pts were found")
+        #     newCalibrations['failPts'].append(coord)
+        #     self.timer = singleShot()
+        #     return
 
-        # Make sure the robot is still connected before recording the results
-        if not robot.connected():
-            errors.append("Robot was disconnected during calibration")
-            self.endCalibration()
-            return
+
 
 
         # Since the camera found the object, now read the robots location through camera, and record both results
@@ -893,9 +955,13 @@ class CWPage5(QtWidgets.QWizardPage):
         if dist < 2:
             newCalibrations["ptPairs"].append([marker.center, coord])
         else:
-            print("Distance was too high: ", dist)
+            printf("CWPage5.runCalibration(): Disregarding point. Robot returned coordinate too far from desired pos")
 
         self.timer = singleShot()
+
+
+
+
 
     def pruneCalibrationSet(self, newSize, ptPairs):
         """
@@ -994,10 +1060,17 @@ class CWPage5(QtWidgets.QWizardPage):
             printf("CWPage5.pruneCalibrationSet(): Found set is worse than the average. Returning bestSet.")
             return bestScore, bestSet
 
-
     def isComplete(self):
-        return self.successComplete
 
+        return self.newCalibrations is not None
+
+    def close(self):
+        self.cancelTest = True  # Stops the calibration from creating another singleshot
+
+        vision = self.env.getVision()
+        robot  = self.env.getRobot()
+        vision.endAllTrackers()
+        robot.setPos(wait=False, **robot.home)
 
 
 

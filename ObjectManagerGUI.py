@@ -1,13 +1,12 @@
-import Paths
-import numpy as np
+import numpy             as np
 import Logic.RobotVision as rv
-from CameraGUI           import CameraWidget, CameraSelector, cvToPixFrame
+from time                import time
 from PyQt5               import QtCore, QtWidgets, QtGui
+from CameraGUI           import CameraWidget, CameraSelector, cvToPixFrame
+from Logic               import Paths
 from Logic.Global        import printf
-from Logic.RobotVision   import MIN_POINTS_TO_LEARN_OBJECT
 from Logic.ObjectManager import TrackableObject, MotionPath
-from time import time
-
+from Logic.RobotVision   import MIN_POINTS_TO_LEARN_OBJECT
 
 
 class ObjectManagerWindow(QtWidgets.QDialog):
@@ -39,7 +38,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         # CREATE OBJECTS AND LAYOUTS FOR ROW 1 COLUMN (ALL)
         newObjBtn    = QtWidgets.QPushButton("New Trackable Object")
         newGrpBtn    = QtWidgets.QPushButton("New Trackable Group")
-        newRecBtn    = QtWidgets.QPushButton("New Robot Recording")
+        newRecBtn    = QtWidgets.QPushButton("New Motion Recording")
 
 
         newObjBtn.setFixedWidth(150)
@@ -107,7 +106,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         # If selectedItem is a string, it will try to select the item. This is for obj's added through the ObjWizard
         # Clear the current objectList
         self.objTree.clear()
-        self.vision.trackerEndStopClear()
+        self.vision.endAllTrackers()
 
 
         # Get a list for each section of the QTreeWidget that there will be
@@ -151,22 +150,24 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         obj = self.objManager.getObject(selObject)
 
 
+        self.vision.endAllTrackers()
+
         if obj is None:
-            self.vision.trackerEndStopClear()
             self.clearSelectedLayout()
             return
 
-        self.vision.trackerEndStopClear()
 
         # Make the SelectedObject window reflect the information about the object (and it's type) that is curr. selected
         if isinstance(obj, self.objManager.TRACKABLEOBJ):
             self.setSelectionTrackable(obj)
-            self.vision.trackerAddStartTrack(obj)
+            self.vision.addTrackable(obj)
+            self.vision.startTracker()
             return
 
         if isinstance(obj, self.objManager.TRACKABLEGROUP):
             self.setSelectionGroup(obj)
-            self.vision.trackerAddStartTrack(obj)
+            self.vision.addTrackable(obj)
+            self.vision.startTracker()
             return
 
         if isinstance(obj, self.objManager.MOTIONPATH):
@@ -382,7 +383,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
     def closeEvent(self, event):
         # This ensures that the cameraWidget will no longer be open when the window closes
-        self.vision.trackerEndStopClear()
+        self.vision.endAllTrackers()
         self.cameraWidget.close()
 
 
@@ -559,7 +560,9 @@ class MotionRecordWindow(QtWidgets.QDialog):
         # Create non global UI variables
         nameLbl   = QtWidgets.QLabel("Recording Name: ")
         pathLbl   = QtWidgets.QLabel("Recorded Path")
-        hint2Lbl  = QtWidgets.QLabel("While recording, press the robots suction cup to activate the pump.")
+        hint2Lbl  = QtWidgets.QLabel("While recording, press the robots suction cup to activate the pump.\n"
+                                     "When you press Apply, Gaussian smoothing will be applied, and areas of no\n"
+                                     "movement at the start and end will be trimmed out.")
         cancelBtn = QtWidgets.QPushButton("Cancel", self)
 
 
@@ -668,6 +671,7 @@ class MotionRecordWindow(QtWidgets.QDialog):
     def toggleRecording(self):
         self.lastTime = time()
         if self.recording:
+            self.robot.setGripper(False)
             self.recordBtn.setText("Record")
             if len(self.motionPath):
                 self.recordBtn.setText("Continue Recording")
@@ -693,21 +697,107 @@ class MotionRecordWindow(QtWidgets.QDialog):
 
     def recordAction(self):
         # This is where a point is recorded from the robot
+
+
+        GRIPPER = 1
+
         now = time()
         if now - self.lastTime < 0.01: return  # If 10 ms havent passed, ignore
         print("Curr FPS: ", 1.0 / (now - self.lastTime))
         self.lastTime = now
 
+        # Every 10 times check the gripper status
+
+        if len(self.motionPath) == 0:
+            gripperStatus = 0
+        elif len(self.motionPath) % 15 == 0:
+            # If the robots tip is pressed, toggle the pump
+            if self.robot.getTipSensor():
+                gripperStatus = int(not self.motionPath[-1][GRIPPER])
+                self.robot.setGripper(gripperStatus)
+            else:
+                gripperStatus = self.motionPath[-1][GRIPPER]
+        else:
+            gripperStatus = self.motionPath[-1][GRIPPER]
 
         t         = now - self.startTime + self.baseTime
         angles    = self.robot.getServoAngles()
-        tip       = False  # self.robot.getTipSensor()
-        newAction = (round(t, 3), int(tip), angles[0], angles[1], angles[2], angles[3])
+        tip       = gripperStatus
+        newAction = [round(t, 3), int(tip), angles[0], angles[1], angles[2], angles[3]]
+
+
         self.motionPath.append(newAction)
         self.addActionToTable(newAction)
 
+    def trimPath(self):
+        """
+        Gets rid of motionless parts of the motion path at the beginning and end, where the user is presumably pressing
+        "record" or pressing "stop recording"
+        """
+        if len(self.motionPath) <= 20: return
+        TIME    = 0
+        GRIPPER = 1
+        SERVO0  = 2
+        SERVO1  = 3
+        SERVO2  = 4
+        SERVO3  = 5
+        minDist = 1   # In degrees
+
+
+        print("Trimming start from: ", len(self.motionPath))
+        startPoint = self.motionPath[0]
+        trimStart  = 0
+        for i, p in enumerate(self.motionPath):
+            trimStart = i
+            # print("Start: ", startPoint, "curr: ", p)
+            if abs(p[SERVO0] - startPoint[SERVO0]) > minDist: break
+            if abs(p[SERVO1] - startPoint[SERVO1]) > minDist: break
+            if abs(p[SERVO2] - startPoint[SERVO2]) > minDist: break
+            if abs(p[SERVO3] - startPoint[SERVO3]) > minDist: break
+
+        if trimStart < len(self.motionPath) - 1:
+            self.motionPath = self.motionPath[trimStart:]
+            print("Trimmed start: ", len(self.motionPath))
+
+        if len(self.motionPath) <= 20: return
+
+
+        print("b4", self.motionPath[:50])
+        print("Trimming end from: ", len(self.motionPath))
+        endPoint   = self.motionPath[-1]
+        trimEnd    = 0
+        self.motionPath.reverse()
+        for i, p in enumerate(self.motionPath):
+            trimEnd = i
+            # print("Start: ", endPoint, "curr: ", p)
+            if abs(p[SERVO0] - endPoint[SERVO0]) > minDist: break
+            if abs(p[SERVO1] - endPoint[SERVO1]) > minDist: break
+            if abs(p[SERVO2] - endPoint[SERVO2]) > minDist: break
+            if abs(p[SERVO3] - endPoint[SERVO3]) > minDist: break
+
+        # Correct the order
+        self.motionPath.reverse()
+        if trimStart < len(self.motionPath) - 1:
+            self.motionPath = self.motionPath[:-trimEnd]
+            print("Trimmed end: ", len(self.motionPath))
+        print("b4", self.motionPath[:50])
+
+
+        # Subtract the time from the start to every cell in the array now
+        startTime = self.motionPath[0][TIME] - .1
+        for i in range(len(self.motionPath)):
+            self.motionPath[i][TIME] = self.motionPath[i][TIME] - startTime
+            if self.motionPath[i][TIME] < 0:
+                print("ERROR")
+
+        startPoint[TIME] = 0
+        endPoint[TIME]   = self.motionPath[-1][TIME] + .1
+        self.motionPath = [startPoint] + self.motionPath + [endPoint]
 
     def optimizeMotionPath(self):
+        if len(self.motionPath) <= 20: return
+
+
         TIME    = 0
         GRIPPER = 1
         SERVO0  = 2
@@ -742,6 +832,10 @@ class MotionRecordWindow(QtWidgets.QDialog):
         print("After: ", self.motionPath[:10], len(self.motionPath))
 
     def createNewObject(self):
+        if self.newObject is None:
+            self.optimizeMotionPath()
+            self.trimPath()
+
         # Create an actual TrackableObject with this information
         if self.newObject is not None:
             name        = self.newObject.name
@@ -753,7 +847,6 @@ class MotionRecordWindow(QtWidgets.QDialog):
             name = self.nameEdit.text()
             motionObj = MotionPath(name)
 
-        self.optimizeMotionPath()
         motionObj.setMotionPath(self.motionPath)
 
         self.objManager.saveObject(motionObj)
@@ -768,11 +861,15 @@ class MotionRecordWindow(QtWidgets.QDialog):
 
         self.hintLbl.setText(newHintText)
 
+        if len(self.motionPath) <= 20:
+            self.hintLbl.setText("Recording must be longer than 20 points of data")
+
         # Set the apply button enabled if everything is filled out correctly
-        setEnabled = len(newHintText) == 0 and len(self.motionPath) > 5 and not self.recording
+        setEnabled = len(newHintText) == 0 and len(self.motionPath) > 20 and not self.recording
         self.applyBtn.setEnabled(setEnabled)
 
     def close(self):
+        self.robot.setGripper(False)
         self.timer.stop()
 
 
@@ -786,7 +883,8 @@ class ObjectWizard(QtWidgets.QWizard):
 
         # Since there are camera modules in the wizard, make sure that all tracking is off
         vision = environment.getVision()
-        vision.trackerEndStopClear()
+        vision.endAllTrackers()
+
         self.objManager = environment.getObjectManager()
         self.vision     = environment.getVision()
         self.newObject  = None  # Is set in self.close()
@@ -1016,7 +1114,8 @@ class OWPage2(QtWidgets.QWizardPage):
         self.object = target
         self.completeChanged.emit()
         self.cameraWidget.play()
-        self.vision.trackerAddStartTrack(trackable)
+        self.vision.addTrackable(trackable)
+        self.vision.startTracker()
         self.newObject.emit()
 
 
@@ -1052,7 +1151,7 @@ class OWPage2(QtWidgets.QWizardPage):
         self.setStep(1)
         self.cameraWidget.play()
         self.cameraWidget.takeAnother()
-        self.vision.trackerEndStopClear()
+        self.vision.endAllTrackers()
 
 
     def isComplete(self):
@@ -1060,9 +1159,7 @@ class OWPage2(QtWidgets.QWizardPage):
 
     def close(self):
         self.cameraWidget.close()
-        self.vision.clearTargets()
-        self.vision.endTracker()
-        self.vision.endTrackerFilter()
+        self.vision.endAllTrackers()
 
 class OWPage3(QtWidgets.QWizardPage):
     def __init__(self, parent):

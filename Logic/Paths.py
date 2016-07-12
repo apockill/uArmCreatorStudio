@@ -1,16 +1,32 @@
 """
 This is for storing the location of directories that don't move
 """
-from Resources import CompiledImages
+import os
+import sys
+# from Resources import CompiledImages
 
+################        PATHS FOR ALL       ################
 resourcesLoc = "Resources\\"
 settings_txt = resourcesLoc + "Settings.txt"
-objects_dir  = resourcesLoc + "Objects\\"
+objects_dir  = resourcesLoc + "Objects\\"         # Used by ObjectManager
 
 
-#####     ICONS     #####
-# The colon before the filename is so that it access the "compiled" images from CompiledImages.py, a QT resources system
-imageLoc = ":/Icons/"
+
+
+def resourcePath(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+
+    return os.path.join(os.path.abspath("."), relative_path)
+exeResourcesPath   = resourcePath(resourcesLoc)
+# Used by Vision
+face_cascade       = exeResourcesPath + "face_cascade.xml"
+smile_cascade      = exeResourcesPath + "smile_cascade.xml"
+
+
+################        GUI PATHS         ################
+imageLoc = resourcePath("Resources\\Icons\\")
 
 # Other
 cancel             = imageLoc + "cancel.png"
@@ -45,6 +61,7 @@ keyboard_event      = imageLoc + "event_keyboard.png"
 tip_event           = imageLoc + "event_tip.png"
 motion_event        = imageLoc + "event_motion.png"
 recognize_event     = imageLoc + "event_recognize.png"
+not_recognize_event = imageLoc + "event_not_recognize.png"
 
 
 # Commands

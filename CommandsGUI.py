@@ -1,9 +1,10 @@
 import ast  # To check if a statement is python parsible, for evals
 import re   # For variable santization
-import Paths
 from PyQt5        import QtGui, QtCore, QtWidgets
+from Logic        import Paths
 from Logic.Global import printf
 from WidgetsGUI   import ScriptWidget
+
 
 # This should only be used once, in CommandList.addCommand
 class CommandWidget(QtWidgets.QWidget):
@@ -120,7 +121,7 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
 
         add(MoveXYZCommandGUI)
         add(MoveWristCommandGUI)
-        add(PlayRobotRecordingCommandGUI)
+        add(PlayMotionRecordingCommandGUI)
         add(SpeedCommandGUI)
         add(AttachCommandGUI)
         add(DetachCommandGUI)
@@ -425,7 +426,7 @@ class CommandGUI:
 
     def _addRecordingHint(self, prompt, numResources):
         if numResources == 0:
-            hintText = "You have not created any Robot Recordings yet. " + \
+            hintText = "You have not created any Motion Recordings yet. " + \
                        "Try creating new recordings in the Resource Manager!"
             self._addHint(prompt, hintText)
 
@@ -613,15 +614,15 @@ class MoveWristCommandGUI(CommandGUI):
         if self.parameters['relative']: self.description += '   Relative'
 
 
-class PlayRobotRecordingCommandGUI(CommandGUI):
-    title     = "Play Robot Recording"
-    tooltip   = "This will play back a 'robot recording' at a playback speed of your choosing. To create robot\n" + \
-                "robot recordings, simply click on 'Resources' on the toolbar and add a new recording."
+class PlayMotionRecordingCommandGUI(CommandGUI):
+    title     = "Play Motion Recording"
+    tooltip   = "This will play back a 'motion recording' at a playback speed of your choosing. To create robot\n" + \
+                "motion recordings, simply click on 'Resources' on the toolbar and add a new recording."
     icon      = Paths.play_path_command
-    logicPair = "PlayRobotRecordingCommand"
+    logicPair = "PlayMotionRecordingCommand"
 
     def __init__(self, env, parameters=None):
-        super(PlayRobotRecordingCommandGUI, self).__init__(parameters)
+        super(PlayMotionRecordingCommandGUI, self).__init__(parameters)
 
         objManager = env.getObjectManager()
         self.getObjectList = lambda: objManager.getObjectNameList(objFilter=objManager.MOTIONPATH)
@@ -669,7 +670,7 @@ class PlayRobotRecordingCommandGUI(CommandGUI):
         return self.parameters
 
     def _updateDescription(self):
-        self.description = "Play robot recording " + self.parameters["objectID"] + " x" + str(self.parameters["speed"])
+        self.description = "Play motion recording " + self.parameters["objectID"] + " x" + str(self.parameters["speed"])
         if self.parameters["reversed"]: self.description += " reversed"
 
 
@@ -1360,8 +1361,8 @@ class TestVariableCommandGUI(CommandGUI):
 
 class ScriptCommandGUI(CommandGUI):
     title     = "Run Python Code"
-    tooltip   = "This tool will execute a script made by the user. DO NOT RUN PROGRAMS WITH SCRIPTS WRITTEN BY OTHER"+\
-                " USERS UNLESS YOU HAVE CHECKED THE SCRIPT AND KNOW WHAT YOU ARE DOING!"
+    tooltip   = "This tool will execute a script made by the user.\nDO NOT RUN PROGRAMS WITH SCRIPTS WRITTEN BY OTHER"+\
+                "\nUSERS UNLESS YOU HAVE CHECKED THE SCRIPT AND KNOW WHAT YOU ARE DOING!"
     icon      = Paths.script_command
     logicPair = "ScriptCommand"
 
@@ -1383,8 +1384,8 @@ class ScriptCommandGUI(CommandGUI):
         return prompt
 
     def _extractPromptInfo(self, prompt):
-        newParameters = {"script": prompt.IDE.getCode()} # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
-
+        newParameters = {"script": str(prompt.IDE.getCode())} # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
+        print("New parameters: ", newParameters)
         self.parameters.update(newParameters)
 
         return self.parameters

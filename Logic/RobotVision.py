@@ -74,6 +74,7 @@ def playMotionPath(motionPath, robot, exitFunc):
     action = motionPath[0]
 
     lastVal = [action[SERVO0], action[SERVO1], action[SERVO2], action[SERVO3]]
+    gripper = False
     setServo(0, lastVal[0])
     setServo(1, lastVal[1])
     setServo(2, lastVal[2])
@@ -110,6 +111,13 @@ def playMotionPath(motionPath, robot, exitFunc):
                  (abs(lastVal[2] - action[SERVO2]), 2),
                  (abs(lastVal[3] - action[SERVO3]), 3)]
         diffS = sorted(diffS, key=lambda d: d[0], reverse=True)
+
+
+        # Update the gripper
+        if not gripper == action[GRIPPER]:
+            print("New gripper state!")
+            gripper = action[GRIPPER]
+            robot.setGripper(gripper)
 
 
         # Update each servo, in order of most needy to least needy
@@ -412,7 +420,7 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exit
     if jumpPos[2] < groundHeight: jumpPos[2] = groundHeight  # TODO: Fix this bug
 
     print("Jumping robot: ", jumpPos)
-    if abs(jumpPos[1] - robot.pos['y']) < 7 and abs(jumpPos[0] - robot.pos['x']) < 7:
+    if abs(jumpPos[1] - robot.coord[1]) < 7 and abs(jumpPos[0] - robot.coord[0]) < 7:
         robot.setPos(x=jumpPos[0], y=jumpPos[1])
     # if jumpPos[2] < robot.pos['z'] - 3: jumpPos[2] = robot.pos['z'] - 3
     # print("Actually jumping to: ", jumpPos)
@@ -440,7 +448,7 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exit
         # Check if the robot has hit the object by seeing if the robots height is less than before, as per the camera
         robCoord = robot.getCurrentCoord()
         heightDiff = robCoord[2] - lastHeight
-        print("heightdiff", heightDiff, "lastHeight", lastHeight, "currheight", robCoord[2], "sentHeight: ", robot.pos['z'])
+        print("heightdiff", heightDiff, "lastHeight", lastHeight, "currheight", robCoord[2], "sentHeight: ", robot.coord[2])
         if heightDiff >= -1.1 and i > 4:
             smallStepCount += 1
         else:
@@ -487,7 +495,7 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exit
         #     break
         robot.setPos(x=relMove[0], y=relMove[1], relative=True)
         robot.setPos(z=-1.25, relative=True)
-        print("Moving to  z: ", robot.pos["z"])
+        print("Moving to  z: ", robot.coord[2])
         robot.refresh()
 
         failTrackCount = 0

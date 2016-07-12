@@ -31,18 +31,14 @@ robot.setSpeed(10)
 robot.setPos(x=0, y=-15, z=15)
 robot.setServoAngles(servo2=90)
 robot.setGripper(True)
-robot.refresh()
 
 
 robot.setPos(x=10, relative=True)
 robot.setPos(x=-20, relative=True)
-robot.refresh()
 robot.setPos(x=0, y=-15, z=15)
-robot.refresh()
 
 
 # Turn off the gripper
 robot.setGripper(False)
-robot.refresh()
 
 

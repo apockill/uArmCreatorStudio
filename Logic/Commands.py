@@ -90,10 +90,10 @@ class MoveWristCommand(Command):
             return False
 
 
-class PlayRobotRecordingCommand(Command):
+class PlayMotionRecordingCommand(Command):
 
     def __init__(self, env, interpreter, parameters=None):
-        super(PlayRobotRecordingCommand, self).__init__(parameters)
+        super(PlayMotionRecordingCommand, self).__init__(parameters)
 
         # Load any objects, modules, calibrations, etc  that will be used in the run Section here. Use getVerifyXXXX()
         self.robot       = self.getVerifyRobot(env)
@@ -292,6 +292,33 @@ class BuzzerCommand(Command):
             return False
 
 
+class EndProgramCommand(Command):
+
+    def __init__(self, env, interpreter, parameters=None):
+        super(EndProgramCommand, self).__init__(parameters)
+
+        # Load any objects that will be used in the run Section here
+        self.interpreter = interpreter
+
+    def run(self):
+        printf("EndProgramCommand.run(): Attempting to shut down program now...")
+        self.interpreter.killApp = True
+        return True
+
+
+class EndEventCommand(Command):
+
+    def __init__(self, env, interpreter, parameters=None):
+        super(EndEventCommand, self).__init__(parameters)
+
+        # Load any objects that will be used in the run Section here
+        self.interpreter = interpreter
+
+
+    def run(self):
+        printf("EndEventCommand.run(): Exiting current event")
+        return "Exit"
+
 
 
 
@@ -401,9 +428,9 @@ class TestObjectSeenCommand(Command):
         print("Requiring at least ", self.minPts, " pts with an age less than ", self.maxAge, " for objectID ", self.parameters["objectID"], "NOT?", self.parameters["not"])
 
     def run(self):
-        printf("NameCommand.run(): A quick description, usually using parameters, of the command that is running")
+        printf("TestObjectSeenCommand.run(): Testing if ", self.parameters["objectID"], " was seen")
         tracked = self.vision.searchTrackedHistory(trackable  = self.trackable,
-                                                   maxFrame   = self.maxAge,
+                                                   maxAge= self.maxAge,
                                                    minPtCount = self.minPts)
 
         # Return if an object that matched that criteria was tracked
@@ -488,30 +515,23 @@ class TestVariableCommand(Command):
         return testResult and success
 
 
-class EndProgramCommand(Command):
+class ScriptCommand(Command):
 
     def __init__(self, env, interpreter, parameters=None):
-        super(EndProgramCommand, self).__init__(parameters)
+        super(ScriptCommand, self).__init__(parameters)
 
-        # Load any objects that will be used in the run Section here
+        # Load any objects, modules, calibrations, etc  that will be used in the run Section here. Use getVerifyXXXX()
         self.interpreter = interpreter
+        self.env = env
+        if len(self.errors): return
+
+        # Here, start tracking if your command requires it
+        # Add any objects to be tracked
 
     def run(self):
-        printf("EndProgramCommand.run(): Attempting to shut down program now...")
-        self.interpreter.killApp = True
+        if len(self.errors): return
+
+        self.interpreter.evaluateScript(self.parameters["script"], self.env)
+        printf("NameCommand.run(): A quick description, usually using parameters, of the command that is running")
         return True
-
-
-class EndEventCommand(Command):
-
-    def __init__(self, env, interpreter, parameters=None):
-        super(EndEventCommand, self).__init__(parameters)
-
-        # Load any objects that will be used in the run Section here
-        self.interpreter = interpreter
-
-
-    def run(self):
-        printf("EndEventCommand.run(): Exiting current event")
-        return "Exit"
 

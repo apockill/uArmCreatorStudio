@@ -43,7 +43,7 @@ class Robot:
 
         # Cache Variables that keep track of robot state
         self.__speed = 10                                  # In cm / second (or XYZ [unit] per second)
-        self.pos   = {'x': None, 'y': None, 'z': None}     # Keep track of the robots position
+        self.coord     = [None, None, None]     # Keep track of the robots position
         self.__gripperStatus   = False                     # Keep track of the robots gripper status
         self.__servoStatus     = [True, True, True, True]
         self.__servoAngleCache = [None, None, None, 90.0]  # Wrist is 90 degrees as default
@@ -105,6 +105,15 @@ class Robot:
         with self.lock:
             return self.uArm.getFK(servo0, servo1, servo2)
 
+    def getCacheState(self):
+        """
+            This returns a dictionary that can be fed into self.setCacheState() which will return the robot
+            to some previous state. Useful for saving position, servoangles, speed, and all of that in one go.
+        """
+        pos = self.coord[:]
+
+
+
 
     def setPos(self, x=None, y=None, z=None, coord=None, relative=False, wait=True):
         """
@@ -120,12 +129,12 @@ class Robot:
             printf("Robot.setPos(): Robot not found or setupThread is running, canceling position change")
             return
 
-        def setVal(value, name, relative):
+        def setVal(value, axis, relative):
             if value is not None:
                 if relative:
-                    self.pos[name] += value
+                    self.coord[axis] += value
                 else:
-                    self.pos[name] = value
+                    self.coord[axis] = value
 
 
         # Make sure positional servos are attached, so that the positional cache is updated
@@ -135,37 +144,38 @@ class Robot:
             x, y, z = coord
 
         self.lock.acquire()
-        posBefore = dict(self.pos)  # Make a copy of the pos right now
+        posBefore = self.coord[:]  # Make a copy of the pos right now
 
-        setVal(x, 'x', relative)
-        setVal(y, 'y', relative)
-        setVal(z, 'z', relative)
+        setVal(x, 0, relative)
+        setVal(y, 1, relative)
+        setVal(z, 2, relative)
 
 
         # Make sure all X, Y, and Z values are within a reachable range (not a permanent solution)
-        if self.pos['x'] is not None and self.pos['y'] is not None and self.pos['z'] is not None:
-            if self.xMin > self.pos['x'] or self.pos['x'] > self.xMax:
-                printf("Robot.robot.setPos(): X is out of bounds. Requested: ", self.pos['x'])
-                self.pos['x'] = self.clamp(self.xMin, self.pos['x'], self.xMax)
+        if self.coord[0] is not None and self.coord[1] is not None and self.coord[2] is not None:
+            if self.xMin > self.coord[0] or self.coord[0] > self.xMax:
+                printf("Robot.robot.setPos(): X is out of bounds. Requested: ", self.coord[0])
+                self.coord[0] = self.clamp(self.xMin, self.coord[0], self.xMax)
 
-            if self.yMin > self.pos['y'] or self.pos['y'] > self.yMax:
-                printf("Robot.robot.setPos(): Y is out of bounds. Requested: ", self.pos['y'])
-                self.pos['y'] = self.clamp(self.yMin, self.pos['y'], self.yMax)
+            if self.yMin > self.coord[1] or self.coord[1] > self.yMax:
+                printf("Robot.robot.setPos(): Y is out of bounds. Requested: ", self.coord[1])
+                self.coord[1] = self.clamp(self.yMin, self.coord[1], self.yMax)
 
-            if self.zMin > self.pos['z'] or self.pos['z'] > self.zMax:
-                printf("Robot.robot.setPos(): Z is out of bounds. Requested: ", self.pos['z'])
-                self.pos['z'] = self.clamp(self.zMin, self.pos['z'], self.zMax)
+            if self.zMin > self.coord[2] or self.coord[2] > self.zMax:
+                printf("Robot.robot.setPos(): Z is out of bounds. Requested: ", self.coord[2])
+                self.coord[2] = self.clamp(self.zMin, self.coord[2], self.zMax)
 
 
         # If this command has changed the position, then move the robot
-        if not posBefore == self.pos:
+        if not posBefore == self.coord:
 
             try:
-                self.uArm.moveToWithSpeed(self.pos['x'], self.pos['y'], self.pos['z'], self.__speed)
-                self.__servoAngleCache = list(self.uArm.getIK(self.pos['x'], self.pos['y'], self.pos['z'])) + [self.__servoAngleCache[3]]
+                self.uArm.moveToWithSpeed(self.coord[0], self.coord[1], self.coord[2], self.__speed)
+                self.__servoAngleCache = list(self.uArm.getIK(self.coord[0], self.coord[1], self.coord[2])) + [self.__servoAngleCache[3]]
 
-                # Since moves cause servos to lock, update the servoStatus
-                self.__servoStatus[0], self.__servoStatus[1], self.__servoStatus[2]  = True, True, True
+                # Since moves cause servos to attach, update the servoStatus
+                self.__servoStatus[0], self.__servoStatus[1], self.__servoStatus[2], self.__servoStatus[3] = True, True, True, True
+
             except ValueError:
                 printf("Robot.refresh(): ERROR: Robot out of bounds and the uarm_python library crashed!")
 
@@ -211,7 +221,6 @@ class Robot:
         if servo2 is not None: setServoAngle(2, servo2, relative)
         if servo3 is not None: setServoAngle(3, servo3, relative)
 
-
     def setActiveServos(self, all=None, servo0=None, servo1=None, servo2=None, servo3=None):
         if not self.connected() or self.exiting:
             printf("Robot.setServos(): Robot not found or setupThread is running, canceling servo change")
@@ -221,9 +230,11 @@ class Robot:
         oldServoStatus = self.__servoStatus[:]
 
         def setServo(servoNum, status):
+            # Verify that it is a dfiferent servo position before sending
+            if self.__servoStatus[servoNum] == status: return
+
             with self.lock:
                 if status:
-
                     self.uArm.servoAttach(servoNum)
                 else:
                     self.uArm.servoDetach(servoNum)
@@ -245,13 +256,8 @@ class Robot:
         # If any positional servos have been attached, update the self.pos cache with the robots current position
         if any(attached):
             curr = self.getCurrentCoord()
-            oldPos = dict(self.pos)
-            print("old")
-            self.pos['x'], self.pos['y'], self.pos['z'] =  curr
-            print("new", self.pos)
-            print("old servo pos: ", self.__servoAngleCache)
+            self.coord =  list(curr)
             self.__servoAngleCache = list(self.uArm.getServoAngles())
-            print("new servo pos: ", self.__servoAngleCache)
 
     def setGripper(self, status):
         if not self.connected() or self.exiting:
@@ -274,6 +280,8 @@ class Robot:
         # Changes a class wide variable that affects the move commands in self.refresh()
         self.__speed = speed
 
+    def setCacheState(self, stateDict):
+        pass
 
 
     def connected(self):
@@ -282,10 +290,6 @@ class Robot:
         if self.__threadRunning:      return False  # If the setupThread is running
         return True
 
-
-
-    def refresh(self, override=False):
-        pass
 
 
 

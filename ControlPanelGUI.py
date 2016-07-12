@@ -1,7 +1,7 @@
 import EventsGUI   as EventsGUI
 import CommandsGUI as CommandsGUI
-from PyQt5        import QtCore, QtWidgets, QtGui
-from Logic.Global import printf
+from PyQt5         import QtCore, QtWidgets, QtGui
+from Logic.Global  import printf
 
 
 class ControlPanel(QtWidgets.QWidget):
@@ -328,7 +328,7 @@ class EventList(QtWidgets.QListWidget):
             for _, item in self.events.items():
                 if isinstance(item, eventType) and (item.parameters == parameters or parameters is None):
                     printf('EventList.addEvent(): Event already exists, disregarding user input.')
-                    return
+                    return None
 
 
         newEvent             = eventType(parameters)
@@ -370,8 +370,8 @@ class EventList(QtWidgets.QListWidget):
 
         if not isLoading:
             self.setCurrentRow(placeIndex)  # Select the newly added event
-            self.refreshControlPanel()  # Call for a refresh of the ControlPanel so it shows the commandList
-
+            self.refreshControlPanel()      # Call for a refresh of the ControlPanel so it shows the commandList
+        return placeIndex                   # Returns where the object was placed
 
 
 
@@ -402,41 +402,67 @@ class EventList(QtWidgets.QListWidget):
 
     def replaceEvent(self):
         # Replace one event with another, while keeping the same commandList
-
         printf('EventList.replaceEvent(): Changing selected event')
 
         # Get the current item it's corresponding event
-        selectedItem = self.getSelectedEventItem()
-        if selectedItem is None:
+        eventItem = self.getSelectedEventItem()
+        event     = self.getSelectedEvent()
+        if eventItem is None:
             QtWidgets.QMessageBox.question(self, 'Error', 'You need to select an event to change',
                                            QtWidgets.QMessageBox.Ok)
             return
 
-        # Get the type of event you will be replacing the selected event with
+
+        # Get the type/parameters of the event you will be replacing the selected event with
         objManager  = self.env.getObjectManager()
         eventPrompt = EventsGUI.EventPromptWindow(objManager, parent=self)
         if not eventPrompt.accepted:
             printf('EventList.replaceEvent():User rejected the prompt.')
             return
-        eventType = eventPrompt.chosenEvent
-        params = eventPrompt.chosenParameters
+        eventType   = eventPrompt.chosenEvent
+        params      = eventPrompt.chosenParameters
 
-        # Make sure this event does not already exist
+
+        # Make sure the chosen event does not already exist
         for e in self.events.values():
             if isinstance(e, eventType) and (e.parameters == params or params is None):
                 printf('EventList.addEvent(): Event already exists, disregarding user input.')
                 return
 
-        # Actually change the event to the new type
-        newEvent = eventType(params)
-        newEvent.commandList = self.getEventFromItem(selectedItem).commandList  # self.events[selectedItem].commandList
 
-        # Transfer the item widget and update the looks
-        oldWidget = self.itemWidget(selectedItem)
-        newEvent.dressWidget(oldWidget)
+        # Pull the commandSave from the event before deleting it
+        commandSave = event.commandList.getSaveData()
 
-        # Update the self.events dictionary with the new event
-        self.events[self.itemWidget(selectedItem)] = newEvent
+
+        # Delete the selected event
+        del self.events[self.itemWidget(eventItem)]
+        self.takeItem(self.currentRow())
+
+
+        # Make sure the changed event is selected
+        index = self.addEvent(eventType, parameters=params, commandListSave=commandSave)
+        if index is not None:
+            self.setCurrentRow(index)  # Select the newly added event
+            self.refreshControlPanel()      # Call for a refresh of the ControlPanel so it shows the commandList
+        return
+
+
+
+
+        #
+        # # Make sure this event does not already exist
+
+        #
+        # # Actually change the event to the new type
+        # newEvent = eventType(params)
+        # newEvent.commandList = self.getEventFromItem(selectedItem).commandList  # self.events[selectedItem].commandList
+        #
+        # # Transfer the item widget and update the looks
+        # oldWidget = self.itemWidget(selectedItem)
+        # newEvent.dressWidget(oldWidget)
+        #
+        # # Update the self.events dictionary with the new event
+        # self.events[self.itemWidget(selectedItem)] = newEvent
 
 
     def getSaveData(self):

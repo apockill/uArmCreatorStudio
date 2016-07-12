@@ -1,8 +1,6 @@
-import Paths
 from PyQt5        import QtGui, QtCore, QtWidgets
-from CameraGUI    import cvToPixFrame
+from Logic        import Paths
 from Logic.Global import printf
-
 
 
 class EventWidget(QtWidgets.QWidget):
@@ -55,9 +53,7 @@ class EventPromptWindow(QtWidgets.QDialog):
         self.chosenParameters = None  # Any extra parameters about the event (AKA,type of object, key, number, or motion
 
         # UI Stuff
-        self.buttonWidth = 130
-        self.initButtons()          # Create the event "Buttons"
-        self.initButtonMenus()      # Populate any event buttons that have drop down menus
+        self.buttonWidth = 150
         self.initUI()               # Actually format and place everything
 
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)  # TODO: Investigate adding this to command windows
@@ -65,8 +61,7 @@ class EventPromptWindow(QtWidgets.QDialog):
 
 
     def initUI(self):
-
-
+        self.initButtons()          # Create the event "Buttons"
 
         ####   Actually format and place everything   #####
         # Create grid layout
@@ -81,8 +76,8 @@ class EventPromptWindow(QtWidgets.QDialog):
         # Right column
         grid.addWidget(  self.keyboardBtn, 0, 1, QtCore.Qt.AlignLeft)
         grid.addWidget(    self.motionBtn, 1, 1, QtCore.Qt.AlignLeft)
-        grid.addWidget( self.recognizeBtn, 2, 1, QtCore.Qt.AlignLeft)
-
+        grid.addWidget(      self.seenBtn, 2, 1, QtCore.Qt.AlignLeft)
+        grid.addWidget(   self.notSeenBtn, 3, 1, QtCore.Qt.AlignLeft)
 
         # Set up Cancel button in it's own layout:
         cancelLayout = QtWidgets.QHBoxLayout()
@@ -116,15 +111,21 @@ class EventPromptWindow(QtWidgets.QDialog):
         self.tipBtn       = self.getNewButton(     'Tip Sensor',       TipEventGUI.icon)
         self.keyboardBtn  = self.getNewButton(       'Keyboard',  KeypressEventGUI.icon)
         self.motionBtn    = self.getNewButton(         'Motion',    MotionEventGUI.icon)
-        self.recognizeBtn = self.getNewButton(      'Recognize', RecognizeEventGUI.icon)
+        self.seenBtn      = self.getNewButton(     'Recognized', RecognizeEventGUI.icon)
+        self.notSeenBtn   = self.getNewButton( 'Not Recognized', NotRecognizeEventGUI.icon)
+
 
         # CONNECT BUTTONS THAT DON'T HAVE MENUS
-        self.initBtn      .clicked.connect(lambda: self.btnClicked(   InitEventGUI))
-        self.destroyBtn   .clicked.connect(lambda: self.btnClicked(DestroyEventGUI))
-        self.stepBtn      .clicked.connect(lambda: self.btnClicked(   StepEventGUI))
-        self.tipBtn       .clicked.connect(lambda: self.btnClicked(    TipEventGUI))
-        self.motionBtn    .clicked.connect(lambda: self.btnClicked( MotionEventGUI))
-        self.cancelBtn    .clicked.connect(self.cancelClicked)
+        self.initBtn.clicked.connect(lambda: self.btnClicked(   InitEventGUI))
+        self.destroyBtn.clicked.connect(lambda: self.btnClicked(DestroyEventGUI))
+        self.stepBtn.clicked.connect(lambda: self.btnClicked(   StepEventGUI))
+        self.tipBtn.clicked.connect(lambda: self.btnClicked(    TipEventGUI))
+        self.motionBtn.clicked.connect(lambda: self.btnClicked( MotionEventGUI))
+        self.cancelBtn.clicked.connect(self.cancelClicked)
+
+
+        # Initialize the menus for the rest of the buttons
+        self.initButtonMenus()      # Populate any event buttons that have drop down menus
 
     def initButtonMenus(self):
         """
@@ -181,15 +182,29 @@ class EventPromptWindow(QtWidgets.QDialog):
 
 
 
+        trackableList   = self.objManager.getObjectNameList(objFilter=self.objManager.TRACKABLE)
         ######################   RECOGNIZE MENU    ######################
+
         newRecognizeBtn = lambda params: self.btnClicked(RecognizeEventGUI, params=params)
         recognizeMnu    = QtWidgets.QMenu()
-        trackableList   = self.objManager.getObjectNameList(objFilter=self.objManager.TRACKABLE)
+        recognizeMnu.addAction("Face Detected", lambda: newRecognizeBtn({'objectID': "Face", "not": False}))
 
+        recognizeMnu.addSeparator()
         for name in trackableList:
-            recognizeMnu.addAction(name, lambda name=name: newRecognizeBtn({'objectID': name}))
+            recognizeMnu.addAction(name, lambda name=name: newRecognizeBtn({'objectID': name, "not": False}))
+        self.seenBtn.setMenu(recognizeMnu)
 
-        self.recognizeBtn.setMenu(recognizeMnu)
+        ######################   "NOT" RECOGNIZED MENU    ######################
+        # Add "recognize
+        newNotRecognizeBtn = lambda params: self.btnClicked(NotRecognizeEventGUI, params=params)
+        notRecognizeMnu = QtWidgets.QMenu()
+        notRecognizeMnu = QtWidgets.QMenu()
+        notRecognizeMnu.addAction("Face Not Detected", lambda: newNotRecognizeBtn({'objectID': "Face", "not": True}))
+        # trackableList   = self.objManager.getObjectNameList(objFilter=self.objManager.TRACKABLE)
+        for name in trackableList:
+            notRecognizeMnu.addAction(name, lambda name=name: newNotRecognizeBtn({'objectID': name, "not": True}))
+        self.notSeenBtn.setMenu(notRecognizeMnu)
+
 
     def btnClicked(self, eventType, **kwargs):
         printf("EventWindow.buttonSelected(): Event Type ", eventType, "selected")
@@ -215,6 +230,7 @@ class EventGUI:
     # Priority determines how the events will be sorted. 0 means the event will be at the top. 10000 is last.
     priority = 5000
     title = ""
+
     def __init__(self, parameters):
         """
         self.parameters is used for events like KeyPressEvent where one class can handle multiple types of events
@@ -222,6 +238,8 @@ class EventGUI:
         when adding new ones, so you can make sure there aren't two 'A Keypress' events.
         """
         self.parameters  = parameters  # Parameters will be none for some events, but its important to save them
+        if self.parameters is None:
+            self.parameters = {}
         self.commandList = None
 
     def dressWidget(self, widget):
@@ -353,15 +371,21 @@ class RecognizeEventGUI(EventGUI):
 
     def dressWidget(self, widget):
         self.title = "Object '" + self.parameters["objectID"] + "' Recognized"
-
+        self.priority = 0
         # Format the widget that will show up to make it unique. Not necessary in non-parameter events
         widget.setIcon(self.icon)
-        # widget.setSecondIcon(self.parameters["customIcon"])
         widget.setTitle(self.parameters["objectID"].replace("_", " "))
         widget.setTip('Activates when the object ' + self.parameters["objectID"] + " is seen on camera.")
         return widget
 
 
+class NotRecognizeEventGUI(RecognizeEventGUI):
+    icon      = Paths.not_recognize_event
+    logicPair = 'RecognizeEvent'
+    priority  = 110
+
+    def __init__(self, parameters):
+        super(NotRecognizeEventGUI, self).__init__(parameters)
 
 
 

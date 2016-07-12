@@ -150,7 +150,7 @@ class Uarm:
 
     def __send(self, cmnd):
         # This command will send a command and recieve the robots response. There must always be a response!
-        if not self.connected(): return None
+        if not self.connected(): return ""
 
         # Prepare and send the command to the robot
         cmndString = bytes("[" + cmnd + "]\n", encoding='ascii')
@@ -160,7 +160,7 @@ class Uarm:
         except serial.serialutil.SerialException as e:
             printf("UArm.__send(): ERROR ", e, "while sending command ", cmnd, ". Disconnecting Serial!")
             self.isConnected = False
-            return False
+            return ""
 
 
         # Read the response from the robot (THERE MUST ALWAYS BE A RESPONSE!)
@@ -172,7 +172,7 @@ class Uarm:
             except serial.serialutil.SerialException as e:
                 printf("UArm.__send(): ERROR ", e, "while sending command ", cmnd, ". Disconnecting Serial!")
                 self.isConnected = False
-                return False
+                return ""
 
             if "\n" in response:
                 response = response[:-1]

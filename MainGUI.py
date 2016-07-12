@@ -1,19 +1,19 @@
 # import qdarkstyle
 import json         # For saving and loading settings and tasks
+import os
 import sys          # For GUI, and overloading the default error handling
 import webbrowser   # For opening the uFactory forums under the "file" menu
-import ControlPanelGUI, Paths
+import ControlPanelGUI
 from copy              import deepcopy                  # For copying saves and comparing later
 from PyQt5             import QtCore, QtWidgets, QtGui  # All GUI things
-from CameraGUI         import CameraWidget              # General GUI purposes
-from ObjectManagerGUI  import ObjectManagerWindow       # For opening ObjectManager window
 from CalibrationsGUI   import CalibrateWindow           # For opening Calibrate window
-from Logic             import Global                    # For keeping track of keypresses
+from CameraGUI         import CameraWidget              # General GUI purposes
+from Logic             import Global, Paths             # For keeping track of keypresses
 from Logic.Environment import Environment, Interpreter  # For Logic purposes
 from Logic.Global      import printf                    # For my personal printing format
 from Logic.Robot       import getConnectedRobots        # For settingsWindow
 from Logic.Video       import getConnectedCameras       # For settingsWindow
-
+from ObjectManagerGUI  import ObjectManagerWindow       # For opening ObjectManager window
 
 
 ########## MAIN WINDOW ##########
@@ -28,8 +28,6 @@ class MainWindow(QtWidgets.QMainWindow):
                                  "robotID":            None,                     # COM port of the robot
 
                                  "cameraID":           None,                     # The # of the camera for cv to connect
-
-                                 "objectsDirectory":   Paths.objects_dir,    # Default directory for saving objects
 
                                  "motionCalibrations": {"stationaryMovement": None,
                                                         "activeMovement": None},
@@ -274,14 +272,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 return
         printf("MainWindow.setScript(): Interpreter is ready. Loading script and starting program")
 
-
         # Make sure the vision filters are activated
         vision = self.env.getVision()
-        vision.clearTargets()
-        vision.addTrackerFilter()
+        vision.startTracker()
+        vision.startCascadeTracker()
 
         # Load the script, and get any relevant errors
-        errors = self.interpreter.loadScript(self.env, self.controlPanel.getSaveData())
+        errors = self.interpreter.loadScript(self.controlPanel.getSaveData(), self.env)
 
 
         # If there were during loading, present the user with the option to continue anyways
@@ -303,7 +300,10 @@ class MainWindow(QtWidgets.QMainWindow):
                                 QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.Cancel)
             if reply == QtWidgets.QMessageBox.Cancel:
                 printf("MainWindow.startScript(): Script run canceled by user before starting.")
+                vision.endAllTrackers()
                 return
+
+
 
         # Stop you from moving stuff around while script is running, and activate the visual cmmnd highlighting
         self.controlPanel.setScriptModeOn(self.interpreter.getStatus, self.endScript)
@@ -327,7 +327,7 @@ class MainWindow(QtWidgets.QMainWindow):
         robot.setActiveServos(all=False)
         # Make sure vision filters are stopped
 
-        vision.endTrackerFilter()
+        vision.endAllTrackers()
 
 
         self.scriptToggleBtn.setIcon(QtGui.QIcon(Paths.run_script))
@@ -751,9 +751,16 @@ class Application(QtWidgets.QApplication):
         return super(Application, self).notify(receiver, event)
 
 
+def resource_path(relative):
+    return os.path.join(
+        os.environ.get(
+            "_MEIPASS2",
+            os.path.abspath(".")
+        ),
+        relative
+    )
 
 if __name__ == '__main__':
-
     # Install a global exception hook to catch pyQt errors that fall through (helps with debugging a ton)
     # TODO: Remove this when development is finished.
     sys.__excepthook = sys.excepthook

@@ -138,7 +138,6 @@ class VideoStream:
                 cv2.waitKey(1000)
                 continue
 
-            if newFrame is None: print("Ayy")
 
             # Do frame related work
             with self.frameLock:
@@ -159,6 +158,7 @@ class VideoStream:
 
             # Run any work functions that must be run. Expect no results. Work should be run before filters.
             if len(self.workList) > 0:
+                print("Work: ", self.workList)
                 with self.workLock:
                     for workFunc in self.workList:
                         workFunc(self.frame)
@@ -167,10 +167,11 @@ class VideoStream:
 
             # Run any filters that must be run, save the results in self.filterFrame
             if len(self.filterList) > 0:
+                print("Filters: ", self.filterList)
                 with self.filterLock:
                     filterFrame = self.getFrame()
                     for filterFunc in self.filterList:
-                        filterFrame = filterFunc(filterFrame)
+                        filterFunc(filterFrame)
 
                     # Draw FPS on the screen
                     cv2.putText(filterFrame, str(int(round(fpsTimer.currentFPS, 0))), (10, 20),  cv2.FONT_HERSHEY_PLAIN, 1.25, color=(255, 255, 255), thickness=2)

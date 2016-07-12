@@ -146,24 +146,39 @@ class RecognizeEvent(Event):
 
         # Get what is needed from the environment by requesting it through self.getVerifyXXXX(env)
         self.vision     = self.getVerifyVision(env)
-        self.object     = self.getVerifyObject(env, self.parameters["objectID"])
+
+        if not self.parameters["objectID"] == "Face":
+            self.object     = self.getVerifyObject(env, self.parameters["objectID"])
 
 
         # Make sure initialization can continue
         if len(self.errors): return
 
         # Turn on tracking and add the target. DO NOT TURN ON FILTERS, that's only for GUI to do, which it will.
-        self.vision.addTrackable(self.object)
-        self.vision.startTracker()
+        if not self.parameters["objectID"] == "Face":
+            self.vision.addTrackable(self.object)
+            self.vision.startTracker()
+        else:
+            self.vision.startCascadeTracker()
 
     def isActive(self):
         # Make sure the event won't crash if there were errors
         if len(self.errors): return False  # If it did not compile without errors, don't run
 
-        tracked = self.vision.searchTrackedHistory(trackable=self.object, maxFrame=0)
 
-        # Return if the object was found
-        return tracked is not None
+        if self.parameters["objectID"] == "Face":
+            tracked = self.vision.isFaceDetected()
+            print("Tracked: ", tracked)
+        else:
+            tracked = self.vision.searchTrackedHistory(trackable=self.object, maxAge=0)
+
+        ret = tracked is not None
+
+        # If object was "not" seen
+        if self.parameters["not"]:
+            ret = not ret
+
+        return ret
 
 
 

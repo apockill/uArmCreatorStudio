@@ -2,6 +2,7 @@ import json
 import os
 import sys   # For getting size of oan object
 import cv2   # For image saving
+from Logic        import Paths
 from collections  import namedtuple
 from Logic.Global import printf, ensurePathExists
 
@@ -23,7 +24,8 @@ class ObjectManager:
     All loading, adding replacing, and saving of objects should be done through this class
     """
 
-    def __init__(self, directory):
+    def __init__(self):
+        directory = Paths.objects_dir
         ensurePathExists(directory)
 
         self.__directory = directory
@@ -159,7 +161,7 @@ class ObjectManager:
         # This includes names of objects, names of tags, and names of objects like "Robot Marker" that are reserved
         # It also includes things like "Trackable" or "TrackableObject" for good measure
         forbidden = self.getObjectNameList()
-        forbidden += ['Trackable', 'Robot Marker', "Trackable", "TrackableGroup"]
+        forbidden += ['Trackable', 'Robot Marker', "Trackable", "TrackableGroup", "Face"]
         return forbidden
 
 
@@ -206,7 +208,9 @@ class ObjectManager:
                 # Get all the items in the objects folder, and delete them one by one
                 objDirectory = self.__getDirectory(obj)
                 foldersAndItems = os.listdir(objDirectory)
+                print("folders: ", foldersAndItems)
                 for item in foldersAndItems:
+                    print("deleting: ", objDirectory + item)
                     os.remove(objDirectory + item)
 
                 # Now that the folder is empty, delete it too
@@ -232,9 +236,6 @@ class ObjectManager:
         return False
 
 
-
-
-
 class Resource:
     def __init__(self, name, loadFromDirectory):
         self.name        = name
@@ -249,7 +250,6 @@ class Resource:
 
         # Long form (human readable:
         json.dump(self.dataJson, open(directory + "data.txt", 'w'), sort_keys=False, separators=(',', ': '))
-
 
     def _load(self, directory):
         # Check if the directory exists (just in case)
@@ -271,7 +271,6 @@ class Resource:
             return False
         return True
 
-
 class MotionPath(Resource):
     def __init__(self, name, loadFromDirectory=None):
         self.__motionPath = []
@@ -285,7 +284,6 @@ class MotionPath(Resource):
     def getMotionPath(self):
         # Return a copy of the motionPath
         return self.dataJson["motionPath"][:]
-
 
 class Trackable(Resource):
     """
