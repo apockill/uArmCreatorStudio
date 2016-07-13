@@ -1,0 +1,26 @@
+- Add button binding events for the uArm buttons
+- uArm Buzzer
+- Speed Command
+- Control the LED light on the Arduino
+- Display message
+
+
+---------------------------------------------------------------------------------------------------------------------
+######   FINISHED SHORT TERM GOALS   #####
+- Add a way to organize commands
+- Switch to JSON saving instead of Pickling
+- Have the Environment be the only one with a connection to the robot, vStream, Vision, interpreter objects
+- Have vStream be instantiated and closed from within Environment
+- Impliment a thread stopper while a wait command is active
+- Change mimeData to not send plaintext, or at least make it secure (don't run globals()['mimeText']
+- Command: Set the wrist position, have a "relative" command for it
+- Add a command to the Robot Arduino programming that lets me check whether or not the robot is plugged in, so GUI can know
+
+######   FINISHED LONG TERM GOALS    #####
+- Have events and commands light up as they are activated
+- Add click/drag to the commandDashboard
+- Get Boolean Logic to work properly, with variable creation and variable modification and simple variable math b
+- Add font support
+- Have events "Light Up" as they are run, and if the commandList is selected, have the commandList "light up" the cmmnds
+
+---------------------------------------------------------------------------------------------------------------------

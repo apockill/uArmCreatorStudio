@@ -1,0 +1,85 @@
+[
+   {
+      "commandList": [
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "x": "-10.2",
+               "z": "12.7",
+               "y": "-22.2",
+               "relative": false
+            }
+         },
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "x": "1.0",
+               "z": "12.5",
+               "y": "-18.7",
+               "relative": false
+            }
+         },
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "x": "13.3",
+               "z": "11.0",
+               "y": "-24.4",
+               "relative": false
+            }
+         },
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "x": "13.8",
+               "z": "13.4",
+               "y": "-14.4",
+               "relative": false
+            }
+         },
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "x": "5.8",
+               "z": "12.5",
+               "y": "-7.4",
+               "relative": false
+            }
+         },
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "x": "-5.6",
+               "z": "12.6",
+               "y": "-7.9",
+               "relative": false
+            }
+         },
+         {
+            "typeGUI": "DetachCommandGUI",
+            "typeLogic": "DetachCommand",
+            "parameters": {
+               "servo1": true,
+               "servo2": true,
+               "servo3": true,
+               "servo4": true
+            }
+         }
+      ],
+      "typeGUI": "InitEventGUI",
+      "typeLogic": "InitEvent",
+      "parameters": null
+   },
+   {
+      "commandList": [],
+      "typeGUI": "DestroyEventGUI",
+      "typeLogic": "DestroyEvent",
+      "parameters": null
+   }
+]

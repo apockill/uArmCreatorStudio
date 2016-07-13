@@ -1,0 +1,20 @@
+{
+   "tags": [],
+   "Orientations": {
+      "Orientation_0": {
+         "pickupRect": [
+            33,
+            25,
+            158,
+            275
+         ],
+         "rect": [
+            209,
+            102,
+            416,
+            422
+         ],
+         "height": 0.0
+      }
+   }
+}

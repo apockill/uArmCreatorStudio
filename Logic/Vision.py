@@ -37,40 +37,50 @@ class Vision:
 
 
     # All tracker control functions
-    def endAllTrackers(self):
-        # End all trackers and clear targets
 
 
-        # Shut down and reset any cascade tracking
-        self.vStream.removeWork(self.cascadeTracker.track)
-        self.vStream.removeWork(self.cascadeTracker.drawTracked)
+    # All Tracker Controls
+    def addPlaneTarget(self, trackable):
+        if trackable is None:
+            printf("Vision.addPlaneTarget(): ERROR: Tried to add nonexistent trackable to the tracker!")
+            return
 
-        # Shut down and reset any planeTracking
-        self.clearTargets()
-        self.vStream.removeWork(self.planeTracker.track)
-        self.vStream.removeFilter(self.planeTracker.drawTracked)
-
-
-    # PlaneTracker tracker control functions
-    def startTracker(self):
-        # Adds a worker function to the videoStream to track all the time
-        self.vStream.addWork(self.planeTracker.track)
-        self.vStream.addFilter(self.planeTracker.drawTracked)
-
-    def addTrackable(self, trackable):
         views = trackable.getViews()
         with self.workLock:
             for view in views:
                 self.planeTracker.addView(view)
+        # Make sure that the work and filter trackers are present
+        self.vStream.addWork(self.planeTracker.track)
+        self.vStream.addFilter(self.planeTracker.drawTracked)
 
-    def clearTargets(self):
+    def addCascadeTarget(self, targetID):
+        if type(targetID) is not str:
+            print("ERROR ERROR ERROR IN VISION")
+        self.cascadeTracker.addTarget(targetID)
+
+        # Make sure that the tracker and filter are activated
+        self.vStream.addWork(self.cascadeTracker.track)
+        self.vStream.addFilter(self.cascadeTracker.drawTracked)
+
+    def endAllTrackers(self):
+        # End all trackers and clear targets
+
         with self.workLock:
             self.planeTracker.clear()
+            self.cascadeTracker.clear()
+
+        # Shut down and reset any cascade tracking
+        self.vStream.removeWork(self.cascadeTracker.track)
+        self.vStream.removeFilter(self.cascadeTracker.drawTracked)
+
+        # Shut down and reset any planeTracking
 
 
+        self.vStream.removeWork(self.planeTracker.track)
+        self.vStream.removeFilter(self.planeTracker.drawTracked)
 
 
-    # PlaneTracker search functions
+    # PlaneTracker Search Functions
     def getObjectLatestRecognition(self, trackable):
         # Returns the latest successful recognition of objectID, so the user can pull the position from that
         # it also returns the age of the frame where the object was found (0 means most recently)
@@ -190,13 +200,8 @@ class Vision:
         return None
 
 
-    # Face Tracker Control Functions
-    def startCascadeTracker(self):
-        self.vStream.addWork(self.cascadeTracker.track)
-        self.vStream.addFilter(self.cascadeTracker.drawTracked)
 
-
-    # FaceTracker search functions
+    # Face Tracker Search Functions
     def isFaceDetected(self):
         # Safely pull the relevant trackedHistory from the tracker object
         with self.workLock:
@@ -205,9 +210,6 @@ class Vision:
         if len(trackHistory) > 0:
             return True
         return None
-
-
-
 
 
     # General use computer vision functions
@@ -362,6 +364,9 @@ class Tracker:
         while len(self.trackedHistory) > self.historyLen:
             del self.trackedHistory[-1]
 
+    def clear(self):
+        self.targets = []
+
 
 class PlaneTracker(Tracker):
     """
@@ -411,6 +416,11 @@ class PlaneTracker(Tracker):
         # Where trackedHistory[0] is the most recent frame, and trackedHistory[-1] is about to be deleted.
 
     def createTarget(self, view):
+        """
+        There's a specific function for this so that the GUI can pull the objects information and save it as a file
+        using objectManager. Other than that special case, this function is not necessary for normal tracker use
+        """
+
         # Get the PlanarTarget object for any name, image, and rect. These can be added in self.addTarget()
         x0, y0, x1, y1         = view.rect
         points, descs          = [], []
@@ -586,13 +596,18 @@ class PlaneTracker(Tracker):
 
 class CascadeTracker(Tracker):
     # This tracker is intended for tracking Haar cascade objects that are loaded with the program
-    CascadeTarget  = namedtuple('CascadeTarget', 'name, classifier')
+    CascadeTarget  = namedtuple('CascadeTarget', 'name, classifier, minPts')
 
     def __init__(self, historyLength):
         super(CascadeTracker, self).__init__(historyLength)
 
-        self.cascades = [self.CascadeTarget(name= "Face", classifier=cv2.CascadeClassifier(Paths.face_cascade)),
-                         self.CascadeTarget(name="Smile", classifier=cv2.CascadeClassifier(Paths.smile_cascade))]
+        self.cascades = [self.CascadeTarget(name       = "Face",
+                                            classifier = cv2.CascadeClassifier(Paths.face_cascade),
+                                            minPts     = 20),
+
+                         self.CascadeTarget(name       = "Smile",
+                                            classifier = cv2.CascadeClassifier(Paths.smile_cascade),
+                                            minPts     = 30)]
 
     def addTarget(self, targetName):
         for target in self.cascades:
@@ -602,23 +617,24 @@ class CascadeTracker(Tracker):
                 else:
                     printf("CascadeTracker.addTarget(): ERROR: Tried to add a target that was already there!")
 
-
     def track(self, frame):
         gray  = cv2.cvtColor(frame.copy(), cv2.COLOR_BGR2GRAY)
 
         tracked = []
         # Track any cascades that have been added to self.targets
         for target in self.targets:
-            tracked.append(target.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=15, minSize=(30, 30)))
+            foundList = target.classifier.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=15, minSize=(30, 30))
+
+            # If faces were found, append them here
+            for found in foundList:
+                tracked.append(found)
 
 
         self._addTracked(tracked)
 
-
-
     def drawTracked(self, frame):
-
-        for (x, y, w, h) in self.trackedHistory[0]:
+        for tracked in self.trackedHistory[0]:
+            (x, y, w, h) = tracked
             cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 255, 255), 2)
 
 # def getMotionDirection(self):

@@ -1,4 +1,5 @@
 # import qdarkstyle
+import speech_recognition as sr
 import json         # For saving and loading settings and tasks
 import os
 import sys          # For GUI, and overloading the default error handling
@@ -84,10 +85,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Create File Menu and actions
         fileMenu      = menuBar.addMenu('File')
-        newAction     = QtWidgets.QAction(QtGui.QIcon(Paths.new_file), "New Task", self)
-        saveAction    = QtWidgets.QAction(QtGui.QIcon(Paths.save_file), "Save Task", self)
-        saveAsAction  = QtWidgets.QAction(QtGui.QIcon(Paths.save_file), "Save Task As", self)
-        loadAction    = QtWidgets.QAction(QtGui.QIcon(Paths.load_file), "Load Task", self)
+        newAction     = QtWidgets.QAction(QtGui.QIcon(Paths.file_new), "New Task", self)
+        saveAction    = QtWidgets.QAction(QtGui.QIcon(Paths.file_save), "Save Task", self)
+        saveAsAction  = QtWidgets.QAction(QtGui.QIcon(Paths.file_save), "Save Task As", self)
+        loadAction    = QtWidgets.QAction(QtGui.QIcon(Paths.file_load), "Load Task", self)
 
         # Connect file menu actions
         newAction.triggered.connect(    lambda: self.newTask(promptSave=True))
@@ -274,8 +275,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Make sure the vision filters are activated
         vision = self.env.getVision()
-        vision.startTracker()
-        vision.startCascadeTracker()
+
 
         # Load the script, and get any relevant errors
         errors = self.interpreter.loadScript(self.controlPanel.getSaveData(), self.env)
@@ -317,8 +317,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def endScript(self):
         vision = self.env.getVision()
-
         robot = self.env.getRobot()
+
         self.interpreter.endThread(robot, vision)
         self.controlPanel.setScriptModeOff()
 
@@ -751,14 +751,7 @@ class Application(QtWidgets.QApplication):
         return super(Application, self).notify(receiver, event)
 
 
-def resource_path(relative):
-    return os.path.join(
-        os.environ.get(
-            "_MEIPASS2",
-            os.path.abspath(".")
-        ),
-        relative
-    )
+
 
 if __name__ == '__main__':
     # Install a global exception hook to catch pyQt errors that fall through (helps with debugging a ton)
@@ -771,6 +764,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     sys.excepthook   = exception_hook
+
 
     # Actually start the application
     app = Application(sys.argv)

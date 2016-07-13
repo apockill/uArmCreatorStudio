@@ -1,0 +1,165 @@
+[
+   {
+      "typeLogic": "InitEvent",
+      "parameters": null,
+      "typeGUI": "InitEventGUI",
+      "commandList": [
+         {
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "relative": false,
+               "y": "-14.7",
+               "z": "15.0",
+               "x": "0.5"
+            },
+            "typeGUI": "MoveXYZCommandGUI"
+         },
+         {
+            "typeLogic": "MoveRelativeToObjectCommand",
+            "parameters": {
+               "x": "0",
+               "y": "0",
+               "objectID": "",
+               "z": "5"
+            },
+            "typeGUI": "MoveRelativeToObjectCommandGUI"
+         },
+         {
+            "typeLogic": "PickupObjectCommand",
+            "parameters": {
+               "objectID": "All"
+            },
+            "typeGUI": "PickupObjectCommandGUI"
+         }
+      ]
+   },
+   {
+      "typeLogic": "StepEvent",
+      "parameters": null,
+      "typeGUI": "StepEventGUI",
+      "commandList": []
+   },
+   {
+      "typeLogic": "RecognizeEvent",
+      "parameters": {
+         "objectID": "Cloves Joker"
+      },
+      "typeGUI": "RecognizeEventGUI",
+      "commandList": []
+   },
+   {
+      "typeLogic": "RecognizeEvent",
+      "parameters": {
+         "objectID": "Spades"
+      },
+      "typeGUI": "RecognizeEventGUI",
+      "commandList": []
+   },
+   {
+      "typeLogic": "TipEvent",
+      "parameters": null,
+      "typeGUI": "TipEventGUI",
+      "commandList": []
+   },
+   {
+      "typeLogic": "KeypressEvent",
+      "parameters": {
+         "checkKey": "A"
+      },
+      "typeGUI": "KeypressEventGUI",
+      "commandList": [
+         {
+            "typeLogic": "PickupObjectCommand",
+            "parameters": {
+               "objectID": "Back of Card"
+            },
+            "typeGUI": "PickupObjectCommandGUI"
+         }
+      ]
+   },
+   {
+      "typeLogic": "KeypressEvent",
+      "parameters": {
+         "checkKey": "D"
+      },
+      "typeGUI": "KeypressEventGUI",
+      "commandList": [
+         {
+            "typeLogic": "DetachCommand",
+            "parameters": {
+               "servo3": true,
+               "servo1": true,
+               "servo2": true,
+               "servo4": true
+            },
+            "typeGUI": "DetachCommandGUI"
+         },
+         {
+            "typeLogic": "DropCommand",
+            "parameters": null,
+            "typeGUI": "DropCommandGUI"
+         }
+      ]
+   },
+   {
+      "typeLogic": "KeypressEvent",
+      "parameters": {
+         "checkKey": "E"
+      },
+      "typeGUI": "KeypressEventGUI",
+      "commandList": []
+   },
+   {
+      "typeLogic": "KeypressEvent",
+      "parameters": {
+         "checkKey": "R"
+      },
+      "typeGUI": "KeypressEventGUI",
+      "commandList": [
+         {
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "relative": true,
+               "y": "0",
+               "z": "5",
+               "x": "0"
+            },
+            "typeGUI": "MoveXYZCommandGUI"
+         },
+         {
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "relative": false,
+               "y": "-15",
+               "z": "15",
+               "x": "0"
+            },
+            "typeGUI": "MoveXYZCommandGUI"
+         }
+      ]
+   },
+   {
+      "typeLogic": "MotionEvent",
+      "parameters": {
+         "high": "Inf",
+         "low": "Low"
+      },
+      "typeGUI": "MotionEventGUI",
+      "commandList": []
+   },
+   {
+      "typeLogic": "MotionEvent",
+      "parameters": {
+         "high": "Med",
+         "low": "None"
+      },
+      "typeGUI": "MotionEventGUI",
+      "commandList": []
+   },
+   {
+      "typeLogic": "DestroyEvent",
+      "parameters": null,
+      "typeGUI": "DestroyEventGUI",
+      "commandList": []
+   }
+]

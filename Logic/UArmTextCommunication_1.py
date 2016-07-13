@@ -34,11 +34,13 @@ class Uarm:
 
     # Action commands
     def moveToWithSpeed(self, x, y, z, speed):
+        # Flip the Y axis to keep the coordinates somewhat sane
         x = str(round(    x, 2))
-        y = str(round(    y, 2))
+        y = str(round(   -y, 2))
         z = str(round(    z, 2))
         t = str(round(speed, 2))
         cmnd = "moveX" + x + "Y" + y + "Z" + z + "S" + t
+        # return
         return self.__send(cmnd)
 
     def setGripper(self, onOff):
@@ -73,7 +75,7 @@ class Uarm:
         # Gets the servo1, servo2, and servo3 calculated positions for the XYZ position
 
         x = str(round(    x, 2))
-        y = str(round(    y, 2))
+        y = str(round(   -y, 2))
         z = str(round(    z, 2))
         cmnd = "gikX" + x + "Y" + y + "Z" + z
         response = self.__send(cmnd)
@@ -93,7 +95,7 @@ class Uarm:
         parsedArgs = self.__parseArgs(response, "fk", ["X", "Y", "Z"])
 
         # Return (X, Y, Z)
-        return parsedArgs["X"], parsedArgs["Y"], parsedArgs["Z"]
+        return parsedArgs["X"], -parsedArgs["Y"], parsedArgs["Z"]
 
     def getCurrentCoord(self):
         # Returns an array of the format [x, y, z] of the robots current location
@@ -101,7 +103,7 @@ class Uarm:
         parsedArgs = self.__parseArgs(response, "crd", ["X", "Y", "Z"])
 
         # Return (currX, currY, currZ)
-        return parsedArgs["X"], parsedArgs["Y"], parsedArgs["Z"]
+        return parsedArgs["X"], -parsedArgs["Y"], parsedArgs["Z"]
 
     def getIsMoving(self):
         # Find out if the robot is currently moving

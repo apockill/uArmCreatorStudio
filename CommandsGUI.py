@@ -3,7 +3,7 @@ import re   # For variable santization
 from PyQt5        import QtGui, QtCore, QtWidgets
 from Logic        import Paths
 from Logic.Global import printf
-from WidgetsGUI   import ScriptWidget
+from CommonGUI   import ScriptWidget
 
 
 # This should only be used once, in CommandList.addCommand
@@ -290,7 +290,7 @@ class CommandGUI:
         prompt.mainVLayout = QtWidgets.QVBoxLayout()
         prompt.mainVLayout.addWidget(contentGroupBox)
         prompt.mainVLayout.addStretch(1)
-        prompt.mainVLayout.addLayout(buttonRow)
+
 
         # Set the main layout and general window parameters
         prompt.setMinimumWidth(350)
@@ -303,7 +303,7 @@ class CommandGUI:
 
         # Dress the base window (this is where the child actually puts the content into the widget)
         prompt = self.dressWindow(prompt)
-
+        prompt.mainVLayout.addLayout(buttonRow)
 
         # Run the info window and prevent other windows from being clicked while open:
         printf("Command.openView(): Finished executing self...")
@@ -392,10 +392,18 @@ class CommandGUI:
         row.addWidget(rightItem)
         prompt.content.addLayout(row)
 
+    def _addBtn(self, prompt, button):
+        row = QtWidgets.QHBoxLayout()
+        button.setFixedWidth(self.defaultTextBoxWidth)
+        row.addStretch(1)
+        row.addWidget(button)
+        prompt.content.addLayout(row)
+
     def _addHint(self, prompt, hintText):
         # Add some text (usually at the bottom of the prompt) that tells the user something to help them out
         hintLbl = QtWidgets.QLabel(hintText)
         hintLbl.setWordWrap(True)
+
         # Make the hint bold
         bold = QtGui.QFont()
         bold.setBold(True)
@@ -403,7 +411,7 @@ class CommandGUI:
 
         # Create a row for the hint
         hintRow = QtWidgets.QHBoxLayout()
-        hintRow.addStretch(1)
+        # hintRow.addStretch(1)
         hintRow.addWidget(hintLbl)
 
         # Add it to the prompt
@@ -498,16 +506,17 @@ class NameCommandGUI(CommandGUI):
 class MoveXYZCommandGUI(CommandGUI):
     title     = "Move XYZ"
     tooltip   = "Set the robots position.\nThe robot will move after all events are evaluated"
-    icon      = Paths.xyz_command
+    icon      = Paths.command_xyz
     logicPair = 'MoveXYZCommand'
 
     def __init__(self, env, parameters=None):
         super(MoveXYZCommandGUI, self).__init__(parameters)
+        self.getCoordinates = env.getRobot().getCurrentCoord
 
         if self.parameters is None:
             # If no parameters were given, it's a new command. Thus, get the robots current position and fill it in.
             # This helps with workflow so you can create MoveXYZ commands and move the robot around as you work with it
-            currentXYZ = env.getRobot().getCurrentCoord()
+            currentXYZ = self.getCoordinates()
 
             self.parameters = {'x': round(currentXYZ[0], 1),
                                'y': round(currentXYZ[1], 1),
@@ -517,13 +526,21 @@ class MoveXYZCommandGUI(CommandGUI):
     def dressWindow(self, prompt):
         # Prompt is a QDialog type, this is simply a function to dress it up with the appropriate interface
         # Then it's returned, and the Command.openView() function will open the window and perform appropriate actions
+        def setCoordinates(xEdt, yEdt, zEdt):
+            x, y, z = self.getCoordinates()
+            xEdt.setText(str(x))
+            yEdt.setText(str(y))
+            zEdt.setText(str(z))
 
         # Input: the base window with the cancel and apply buttons, and the layouts set up and connected
-        prompt.xEdit = QtWidgets.QLineEdit()  # Rotation textbox
-        prompt.yEdit = QtWidgets.QLineEdit()  # Stretch textbox
-        prompt.zEdit = QtWidgets.QLineEdit()  # Height textbox
+        getCurrBtn      = QtWidgets.QPushButton("Get Position")
+        prompt.xEdit    = QtWidgets.QLineEdit()  # Rotation textbox
+        prompt.yEdit    = QtWidgets.QLineEdit()  # Stretch textbox
+        prompt.zEdit    = QtWidgets.QLineEdit()  # Height textbox
         prompt.ovrCheck = QtWidgets.QCheckBox()  # "override" CheckBox
         prompt.rltCheck = QtWidgets.QCheckBox()  # "relative" CheckBox
+
+        getCurrBtn.clicked.connect(lambda: setCoordinates(prompt.xEdit, prompt.yEdit, prompt.zEdit))
 
         # Set up all the labels for the inputs
         xLabel = QtWidgets.QLabel('X ')
@@ -531,13 +548,14 @@ class MoveXYZCommandGUI(CommandGUI):
         zLabel = QtWidgets.QLabel('Z ')
         rltCheck = QtWidgets.QLabel('Relative: ')
 
+
         # Fill the textboxes with the default parameters
         prompt.xEdit.setText(str(self.parameters['x']))
         prompt.yEdit.setText(str(self.parameters['y']))
         prompt.zEdit.setText(str(self.parameters['z']))
         prompt.rltCheck.setChecked(self.parameters['relative'])
 
-
+        self._addBtn(prompt, getCurrBtn)
         self._addRow(prompt, xLabel, prompt.xEdit)
         self._addRow(prompt, yLabel, prompt.yEdit)
         self._addRow(prompt, zLabel, prompt.zEdit)
@@ -568,25 +586,30 @@ class MoveXYZCommandGUI(CommandGUI):
 class MoveWristCommandGUI(CommandGUI):
     title     = "Set Wrist Angle"
     tooltip   = "This command sets the angle of the robots 4th axis, the wrist."
-    icon      = Paths.move_wrist_command
+    icon      = Paths.command_move_wrist
     logicPair = "MoveWristCommand"
 
     def __init__(self, env, parameters=None):
         super(MoveWristCommandGUI, self).__init__(parameters)
-
+        self.getWristAngle = lambda: env.getRobot().getServoAngles()[3]
 
         if self.parameters is None:
-            currentWrist = env.getRobot().getServoAngles()[3]
+            currentWrist = self.getWristAngle()
             self.parameters = {"angle": str(currentWrist),
                                "relative": False}
 
 
     def dressWindow(self, prompt):
-
+        def setCurrentAngle(edit):
+            angle = self.getWristAngle()
+            edit.setText(str(angle))
 
         # Create what the user will be interacting with
         prompt.wristEdit = QtWidgets.QLineEdit()
         prompt.rltCheck  = QtWidgets.QCheckBox()  # "relative" CheckBox
+        currentAngleBtn  = QtWidgets.QPushButton("Get Angle")
+
+        currentAngleBtn.clicked.connect(lambda: setCurrentAngle(prompt.wristEdit))
 
         # Create the labels for the interactive stuff
         wristLabel       = QtWidgets.QLabel('Wrist Angle:')
@@ -596,6 +619,7 @@ class MoveWristCommandGUI(CommandGUI):
         prompt.wristEdit.setText(  self.parameters["angle"])
         prompt.rltCheck.setChecked(self.parameters["relative"])
 
+        self._addBtn(prompt, currentAngleBtn)
         self._addRow(prompt, wristLabel, prompt.wristEdit)
         self._addRow(prompt, rltLabel, prompt.rltCheck)
         return prompt
@@ -618,7 +642,7 @@ class PlayMotionRecordingCommandGUI(CommandGUI):
     title     = "Play Motion Recording"
     tooltip   = "This will play back a 'motion recording' at a playback speed of your choosing. To create robot\n" + \
                 "motion recordings, simply click on 'Resources' on the toolbar and add a new recording."
-    icon      = Paths.play_path_command
+    icon      = Paths.command_play_path
     logicPair = "PlayMotionRecordingCommand"
 
     def __init__(self, env, parameters=None):
@@ -677,7 +701,7 @@ class PlayMotionRecordingCommandGUI(CommandGUI):
 class SpeedCommandGUI(CommandGUI):
     title     = "Set Speed"
     tooltip   = "This tool sets the speed of the robot for any move commands that are done after this. "
-    icon      = Paths.speed_command
+    icon      = Paths.command_speed
     logicPair = "SpeedCommand"
 
     def __init__(self, env, parameters=None):
@@ -716,17 +740,17 @@ class SpeedCommandGUI(CommandGUI):
 class DetachCommandGUI(CommandGUI):
     title     = "Detach Servos"
     tooltip   = "Disengage the specified servos on the robot"
-    icon      = Paths.detach_command
+    icon      = Paths.command_detach
     logicPair = "DetachCommand"
 
     def __init__(self, env, parameters=None):
         super(DetachCommandGUI, self).__init__(parameters)
 
         if self.parameters is None:
-            self.parameters = {'servo1': False,
-                               'servo2': False,
-                               'servo3': False,
-                               'servo4': False}
+            self.parameters = {'servo1': True,
+                               'servo2': True,
+                               'servo3': True,
+                               'servo4': True}
 
 
     def dressWindow(self, prompt):
@@ -781,17 +805,17 @@ class AttachCommandGUI(CommandGUI):
 
     title     = "Attach Servos"
     tooltip   = "Re-engage servos on the robot"
-    icon      = Paths.attach_command
+    icon      = Paths.command_attach
     logicPair = "AttachCommand"
 
     def __init__(self, env, parameters=None):
         super(AttachCommandGUI, self).__init__(parameters)
 
         if self.parameters is None:
-            self.parameters = {'servo1': False,
-                               'servo2': False,
-                               'servo3': False,
-                               'servo4': False}
+            self.parameters = {'servo1': True,
+                               'servo2': True,
+                               'servo3': True,
+                               'servo4': True}
 
 
     def dressWindow(self, prompt):
@@ -844,7 +868,7 @@ class AttachCommandGUI(CommandGUI):
 class WaitCommandGUI(CommandGUI):
     title     = "Wait"
     tooltip   = "Halts the program for a preset amount of time"
-    icon      = Paths.wait_command
+    icon      = Paths.command_wait
     logicPair = "WaitCommand"
 
     def __init__(self, env, parameters=None):
@@ -882,7 +906,7 @@ class WaitCommandGUI(CommandGUI):
 class GripCommandGUI(CommandGUI):
     title     = "Activate Gripper"
     tooltip   = "Activates the robots gripper"
-    icon      = Paths.grip_command
+    icon      = Paths.command_grip
     logicPair = "GripCommand"
 
     def __init__(self, env, parameters=None):
@@ -892,7 +916,7 @@ class GripCommandGUI(CommandGUI):
 class DropCommandGUI(CommandGUI):
     title     = "Deactivate Gripper"
     tooltip   = "Deactivates the robots gripper"
-    icon      = Paths.drop_command
+    icon      = Paths.command_drop
     logicPair = "DropCommand"
 
     def __init__(self, env, parameters=None):
@@ -902,7 +926,7 @@ class DropCommandGUI(CommandGUI):
 class BuzzerCommandGUI(CommandGUI):
     title     = "Play Tone"
     tooltip   = "This tool uses the robots buzzer to play a tone at a certain frequency for a certain amount of time"
-    icon      = Paths.buzzer_command
+    icon      = Paths.command_buzzer
     logicPair = "BuzzerCommand"
 
     def __init__(self, env, parameters=None):
@@ -956,7 +980,7 @@ class BuzzerCommandGUI(CommandGUI):
 class EndProgramCommandGUI(CommandGUI):
     title     = "End Program"
     tooltip   = "When the code reaches this point, the program will end."
-    icon      = Paths.end_prgrm_command
+    icon      = Paths.command_end_script
     logicPair = "EndProgramCommand"
 
     def __init__(self, env, parameters=None):
@@ -966,7 +990,7 @@ class EndProgramCommandGUI(CommandGUI):
 class EndEventCommandGUI(CommandGUI):
     title     = "Exit Current Event"
     tooltip   = "When the code reaches this point, the program will not process the rest of this event."
-    icon      = Paths.exit_event_command
+    icon      = Paths.command_exit_event
     logicPair = "EndEventCommand"
 
     def __init__(self, env, parameters=None):
@@ -981,7 +1005,7 @@ class MoveRelativeToObjectCommandGUI(CommandGUI):
     title     = "Move Relative To Object"
     tooltip   = "This tool uses computer vision to recognize an object of your choice, and position the robot directly"\
                 "\nrelative to this objects XYZ location. If XYZ = 0,0,0, the robot will move directly onto the object."
-    icon      = Paths.move_over_command
+    icon      = Paths.command_move_rel_to
     logicPair = "MoveRelativeToObjectCommand"
 
     def __init__(self, env, parameters=None):
@@ -1065,7 +1089,7 @@ class PickupObjectCommandGUI(CommandGUI):
     tooltip   = "This tool uses computer vision to recognize an object of your choice, and attempt to pick up the " \
                 "\nobject. If the object cannot be found or picked up, then False will be returned"
 
-    icon      = Paths.pickup_command
+    icon      = Paths.command_pickup
     logicPair = "PickupObjectCommand"
 
     def __init__(self, env, parameters=None):
@@ -1116,7 +1140,7 @@ class TestObjectSeenCommandGUI(CommandGUI):
     title     = "Test If Object Seen"
     tooltip   = "This command will allow code in blocked brackets below it to run IF the specified object has been " \
                 "recognized."
-    icon      = Paths.see_obj_command
+    icon      = Paths.command_see_obj
     logicPair = "TestObjectSeenCommand"
 
     def __init__(self, env, parameters=None):
@@ -1220,7 +1244,7 @@ class StartBlockCommandGUI(CommandGUI):
     Start a block of code with this class
     """
 
-    icon      = Paths.startblock_command
+    icon      = Paths.command_startblock
     tooltip   = "This is the start of a block of commands that only run if a conditional statement is met."
     logicPair = 'StartBlockCommand'
 
@@ -1233,7 +1257,7 @@ class EndBlockCommandGUI(CommandGUI):
     End a block of code with this command
     """
 
-    icon      = Paths.endblock_command
+    icon      = Paths.command_endblock
     tooltip   = "This is the end of a block of commands."
     logicPair = 'EndBlockCommand'
 
@@ -1246,7 +1270,7 @@ class ElseCommandGUI(CommandGUI):
     End a block of code with this command
     """
 
-    icon      = Paths.else_command
+    icon      = Paths.command_else
     tooltip   = "This will run commands if a test evaluates to False"
     logicPair = 'ElseCommand'
 
@@ -1257,7 +1281,7 @@ class ElseCommandGUI(CommandGUI):
 class SetVariableCommandGUI(CommandGUI):
     title     = "Set Variable"
     tooltip   = "This command can create a variable or set an existing variable to a value or an expression."
-    icon      = Paths.set_var_command
+    icon      = Paths.command_set_var
     logicPair = "SetVariableCommand"
 
     def __init__(self, env, parameters=None):
@@ -1306,7 +1330,7 @@ class SetVariableCommandGUI(CommandGUI):
 class TestVariableCommandGUI(CommandGUI):
     title     = "Test Variable"
     tooltip   = "This will allow/disallow code to run that is in blocked brackets below it."
-    icon      = Paths.test_var_command
+    icon      = Paths.command_test_var
     logicPair = 'TestVariableCommand'
 
     def __init__(self, env, parameters=None):
@@ -1363,7 +1387,7 @@ class ScriptCommandGUI(CommandGUI):
     title     = "Run Python Code"
     tooltip   = "This tool will execute a script made by the user.\nDO NOT RUN PROGRAMS WITH SCRIPTS WRITTEN BY OTHER"+\
                 "\nUSERS UNLESS YOU HAVE CHECKED THE SCRIPT AND KNOW WHAT YOU ARE DOING!"
-    icon      = Paths.script_command
+    icon      = Paths.command_script
     logicPair = "ScriptCommand"
 
     def __init__(self, env, parameters=None):

@@ -34,26 +34,33 @@ class Robot:
     Furthermore this class will allow you to cut off communication with the robot with the "setExiting" command.
     This allows the user to exit a thread very quickly by no longer allowing the robot to send commands or wait,
     thus speeding up the process of leaving a thread.
+
+
+
+    servo0  ->  Base Servo
+    servo1  ->  Stretch Servo
+    servo2  ->  Height Servo
+    servo3  ->  Wrist Servo
     """
     def __init__(self):
-        self.exiting = False   # When true, any time-taking functions will exit ASAP. Used for quickly ending threads.
-        self.uArm    = None    # The communication protocol
-        self.lock    = RLock() # This makes the robot library thread-safe
+        self.exiting = False    # When true, any time-taking functions will exit ASAP. Used for quickly ending threads.
+        self.uArm    = None     # The communication protocol
+        self.lock    = RLock()  # This makes the robot library thread-safe
 
 
         # Cache Variables that keep track of robot state
-        self.__speed = 10                                  # In cm / second (or XYZ [unit] per second)
-        self.coord     = [None, None, None]     # Keep track of the robots position
-        self.__gripperStatus   = False                     # Keep track of the robots gripper status
-        self.__servoStatus     = [True, True, True, True]
-        self.__servoAngleCache = [None, None, None, 90.0]  # Wrist is 90 degrees as default
+        self.__speed             = 10                        # In cm / second (or XYZ [unit] per second)
+        self.coord               = [None, None, None]        # Keep track of the robots position
+        self.__gripperStatus     = False                     # Keep track of the robots gripper status
+        self.__servoAttachStatus = [True, True, True, True]  # Keep track of what servos are attached
+        self.__servoAngleStatus  = [None, None, None, 90.0]  # Wrist is 90 degrees as default
 
 
         # Wether or not the setupThread is running
         self.__threadRunning   = False
 
         # Set up some constants for other functions to use
-        self.home      = {'x': 0.0, 'y': -15.0, 'z': 25.0}
+        self.home      = {'x': 0.0, 'y': 15.0, 'z': 25.0}
 
 
         # Convenience function for clamping a number to a range
@@ -61,8 +68,9 @@ class Robot:
 
         # Create some ranges to allow movement within (need to make a better solution)
         self.xMin, self.xMax = -30, 30
-        self.yMin, self.yMax = -30, -5
+        self.yMin, self.yMax =   5, 30
         self.zMin, self.zMax =  -5, 25
+
 
 
     def getMoving(self):
@@ -171,13 +179,13 @@ class Robot:
 
             try:
                 self.uArm.moveToWithSpeed(self.coord[0], self.coord[1], self.coord[2], self.__speed)
-                self.__servoAngleCache = list(self.uArm.getIK(self.coord[0], self.coord[1], self.coord[2])) + [self.__servoAngleCache[3]]
+                self.__servoAngleStatus = list(self.uArm.getIK(self.coord[0], self.coord[1], self.coord[2])) + [self.__servoAngleStatus[3]]
 
                 # Since moves cause servos to attach, update the servoStatus
-                self.__servoStatus[0], self.__servoStatus[1], self.__servoStatus[2], self.__servoStatus[3] = True, True, True, True
+                self.__servoAttachStatus[0], self.__servoAttachStatus[1], self.__servoAttachStatus[2], self.__servoAttachStatus[3] = True, True, True, True
 
             except ValueError:
-                printf("Robot.refresh(): ERROR: Robot out of bounds and the uarm_python library crashed!")
+                printf("Robot.setPos(): ERROR: Robot out of bounds and the uarm_python library crashed!")
 
             # Wait for robot to finish move, but if exiting, just continue
             if wait:
@@ -198,7 +206,7 @@ class Robot:
         def setServoAngle(servoNum, angle, rel):
             with self.lock:
                 if rel:
-                    newAngle = angle + self.__servoAngleCache[servoNum]
+                    newAngle = angle + self.__servoAngleStatus[servoNum]
                 else:
                     newAngle = angle
 
@@ -211,9 +219,9 @@ class Robot:
 
 
                 # Set the value and save it in the cache
-                if not self.__servoAngleCache[servoNum] == newAngle:
+                if not self.__servoAngleStatus[servoNum] == newAngle:
                     self.uArm.setServo(servoNum, newAngle)
-                    self.__servoAngleCache[servoNum] = newAngle
+                    self.__servoAngleStatus[servoNum] = newAngle
 
 
         if servo0 is not None: setServoAngle(0, servo0, relative)
@@ -227,18 +235,18 @@ class Robot:
             return
 
         # If a positional servo is attached, get the robots current position and update the self.pos cache
-        oldServoStatus = self.__servoStatus[:]
+        oldServoStatus = self.__servoAttachStatus[:]
 
         def setServo(servoNum, status):
             # Verify that it is a dfiferent servo position before sending
-            if self.__servoStatus[servoNum] == status: return
+            if self.__servoAttachStatus[servoNum] == status: return
 
             with self.lock:
                 if status:
                     self.uArm.servoAttach(servoNum)
                 else:
                     self.uArm.servoDetach(servoNum)
-                self.__servoStatus[servoNum] = status
+                self.__servoAttachStatus[servoNum] = status
 
 
         # If anything changed, set the appropriate newServoStatus to reflect that
@@ -251,13 +259,13 @@ class Robot:
         if servo3 is not None: setServo(3, servo3)
 
         # Make an array of which servos have been newly attached.
-        attached = [oldServoStatus[i] is False and self.__servoStatus[i] is True for i in range(3)]
+        attached = [oldServoStatus[i] is False and self.__servoAttachStatus[i] is True for i in range(3)]
 
         # If any positional servos have been attached, update the self.pos cache with the robots current position
         if any(attached):
             curr = self.getCurrentCoord()
             self.coord =  list(curr)
-            self.__servoAngleCache = list(self.uArm.getServoAngles())
+            self.__servoAngleStatus = list(self.uArm.getServoAngles())
 
     def setGripper(self, status):
         if not self.connected() or self.exiting:

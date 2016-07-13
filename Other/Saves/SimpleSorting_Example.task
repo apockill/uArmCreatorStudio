@@ -1,0 +1,276 @@
+[
+   {
+      "typeGUI": "InitEventGUI",
+      "parameters": null,
+      "commandList": [
+         {
+            "typeGUI": "SetVariableCommandGUI",
+            "parameters": {
+               "variable": "spades",
+               "expression": "[25, -10, 10]"
+            },
+            "typeLogic": "SetVariableCommand"
+         },
+         {
+            "typeGUI": "SetVariableCommandGUI",
+            "parameters": {
+               "variable": "hearts",
+               "expression": "[-25, -10, 10]"
+            },
+            "typeLogic": "SetVariableCommand"
+         },
+         {
+            "typeGUI": "SetVariableCommandGUI",
+            "parameters": {
+               "variable": "diamonds",
+               "expression": "[-25, -20, 10]"
+            },
+            "typeLogic": "SetVariableCommand"
+         },
+         {
+            "typeGUI": "SetVariableCommandGUI",
+            "parameters": {
+               "variable": "cloves",
+               "expression": "[25, -20, 10]"
+            },
+            "typeLogic": "SetVariableCommand"
+         },
+         {
+            "typeGUI": "SpeedCommandGUI",
+            "parameters": {
+               "speed": "20"
+            },
+            "typeLogic": "SpeedCommand"
+         },
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "parameters": {
+               "x": "0",
+               "z": "15",
+               "y": "-15",
+               "relative": false
+            },
+            "typeLogic": "MoveXYZCommand"
+         }
+      ],
+      "typeLogic": "InitEvent"
+   },
+   {
+      "typeGUI": "StepEventGUI",
+      "parameters": null,
+      "commandList": [
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "parameters": {
+               "x": "-20",
+               "z": "15",
+               "y": "-10",
+               "relative": false
+            },
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "typeGUI": "PickupObjectCommandGUI",
+            "parameters": {
+               "objectID": "Spades"
+            },
+            "typeLogic": "PickupObjectCommand"
+         },
+         {
+            "typeGUI": "StartBlockCommandGUI",
+            "parameters": null,
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "parameters": {
+               "x": "spades[0]",
+               "z": "spades[2]",
+               "y": "spades[1]",
+               "relative": false
+            },
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "typeGUI": "DropCommandGUI",
+            "parameters": null,
+            "typeLogic": "DropCommand"
+         },
+         {
+            "typeGUI": "EndEventCommandGUI",
+            "parameters": null,
+            "typeLogic": "EndEventCommand"
+         },
+         {
+            "typeGUI": "EndBlockCommandGUI",
+            "parameters": null,
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "typeGUI": "PickupObjectCommandGUI",
+            "parameters": {
+               "objectID": "Diamonds"
+            },
+            "typeLogic": "PickupObjectCommand"
+         },
+         {
+            "typeGUI": "StartBlockCommandGUI",
+            "parameters": null,
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "parameters": {
+               "x": "diamonds[0]",
+               "z": "diamonds[2]",
+               "y": "diamonds[1]",
+               "relative": false
+            },
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "typeGUI": "DropCommandGUI",
+            "parameters": null,
+            "typeLogic": "DropCommand"
+         },
+         {
+            "typeGUI": "EndEventCommandGUI",
+            "parameters": null,
+            "typeLogic": "EndEventCommand"
+         },
+         {
+            "typeGUI": "EndBlockCommandGUI",
+            "parameters": null,
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "typeGUI": "PickupObjectCommandGUI",
+            "parameters": {
+               "objectID": "Cloves"
+            },
+            "typeLogic": "PickupObjectCommand"
+         },
+         {
+            "typeGUI": "StartBlockCommandGUI",
+            "parameters": null,
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "parameters": {
+               "x": "cloves[0]",
+               "z": "cloves[2]",
+               "y": "cloves[1]",
+               "relative": false
+            },
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "typeGUI": "DropCommandGUI",
+            "parameters": null,
+            "typeLogic": "DropCommand"
+         },
+         {
+            "typeGUI": "EndEventCommandGUI",
+            "parameters": null,
+            "typeLogic": "EndEventCommand"
+         },
+         {
+            "typeGUI": "EndBlockCommandGUI",
+            "parameters": null,
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "typeGUI": "PickupObjectCommandGUI",
+            "parameters": {
+               "objectID": "Hearts"
+            },
+            "typeLogic": "PickupObjectCommand"
+         },
+         {
+            "typeGUI": "StartBlockCommandGUI",
+            "parameters": null,
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "parameters": {
+               "x": "hearts[0]",
+               "z": "hearts[2]",
+               "y": "hearts[1]",
+               "relative": false
+            },
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "typeGUI": "DropCommandGUI",
+            "parameters": null,
+            "typeLogic": "DropCommand"
+         },
+         {
+            "typeGUI": "EndEventCommandGUI",
+            "parameters": null,
+            "typeLogic": "EndEventCommand"
+         },
+         {
+            "typeGUI": "EndBlockCommandGUI",
+            "parameters": null,
+            "typeLogic": "EndBlockCommand"
+         }
+      ],
+      "typeLogic": "StepEvent"
+   },
+   {
+      "typeGUI": "KeypressEventGUI",
+      "parameters": {
+         "checkKey": "D"
+      },
+      "commandList": [
+         {
+            "typeGUI": "DetachCommandGUI",
+            "parameters": {
+               "servo2": true,
+               "servo1": true,
+               "servo3": true,
+               "servo4": true
+            },
+            "typeLogic": "DetachCommand"
+         },
+         {
+            "typeGUI": "DropCommandGUI",
+            "parameters": null,
+            "typeLogic": "DropCommand"
+         }
+      ],
+      "typeLogic": "KeypressEvent"
+   },
+   {
+      "typeGUI": "KeypressEventGUI",
+      "parameters": {
+         "checkKey": "R"
+      },
+      "commandList": [
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "parameters": {
+               "x": "0",
+               "z": "5",
+               "y": "0",
+               "relative": true
+            },
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "typeGUI": "MoveXYZCommandGUI",
+            "parameters": {
+               "x": "0",
+               "z": "15",
+               "y": "-15",
+               "relative": false
+            },
+            "typeLogic": "MoveXYZCommand"
+         }
+      ],
+      "typeLogic": "KeypressEvent"
+   }
+]

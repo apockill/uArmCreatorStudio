@@ -26,16 +26,16 @@ while not robot.connected(): sleep(.1)
 print("Robot connected! ")
 robot.uArm.printResponses = True  # Print responses from the robot
 
-# Prepare a move. Nothing will happen until robot.Refresh() is called
+
 robot.setSpeed(10)
-robot.setPos(x=0, y=-15, z=15)
+robot.setPos(**robot.home)
 robot.setServoAngles(servo2=90)
 robot.setGripper(True)
 
 
 robot.setPos(x=10, relative=True)
 robot.setPos(x=-20, relative=True)
-robot.setPos(x=0, y=-15, z=15)
+robot.setPos(**robot.home)
 
 
 # Turn off the gripper

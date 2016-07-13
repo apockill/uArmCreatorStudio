@@ -1,0 +1,59 @@
+I went through tons of different options for FlanParams to find the one that best coped with high numbers of descriptors
+with the best time and match point count.
+
+The best compromise I found was parameters of (3, 19, 1) with a good speed and better pts found than the documentation recommended parameters
+
+
+Result format:
+Time: Time between frames to run the matcher.knnMatcher algorithm
+Pts:  How many points were found on an arbitrary object. In this case, King of Spades (while surrounded by other detailed objects to lag everything)
+Parameters: flanParams in the format of  (table_number, key_size, multi_probe_level)
+
+
+
+# Recommended Parameters From Documentation:
+Time:  .13      Pts: 340        Parameters: ( 6, 12, 1)
+Time:  .31      Pts: 311        Parameters: (12, 20, 2)
+
+
+# Tested
+Time: .064      Pts: 380        Parameters: (12, 24, 1)
+Time: .244      Pts: 330        Parameters: (32, 20, 1)
+Time: .135      Pts: 341        Parameters: (20, 20, 1)
+Time: .310      Pts: 292        Parameters: (20, 15, 1)
+Time: .099      Pts: 400        Parameters: (20, 25, 1)
+Time: .071      Pts: 410        Parameters: (15, 25, 1)
+Time: .089      Pts: 360        Parameters: (15, 20, 1)
+Time: .095      Pts: 280        Parameters: (15, 30, 1)
+Time: .042      Pts: 379        Parameters: (10, 25, 1)
+Time: .03       Pts: 340        Parameters: ( 1, 12, 1)
+Time: .025      Pts: 370        Parameters: ( 1, 13, 1)
+Time: .019      Pts: 370        Parameters: ( 1, 14, 1)
+Time: .016      Pts: 350        Parameters: ( 1, 15, 1)
+Time: .008      Pts: 250        Parameters: ( 1, 20, 1)
+Time: .006      Pts:   0        Parameters: ( 1, 30, 1)
+Time: .027      Pts: 392        Parameters: ( 1, 20, 2)
+Time: .10       Pts: 360        Parameters: ( 1, 12, 2)
+Time: .038      Pts: 100        Parameters: ( 1, 30, 2)
+Time: .25       Pts: 249        Parameters: ( 1, 30, 3)
+Time: .15       Pts: 340        Parameters: ( 6, 19, 2)
+Time: .029      Pts: 400        Parameters: ( 3, 17, 1)
+Time: .023      Pts: 400        Parameters: ( 3, 18, 1)
+Time: .023      Pts: 410        Parameters: ( 3, 19, 1)
+Time: .017      Pts: 390        Parameters: ( 3, 20, 1)
+Time: .016      Pts: 375        Parameters: ( 3, 21, 1)
+Time: .076      Pts: 360        Parameters: ( 3, 19, 2)
+Time: .026      Pts: 420        Parameters: ( 4, 19, 1)
+Time: .033      Pts: 435        Parameters: ( 5, 19, 1)
+Time: .036      Pts: 435        Parameters: ( 6, 19, 1)
+Time: .042      Pts: 420        Parameters: ( 7, 19, 1)
+Time: .038      Pts: 400        Parameters: ( 4, 17, 1)
+Time: .030      Pts: 420        Parameters: ( 4, 18, 1)
+Time: .026      Pts: 420        Parameters: ( 4, 19, 1)
+Time: .022      Pts: 400        Parameters: ( 4, 20, 1)
+Time: .042      Pts: 421        Parameters: ( 6, 18, 1)
+Time: .036      Pts: 435        Parameters: ( 6, 19, 1)
+Time: .030      Pts: 430        Parameters: ( 6, 20, 1)
+Time: .027      Pts: 430        Parameters: ( 6, 22, 1)
+Time: .025      Pts: 375        Parameters: ( 6, 24, 1)
+Time: .032      Pts: 150        Parameters: ( 6, 30, 1)

@@ -1,0 +1,34 @@
+[
+   {
+      "parameters": {},
+      "commandList": [
+         {
+            "parameters": {
+               "script": "    # The first step of using vision is getting a trackable object. Make an object in Resources then access it by name here.\ntrackableObject = objectManager.getObject(\"Plug\")   # Get vision-compatible object by name using objectManager\n\n\n    # The next step is to make sure vision is tracking the object. Usually this should be done in Initialization event.\n    # Objects only stop being tracked when the script ends. Do this only once.\nvision.addPlaneTarget(trackableObject)\n\n\n    # If the object is already being and has been for a while, you can try using vision functions to search for recognitions\n    # This function returns how many frames ago the object was recognized, and a \"tracked\" object with some information\nframeID, trackedObject = vision.getObjectLatestRecognition(trackableObject)\n\n\n    # If no object is found, the \"trackedObject\" will be None. Check if its None before continuing\nif trackedObject is None:\n        # Handle the error here\n        print(\"Object \", trackableObject.name, \" was not recognized!\")\n        return\n\n    # If the object was, in fact, found, then you can pull all sorts of information from it\nprint(trackedObject.center)     # Prints a list [x, y, z] of the objects position in the cameras coordinate system\nprint(trackedObject.rotation)   # Prints a list [xRotation, yRotation, zRotation] of rotation along each axis\nprint(trackedObject.ptCount)    # Prints how many points the object was recognized with. More points = more accuracy\n\n\n    # Here is another function for looking for tracked objects\n    # This will search through the last 30 frames for trackableObject, and try to find a recognition with > 50 keypoints\ntrackedObject = vision.searchTrackedHistory(trackable=trackableObject, maxAge=30, minPtCount=50)"
+            },
+            "typeGUI": "ScriptCommandGUI",
+            "typeLogic": "ScriptCommand"
+         }
+      ],
+      "typeGUI": "InitEventGUI",
+      "typeLogic": "InitEvent"
+   },
+   {
+      "parameters": {
+         "not": false,
+         "objectID": "Smile"
+      },
+      "commandList": [],
+      "typeGUI": "RecognizeCascadeEventGUI",
+      "typeLogic": "RecognizeCascadeEvent"
+   },
+   {
+      "parameters": {
+         "not": true,
+         "objectID": "Smile"
+      },
+      "commandList": [],
+      "typeGUI": "RecognizeCascadeEventGUI",
+      "typeLogic": "RecognizeCascadeEvent"
+   }
+]

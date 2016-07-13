@@ -69,10 +69,21 @@ def playMotionPath(motionPath, robot, exitFunc):
                                  lambda: robot.setServoAngles(servo3=val))[num]()
 
 
+    # If the robot is far from the start position, move there first
+
 
     # On the first iteration, move to the start position using a slow move
     action = motionPath[0]
 
+
+    # Get the start position and the current position. If the distance is too high, move there slowly
+    startPos    = robot.getFK(action[SERVO0], action[SERVO1], action[SERVO2])
+    currentPos  = robot.getCurrentCoord()
+    if dist(startPos, currentPos) > 5:
+        robot.setPos(coord=startPos)
+
+
+    # Set the first position, to make sure the recording starts off on the right foot
     lastVal = [action[SERVO0], action[SERVO1], action[SERVO2], action[SERVO3]]
     gripper = False
     setServo(0, lastVal[0])
@@ -83,6 +94,7 @@ def playMotionPath(motionPath, robot, exitFunc):
 
     # Start running through motionPath
     startTime = time() + action[TIME]
+
 
     for i, action in enumerate(motionPath[1:-1]):
         if exitFunc(): return
@@ -464,7 +476,6 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exit
         if failTrackCount >= 3:
             printf("RobotVision.pickupObject(): Could not find robot for too many down-steps. Exiting pickup")
             robot.setGripper(False)
-            robot.refresh()
             return False
 
         # Actually find the robot using the camera
@@ -495,8 +506,6 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exit
         #     break
         robot.setPos(x=relMove[0], y=relMove[1], relative=True)
         robot.setPos(z=-1.25, relative=True)
-        print("Moving to  z: ", robot.coord[2])
-        robot.refresh()
 
         failTrackCount = 0
 
@@ -505,9 +514,13 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exit
     if newCoord is not None:
         lastCoord = newCoord
 
+    # Slowly lift the robots head
+    while robot.getTipSensor():
+        robot.setPos(z=1, relative=True)
 
     if not lastCoord is None and pointInPolygon(lastCoord, pickupRect):
         print("PICKUP WAS SUCCESSFUL!!!")
+        robot.setSpeed(5)
         robot.setPos(z=8, relative=True)
         return True
     else:

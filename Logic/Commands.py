@@ -58,8 +58,7 @@ class MoveXYZCommand(Command):
         printf("MoveXYZCommand.run(): Moving robot to ", newX, " ", newY, " ", newZ, " ")
 
         if successX and successY and successZ:
-            self.robot.setPos(x=newX, y=newY, z=newZ,
-                                  relative=self.parameters['relative'])
+            self.robot.setPos(x=newX, y=newY, z=newZ, relative=self.parameters['relative'])
             return True
         else:
             printf("MoveXYZCommand.run(): ERROR in parsing either X Y or Z: ", successX, successY, successZ)
@@ -297,13 +296,9 @@ class EndProgramCommand(Command):
     def __init__(self, env, interpreter, parameters=None):
         super(EndProgramCommand, self).__init__(parameters)
 
-        # Load any objects that will be used in the run Section here
-        self.interpreter = interpreter
-
     def run(self):
         printf("EndProgramCommand.run(): Attempting to shut down program now...")
-        self.interpreter.killApp = True
-        return True
+        return "Kill"
 
 
 class EndEventCommand(Command):
@@ -341,8 +336,7 @@ class MoveRelativeToObjectCommand(Command):
         self.ptPairs = coordCalib["ptPairs"]
 
         # Turn on tracking for the relevant object
-        self.vision.addTrackable(self.trackable)
-        self.vision.startTracker()
+        self.vision.addPlaneTarget(self.trackable)
 
     def run(self):
         if len(self.errors) > 0: return False
@@ -395,9 +389,8 @@ class PickupObjectCommand(Command):
         self.grndHeight = coordCalib["groundPos"][2]
 
         # Turn on tracking for the relevant object
-        self.vision.addTrackable(self.trackable)
-        self.vision.addTrackable(self.rbMarker)
-        self.vision.startTracker()
+        self.vision.addPlaneTarget(self.trackable)
+        self.vision.addPlaneTarget(self.rbMarker)
 
     def run(self):
         if len(self.errors) > 0: return False
@@ -419,15 +412,16 @@ class TestObjectSeenCommand(Command):
 
         if len(self.errors): return
 
-        self.vision.addTrackable(self.trackable)
-        self.vision.startTracker()
+        self.vision.addPlaneTarget(self.trackable)
 
 
         self.maxAge = self.parameters["age"]
-        self.minPts = self.vision.tracker.MIN_MATCH_COUNT * (self.parameters["ptCount"] + 1)
+        self.minPts = self.vision.planeTracker.MIN_MATCH_COUNT * (self.parameters["ptCount"] + 1)
         print("Requiring at least ", self.minPts, " pts with an age less than ", self.maxAge, " for objectID ", self.parameters["objectID"], "NOT?", self.parameters["not"])
 
     def run(self):
+        if len(self.errors): return
+
         printf("TestObjectSeenCommand.run(): Testing if ", self.parameters["objectID"], " was seen")
         tracked = self.vision.searchTrackedHistory(trackable  = self.trackable,
                                                    maxAge= self.maxAge,

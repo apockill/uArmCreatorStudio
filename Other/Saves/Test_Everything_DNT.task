@@ -1,0 +1,643 @@
+[
+   {
+      "commandList": [
+         {
+            "parameters": {
+               "x": "0",
+               "relative": false,
+               "y": "15",
+               "z": "15"
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "parameters": {
+               "x": "10",
+               "relative": false,
+               "y": "15",
+               "z": "15"
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "parameters": {
+               "x": "-10",
+               "relative": false,
+               "y": "15",
+               "z": "15"
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "parameters": {
+               "x": "0",
+               "relative": false,
+               "y": "10",
+               "z": "15"
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "parameters": {
+               "x": "0",
+               "relative": false,
+               "y": "25",
+               "z": "15"
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "parameters": {
+               "x": "0",
+               "relative": false,
+               "y": "15",
+               "z": "15"
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "parameters": {
+               "x": "0",
+               "relative": false,
+               "y": "15",
+               "z": "25"
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "parameters": {
+               "x": "0",
+               "relative": false,
+               "y": "15",
+               "z": "10"
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "parameters": {
+               "x": "0",
+               "relative": false,
+               "y": "15",
+               "z": "15"
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "parameters": {
+               "reversed": false,
+               "speed": "1.0",
+               "objectID": ""
+            },
+            "typeGUI": "PlayMotionRecordingCommandGUI",
+            "typeLogic": "PlayMotionRecordingCommand"
+         },
+         {
+            "parameters": {
+               "script": ""
+            },
+            "typeGUI": "ScriptCommandGUI",
+            "typeLogic": "ScriptCommand"
+         },
+         {
+            "parameters": {
+               "objectID": ""
+            },
+            "typeGUI": "PickupObjectCommandGUI",
+            "typeLogic": "PickupObjectCommand"
+         },
+         {
+            "parameters": {
+               "ptCount": 0,
+               "age": 1,
+               "objectID": "",
+               "not": false
+            },
+            "typeGUI": "TestObjectSeenCommandGUI",
+            "typeLogic": "TestObjectSeenCommand"
+         },
+         {
+            "parameters": {
+               "ptCount": 0,
+               "age": 1,
+               "objectID": "",
+               "not": false
+            },
+            "typeGUI": "TestObjectSeenCommandGUI",
+            "typeLogic": "TestObjectSeenCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "parameters": {
+               "script": ""
+            },
+            "typeGUI": "ScriptCommandGUI",
+            "typeLogic": "ScriptCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "parameters": {
+               "ptCount": 0,
+               "age": 1,
+               "objectID": "",
+               "not": false
+            },
+            "typeGUI": "TestObjectSeenCommandGUI",
+            "typeLogic": "TestObjectSeenCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "parameters": {
+               "ptCount": 0,
+               "age": 1,
+               "objectID": "",
+               "not": false
+            },
+            "typeGUI": "TestObjectSeenCommandGUI",
+            "typeLogic": "TestObjectSeenCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "parameters": {
+               "ptCount": 0,
+               "age": 1,
+               "objectID": "",
+               "not": false
+            },
+            "typeGUI": "TestObjectSeenCommandGUI",
+            "typeLogic": "TestObjectSeenCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "parameters": {
+               "ptCount": 0,
+               "age": 1,
+               "objectID": "",
+               "not": false
+            },
+            "typeGUI": "TestObjectSeenCommandGUI",
+            "typeLogic": "TestObjectSeenCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "parameters": {
+               "ptCount": 0,
+               "age": 1,
+               "objectID": "",
+               "not": false
+            },
+            "typeGUI": "TestObjectSeenCommandGUI",
+            "typeLogic": "TestObjectSeenCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "parameters": {
+               "expression": "",
+               "variable": ""
+            },
+            "typeGUI": "SetVariableCommandGUI",
+            "typeLogic": "SetVariableCommand"
+         },
+         {
+            "parameters": {
+               "ptCount": 0,
+               "age": 1,
+               "objectID": "",
+               "not": false
+            },
+            "typeGUI": "TestObjectSeenCommandGUI",
+            "typeLogic": "TestObjectSeenCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndEventCommandGUI",
+            "typeLogic": "EndEventCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndProgramCommandGUI",
+            "typeLogic": "EndProgramCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "parameters": {
+               "expression": "",
+               "variable": "",
+               "test": 0
+            },
+            "typeGUI": "TestVariableCommandGUI",
+            "typeLogic": "TestVariableCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "ElseCommandGUI",
+            "typeLogic": "ElseCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "parameters": {
+               "ptCount": 0,
+               "age": 1,
+               "objectID": "",
+               "not": false
+            },
+            "typeGUI": "TestObjectSeenCommandGUI",
+            "typeLogic": "TestObjectSeenCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "parameters": {
+               "ptCount": 0,
+               "age": 1,
+               "objectID": "",
+               "not": false
+            },
+            "typeGUI": "TestObjectSeenCommandGUI",
+            "typeLogic": "TestObjectSeenCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "parameters": {
+               "ptCount": 0,
+               "age": 1,
+               "objectID": "",
+               "not": false
+            },
+            "typeGUI": "TestObjectSeenCommandGUI",
+            "typeLogic": "TestObjectSeenCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "parameters": {
+               "script": ""
+            },
+            "typeGUI": "ScriptCommandGUI",
+            "typeLogic": "ScriptCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "parameters": {
+               "objectID": ""
+            },
+            "typeGUI": "PickupObjectCommandGUI",
+            "typeLogic": "PickupObjectCommand"
+         },
+         {
+            "parameters": {
+               "speed": "10"
+            },
+            "typeGUI": "SpeedCommandGUI",
+            "typeLogic": "SpeedCommand"
+         },
+         {
+            "parameters": {
+               "servo2": false,
+               "servo1": false,
+               "servo4": false,
+               "servo3": false
+            },
+            "typeGUI": "AttachCommandGUI",
+            "typeLogic": "AttachCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "GripCommandGUI",
+            "typeLogic": "GripCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "DropCommandGUI",
+            "typeLogic": "DropCommand"
+         },
+         {
+            "parameters": {
+               "time": "0.5"
+            },
+            "typeGUI": "WaitCommandGUI",
+            "typeLogic": "WaitCommand"
+         },
+         {
+            "parameters": {
+               "frequency": "1500",
+               "waitForBuzzer": true,
+               "time": "0.5"
+            },
+            "typeGUI": "BuzzerCommandGUI",
+            "typeLogic": "BuzzerCommand"
+         }
+      ],
+      "parameters": {},
+      "typeGUI": "InitEventGUI",
+      "typeLogic": "InitEvent"
+   },
+   {
+      "commandList": [
+         {
+            "parameters": {
+               "reversed": false,
+               "speed": "1.0",
+               "objectID": ""
+            },
+            "typeGUI": "PlayMotionRecordingCommandGUI",
+            "typeLogic": "PlayMotionRecordingCommand"
+         }
+      ],
+      "parameters": {},
+      "typeGUI": "StepEventGUI",
+      "typeLogic": "StepEvent"
+   },
+   {
+      "commandList": [
+         {
+            "parameters": {
+               "servo2": true,
+               "servo1": true,
+               "servo4": true,
+               "servo3": true
+            },
+            "typeGUI": "DetachCommandGUI",
+            "typeLogic": "DetachCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "DropCommandGUI",
+            "typeLogic": "DropCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndProgramCommandGUI",
+            "typeLogic": "EndProgramCommand"
+         }
+      ],
+      "parameters": {},
+      "typeGUI": "TipEventGUI",
+      "typeLogic": "TipEvent"
+   },
+   {
+      "commandList": [],
+      "parameters": {
+         "checkKey": "A"
+      },
+      "typeGUI": "KeypressEventGUI",
+      "typeLogic": "KeypressEvent"
+   },
+   {
+      "commandList": [],
+      "parameters": {
+         "checkKey": "B"
+      },
+      "typeGUI": "KeypressEventGUI",
+      "typeLogic": "KeypressEvent"
+   },
+   {
+      "commandList": [],
+      "parameters": {
+         "checkKey": "C"
+      },
+      "typeGUI": "KeypressEventGUI",
+      "typeLogic": "KeypressEvent"
+   },
+   {
+      "commandList": [],
+      "parameters": {
+         "checkKey": "D"
+      },
+      "typeGUI": "KeypressEventGUI",
+      "typeLogic": "KeypressEvent"
+   },
+   {
+      "commandList": [],
+      "parameters": {
+         "low": "High",
+         "high": "Inf"
+      },
+      "typeGUI": "MotionEventGUI",
+      "typeLogic": "MotionEvent"
+   },
+   {
+      "commandList": [],
+      "parameters": {
+         "low": "Low",
+         "high": "Inf"
+      },
+      "typeGUI": "MotionEventGUI",
+      "typeLogic": "MotionEvent"
+   },
+   {
+      "commandList": [],
+      "parameters": {
+         "low": "None",
+         "high": "High"
+      },
+      "typeGUI": "MotionEventGUI",
+      "typeLogic": "MotionEvent"
+   },
+   {
+      "commandList": [],
+      "parameters": {
+         "low": "Low",
+         "high": "High"
+      },
+      "typeGUI": "MotionEventGUI",
+      "typeLogic": "MotionEvent"
+   },
+   {
+      "commandList": [],
+      "parameters": {
+         "objectID": "Face",
+         "not": false
+      },
+      "typeGUI": "RecognizeCascadeEventGUI",
+      "typeLogic": "RecognizeCascadeEvent"
+   },
+   {
+      "commandList": [],
+      "parameters": {
+         "objectID": "Face",
+         "not": true
+      },
+      "typeGUI": "RecognizeCascadeEventGUI",
+      "typeLogic": "RecognizeCascadeEvent"
+   },
+   {
+      "commandList": [
+         {
+            "parameters": {
+               "frequency": "1500",
+               "waitForBuzzer": true,
+               "time": ".1"
+            },
+            "typeGUI": "BuzzerCommandGUI",
+            "typeLogic": "BuzzerCommand"
+         }
+      ],
+      "parameters": {},
+      "typeGUI": "DestroyEventGUI",
+      "typeLogic": "DestroyEvent"
+   }
+]

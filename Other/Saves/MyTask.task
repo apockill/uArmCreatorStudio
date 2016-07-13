@@ -1,0 +1,50 @@
+[
+   {
+      "commandList": [
+         {
+            "parameters": {
+               "script": "print(\"Hello\")\n"
+            },
+            "typeGUI": "ScriptCommandGUI",
+            "typeLogic": "ScriptCommand"
+         }
+      ],
+      "parameters": null,
+      "typeGUI": "InitEventGUI",
+      "typeLogic": "InitEvent"
+   },
+   {
+      "commandList": [
+         {
+            "parameters": {
+               "expression": "speed/2",
+               "variable": "speed"
+            },
+            "typeGUI": "SetVariableCommandGUI",
+            "typeLogic": "SetVariableCommand"
+         }
+      ],
+      "parameters": {
+         "checkKey": "A"
+      },
+      "typeGUI": "KeypressEventGUI",
+      "typeLogic": "KeypressEvent"
+   },
+   {
+      "commandList": [
+         {
+            "parameters": {
+               "expression": "speed*2",
+               "variable": "speed"
+            },
+            "typeGUI": "SetVariableCommandGUI",
+            "typeLogic": "SetVariableCommand"
+         }
+      ],
+      "parameters": {
+         "checkKey": "S"
+      },
+      "typeGUI": "KeypressEventGUI",
+      "typeLogic": "KeypressEvent"
+   }
+]

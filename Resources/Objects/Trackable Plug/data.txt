@@ -1,0 +1,22 @@
+{
+   "Orientations": {
+      "Orientation_0": {
+         "height": 0.0,
+         "rect": [
+            160,
+            178,
+            436,
+            356
+         ],
+         "pickupRect": [
+            39,
+            51,
+            227,
+            149
+         ]
+      }
+   },
+   "tags": [
+      "Trash"
+   ]
+}

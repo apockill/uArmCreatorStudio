@@ -1,4 +1,4 @@
-
+from time         import sleep
 from copy         import deepcopy
 from threading    import Thread
 from Logic.Global import printf, FpsTimer
@@ -112,7 +112,6 @@ class Interpreter:
         :param      script: a loaded script from a .task file
         :return:    any errors that commands returned during instantiation
         """
-        print("script", script)
         script = deepcopy(script)
 
         errors = {}  # Errors are returned from
@@ -160,7 +159,7 @@ class Interpreter:
             robot.setSpeed(10)
 
             self.__exiting     = False
-            self.mainThread  = Thread(target=self.__programThread)
+            self.mainThread  = Thread(target=lambda: self.__programThread(robot, vision))
             self.currRunning = {}
             self.mainThread.start()
         else:
@@ -172,51 +171,46 @@ class Interpreter:
 
         self.__exiting = True
 
-        if self.mainThread is not None:
-            # DeActivate Vision and the Robot so that exiting the thread will be very fast
-            vision.setExiting(True)
-            robot.setExiting(True)
+        # DeActivate Vision and the Robot so that exiting the thread will be very fast
+        vision.setExiting(True)
+        robot.setExiting(True)
 
-            self.mainThread.join(3000)
-
-            if self.mainThread.is_alive():
-                printf("Interpreter.endThread(): ERROR: Thread was told to close but did not")
-                return False
-
-            # Re-Activate the Robot and Vision, for any future uses
-            vision.setExiting(False)
-            robot.setExiting(False)
-            vision.endAllTrackers()
-
-            # Clean up interpreter variables
-            self.mainThread = None
-            self.events     = []
+        while self.mainThread is not None: sleep(.05)
 
 
-            # Reset self.__variables with the default values/functions #
-            safeList = ['math', 'acos', 'asin', 'atan', 'atan2', 'ceil', 'cos', 'cosh', 'degrees',
-                        'e', 'exp', 'fabs', 'floor', 'fmod', 'frexp', 'hypot', 'ldexp', 'log', 'log10',
-                        'modf', 'pi', 'pow', 'radians', 'sin', 'sinh', 'sqrt', 'tan', 'tanh']
+        # Re-Activate the Robot and Vision, for any future uses
+        vision.setExiting(False)
+        robot.setExiting(False)
+
+        # Clean up interpreter variables
+        self.mainThread = None
+        self.events     = []
 
 
-            # Use the list to filter the local namespace
-            self.__variables        = {}
-            self.__variables        = dict([(k, locals().get(k, None)) for k in safeList])
+        # Reset self.__variables with the default values/functions #
+        safeList = ['math', 'acos', 'asin', 'atan', 'atan2', 'ceil', 'cos', 'cosh', 'degrees',
+                    'e', 'exp', 'fabs', 'floor', 'fmod', 'frexp', 'hypot', 'ldexp', 'log', 'log10',
+                    'modf', 'pi', 'pow', 'radians', 'sin', 'sinh', 'sqrt', 'tan', 'tanh']
 
 
-            # Add any needed builtins back in.
-            self.__variables['abs']    = abs
-            self.__variables['robot']  = robot
-            self.__variables['vision'] = vision
+        # Use the list to filter the local namespace
+        self.__variables        = {}
+        self.__variables        = dict([(k, locals().get(k, None)) for k in safeList])
 
-            return True
+
+        # Add any needed builtins back in.
+        self.__variables['abs']    = abs
+        self.__variables['robot']  = robot
+        self.__variables['vision'] = vision
+
+        return True
 
     def addEvent(self, event):
         self.events.append(event)
 
 
     def isRunning(self):
-        return not self.__exiting or self.mainThread is not None
+        return self.mainThread is not None
 
     def isExiting(self):
         # Commands that have the potential to take a long time (wait, pickup, that sort of thing) will use this to check
@@ -226,7 +220,7 @@ class Interpreter:
     def getStatus(self):
         # Returns an index of the (event, command) that is currently being run
 
-        if self.isExiting():
+        if not self.isRunning():
             return False
 
         currRunning = self.currRunning
@@ -290,12 +284,22 @@ class Interpreter:
 
         answer = None
 
-        robot = env.getRobot()
-        vision = env.getVision()
+        print("running:\n", script)
+        robot         = env.getRobot()
+        vision        = env.getVision()
+        objectManager = env.getObjectManager()
+        scriptReturn  = None  # If the script returns anything, its placed in here
+
+        # Build the script inside of a function, so users can "return" out of it
+        script = script.replace('\n', '\n    ')
+        script        = "def script(robot, vision, objectManager):\n" + \
+                            script + "\n" + \
+                        "scriptReturn = script(robot, vision, objectManager)"
         try:
             exec(script)
-        except:
-            printf('Interpreter.__evaluateExpression(): ERROR: Script "', script, '" crashed!')
+            print("Returned ", scriptReturn)
+        except Exception as e:
+            printf('Interpreter.__evaluateExpression(): ERROR: Script crashed: ', e)
             return None, False
 
         if answer is None:
@@ -306,7 +310,7 @@ class Interpreter:
 
 
     # The following functions are *only* for interpreter to use within itself.
-    def __programThread(self):
+    def __programThread(self, robot, vision):
         # This is where the script you create actually gets run.
         print("\n\n\n ##### STARTING PROGRAM #####\n")
 
@@ -332,9 +336,18 @@ class Interpreter:
         # Check if a DestroyEvent exists, if so, run it's commandList
         destroyEvent = list(filter(lambda event: type(event) == Events.DestroyEvent, self.events))
 
-        if len(destroyEvent): self.__interpretEvent(destroyEvent[0], overrideKillApp=True)
+        if len(destroyEvent):
+            robot.setExiting(False)
+            vision.setExiting(False)
+            self.__exiting = False
+            self.__interpretEvent(destroyEvent[0])
+            robot.setExiting(True)
+            vision.setExiting(True)
+            self.__exiting = True
 
-    def __interpretEvent(self, event, overrideKillApp=False,):
+        self.mainThread = None
+
+    def __interpretEvent(self, event):
         # This will run through every command in an events commandList, and account for Conditionals and code blocks.
         eventIndex    = self.events.index(event)
         commandList   = event.commandList
@@ -345,7 +358,7 @@ class Interpreter:
 
         # Check each command, run the ones that should be run
         while index < len(event.commandList):
-            if self.isExiting() and not overrideKillApp: break  # THis might be overrun for things like DestroyEvent
+            if self.isExiting(): break  # THis might be overrun for things like DestroyEvent
 
             command    = commandList[index]
 
@@ -355,6 +368,9 @@ class Interpreter:
 
 
             # If the command returned an "Exit event" command, then exit the event evaluation
+            if evaluation == "Kill":
+                self.__exiting = True
+                break
             if evaluation == "Exit": break
 
 

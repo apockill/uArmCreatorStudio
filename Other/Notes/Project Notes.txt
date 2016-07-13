@@ -1,0 +1,28 @@
+DONT FORGET TO GIVE thenounproject.com CREDIT FOR THE ICONS
+
+
+---------------------------------------------------------------------------------------------------------------------
+
+######   Tests to perform   #####
+- Can a settings file be loaded, then another one loaded after, with everything slightly changed?
+
+
+
+
+---------------------------
+#### Transformation samples ####
+srcPts = np.array(  [[  -27,    65,  515],
+                     [   52,  -132,  580],
+                     [   40,    95,  430],
+                     [  107,   -78,  600],
+                     [   43,   185,  640],
+                     [ -195,   100,  520]],
+                     np.float32)
+
+dstPts = np.array(  [[    1,   -15,   15],
+                     [  -10,   -10,   10],
+                     [   15,   -25,   25],
+                     [   16,   -25,   25],
+                     [    5,   -10,    6],
+                     [    1,   -25,   15]],
+                     np.float32)

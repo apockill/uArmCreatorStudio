@@ -337,17 +337,22 @@ class EventList(QtWidgets.QListWidget):
         newCommandList.loadData(commandListSave)
         newEvent.commandList =  newCommandList
 
+        # Create the widget item to visualize the event
+        blankWidget = EventsGUI.EventWidget(self)
+        eventWidget = newEvent.dressWidget(blankWidget)
+
         # Figure out where the event will be placed in the list by looking at the "priority" of the other events
         placeIndex = 0
         for index, event in enumerate(self.getEventsOrdered()):
             if newEvent.priority < event.priority:
                 break
+
+            # If they are of the same priority, then put them in alphabetical order
+            if newEvent.priority == event.priority:
+                if min(newEvent.title, event.title) == newEvent.title: break
+
+
             placeIndex = index + 1
-
-
-        # Create the widget item to visualize the event
-        blankWidget = EventsGUI.EventWidget(self)
-        eventWidget = newEvent.dressWidget(blankWidget)
 
 
         # Create the list item to put the widget item inside of

@@ -1,0 +1,45 @@
+[
+   {
+      "commandList": [
+         {
+            "typeGUI": "BuzzerCommandGUI",
+            "typeLogic": "BuzzerCommand",
+            "parameters": {
+               "time": "0.5",
+               "frequency": "250",
+               "expression": "0.5"
+            }
+         },
+         {
+            "typeGUI": "BuzzerCommandGUI",
+            "typeLogic": "BuzzerCommand",
+            "parameters": {
+               "time": "0.5",
+               "frequency": "500",
+               "expression": "0.5"
+            }
+         },
+         {
+            "typeGUI": "BuzzerCommandGUI",
+            "typeLogic": "BuzzerCommand",
+            "parameters": {
+               "time": "0.5",
+               "frequency": "750",
+               "expression": "0.5"
+            }
+         },
+         {
+            "typeGUI": "BuzzerCommandGUI",
+            "typeLogic": "BuzzerCommand",
+            "parameters": {
+               "time": "0.5",
+               "frequency": "1000",
+               "expression": "0.5"
+            }
+         }
+      ],
+      "typeGUI": "InitEventGUI",
+      "typeLogic": "InitEvent",
+      "parameters": {}
+   }
+]

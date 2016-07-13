@@ -1,5 +1,7 @@
 from time                import sleep  # Used only for waiting for robot in CoordCalibrations, page 5
 import numpy             as np
+import CommandsGUI
+import EventsGUI
 from PyQt5               import QtCore, QtWidgets, QtGui
 from CameraGUI           import CameraSelector
 from Logic               import Paths
@@ -36,11 +38,27 @@ class CalibrateWindow(QtWidgets.QDialog):
         self.updateLabels()
 
     def initUI(self):
+        def createIconLayout(commandOrEvent):
+            # Returns a QLabel with a pixmap set with a picture from the specified path, and a caption to go next to it
+            title = commandOrEvent.title
+            icon  = QtGui.QPixmap(commandOrEvent.icon)
+            captionLbl = QtWidgets.QLabel(title)
+            pictureLbl = QtWidgets.QLabel()
+            pictureLbl.setPixmap(icon)
+
+            layout = QtWidgets.QHBoxLayout()
+            layout.addWidget(pictureLbl)
+            layout.addWidget(captionLbl)
+            return layout
 
         motionBtn = QtWidgets.QPushButton("Calibrate Motion Detection")
         coordBtn  = QtWidgets.QPushButton("Calibrate Camera/Robot Position")
         cancelBtn = QtWidgets.QPushButton("Cancel")
         applyBtn  = QtWidgets.QPushButton("Apply")
+
+        crHint    = QtWidgets.QLabel("Required for ")
+        mdHint    = QtWidgets.QLabel("Required for ")
+
 
         motionBtn.clicked.connect(self.calibrateMotion)
         coordBtn.clicked.connect(self.calibrateCoordinates)
@@ -57,15 +75,26 @@ class CalibrateWindow(QtWidgets.QDialog):
         # Add the relevant claibration buttons and labels here
         row1 = QtWidgets.QHBoxLayout()
         row2 = QtWidgets.QHBoxLayout()
+        row3 = QtWidgets.QHBoxLayout()
+        row4 = QtWidgets.QHBoxLayout()
 
         row1.addWidget(      coordBtn)
         row1.addStretch(1)
         row1.addWidget( self.coordLbl)
 
-        row2.addWidget(     motionBtn)
         row2.addStretch(1)
-        row2.addWidget(self.motionLbl)
+        row2.addWidget(crHint)
+        row2.addLayout(createIconLayout(CommandsGUI.PickupObjectCommandGUI))
+        row2.addLayout(createIconLayout(CommandsGUI.MoveRelativeToObjectCommandGUI))
 
+
+        row3.addWidget(     motionBtn)
+        row3.addStretch(1)
+        row3.addWidget(self.motionLbl)
+
+        row4.addStretch(1)
+        row4.addWidget(mdHint)
+        row4.addLayout(createIconLayout(EventsGUI.MotionEventGUI))
 
 
 
@@ -73,6 +102,9 @@ class CalibrateWindow(QtWidgets.QDialog):
         middleVLayout = QtWidgets.QVBoxLayout()
         middleVLayout.addLayout(row1)
         middleVLayout.addLayout(row2)
+        middleVLayout.addSpacing(50)
+        middleVLayout.addLayout(row3)
+        middleVLayout.addLayout(row4)
         middleVLayout.addStretch(1)
 
 
@@ -334,7 +366,7 @@ class CWPage1(QtWidgets.QWizardPage):
         promptLbl  = QtWidgets.QLabel(prompt)
         imageLbl   = QtWidgets.QLabel()
 
-        imageLbl.setPixmap(QtGui.QPixmap(Paths.robot_cam_overview))
+        imageLbl.setPixmap(QtGui.QPixmap(Paths.help_cam_overview))
 
         # Set titles bold
         bold = QtGui.QFont()
@@ -402,7 +434,7 @@ class CWPage2(QtWidgets.QWizardPage):
 
 
         # Set the animated gif on the movieLbl
-        movie = QtGui.QMovie(Paths.robot_lower_head)
+        movie = QtGui.QMovie(Paths.help_lower_head)
         movieLbl.setMovie(movie)
         movie.start()
 
@@ -487,8 +519,8 @@ class CWPage3(QtWidgets.QWizardPage):
 
 
         # Set the images on the img labels
-        imgOneLbl.setPixmap(QtGui.QPixmap(Paths.make_sticker))
-        imgTwoLbl.setPixmap(QtGui.QPixmap(Paths.sticker_on_head))
+        imgOneLbl.setPixmap(QtGui.QPixmap(Paths.help_make_sticker))
+        imgTwoLbl.setPixmap(QtGui.QPixmap(Paths.help_marker_on_head))
 
         # Set titles bold
         bold = QtGui.QFont()
@@ -552,7 +584,7 @@ class CWPage4(QtWidgets.QWizardPage):
 
 
         # Set the animated gif on the movieLbl
-        movie = QtGui.QMovie(Paths.selecting_marker)
+        movie = QtGui.QMovie(Paths.help_sel_marker)
         movieLbl.setMovie(movie)
         movie.start()
 
@@ -607,7 +639,7 @@ class CWPage4(QtWidgets.QWizardPage):
                              rect       = rect,
                              pickupRect = None,
                              height     = None)
-        target = self.vision.tracker.createTarget(trackable.getViews()[0])
+        target = self.vision.planeTracker.createTarget(trackable.getViews()[0])
 
         # Analyze it, and make sure it's a valid target. If not, return the camera to selection mode.
         if len(target.descrs) == 0 or len(target.keypoints) == 0:
@@ -637,8 +669,7 @@ class CWPage4(QtWidgets.QWizardPage):
 
         # Turn on the camera, and start tracking
         self.cameraWidget.play()
-        self.vision.addTrackable(self.newRobotMrkr)
-        self.vision.startTracker()
+        self.vision.addPlaneTarget(self.newRobotMrkr)
 
 
     def tryAgain(self):
@@ -737,8 +768,7 @@ class CWPage5(QtWidgets.QWizardPage):
         #   Start tracking the robots marker
         rbMarker = objManager.getObject("Robot Marker")
         vision.endAllTrackers()
-        vision.addTrackable(rbMarker)
-        vision.startTracker()
+        vision.addPlaneTarget(rbMarker)
 
 
         # A list of robot Coord and camera Coords, where each index of robPts corresponds to the cameraPoint index
@@ -758,33 +788,45 @@ class CWPage5(QtWidgets.QWizardPage):
 
         # Test the z on 4 xy points
         zTest = int(round(zLower, 0))  # Since range requires an integer, round zLower just for this case
-        for z in range(zTest, 26, 1): testCoords += [[0,  -15, z]]
-        for z in range(zTest, 19, 2): testCoords += [[-8, -11, z]]
-        for z in range(zTest, 20, 2): testCoords += [[-5, -13, z]]
-        for z in range(zTest, 20, 2): testCoords += [[-5, -17, z]]
-        for z in range(zTest, 19, 2): testCoords += [[-8, -19, z]]
-        for z in range(zTest, 19, 2): testCoords += [[ 8, -11, z]]
-        for z in range(zTest, 20, 2): testCoords += [[ 5, -13, z]]
-        for z in range(zTest, 20, 2): testCoords += [[ 5, -17, z]]
-        for z in range(zTest, 19, 2): testCoords += [[ 8, -19, z]]
+        for x in range(  -20, 20): testCoords += [[x,  15,    15]]  # Center of XYZ grid
+        for y in range(    8, 25): testCoords += [[ 0,  y,    15]]
+        for z in range(zTest, 25): testCoords += [[ 0, 15,     z]]
 
+        for x in range(  -20, 20): testCoords += [[x,  15, zTest]]  # Center of XY, Bottom z
+        for y in range(    8, 25): testCoords += [[ 0,  y, zTest]]
+        # for z in range(zTest, 25): testCoords += [[ 0, 15,     z]]
 
-        # # Test very near the base of the robot, but avoid the actual base
-        for x in range(-20, -10,  1): testCoords += [[x, -5, zLower]] # Anything lower than -10x will hit the robot legs
-        for x in range( 10,  20,  1): testCoords += [[x, -5, zLower]]
-        for x in range( 20,   9, -1): testCoords += [[x, -6, zLower]]
-        for x in range( -9, -20, -1): testCoords += [[x, -6, zLower]]
-        for x in range(-20,  -6,  1): testCoords += [[x, -7, zLower]]
-        for x in range(  6,  20,  1): testCoords += [[x, -7, zLower]]
-        direction  = True
+        for x in range(  -20, 20): testCoords += [[x,  15,    25]]  # Center of XY, top z
+        for y in range(   10, 25): testCoords += [[ 0,  y,    25]]
+        # for z in range(zTest, 25): testCoords += [[ 0, 15,     z]]
 
-        # Scan the entire board row by row
-        for y in range(-8, -25, -1):  # [-8, -11, -15, -19, -25]:
-            if direction:
-                for x in range(20, -20, -1): testCoords += [[x, y, zLower]]
-            else:
-                for x in range(-20, 20,  1): testCoords += [[x, y, zLower]]
-            direction = not direction
+        # for z in range(zTest, 26, 1): testCoords += [[0,  15, z]]
+        # for z in range(zTest, 19, 2): testCoords += [[-8, 11, z]]
+        # for z in range(zTest, 20, 2): testCoords += [[-5, 13, z]]
+        # for z in range(zTest, 20, 2): testCoords += [[-5, 17, z]]
+        # for z in range(zTest, 19, 2): testCoords += [[-8, 19, z]]
+        # for z in range(zTest, 19, 2): testCoords += [[ 8, 11, z]]
+        # for z in range(zTest, 20, 2): testCoords += [[ 5, 13, z]]
+        # for z in range(zTest, 20, 2): testCoords += [[ 5, 17, z]]
+        # for z in range(zTest, 19, 2): testCoords += [[ 8, 19, z]]
+        #
+        #
+        # # # Test very near the base of the robot, but avoid the actual base
+        # for x in range(-20, -10,  1): testCoords += [[x, 5, zLower]] # Anything lower than -10x will hit the robot legs
+        # for x in range( 10,  20,  1): testCoords += [[x, 5, zLower]]
+        # for x in range( 20,   9, -1): testCoords += [[x, 6, zLower]]
+        # for x in range( -9, -20, -1): testCoords += [[x, 6, zLower]]
+        # for x in range(-20,  -6,  1): testCoords += [[x, 7, zLower]]
+        # for x in range(  6,  20,  1): testCoords += [[x, 7, zLower]]
+        # direction  = True
+        #
+        # # Scan the entire board row by row
+        # for y in range(8, 25):  # [-8, -11, -15, -19, -25]:
+        #     if direction:
+        #         for x in range(20, -20, -1): testCoords += [[x, y, zLower]]
+        #     else:
+        #         for x in range(-20, 20,  1): testCoords += [[x, y, zLower]]
+        #     direction = not direction
 
 
         printf("CWPage5.runCalibration(): Testing ", len(testCoords), " coordinate points")
@@ -815,7 +857,7 @@ class CWPage5(QtWidgets.QWizardPage):
         robot.setPos(**robot.home)
 
         # Prune the list down to 20 less than the original size, find the best set out of those
-        minPointCount = 6
+        minPointCount = 20
         # prunedSize = int(len(newCalibrations["ptPairs"]) * .90)
         # if prunedSize > minPointCount:
         #     bestScore, bestPtPairs = self.pruneCalibrationSet(prunedSize, newCalibrations["ptPairs"])
@@ -882,7 +924,7 @@ class CWPage5(QtWidgets.QWizardPage):
         # Here we update the GUI element for telling the user how many valid points have been tested, and progress
         successCount = len(newCalibrations["ptPairs"])
         recFailCount = len(newCalibrations["failPts"])
-        print("failcoutn: ", recFailCount)
+        # print("failcoutn: ", recFailCount)
         text  = "Calibration Progress: \n"
         if currentPoint > len(testCoords) * .25:
             if recFailCount / currentPoint > .5:
@@ -893,8 +935,8 @@ class CWPage5(QtWidgets.QWizardPage):
 
 
         text += "    Testing Point:\t" + str(currentPoint) + "/" + str(len(testCoords)) + "\n"
-        text += "    Correct Points:\t" + str(successCount) + "\n"
-        text += "    Failed Points:\t" + str(currentPoint - successCount) + "\n"
+        text += "    Valid Points: \t" + str(successCount) + "\n"
+        # text += "    Failed Points:\t" + str(currentPoint - successCount) + "\n"
 
         self.testLbl.setText(text)
 

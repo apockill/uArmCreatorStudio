@@ -112,8 +112,7 @@ class MotionEvent(Event):
         # Scale the movement thresholds and set a low, medium, and high threshold
         diff      = (self.active - self.stationary)
         self.low  = self.stationary + diff
-        self.med  = self.stationary + diff * 3
-        self.high = self.stationary + diff * 6
+        self.high = self.stationary + diff * 4
 
     def isActive(self):
         if len(self.errors): return False  # If it did not compile without errors, don't run
@@ -124,53 +123,41 @@ class MotionEvent(Event):
 
         if self.parameters["low"] == "Low":
             active = active and self.low < currentMotion
-        if self.parameters["low"] == "Med":
-            active = active and self.med < currentMotion
+
         if self.parameters["low"] == "High":
             active = active and self.high < currentMotion
 
         if self.parameters["high"] == "Low":
             active = active and currentMotion < self.low
-        if self.parameters["high"] == "Med":
-            active = active and currentMotion < self.med
+
         if self.parameters["high"] == "High":
             active = active and currentMotion < self.high
 
         return active  #self.parameters["lowThreshold"] < motion < self.parameters["upperThreshold"]
 
 
-class RecognizeEvent(Event):
+class RecognizeObjectEvent(Event):
 
     def __init__(self, env, interpreter, parameters):
-        super(RecognizeEvent, self).__init__(parameters)
+        super(RecognizeObjectEvent, self).__init__(parameters)
 
         # Get what is needed from the environment by requesting it through self.getVerifyXXXX(env)
         self.vision     = self.getVerifyVision(env)
-
-        if not self.parameters["objectID"] == "Face":
-            self.object     = self.getVerifyObject(env, self.parameters["objectID"])
+        self.object     = self.getVerifyObject(env, self.parameters["objectID"])
 
 
         # Make sure initialization can continue
         if len(self.errors): return
 
         # Turn on tracking and add the target. DO NOT TURN ON FILTERS, that's only for GUI to do, which it will.
-        if not self.parameters["objectID"] == "Face":
-            self.vision.addTrackable(self.object)
-            self.vision.startTracker()
-        else:
-            self.vision.startCascadeTracker()
+        self.vision.addPlaneTarget(self.object)
 
     def isActive(self):
         # Make sure the event won't crash if there were errors
         if len(self.errors): return False  # If it did not compile without errors, don't run
 
 
-        if self.parameters["objectID"] == "Face":
-            tracked = self.vision.isFaceDetected()
-            print("Tracked: ", tracked)
-        else:
-            tracked = self.vision.searchTrackedHistory(trackable=self.object, maxAge=0)
+        tracked = self.vision.searchTrackedHistory(trackable=self.object, maxAge=0)
 
         ret = tracked is not None
 
@@ -180,6 +167,37 @@ class RecognizeEvent(Event):
 
         return ret
 
+
+class RecognizeCascadeEvent(Event):
+    """
+    For tracking cascades like "Face" or "Smile" using visions CascadeTracker features
+    """
+
+    def __init__(self, env, interpreter, parameters):
+        super(RecognizeCascadeEvent, self).__init__(parameters)
+
+        # Get what is needed from the environment by requesting it through self.getVerifyXXXX(env)
+        self.vision     = self.getVerifyVision(env)
+
+        # Make sure initialization can continue
+        if len(self.errors): return
+
+        # Turn on tracking and add the target. DO NOT TURN ON FILTERS, that's only for GUI to do, which it will.
+        self.vision.addCascadeTarget(self.parameters["objectID"])
+
+
+    def isActive(self):
+        # Make sure the event won't crash if there were errors
+        if len(self.errors): return False  # If it did not compile without errors, don't run
+
+        ret = self.vision.isFaceDetected()
+
+
+        # If target was "not" seen
+        if self.parameters["not"]:
+            ret = not ret
+
+        return ret
 
 
 class TipEvent(Event):

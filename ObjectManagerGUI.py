@@ -2,6 +2,7 @@ import numpy             as np
 import Logic.RobotVision as rv
 from time                import time
 from PyQt5               import QtCore, QtWidgets, QtGui
+from CommonGUI           import centerScreen
 from CameraGUI           import CameraWidget, CameraSelector, cvToPixFrame
 from Logic               import Paths
 from Logic.Global        import printf
@@ -160,14 +161,12 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         # Make the SelectedObject window reflect the information about the object (and it's type) that is curr. selected
         if isinstance(obj, self.objManager.TRACKABLEOBJ):
             self.setSelectionTrackable(obj)
-            self.vision.addTrackable(obj)
-            self.vision.startTracker()
+            self.vision.addPlaneTarget(obj)
             return
 
         if isinstance(obj, self.objManager.TRACKABLEGROUP):
             self.setSelectionGroup(obj)
-            self.vision.addTrackable(obj)
-            self.vision.startTracker()
+            self.vision.addPlaneTarget(obj)
             return
 
         if isinstance(obj, self.objManager.MOTIONPATH):
@@ -200,7 +199,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         # Get the "Average" number of keypoints for this object
         totalPoints = 0
         for view in views:
-            target = self.vision.tracker.createTarget(view)
+            target = self.vision.planeTracker.createTarget(view)
             totalPoints += len(target.descrs)
         avgPoints = int(totalPoints / len(views))
 
@@ -373,12 +372,14 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         recMenu        = MotionRecordWindow(forbiddenNames, pathObj, robot, self.objManager, self)
         finished       = recMenu.exec_()
-        recMenu.close()
-        recMenu.deleteLater()
 
         if finished:
             recMenu.createNewObject()
             self.refreshObjectList(selectedItem=recMenu.newObject.name)
+
+        recMenu.close()
+        recMenu.deleteLater()
+
 
 
     def closeEvent(self, event):
@@ -538,6 +539,10 @@ class MotionRecordWindow(QtWidgets.QDialog):
             self.nameEdit.setText(self.newObject.name)
             self.nameEdit.setDisabled(True)
 
+            lastPos = self.motionPath[-1][2:]
+            pos = robot.getFK(servo0=lastPos[0], servo1=lastPos[1], servo2=lastPos[2])
+            robot.setPos(coord=pos, wait=False)
+            robot.setServoAngles(servo3=lastPos[3])
 
         self.initUI()
         self.refreshMotionList()
@@ -831,6 +836,8 @@ class MotionRecordWindow(QtWidgets.QDialog):
         self.motionPath = final
         print("After: ", self.motionPath[:10], len(self.motionPath))
 
+
+
     def createNewObject(self):
         if self.newObject is None:
             self.optimizeMotionPath()
@@ -851,7 +858,6 @@ class MotionRecordWindow(QtWidgets.QDialog):
 
         self.objManager.saveObject(motionObj)
         self.newObject = motionObj
-
 
     def isComplete(self):
         newHintText = ""
@@ -903,9 +909,16 @@ class ObjectWizard(QtWidgets.QWizard):
 
 
         self.page2.newObject.connect(lambda: self.page4.setObject(self.page2.object))  # Link page3 to page2's object
-
         self.setWindowTitle("Object Wizard")
         self.setWindowIcon(QtGui.QIcon(Paths.objectWizard))
+
+        # Center the window after building it
+        self.timer    = QtCore.QTimer.singleShot(0, lambda: centerScreen(self))
+
+
+
+
+
 
 
     def createNewObject(self):
@@ -942,6 +955,10 @@ class ObjectWizard(QtWidgets.QWizard):
         self.page4.close()
 
 class OWPage1(QtWidgets.QWizardPage):
+    """
+    Get the name of the object
+    """
+
     def __init__(self, forbiddenNames, parent):
         super(OWPage1, self).__init__(parent)
 
@@ -987,9 +1004,9 @@ class OWPage1(QtWidgets.QWizardPage):
         mainHLayout = QtWidgets.QHBoxLayout()
         mainHLayout.addLayout(col1)
 
-        self.setLayout(mainHLayout)
         self.setMinimumHeight(750)
-        self.setMinimumWidth(700)
+        self.setMinimumWidth(900)
+        self.setLayout(mainHLayout)
 
     def isComplete(self):
         newName, newHintText = sanitizeName(self.nameEdit.text(), self.forbiddenNames)
@@ -999,7 +1016,11 @@ class OWPage1(QtWidgets.QWizardPage):
         return len(newHintText) == 0
 
 class OWPage2(QtWidgets.QWizardPage):
-    newObject = QtCore.pyqtSignal()  # This emits when a valid object is selected, so that KPWPage3 can update
+    """
+    Have the user select the object
+    """
+
+    newObject = QtCore.pyqtSignal()  # This emits when a valid object is selected, so that OWPage3 can update
 
     def __init__(self, environment, parent):
         super(OWPage2, self).__init__(parent)
@@ -1037,10 +1058,10 @@ class OWPage2(QtWidgets.QWizardPage):
         self.hintLbl.setWordWrap(True)
 
         # Create a tutorial gif that will be next to the video
-        movieLbl   = QtWidgets.QLabel("Could not find example gif")
+        movieLbl   = QtWidgets.QLabel("")
 
         # Set the animated gif on the movieLbl
-        movie = QtGui.QMovie(Paths.selecting_object)
+        movie = QtGui.QMovie(Paths.help_sel_obj)
         movieLbl.setMovie(movie)
         movie.start()
 
@@ -1061,6 +1082,7 @@ class OWPage2(QtWidgets.QWizardPage):
 
         mainHLayout = QtWidgets.QHBoxLayout()
         mainHLayout.addLayout(col1)
+
 
         self.setLayout(mainHLayout)
 
@@ -1102,7 +1124,7 @@ class OWPage2(QtWidgets.QWizardPage):
         # Get the "target" object from the image and rectangle
         trackable = TrackableObject("")
         trackable.addNewView(frame, rect, None, None)
-        target    = self.vision.tracker.createTarget(trackable.getViews()[0])
+        target    = self.vision.planeTracker.createTarget(trackable.getViews()[0])
 
         # Analyze it, and make sure it's a valid target. If not, return the camera to selection mode.
         if len(target.descrs) == 0 or len(target.keypoints) == 0:
@@ -1114,8 +1136,7 @@ class OWPage2(QtWidgets.QWizardPage):
         self.object = target
         self.completeChanged.emit()
         self.cameraWidget.play()
-        self.vision.addTrackable(trackable)
-        self.vision.startTracker()
+        self.vision.addPlaneTarget(trackable)
         self.newObject.emit()
 
 
@@ -1162,6 +1183,10 @@ class OWPage2(QtWidgets.QWizardPage):
         self.vision.endAllTrackers()
 
 class OWPage3(QtWidgets.QWizardPage):
+    """
+    Get the height of the object, in centimeters
+    """
+
     def __init__(self, parent):
         super(OWPage3, self).__init__(parent)
 
@@ -1182,6 +1207,7 @@ class OWPage3(QtWidgets.QWizardPage):
                                       "\nIf the object is not flat on the top, measure the height to the part of the "
                                       "object that the robot will be grasping.")
 
+        centLbl    = QtWidgets.QLabel(" centimeters")
 
         # Set titles bold
         bold = QtGui.QFont()
@@ -1189,14 +1215,18 @@ class OWPage3(QtWidgets.QWizardPage):
         step1Lbl.setFont(bold)
         self.errorLbl.setFont(bold)
 
+        heightRow = QtWidgets.QHBoxLayout()
+        heightRow.addWidget(self.heightTxt)
+        heightRow.addWidget(centLbl)
 
         # Place the GUI objects vertically
         col1 = QtWidgets.QVBoxLayout()
         col1.addWidget(step1Lbl)
         col1.addWidget(promptLbl)
-        col1.addWidget(self.heightTxt)
+        col1.addLayout(heightRow)
         col1.addStretch(1)
         col1.addWidget(self.errorLbl)
+
         mainHLayout = QtWidgets.QHBoxLayout()
         mainHLayout.addLayout(col1)
 
@@ -1236,6 +1266,9 @@ class OWPage4(QtWidgets.QWizardPage):
     and requets another picture. The isComplete() function returns true only when there is a selected rectangle.
 
     Only a rectangle is returned, to be used with PlaneTracker's pickupRect variable
+    """
+    """
+    Get the pickup area of the object
     """
 
     def __init__(self, environment, parent):
@@ -1281,7 +1314,7 @@ class OWPage4(QtWidgets.QWizardPage):
         movieLbl   = QtWidgets.QLabel("Could not find example gif")
 
         # Set the animated gif on the movieLbl
-        movie = QtGui.QMovie(Paths.selecting_pickArea)
+        movie = QtGui.QMovie(Paths.help_sel_pickuprect)
         movieLbl.setMovie(movie)
         movie.start()
         movieLbl.resize(320, 320)
