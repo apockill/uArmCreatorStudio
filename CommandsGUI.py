@@ -143,6 +143,7 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         add(MoveRelativeToObjectCommandGUI)
         add(PickupObjectCommandGUI)
         add(TestObjectSeenCommandGUI)
+        add(TestObjectLocationCommandGUI)
 
         return tabWidget
 
@@ -1234,6 +1235,75 @@ class TestObjectSeenCommandGUI(CommandGUI):
         self.description = "If"
         if self.parameters["not"]: self.description += " NOT"
         self.description += " " + confidenceText[self.parameters["ptCount"]] + " confident object was seen"
+
+
+class TestObjectLocationCommandGUI(CommandGUI):
+    title     = "Test Location of Object"
+    tooltip   = "This command will allow code in blocked brackets below it to run IF the specified object has been"\
+                "recognized and the objects location in a particular location."
+    icon      = Paths.command_see_obj
+    logicPair = "TestObjectLocationCommand"
+
+    def __init__(self, env, parameters=None):
+        super(TestObjectLocationCommandGUI, self).__init__(parameters)
+
+        objManager = env.getObjectManager()
+        vision     = env.getVision()
+        self.getObjectList   = lambda: objManager.getObjectNameList(objFilter=objManager.TRACKABLE)
+
+        # If parameters do not exist, then set up the default parameters
+        if self.parameters is None:
+            # Anything done with env should be done here. Try not to save env as a class variable whenever possible
+            self.parameters = {"objectID":    "",
+                               "location":     0,
+                                    "not": False}
+
+    def dressWindow(self, prompt):
+        # Define what happens when the user changes the object selection
+        choiceLbl         = QtWidgets.QLabel("Choose an Object: ")
+        notLbl            = QtWidgets.QLabel("NOT")
+
+        prompt.objChoices = QtWidgets.QComboBox()
+        prompt.notCheck   = QtWidgets.QCheckBox()  # "Not" CheckBox
+
+
+        # Populate the ObjectList with trackable objects
+        prompt.objChoices.addItem(self.parameters["objectID"])  # Add the previously selected item at the top
+        objectList = self.getObjectList()
+        for index, objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
+
+
+
+        # Set up the "NOT" Check
+        prompt.notCheck.setChecked(self.parameters["not"])
+
+
+
+        self._addRow(prompt,     choiceLbl, prompt.objChoices)
+        self._addRow(prompt,        notLbl,   prompt.notCheck)
+
+        self._addObjectHint(prompt, len(objectList))
+
+        return prompt
+
+    def _extractPromptInfo(self, prompt):
+        newParameters = {"objectID": str(prompt.objChoices.currentText()),
+                              "not": prompt.notCheck.isChecked()}
+
+        print("new params", newParameters)
+        self.parameters.update(newParameters)
+
+        return self.parameters
+
+    def _updateDescription(self):
+        objName = (self.parameters["objectID"], "Object")[len(self.parameters["objectID"]) == 0]
+        self.title = "Test the Location of " + objName
+
+        confidenceText = ["slightly", "fairly", "highly"]
+
+        self.description = "If " + objName + " is"
+        if self.parameters["not"]: self.description += " NOT"
+        self.description += " seen in a specified location"
 
 
 
