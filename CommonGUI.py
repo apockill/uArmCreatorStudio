@@ -1,4 +1,7 @@
 from PyQt5        import QtGui, QtCore, QtWidgets
+from threading    import RLock
+from Logic.Global import printf
+
 import ast  # To check if a statement is python parsible, for evals
 """
 This module is for storing general purpose widgets
@@ -125,16 +128,20 @@ class ScriptWidget(QtWidgets.QWidget):
 """
     Using this scripting module, the possibilities are endless. You can directly inject python code into your program
 without a hassle. You can use any of the libraries and modules that are built into this software, real time, and
-without any extra modification. There are certain classes that are preloaded into this script that you can use.
+without any extra modification.
+
+    There are certain classes that are loaded into the script as python builtins, so you don't need to pass them to
+functions or worry about scope, or even worry about setting them global. They are:
 
 
-Variables you have quick access to:
+Builtin Variables:
     robot
         You have full access to controlling the robot, using the Robot.py library that was built as a wrapper for
         a communication protocol.
 
         For source code on the Robot class, go to:
         https://github.com/apockill/RobotGUIProgramming/blob/master/Logic/Robot.py
+
 
     vision
         Using this module, you can easly and without hassle track objects that you have taught the software in the
@@ -146,12 +153,17 @@ Variables you have quick access to:
         https://github.com/apockill/RobotGUIProgramming/blob/master/Logic/Vision.py
 
 
-    objectManager
+    resources
         You can pull any "objects" that you have built using the Resource Manager. This means, for example,
         that you could request a Motion Recording and replay it, or request a Vision object and track it.
 
         For source code on the Object Manager class, go to:
         https://github.com/apockill/RobotGUIProgramming/blob/master/Logic/ObjectManager.py
+
+
+    settings
+        This is a python dictionary of the GUI settings. This includes things like calibrations for various things.
+        Try doing print(settings) to see what it contains.
 
 
 Examples scripts using robot
@@ -163,7 +175,7 @@ Examples scripts using robot
     robot.setSpeed(10)              # Sets speed for all future moves using robot.setPos. Speed set in cm/s
     robot.connected()               # Returns True if the robot is connected and working, False if not
 
-    robot.getServoAngles()          # Returns the current angles of the robots servos in [servo0, servo1, servo2, servo3] format
+    robot.getServoAngles()          # Returns the current angles of the robots servos, like [servo0, servo1, servo2, servo3]
     robot.getCurrentCoord()         # Returns the current coordinate of the robot in [x, y, z] format
     robot.getTipSensor()            # Returns True or False, if the tip sensor on the robot is being pressed or not
     robot.getMoving()               # Returns True if the robot is currently moving
@@ -172,12 +184,20 @@ Examples scripts using robot
 
 Example scripts using vision
     # The first step of using vision is getting a trackable object. Make an object in Resources then access it by name here.
-    trackableObject = objectManager.getObject("Ace of Spades")   # Get vision-compatible object by name using objectManager
+    trackableObject = resources.getObject("Ace of Spades")
 
 
     # The next step is to make sure vision is tracking the object. Usually this should be done in Initialization event.
     # Objects only stop being tracked when the script ends. Do this only once.
     vision.addPlaneTarget(trackableObject)
+
+
+    # Wait two seconds to make sure that vision has time to search for the new object
+    sleep(2)
+
+
+    # Alternatively you can use the following, which will wait for 30 frames to pass before continuing
+    vision.waitForNewFrames(30)
 
 
     # If the object is already being tracked and has been for a while, you can try using vision to search for it
@@ -202,8 +222,17 @@ Example scripts using vision
     trackedObject = vision.searchTrackedHistory(trackable=trackableObject, maxAge=30, minPtCount=50)
 
 
+
+Any variable created in the scope of the script command can be used in any other script command, or block command
+    def someFunctionName(someArgument):
+        # Any python function here
+        print("This function can work in any script command in the program!")
+        print(someArgument)
+
+    someVariableName = "This string can be used in any Script command in the program"
+
 """
-    minWidth  = 500
+    minWidth  = 550
     minHeight = 600
 
 
@@ -331,11 +360,79 @@ Example scripts using vision
         self.hintLbl.setText(error)
 
 
+
+class Console(QtWidgets.QWidget):
+    """
+        This is used to display console output, and allow the user to choose which classes print output, and allow
+        users to "exec" code
+    """
+    # Have clear button, settings (for which classes to display responses from), exec stuff,
+
+
+    def __init__(self, parent):
+        super(Console, self).__init__(parent)
+        # Since prints might come from different threads, lock before adding stuff to self.text
+        self.printLock    = RLock()
+        self.execFunction = None
+
+        self.inputEdt  = QtWidgets.QLineEdit()
+        self.text      = QtWidgets.QTextEdit()
+
+
+        # Initialize UI
+        self.inputEdt.returnPressed.connect(self.input)
+
+        monospace = QtGui.QFont("Monospace")
+        monospace.setStyleHint(QtGui.QFont.TypeWriter)
+        self.text.setFont(monospace)
+        self.text.setReadOnly(True)
+        self.text.setWordWrapMode(QtGui.QTextOption.NoWrap)
+
+        self.mainVLayout = QtWidgets.QVBoxLayout()
+        self.mainVLayout.addWidget(self.text)
+        self.mainVLayout.addWidget(self.inputEdt)
+        self.setLayout(self.mainVLayout)
+
+    def write(self, printStr):
+        printStr = str(printStr)
+        if len(printStr) == 0: return
+
+        with self.printLock:
+            self.text.insertPlainText(printStr + "\n")
+            c = self.text.textCursor()
+            c.movePosition(QtGui.QTextCursor.End)
+            self.text.setTextCursor(c)
+
+    def input(self):
+        with self.printLock:
+
+            if self.execFunction is None:
+                self.inputEdt.setText("")
+                return
+
+            command = self.inputEdt.text()
+            self.write(command)
+            ret, success = self.execFunction(command)
+            if ret is None:
+                self.write("")
+            else:
+                self.write(ret)
+
+
+            self.inputEdt.setText("")
+
+
+    def setExecFunction(self, execFunction):
+        # Set the function that will evaluate code
+        self.execFunction = execFunction
+
+
+
 # Center a window on the current screen
 def centerScreen(self):
         frameGm = self.frameGeometry()
         screen = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
         centerPoint = QtWidgets.QApplication.desktop().screenGeometry(screen).center()
         frameGm.moveCenter(centerPoint)
-        print("Centerpoint: ", centerPoint, screen)
+
         self.move(frameGm.topLeft())

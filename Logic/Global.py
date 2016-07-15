@@ -9,18 +9,53 @@ It also holds the actual global variable "keysPressed".
 """
 
 
+def wait(waitTime, exitFunc):
+    """
+    This is a convenience function for waiting a certain amount of time. The idea is that the exitFunc will
+    quit the wait at any point that it returns True. This is so that when the interpreter is stopped, all
+    commands will exit quickly and easily.
+    """
+
+    waitedTime = 0
+
+    # While sleeping, make sure that the script has not been shut down
+    start = time()
+    while time() - start < waitTime - .05:
+        if exitFunc(): return
+        sleep(.05)
+
+    sleep(waitTime - (time() - start))
+
+
+def waitUntilTime(timeMS, exitFunc):
+    # Waits until a certain time is reached, where timeMS is the time in miliseconds since some 1970
+
+    if exitFunc(): return
+
+    while time() < timeMS - 0.055:
+        if exitFunc(): return
+        sleep(.05)
+
+
+    # Sleep the last little bit, for extra accuracy
+    now = time()
+    if now < timeMS:
+        sleep(timeMS - now)
 
 
 # Initiate Global Variables (called from
 def init():
     global keysPressed
+    global printRedirectFunc
 
     # Used in keyboardEvent. Updated through Main.Application.notify() Format: ['a', 'b', '5', 'z']
     # Characters are stored while key is pressed, and removed when key is released
     keysPressed        = []
 
-    # When True, Global.printf function will print function name
-    printFunctionName  = True
+    # When this function is set, all print "strings" will be sent to it before printing normally
+    # The use case is for the Console widget. If printRedirectFunc = Console.write, then all prints will print on there
+    printRedirectFunc  = lambda string: None
+
 
 
 
@@ -69,6 +104,10 @@ def caller_name(skip=2, printModule=True, printClass=True, printFunction=True):
 
 spaceFunc = lambda n: ''.join(' ' for _ in range(n))  # For printf
 def printf(*args):
+    """
+    This function appends the Class and Function name to every function that runs in the program. This is immeasurably
+    helpful for debugging.
+    """
     # Create settings for the boilerplate information
     printModule   = False
     printFunction = True    # If false, no boilerplate will be printed
@@ -91,22 +130,18 @@ def printf(*args):
 
 
     # Format the space between the boilerplate and content
-    if ':' in buildString:
-        splitIndex = buildString.index(':')
-
-        boilerPlate = caller_name(printModule=printModule, printClass=printClass, printFunction=printFunction) + "()"
-        content     = buildString[splitIndex + 1:].lstrip()
-
+    boilerPlate = caller_name(printModule=printModule, printClass=printClass, printFunction=printFunction)
+    if len(boilerPlate) > 0:
         spaces = int((indentLength - len(boilerPlate)))       #How many spaces ahead the content column should be
         if spaces > 0:
-
             spacesString = spaceFunc(spaces)
             boilerPlate +=  spacesString
 
-        buildString = boilerPlate + content
-
-
+    buildString = boilerPlate + buildString
     print(buildString)
+
+    global printRedirectFunc
+    printRedirectFunc(buildString)
 
 
 class FpsTimer:

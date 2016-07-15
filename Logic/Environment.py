@@ -1,7 +1,8 @@
 from time         import sleep
 from copy         import deepcopy
 from threading    import Thread
-from Logic.Global import printf, FpsTimer
+from math         import *  # This is for setting math functions on the cleanNamespace function of interpeter
+from Logic.Global import printf, FpsTimer, wait
 from Logic.Vision import Vision
 from Logic        import Video, Events, Commands, ObjectManager, Robot, Global
 
@@ -90,7 +91,9 @@ class Environment:
 
 
 class Interpreter:
-    def __init__(self):
+    def __init__(self, environment):
+
+        self.env          = environment
         self.mainThread   = None    # The thread on which the script runs on. Is None while thread is not running.
         self.__exiting    = True    # When True, the script thread will attempt to close ASAP
         self.scriptFPS    = 50      # Speed at which events are checked
@@ -99,8 +102,13 @@ class Interpreter:
         # For self.getStatus()
         self.currRunning  = []      # A dictionary of what has been run so far in the loop {eventIndex:[commandIndex's]}
 
-        # Should only be interacted with through self.setVariable()
-        self.__variables  = {}
+        # These two are set in self.cleanNamespace
+        self.__variables  = None
+        self.execBuiltins = None
+        self.cleanNamespace()
+
+
+
 
 
     # Functions for GUI to use
@@ -143,31 +151,43 @@ class Interpreter:
 
         # Get rid of repeat errors
         # errors = set(errors)
-        printf("Interpreter.loadScript(): The following errors occured during loading: ", errors)
+        printf("The following errors occured during loading: ", errors)
         return errors
 
 
 
     # Generic Functions for API and GUI to use
-    def startThread(self, robot, vision):
+    def startThread(self, threaded=True):
         # Start the program thread
+
         if self.mainThread is None:
+            self.cleanNamespace()
+            robot  = self.env.getRobot()
+            vision = self.env.getVision()
+
             # Make sure vision and robot are not in exiting mode
             vision.setExiting(False)
             robot.setExiting(False)
             robot.setActiveServos(all=True)
             robot.setSpeed(10)
 
-            self.__exiting     = False
-            self.mainThread  = Thread(target=lambda: self.__programThread(robot, vision))
+            self.__exiting   = False
             self.currRunning = {}
-            self.mainThread.start()
-        else:
-            printf("Interpreter.startThread(): ERROR: Tried to run programThread, but there was already one running!")
 
-    def endThread(self, robot, vision):
+            if threaded:
+                self.mainThread  = Thread(target=lambda: self.__programThread())
+                self.mainThread.start()
+            else:
+                self.__programThread()
+        else:
+            printf("ERROR: Tried to run programThread, but there was already one running!")
+
+    def endThread(self):
+        robot  = self.env.getRobot()
+        vision = self.env.getVision()
+
         # Close the thread that is currently running at the first chance it gets. Return True or False
-        printf("Interpreter.endThread(): Closing program thread.")
+        printf("Closing program thread.")
 
         self.__exiting = True
 
@@ -186,30 +206,13 @@ class Interpreter:
         self.mainThread = None
         self.events     = []
 
-
-        # Reset self.__variables with the default values/functions #
-        safeList = ['math', 'acos', 'asin', 'atan', 'atan2', 'ceil', 'cos', 'cosh', 'degrees',
-                    'e', 'exp', 'fabs', 'floor', 'fmod', 'frexp', 'hypot', 'ldexp', 'log', 'log10',
-                    'modf', 'pi', 'pow', 'radians', 'sin', 'sinh', 'sqrt', 'tan', 'tanh']
-
-
-        # Use the list to filter the local namespace
-        self.__variables        = {}
-        self.__variables        = dict([(k, locals().get(k, None)) for k in safeList])
-
-
-        # Add any needed builtins back in.
-        self.__variables['abs']    = abs
-        self.__variables['robot']  = robot
-        self.__variables['vision'] = vision
-
         return True
 
     def addEvent(self, event):
         self.events.append(event)
 
 
-    def isRunning(self):
+    def threadRunning(self):
         return self.mainThread is not None
 
     def isExiting(self):
@@ -220,7 +223,7 @@ class Interpreter:
     def getStatus(self):
         # Returns an index of the (event, command) that is currently being run
 
-        if not self.isRunning():
+        if not self.threadRunning():
             return False
 
         currRunning = self.currRunning
@@ -229,6 +232,83 @@ class Interpreter:
 
 
     # The following functions should never be called by user - only for Commands/Events to interact with Interpreter
+    def cleanNamespace(self):
+        """
+        This function resets the self.variables namespace, and creates a variable called self.execBuiltins which
+        holds the python builtin functions that are allowed in the Script command. It also adds several things
+        as builtins.
+
+        Extra Builtins
+            - robot
+            - vision
+            - settings
+            - resources
+            - vStream
+
+
+        Excluded Builtins
+            - setattr
+            - dir
+            - next
+            - id
+            - object
+            - staticmethod
+            - eval
+            - open
+            - exec
+            - format
+            - getattr
+            - memoryview
+            - compile
+            - classmethod
+            - repr
+            - property
+            - __import__
+            - hasattr
+            - help
+            - input
+
+        """
+        #
+                # Reset self.__variables with the default values/functions #
+        safeList = ['math', 'acos', 'asin', 'atan', 'atan2', 'ceil', 'cos', 'cosh', 'degrees',
+                    'e', 'exp', 'fabs', 'floor', 'fmod', 'frexp', 'hypot', 'ldexp', 'log', 'log10',
+                    'modf', 'pi', 'pow', 'radians', 'sin', 'sinh', 'sqrt', 'tan', 'tanh']
+        cleanVariables   = {}
+        cleanVariables   = dict([(k, locals().get(k, None)) for k in safeList])
+        self.__variables = cleanVariables
+
+
+        robot         = self.env.getRobot()
+        vision        = self.env.getVision()
+        settings      = self.env.getSettings()
+        resources     = self.env.getObjectManager()
+        vStream       = self.env.getVStream()
+        newSleep      = lambda time: wait(time, self.isExiting)
+
+        # Add Python builtins, and also the extra ones (above)
+        execBuiltins = {      "abs":       abs,       "dict":       dict,
+                              "all":       all,        "hex":        hex,      "slice":      slice,
+                              "any":       any,     "divmod":     divmod,     "sorted":     sorted,
+                            "ascii":     ascii,  "enumerate":  enumerate,      "range":      range,
+                              "bin":       bin,        "int":        int,        "str":        str,
+                             "bool":      bool, "isinstance": isinstance,        "ord":        ord,
+                        "bytearray": bytearray,     "filter":     filter, "issubclass": issubclass,
+                            "bytes":     bytes,      "float":      float,       "iter":       iter,
+                         "callable":  callable,        "len":        len,       "type":       type,
+                              "chr":       chr,  "frozenset":  frozenset,       "list":       list,
+                           "locals":    locals,        "zip":        zip,       "vars":       vars,
+                          "globals":   globals,        "map":        map,   "reversed":   reversed,
+                          "complex":   complex,        "max":        max,      "round":      round,
+                          "delattr":   delattr,       "hash":       hash,        "set":        set,
+                              "min":       min,        "oct":        oct,        "sum":        sum,
+                              "pow":       pow,      "super":      super,      "print":     printf,
+                            "tuple":     tuple,      "robot":      robot,  "resources":  resources,
+                           "vision":    vision,   "settings":   settings,    "vStream":    vStream,
+                            "sleep":   newSleep}
+
+        self.execBuiltins = execBuiltins
+
     def setVariable(self, name, expression):
         """
         Sets a variable to an expression in the interpreter. It will first check if the variable exists, if not, add it
@@ -266,40 +346,9 @@ class Interpreter:
 
         answer = None
         try:
-            answer = eval(expression, {"__builtins__": None}, self.__variables)
-        except:
-            printf('Interpreter.__evaluateExpression(): ERROR: Expression "', expression, '" crashed!')
-            return None, False
-
-        if answer is None:
-
-            return None, False
-
-        return answer, True
-
-    def evaluateScript(self, script, env):
-        # Returns value, success. Value is the output of the expression, and 'success' is whether or not it crashed.
-        # If it crashes, it returns None, but some expressions might return none, so 'success' variable is still needed.
-        # Side note: I would have to do ~66,000 eval operations to lag the program by one second.
-
-        answer = None
-
-        print("running:\n", script)
-        robot         = env.getRobot()
-        vision        = env.getVision()
-        objectManager = env.getObjectManager()
-        scriptReturn  = None  # If the script returns anything, its placed in here
-
-        # Build the script inside of a function, so users can "return" out of it
-        script = script.replace('\n', '\n    ')
-        script        = "def script(robot, vision, objectManager):\n" + \
-                            script + "\n" + \
-                        "scriptReturn = script(robot, vision, objectManager)"
-        try:
-            exec(script)
-            print("Returned ", scriptReturn)
+            answer = eval(expression, self.execBuiltins, self.__variables)
         except Exception as e:
-            printf('Interpreter.__evaluateExpression(): ERROR: Script crashed: ', e)
+            printf("ERROR: ", e)
             return None, False
 
         if answer is None:
@@ -307,10 +356,32 @@ class Interpreter:
             return None, False
 
         return answer, True
+
+    def evaluateScript(self, script):
+
+
+        # # Build the script inside of a function, so users can "return" out of it
+        # script = '\n\t' + script.replace('\n', '\n\t')
+        # script        = "def script():\n" + \
+        #                     script + "\n" + \
+        #                 "scriptReturn = script()"
+
+        #  self.__variables["scriptReturn"] = None
+
+        try:
+            exec(script, self.execBuiltins, self.__variables)
+
+            # if self.__variables["scriptReturn"] is not None:
+            #     print("Returned ", self.__variables["scriptReturn"])
+        except Exception as e:
+            printf("ERROR: ", e)
+            return False
+
+        return True
 
 
     # The following functions are *only* for interpreter to use within itself.
-    def __programThread(self, robot, vision):
+    def __programThread(self):
         # This is where the script you create actually gets run.
         print("\n\n\n ##### STARTING PROGRAM #####\n")
 
@@ -337,6 +408,9 @@ class Interpreter:
         destroyEvent = list(filter(lambda event: type(event) == Events.DestroyEvent, self.events))
 
         if len(destroyEvent):
+            robot  = self.env.getRobot()
+            vision = self.env.getVision()
+
             robot.setExiting(False)
             vision.setExiting(False)
             self.__exiting = False

@@ -1,9 +1,10 @@
 import ast  # To check if a statement is python parsible, for evals
 import re   # For variable santization
+from CameraGUI    import CameraSelector
 from PyQt5        import QtGui, QtCore, QtWidgets
 from Logic        import Paths
 from Logic.Global import printf
-from CommonGUI   import ScriptWidget
+from CommonGUI    import ScriptWidget
 
 
 # This should only be used once, in CommandList.addCommand
@@ -15,14 +16,16 @@ class CommandWidget(QtWidgets.QWidget):
         self.indent = 0
         self.margins = None  # Is set after initUI creates it's first layout
         # Set up UI Globals
-        self.title = QtWidgets.QLabel()
+        self.title       = QtWidgets.QLabel()
         self.description = QtWidgets.QLabel()
-        self.icon = QtWidgets.QLabel("No Icon Found")
-        self.deleteBtn = QtWidgets.QPushButton("")
+        self.icon        = QtWidgets.QLabel("No Icon Found")
+        self.deleteBtn   = QtWidgets.QPushButton("")
+
 
         self.initUI()
         self.margins = self.layout().getContentsMargins()  # Has to be after initUI()
         self.setIndent(0)
+
         # Connect the delete button with a function in the CommandList widget that will delete selected commands
         self.deleteBtn.clicked.connect(onDeleteFunction)
 
@@ -258,21 +261,23 @@ class CommandGUI:
 
         # If this object has no window object, then skip this process and return true (ei, StartBlockCommand)
         if self.parameters is None:
-            # printf("Command.openView(): About to execute self...", self, super(Command, self), self.parent)
+            # printf("About to execute self...", self, super(Command, self), self.parent)
             return True
 
         ##### Create the base window #####
         prompt = QtWidgets.QDialog()
 
-        prompt.applyBtn = QtWidgets.QPushButton('Apply')
-        cancelBtn = QtWidgets.QPushButton('Cancel')
 
+        # Create the apply/cancel buttons, connect them, and format them
+        prompt.applyBtn = QtWidgets.QPushButton('Apply')
+        cancelBtn       = QtWidgets.QPushButton('Cancel')
         prompt.applyBtn.setMaximumWidth(100)
         cancelBtn.setMaximumWidth(100)
         prompt.applyClicked = True
         prompt.applyBtn.clicked.connect(prompt.accept)
         cancelBtn.clicked.connect(prompt.reject)
         prompt.applyBtn.setDefault(True)
+
 
         # Create a content box for the command to fill out parameters and GUI elements
         prompt.content    = QtWidgets.QVBoxLayout()
@@ -286,6 +291,7 @@ class CommandGUI:
         buttonRow.addWidget(cancelBtn)
         buttonRow.addStretch(1)
         buttonRow.addWidget(prompt.applyBtn)
+
 
         # Create the main vertical layout, add everything to it
         prompt.mainVLayout = QtWidgets.QVBoxLayout()
@@ -304,10 +310,11 @@ class CommandGUI:
 
         # Dress the base window (this is where the child actually puts the content into the widget)
         prompt = self.dressWindow(prompt)
-        prompt.mainVLayout.addLayout(buttonRow)
+
+        prompt.mainVLayout.addLayout(buttonRow)  # Add button after, so hints appear above buttons
 
         # Run the info window and prevent other windows from being clicked while open:
-        printf("Command.openView(): Finished executing self...")
+        printf("Finished executing self...")
         accepted = prompt.exec_()
 
         # Make sure QT properly handles the memory after this function ends
@@ -322,10 +329,10 @@ class CommandGUI:
 
             # Update self.description for the widget to be dressed with after, by CommandList
             self._updateDescription()
-            printf('CommandWindow.openView(): New parameters: ', self.parameters)
+            printf("New parameters: ", self.parameters)
 
         else:
-            printf('CommandWindow.openView(): User Canceled.')
+            printf("User Canceled.")
 
 
 
@@ -383,21 +390,23 @@ class CommandGUI:
 
 
     # The following are helper functions for modifying the prompt window in a consistent way
-    def _addRow(self, prompt, leftWidget, rightItem):
-        if isinstance(rightItem, QtWidgets.QLineEdit) or isinstance(rightItem, QtWidgets.QComboBox):
-            rightItem.setFixedWidth(self.defaultTextBoxWidth)
-        # Creates and adds a row to prompt.content, with proper formatting
-        row = QtWidgets.QHBoxLayout()
-        row.addStretch(1)
-        row.addWidget(leftWidget)
-        row.addWidget(rightItem)
-        prompt.content.addLayout(row)
+    def _addRow(self, prompt, *args, alignRight=True):
+        # If any argument is of the following type, then set the width to self.defaultTextBoxWidth
+        setWidthOnTypes = [QtWidgets.QLineEdit, QtWidgets.QComboBox, QtWidgets.QPushButton]
 
-    def _addBtn(self, prompt, button):
         row = QtWidgets.QHBoxLayout()
-        button.setFixedWidth(self.defaultTextBoxWidth)
-        row.addStretch(1)
-        row.addWidget(button)
+
+        # Push objects together, otherwise keep it centered
+        if alignRight: row.addStretch(1)
+
+        for widget in args:
+            # Set the width if it is a typ
+            if type(widget) in setWidthOnTypes:   # any([isinstance(widget, wType) for wType in  setWidthOnTypes]):
+                widget.setFixedWidth(self.defaultTextBoxWidth)
+
+            # Creates and adds a row to prompt.content, with proper formatting
+            row.addWidget(widget)
+
         prompt.content.addLayout(row)
 
     def _addHint(self, prompt, hintText):
@@ -556,7 +565,7 @@ class MoveXYZCommandGUI(CommandGUI):
         prompt.zEdit.setText(str(self.parameters['z']))
         prompt.rltCheck.setChecked(self.parameters['relative'])
 
-        self._addBtn(prompt, getCurrBtn)
+        self._addRow(prompt, getCurrBtn)
         self._addRow(prompt, xLabel, prompt.xEdit)
         self._addRow(prompt, yLabel, prompt.yEdit)
         self._addRow(prompt, zLabel, prompt.zEdit)
@@ -620,7 +629,7 @@ class MoveWristCommandGUI(CommandGUI):
         prompt.wristEdit.setText(  self.parameters["angle"])
         prompt.rltCheck.setChecked(self.parameters["relative"])
 
-        self._addBtn(prompt, currentAngleBtn)
+        self._addRow(prompt, currentAngleBtn)
         self._addRow(prompt, wristLabel, prompt.wristEdit)
         self._addRow(prompt, rltLabel, prompt.rltCheck)
         return prompt
@@ -1221,7 +1230,6 @@ class TestObjectSeenCommandGUI(CommandGUI):
                               "ptCount": acc,
                               "not": prompt.notCheck.isChecked()}
 
-        print("new params", newParameters)
         self.parameters.update(newParameters)
 
         return self.parameters
@@ -1239,32 +1247,42 @@ class TestObjectSeenCommandGUI(CommandGUI):
 
 class TestObjectLocationCommandGUI(CommandGUI):
     title     = "Test Location of Object"
-    tooltip   = "This command will allow code in blocked brackets below it to run IF the specified object has been"\
+    tooltip   = "This command will allow code in blocked brackets below it to run IF the specified object has been" \
                 "recognized and the objects location in a particular location."
     icon      = Paths.command_see_obj
     logicPair = "TestObjectLocationCommand"
 
+
     def __init__(self, env, parameters=None):
         super(TestObjectLocationCommandGUI, self).__init__(parameters)
 
-        objManager = env.getObjectManager()
-        vision     = env.getVision()
-        self.getObjectList   = lambda: objManager.getObjectNameList(objFilter=objManager.TRACKABLE)
+        objManager         = env.getObjectManager()
+        self.vStream       = env.getVStream()
+        self.getObjectList = lambda: objManager.getObjectNameList(objFilter=objManager.TRACKABLE)
 
         # If parameters do not exist, then set up the default parameters
         if self.parameters is None:
             # Anything done with env should be done here. Try not to save env as a class variable whenever possible
-            self.parameters = {"objectID":    "",
-                               "location":     0,
-                                    "not": False}
+            self.parameters = {"objectID":                "",
+                               "location":  [[0, 0], [0, 0]],
+                                   "part":          "center",  # Indexes correspond to self.partChoices
+                                    "not":             False}
+
+        self.partChoices = ["center", "all", "any"]
 
     def dressWindow(self, prompt):
         # Define what happens when the user changes the object selection
-        choiceLbl         = QtWidgets.QLabel("Choose an Object: ")
-        notLbl            = QtWidgets.QLabel("NOT")
+        choiceLbl = QtWidgets.QLabel("Choose an Object: ")
+        partLbl   = QtWidgets.QLabel("What part of object must enter the location: ")
+        selectLbl = QtWidgets.QLabel("Click and drag the area of the screen that the object will be in")
+        notLbl    = QtWidgets.QLabel("NOT")
 
-        prompt.objChoices = QtWidgets.QComboBox()
-        prompt.notCheck   = QtWidgets.QCheckBox()  # "Not" CheckBox
+
+        # Create the "input" objects
+        prompt.objChoices  = QtWidgets.QComboBox()
+        prompt.partChoices = QtWidgets.QComboBox()
+        prompt.camWidget   = CameraSelector(self.vStream, prompt, hideRectangle=False)
+        prompt.notCheck    = QtWidgets.QCheckBox()  # "Not" CheckBox
 
 
         # Populate the ObjectList with trackable objects
@@ -1273,24 +1291,49 @@ class TestObjectLocationCommandGUI(CommandGUI):
         for index, objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
 
 
+        # Populate the "parts choices" with trackable objects
+        prompt.partChoices.addItem(self.parameters["part"])
+        for choice in self.partChoices: prompt.partChoices.addItem(choice)
+
+
+        # Set up the CameraWidget
+        prompt.camWidget.play()
+        prompt.camWidget.setRectangle(self.parameters["location"])
+
 
         # Set up the "NOT" Check
         prompt.notCheck.setChecked(self.parameters["not"])
 
 
 
-        self._addRow(prompt,     choiceLbl, prompt.objChoices)
-        self._addRow(prompt,        notLbl,   prompt.notCheck)
-
+        self._addRow(prompt, choiceLbl, prompt.objChoices)
+        self._addRow(prompt, partLbl, prompt.partChoices)
+        self._addRow(prompt, selectLbl, alignRight=False)
+        self._addRow(prompt, prompt.camWidget)
+        self._addRow(prompt, notLbl, prompt.notCheck)
         self._addObjectHint(prompt, len(objectList))
+        prompt.resize(prompt.sizeHint())
 
         return prompt
 
     def _extractPromptInfo(self, prompt):
-        newParameters = {"objectID": str(prompt.objChoices.currentText()),
-                              "not": prompt.notCheck.isChecked()}
+        # Get a new location and sanitize the value
+        newLoc = prompt.camWidget.getSelectedRect()
+        if newLoc is not None:
+            newLoc = [[newLoc[0], newLoc[1]], [newLoc[2], newLoc[3]]]  # Format the new location to this commands format
+        else:
+            newLoc = self.parameters["location"]
 
-        print("new params", newParameters)
+        # Get the "partChoice"
+        choice = prompt.partChoices.currentText()
+
+
+        # Save the new parameters
+        newParameters = {"objectID": str(prompt.objChoices.currentText()),
+                              "not": prompt.notCheck.isChecked(),
+                             "part": choice,
+                         "location": newLoc}
+
         self.parameters.update(newParameters)
 
         return self.parameters
@@ -1299,11 +1342,10 @@ class TestObjectLocationCommandGUI(CommandGUI):
         objName = (self.parameters["objectID"], "Object")[len(self.parameters["objectID"]) == 0]
         self.title = "Test the Location of " + objName
 
-        confidenceText = ["slightly", "fairly", "highly"]
 
-        self.description = "If " + objName + " is"
+        self.description = "If " + self.parameters["part"] + " of " + objName + " is"
         if self.parameters["not"]: self.description += " NOT"
-        self.description += " seen in a specified location"
+        self.description += " seen within a location"
 
 
 
@@ -1466,26 +1508,32 @@ class ScriptCommandGUI(CommandGUI):
         # If parameters do not exist, then set up the default parameters
         if self.parameters is None:
             # Anything done with env should be done here. Try not to save env as a class variable whenever possible
-            self.parameters = {"script": ""}
+            self.parameters = {"script":      "",
+                               "description": ""}
 
     def dressWindow(self, prompt):
         # Do some GUI code setup
         # Put all the objects into horizontal layouts called Rows
-        prompt.IDE = ScriptWidget(self.parameters["script"], prompt)
+        prompt.IDE     = ScriptWidget(self.parameters["script"], prompt)
+        descriptionLbl = QtWidgets.QLabel("Description: ")
 
+        prompt.descriptionEdt = QtWidgets.QLineEdit()
+
+        self._addRow(prompt, descriptionLbl, prompt.descriptionEdt)
         prompt.content.addWidget(prompt.IDE)  # and so on for all of the rows
 
         return prompt
 
     def _extractPromptInfo(self, prompt):
-        newParameters = {"script": str(prompt.IDE.getCode())} # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
-        print("New parameters: ", newParameters)
+        newParameters = {"script": str(prompt.IDE.getCode()),
+                         "description": prompt.descriptionEdt.text()}
+
         self.parameters.update(newParameters)
 
         return self.parameters
 
     def _updateDescription(self):
-        self.description = ""  # Some string that uses your parameters to describe the object.
+        self.description = self.parameters["description"]  # Some string that uses your parameters to describe the object.
 
 
 

@@ -161,12 +161,12 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         # Make the SelectedObject window reflect the information about the object (and it's type) that is curr. selected
         if isinstance(obj, self.objManager.TRACKABLEOBJ):
             self.setSelectionTrackable(obj)
-            self.vision.addPlaneTarget(obj)
+            self.vision.addTarget(obj)
             return
 
         if isinstance(obj, self.objManager.TRACKABLEGROUP):
             self.setSelectionGroup(obj)
-            self.vision.addPlaneTarget(obj)
+            self.vision.addTarget(obj)
             return
 
         if isinstance(obj, self.objManager.MOTIONPATH):
@@ -177,7 +177,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         views = trackableObj.getViews()
         if len(views) == 0:
-            printf("ObjectManager.refreshSelectedObjMenu(): ERROR: Object returned ZERO samples!")
+            printf("ERROR: Object returned ZERO samples!")
             self.clearSelectedLayout()
             return
         selDescLbl         = QtWidgets.QLabel("")   # Description of selected object
@@ -307,7 +307,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
             QtWidgets.QMessageBox.question(self, 'Error', message, QtWidgets.QMessageBox.Ok)
             return
 
-        printf("ObjectManager.openObjectWizard(): Opening Object Wizard!")
+        printf("Opening Object Wizard!")
 
         self.cameraWidget.pause()
 
@@ -355,7 +355,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
             self.objManager.refreshGroups()
             self.refreshObjectList(selectedItem=grpID)
         else:
-            printf("ObjectManager.openGroupMenu(): User rejected prompt. Ignoring changes!")
+            printf("User rejected prompt. Ignoring changes!")
 
         groupMenu.close()
         groupMenu.deleteLater()
@@ -708,7 +708,8 @@ class MotionRecordWindow(QtWidgets.QDialog):
 
         now = time()
         if now - self.lastTime < 0.01: return  # If 10 ms havent passed, ignore
-        print("Curr FPS: ", 1.0 / (now - self.lastTime))
+        print("Current FPS: ", 1.0 / (now - self.lastTime))
+
         self.lastTime = now
 
         # Every 10 times check the gripper status
@@ -749,7 +750,7 @@ class MotionRecordWindow(QtWidgets.QDialog):
         minDist = 1   # In degrees
 
 
-        print("Trimming start from: ", len(self.motionPath))
+
         startPoint = self.motionPath[0]
         trimStart  = 0
         for i, p in enumerate(self.motionPath):
@@ -762,13 +763,11 @@ class MotionRecordWindow(QtWidgets.QDialog):
 
         if trimStart < len(self.motionPath) - 1:
             self.motionPath = self.motionPath[trimStart:]
-            print("Trimmed start: ", len(self.motionPath))
+
 
         if len(self.motionPath) <= 20: return
 
 
-        print("b4", self.motionPath[:50])
-        print("Trimming end from: ", len(self.motionPath))
         endPoint   = self.motionPath[-1]
         trimEnd    = 0
         self.motionPath.reverse()
@@ -784,8 +783,7 @@ class MotionRecordWindow(QtWidgets.QDialog):
         self.motionPath.reverse()
         if trimStart < len(self.motionPath) - 1:
             self.motionPath = self.motionPath[:-trimEnd]
-            print("Trimmed end: ", len(self.motionPath))
-        print("b4", self.motionPath[:50])
+
 
 
         # Subtract the time from the start to every cell in the array now
@@ -793,7 +791,7 @@ class MotionRecordWindow(QtWidgets.QDialog):
         for i in range(len(self.motionPath)):
             self.motionPath[i][TIME] = self.motionPath[i][TIME] - startTime
             if self.motionPath[i][TIME] < 0:
-                print("ERROR")
+                printf("ERROR: Time is negative in motionPath!")
 
         startPoint[TIME] = 0
         endPoint[TIME]   = self.motionPath[-1][TIME] + .1
@@ -810,7 +808,6 @@ class MotionRecordWindow(QtWidgets.QDialog):
         SERVO2  = 4
         SERVO3  = 5
 
-        print("Before: ", self.motionPath[:10], len(self.motionPath))
         # Run the motion path through a gausian smoother
         # Smooth the Time values, and all the servo values
         degree = 10
@@ -826,29 +823,31 @@ class MotionRecordWindow(QtWidgets.QDialog):
         smooth         = np.asarray(smooth)
         timeAndGripper = np.hstack((smooth[:, [0]], np.asarray(cutData)))
         undrounded     = np.hstack((timeAndGripper, smooth[:, 1:])).tolist()
-        final          = list(map(lambda a: [float(round(a[0], 3)),
-                                             int(a[1]),
-                                             float(round(a[2], 1)),
-                                             float(round(a[3], 1)),
-                                             float(round(a[4], 1)),
-                                             float(round(a[5], 1))], undrounded))
 
-        self.motionPath = final
-        print("After: ", self.motionPath[:10], len(self.motionPath))
+        self.roundMotionPath()
 
-
+    def roundMotionPath(self):
+        # Makes sure saves don't take a lot of space, by rounding any float errors
+        self.motionPath = list(map(lambda a: [float(round(a[0], 2)),
+                                    int(a[1]),
+                                    float(round(a[2], 1)),
+                                    float(round(a[3], 1)),
+                                    float(round(a[4], 1)),
+                                    float(round(a[5], 1))], self.motionPath))
 
     def createNewObject(self):
         if self.newObject is None:
             self.optimizeMotionPath()
             self.trimPath()
 
+        self.roundMotionPath()
         # Create an actual TrackableObject with this information
         if self.newObject is not None:
+
             name        = self.newObject.name
             motionObj   = self.objManager.getObject(name)
             if motionObj is None:
-                printf("ObjectManager.openObjectWizard(): ERROR: Could not find object to add sample to!")
+                printf("ERROR: Could not find object to add sample to!")
                 return
         else:
             name = self.nameEdit.text()
@@ -932,7 +931,7 @@ class ObjectWizard(QtWidgets.QWizard):
             name        = self.objToModifyName
             trackObject = self.objManager.getObject(name)
             if trackObject is None:
-                printf("ObjectManager.openObjectWizard(): ERROR: Could not find object to add sample to!")
+                printf("ERROR: Could not find object to add sample to!")
                 return
         else:
             name = self.page1.nameEdit.text()
@@ -1039,9 +1038,9 @@ class OWPage2(QtWidgets.QWizardPage):
 
         # Create the camera widget and set it up
         self.vision       = environment.getVision()
-        self.cameraWidget = CameraSelector(environment.getVStream().getFilteredWithID, parent=self)
+        self.cameraWidget = CameraSelector(environment.getVStream(), parent=self)
         self.cameraWidget.play()
-        self.cameraWidget.declinePicBtn.clicked.connect(self.tryAgain)
+        # self.cameraWidget.declinePicBtn.clicked.connect(self.tryAgain)
         self.cameraWidget.objSelected.connect(self.objectSelected)
 
 
@@ -1117,9 +1116,16 @@ class OWPage2(QtWidgets.QWizardPage):
             zero keypoints, it won't allow the user to track it, and will automatically revert the camera to
             selection mode.
         """
+        # Reset all variables before setting a new object
+        self.object = None
+        self.completeChanged.emit()
+        self.hintLbl.setText("")
+        self.setStep(1)
+        self.vision.endAllTrackers()
 
-        frame, rect = self.cameraWidget.getSelected()
 
+        rect  = self.cameraWidget.getSelectedRect()
+        frame = self.cameraWidget.getSelectedFrame()
 
         # Get the "target" object from the image and rectangle
         trackable = TrackableObject("")
@@ -1128,7 +1134,7 @@ class OWPage2(QtWidgets.QWizardPage):
 
         # Analyze it, and make sure it's a valid target. If not, return the camera to selection mode.
         if len(target.descrs) == 0 or len(target.keypoints) == 0:
-
+            self.hintLbl.setText("Your selected object needs more detail to be tracked")
             self.cameraWidget.takeAnother()
             return
 
@@ -1136,7 +1142,8 @@ class OWPage2(QtWidgets.QWizardPage):
         self.object = target
         self.completeChanged.emit()
         self.cameraWidget.play()
-        self.vision.addPlaneTarget(trackable)
+        self.vision.endAllTrackers()  # Reset the trackers
+        self.vision.addTarget(trackable)
         self.newObject.emit()
 
 
@@ -1163,16 +1170,6 @@ class OWPage2(QtWidgets.QWizardPage):
             self.hintLbl.setText("Tracking " + str(len(self.object.descrs)) + " Points")
 
 
-
-
-    def tryAgain(self):
-        self.object = None
-        self.completeChanged.emit()
-        self.hintLbl.setText("")
-        self.setStep(1)
-        self.cameraWidget.play()
-        self.cameraWidget.takeAnother()
-        self.vision.endAllTrackers()
 
 
     def isComplete(self):
@@ -1283,9 +1280,9 @@ class OWPage4(QtWidgets.QWizardPage):
 
         # Create the camera widget and set it up. The camera's image is set in self.setObject()
         self.vision       = environment.getVision()
-        self.cameraWidget = CameraSelector(environment.getVStream().getFilteredWithID, parent=self, hideRectangle=False)
+        self.cameraWidget = CameraSelector(environment.getVStream(), parent=self, hideRectangle=False)
         self.cameraWidget.pause()
-        self.cameraWidget.declinePicBtn.clicked.connect(self.tryAgain)
+        # self.cameraWidget.declinePicBtn.clicked.connect(self.tryAgain)
         self.cameraWidget.objSelected.connect(self.rectSelected)
 
         self.initUI()
@@ -1349,19 +1346,16 @@ class OWPage4(QtWidgets.QWizardPage):
 
         self.cameraWidget.setFrame(cropped)
 
-        self.tryAgain()
-        self.completeChanged.emit()
-
-    def tryAgain(self):
         self.yourDoneLbl.setText("")
         self.pickupRect = None
         self.cameraWidget.takeAnother()
         self.completeChanged.emit()
 
 
+
     def rectSelected(self):
         # Runs when the user has selected an area on self.cameraWidget
-        _, rect = self.cameraWidget.getSelected()
+        rect = self.cameraWidget.getSelectedRect()
         self.pickupRect = rect
         self.yourDoneLbl.setText("Congratulations, you've created a new object! "
                                  "\nThis will now be saved in a seperate file, and can be used in any project.")

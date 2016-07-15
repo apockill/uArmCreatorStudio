@@ -16,10 +16,17 @@ class LogicObject:
             self.errors.append("Robot is not connected")
         return env.getRobot()
 
-    def getVerifyVision(self, env):
+    def getVerifyVStream(self, env):
         vStream = env.getVStream()
         if not vStream.connected():
             self.errors.append("Camera is not connected")
+
+        return vStream
+
+    def getVerifyVision(self, env):
+        # Make sure the camera is connected
+        self.getVerifyVStream(env)
+
         return env.getVision()
 
     def getVerifyMotionCalibrations(self, env):
@@ -46,7 +53,9 @@ class LogicObject:
         objectManager = env.getObjectManager()
         requestedObj  = objectManager.getObject(objectID)
 
-        if requestedObj is None:
+        if objectID == "":
+            self.errors.append("No Object Selected")
+        elif requestedObj is None:
             self.errors.append("Resource not found: '" + str(objectID) + "'")
 
         return requestedObj

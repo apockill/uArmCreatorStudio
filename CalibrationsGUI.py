@@ -155,13 +155,13 @@ class CalibrateWindow(QtWidgets.QDialog):
 
         # Check that there is a valid camera connected
         if not vStream.connected():
-            printf("CalibrateView.calibrateMotion(): No Camera Connected!")
+            printf("No Camera Connected!")
             self.cameraError()
             return
 
         # Check that there is a valid robot connected
         if not robot.connected():
-            printf("CalibrateView.calibrateMotion(): No uArm connected!")
+            printf("No uArm connected!")
             self.robotError()
             return
 
@@ -218,7 +218,7 @@ class CalibrateWindow(QtWidgets.QDialog):
 
 
         self.updateLabels()
-        printf("CalibrateView.calibrateMotion(): Function complete! New settings: ", noMovement, ", ", highMovement)
+        printf("Function complete! New settings: ", noMovement, ", ", highMovement)
 
     def calibrateCoordinates(self):
         vStream      = self.env.getVStream()
@@ -485,7 +485,7 @@ class CWPage2(QtWidgets.QWizardPage):
             self.groundCoords = list(map(float, sumCoords / samples))
             self.robot.setPos(z=self.groundCoords[2] + .5)
             self.robot.setActiveServos(servo0=False)
-            printf("CWPage2.nextPressed(): New ground coordinates set: ", self.groundCoords)
+            printf("New ground coordinates set: ", self.groundCoords)
 
 class CWPage3(QtWidgets.QWizardPage):
     def __init__(self, parent):
@@ -553,7 +553,12 @@ class CWPage4(QtWidgets.QWizardPage):
 
         # The final object is stored here:
         self.newRobotMrkr    = None
-        self.hintLbl      = QtWidgets.QLabel("")  # This will tell the user how many points are on the object
+
+        # Create global GUI objects
+        self.hintLbl  = QtWidgets.QLabel("")  # This will tell the user how many points are on the object
+        self.movieLbl = QtWidgets.QLabel("")  # Changes the gif depending on what the user is having trouble with
+        self.selMovie = QtGui.QMovie(Paths.help_sel_marker)  # Help with selecting the marker
+        self.detMovie = QtGui.QMovie(Paths.help_add_detail)  # Help with adding detail to marker
 
 
         # Get the Environment objects that will be used
@@ -562,11 +567,9 @@ class CWPage4(QtWidgets.QWizardPage):
         self.objManager   = environment.getObjectManager()
 
         # Create the camera widget and set it up
-        self.cameraWidget = CameraSelector(environment.getVStream().getFilteredWithID, parent=self)
+        self.cameraWidget = CameraSelector(environment.getVStream(), parent=self)
         self.cameraWidget.play()
-        self.cameraWidget.declinePicBtn.clicked.connect(self.tryAgain)
         self.cameraWidget.objSelected.connect(self.objectSelected)
-
 
         self.initUI()
 
@@ -580,13 +583,13 @@ class CWPage4(QtWidgets.QWizardPage):
 
         stepLbl    = QtWidgets.QLabel("Step 4: Selecting the Marker")
         promptLbl  = QtWidgets.QLabel(prompt)
-        movieLbl   = QtWidgets.QLabel("Could not find example gif")  # Displays a gif of selecting the marker
 
 
         # Set the animated gif on the movieLbl
-        movie = QtGui.QMovie(Paths.help_sel_marker)
-        movieLbl.setMovie(movie)
-        movie.start()
+
+        self.movieLbl.setMovie(self.selMovie)
+        self.selMovie.start()
+        self.detMovie.start()
 
 
         # Set titles bold
@@ -599,7 +602,7 @@ class CWPage4(QtWidgets.QWizardPage):
         camRow = QtWidgets.QHBoxLayout()
         camRow.addWidget(self.cameraWidget)
         camRow.addStretch(1)
-        camRow.addWidget(movieLbl)
+        camRow.addWidget(self.movieLbl)
 
         # Place the GUI objects vertically
         col1 = QtWidgets.QVBoxLayout()
@@ -628,10 +631,16 @@ class CWPage4(QtWidgets.QWizardPage):
             selection mode.
         """
 
+        # Reset any previous markers
+        self.newRobotMrkr = None
+        self.completeChanged.emit()
+        self.hintLbl.setText("")
+        self.vision.endAllTrackers()
+        self.movieLbl.setMovie(self.selMovie)
+        self.movieLbl.show()
 
-
-        frame, rect = self.cameraWidget.getSelected()
-
+        rect  = self.cameraWidget.getSelectedRect()
+        frame = self.cameraWidget.getSelectedFrame()
 
         # Get the "target" object from the image and rectangle
         trackable = TrackableObject("Robot Marker")
@@ -644,9 +653,11 @@ class CWPage4(QtWidgets.QWizardPage):
         # Analyze it, and make sure it's a valid target. If not, return the camera to selection mode.
         if len(target.descrs) == 0 or len(target.keypoints) == 0:
             self.cameraWidget.takeAnother()
+            self.hintLbl.setText("You must select an object with more detail.")
             return
 
-        if len(target.descrs) < 300:
+        if len(target.descrs) < 450:
+            self.movieLbl.setMovie(self.detMovie)
             self.hintLbl.setText("Your selected marker does not have enough detail. Only " + str(len(target.descrs)) +
                                  " points were found.\nAdd detail to your marker and try again.")
             self.cameraWidget.takeAnother()
@@ -660,25 +671,16 @@ class CWPage4(QtWidgets.QWizardPage):
 
         # If the object was not very good, warn the user. Otherwise, state the # of points on the object
         if len(target.descrs) < 600:
+            self.movieLbl.setMovie(self.detMovie)
             self.hintLbl.setText("Your selected marker is not very detailed, or is too small, only " +
                                  str(len(target.descrs)) + " points were found.\n"
                                  "Tracking may not be very accurate.")
         else:
             self.hintLbl.setText("Found " + str(len(target.descrs)) + " Points")
 
-
         # Turn on the camera, and start tracking
         self.cameraWidget.play()
-        self.vision.addPlaneTarget(self.newRobotMrkr)
-
-
-    def tryAgain(self):
-        self.newRobotMrkr = None
-        self.completeChanged.emit()
-        self.hintLbl.setText("")
-        self.cameraWidget.play()
-        self.cameraWidget.takeAnother()
-        self.vision.endAllTrackers()
+        self.vision.addTarget(self.newRobotMrkr)
 
 
     def isComplete(self):
@@ -755,9 +757,7 @@ class CWPage5(QtWidgets.QWizardPage):
 
     def startCalibration(self):
 
-        if self.testRunning is True:
-            print("Cancelign start calibration!")
-            return
+        if self.testRunning is True: return
 
         # Pull from the environment and start the tracking
         robot      = self.env.getRobot()
@@ -768,7 +768,7 @@ class CWPage5(QtWidgets.QWizardPage):
         #   Start tracking the robots marker
         rbMarker = objManager.getObject("Robot Marker")
         vision.endAllTrackers()
-        vision.addPlaneTarget(rbMarker)
+        vision.addTarget(rbMarker)
 
 
         # A list of robot Coord and camera Coords, where each index of robPts corresponds to the cameraPoint index
@@ -778,7 +778,7 @@ class CWPage5(QtWidgets.QWizardPage):
         robot.setActiveServos(all=True)
         robot.setSpeed(15)
 
-        zLower = self.getGroundCoord()[2] + 1.5
+        zLower = float(round(self.getGroundCoord()[2] + 1.5, 2))
         robot.setPos(x=robot.home["x"], y=robot.home["y"], z=zLower)
         sleep(1)
 
@@ -788,16 +788,23 @@ class CWPage5(QtWidgets.QWizardPage):
 
         # Test the z on 4 xy points
         zTest = int(round(zLower, 0))  # Since range requires an integer, round zLower just for this case
-        for x in range(  -20, 20): testCoords += [[x,  15,    15]]  # Center of XYZ grid
-        for y in range(    8, 25): testCoords += [[ 0,  y,    15]]
-        for z in range(zTest, 25): testCoords += [[ 0, 15,     z]]
+        for x in range(  -20, 20, 3): testCoords += [[x,  15,    15]]  # Center of XYZ grid
+        for y in range(    8, 25, 3): testCoords += [[ 0,  y,    15]]
+        for z in range(zTest, 25, 1): testCoords += [[ 0, 15,     z]]
 
-        for x in range(  -20, 20): testCoords += [[x,  15, zTest]]  # Center of XY, Bottom z
-        for y in range(    8, 25): testCoords += [[ 0,  y, zTest]]
+        # for x in range(  -20, 20, 1): testCoords += [[x,  15, zTest]]  # Center of XY, Bottom z
+        # for y in range(    8, 25, 1): testCoords += [[ 0,  y, zTest]]
         # for z in range(zTest, 25): testCoords += [[ 0, 15,     z]]
 
-        for x in range(  -20, 20): testCoords += [[x,  15,    25]]  # Center of XY, top z
-        for y in range(   10, 25): testCoords += [[ 0,  y,    25]]
+        for x in range(  -20, 20, 3): testCoords += [[x,  15,    25]]  # Center of XY, top z
+        for y in range(   10, 25, 3): testCoords += [[ 0,  y,    25]]
+
+        direction  = int(1)
+        for y in range(8, 25, 2):
+            for x in range(-20 * direction, 20 * direction, 5 * direction):
+                testCoords += [[x, y, zTest]]
+            direction *= -1
+
         # for z in range(zTest, 25): testCoords += [[ 0, 15,     z]]
 
         # for z in range(zTest, 26, 1): testCoords += [[0,  15, z]]
@@ -818,18 +825,13 @@ class CWPage5(QtWidgets.QWizardPage):
         # for x in range( -9, -20, -1): testCoords += [[x, 6, zLower]]
         # for x in range(-20,  -6,  1): testCoords += [[x, 7, zLower]]
         # for x in range(  6,  20,  1): testCoords += [[x, 7, zLower]]
-        # direction  = True
         #
-        # # Scan the entire board row by row
-        # for y in range(8, 25):  # [-8, -11, -15, -19, -25]:
-        #     if direction:
-        #         for x in range(20, -20, -1): testCoords += [[x, y, zLower]]
-        #     else:
-        #         for x in range(-20, 20,  1): testCoords += [[x, y, zLower]]
-        #     direction = not direction
+        #
+        # Scan the entire board row by row
 
 
-        printf("CWPage5.runCalibration(): Testing ", len(testCoords), " coordinate points")
+
+        printf("Testing ", len(testCoords), " coordinate points")
 
 
         # Begin testing every coordinate in the testCoords array, and recording the results into newCalibrations
@@ -857,7 +859,7 @@ class CWPage5(QtWidgets.QWizardPage):
         robot.setPos(**robot.home)
 
         # Prune the list down to 20 less than the original size, find the best set out of those
-        minPointCount = 20
+        minPointCount = 10
         # prunedSize = int(len(newCalibrations["ptPairs"]) * .90)
         # if prunedSize > minPointCount:
         #     bestScore, bestPtPairs = self.pruneCalibrationSet(prunedSize, newCalibrations["ptPairs"])
@@ -902,6 +904,8 @@ class CWPage5(QtWidgets.QWizardPage):
                      str(len(testCoords)) + " points were found.\nResults will be saved when you click Apply " +\
                      "on the calibrations page. Feel free to try this again.\n" +\
                      "Make sure to repeat this calibration whenever you move your camera or move your robot."
+            self.testLbl.setPixmap(QtGui.QPixmap(Paths.help_star))
+            self.testLbl.show()
             self.newCalibrations = newCalibrations
             self.startBtn.setDisabled(True)
 
@@ -911,9 +915,6 @@ class CWPage5(QtWidgets.QWizardPage):
 
         # Update the "Finished" button
         self.completeChanged.emit()
-
-
-
 
     def getPoint(self, currentPoint, errors, newCalibrations, testCoords):
         self.testRunning = True
@@ -927,7 +928,7 @@ class CWPage5(QtWidgets.QWizardPage):
         # print("failcoutn: ", recFailCount)
         text  = "Calibration Progress: \n"
         if currentPoint > len(testCoords) * .25:
-            if recFailCount / currentPoint > .5:
+            if recFailCount / currentPoint > .7:  # If over 70% of tests failed so far
                 text += "    Progress Report: The robot marker has failed to be recognized " + \
                         str(recFailCount) + " times!\n"
             else:
@@ -957,7 +958,7 @@ class CWPage5(QtWidgets.QWizardPage):
         currentPoint += 1
 
 
-        printf("CWPage5.runCalibration(): Testing point ", coord)
+        printf("Testing point ", coord)
 
         # Move the robot to the coordinate
         robot.setPos(x=coord[0], y=coord[1], z=coord[2])
@@ -976,14 +977,14 @@ class CWPage5(QtWidgets.QWizardPage):
 
 
         # Make sure the object was found in a recent frame
-        if not frameAge == 0 or marker.center is None:
-            printf("CWPage5.runCalibration(): Marker was not recognized.")
+        if not frameAge < 2 or marker.center is None:
+            printf("Marker was not recognized.")
             newCalibrations['failPts'].append(coord)
             self.timer = singleShot()
             return
 
         # if marker.ptCount < 20:
-        #     printf("CWPage5.runCalibration(): Disregarding point. Only ", marker.ptCount, "tracker pts were found")
+        #     printf("Disregarding point. Only ", marker.ptCount, "tracker pts were found")
         #     newCalibrations['failPts'].append(coord)
         #     self.timer = singleShot()
         #     return
@@ -997,11 +998,10 @@ class CWPage5(QtWidgets.QWizardPage):
         if dist < 2:
             newCalibrations["ptPairs"].append([marker.center, coord])
         else:
-            printf("CWPage5.runCalibration(): Disregarding point. Robot returned coordinate too far from desired pos")
-
+            printf("Using actual coord. Robot returned coordinate too far from desired pos",
+                   coord, actCoord)
+            newCalibrations["ptPairs"].append([marker.center, actCoord])
         self.timer = singleShot()
-
-
 
 
 
@@ -1054,7 +1054,7 @@ class CWPage5(QtWidgets.QWizardPage):
             return errorSum  / len(testPoints)
 
 
-        printf("CWPage5.getBestCalibrationSet.(): Pruning set to size ", newSize, " out of original ", len(ptPairs))
+        printf("Pruning set to size ", newSize, " out of original ", len(ptPairs))
 
         if len(ptPairs) <= newSize:
             return newCalibration
@@ -1082,7 +1082,7 @@ class CWPage5(QtWidgets.QWizardPage):
             if error < bestScore or bestScore == -1:
                 bestSet = randPtPairs
                 bestScore = error
-                print(bestScore)
+
         avgError /= samples
 
         bestIndexes = sorted(pointError, key=lambda pt:  pt[2] / pt[1] if pt[1] > 0 else 1000)
@@ -1093,13 +1093,13 @@ class CWPage5(QtWidgets.QWizardPage):
 
         error = testPointSetError(bestSet, testPoints)
 
-        printf("CWPage5.pruneCalibrationSet(): Average error: ", avgError, " bestSet ", bestScore, " der. set: ", error)
+        printf("Average error: ", avgError, " bestSet ", bestScore, " der. set: ", error)
         if error < avgError:
-            printf("CWPage5.pruneCalibrationSet(): Returning derived set")
+            printf("Returning derived set")
             return error, bestSet
         else:
 
-            printf("CWPage5.pruneCalibrationSet(): Found set is worse than the average. Returning bestSet.")
+            printf("Found set is worse than the average. Returning bestSet.")
             return bestScore, bestSet
 
     def isComplete(self):

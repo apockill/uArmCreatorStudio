@@ -52,7 +52,7 @@ class ObjectManager:
             createObj = lambda objType, prefix, directory: objType(folder.replace(prefix + " ", ""), path)
 
             if not os.path.isdir(path):
-                printf("ObjectManager.loadAllObjects(): ERROR: Could not find directory ", path)
+                printf("ERROR: Could not find directory ", path)
                 continue
 
 
@@ -62,7 +62,7 @@ class ObjectManager:
 
             # Check that loading is complete and add the object if it was created successfully
             if newObj is None:
-                printf("ObjectManager.loadAllObjects(): ERROR: Could not find relevant object for folder: ", folder)
+                printf("ERROR: Could not find relevant object for folder: ", folder)
                 continue
 
             if newObj.loadSuccess: self.__addObject(newObj)
@@ -73,19 +73,19 @@ class ObjectManager:
         # If not new, replace self
         wasNew = self.__addObject(newObject)
         if not wasNew:
-            printf("ObjectManager.saveObject(): Tried to add object that already existed, ", newObject.name)
+            printf("Tried to add object that already existed, ", newObject.name)
 
         newObject.save(self.__getDirectory(newObject))
 
     def refreshGroups(self):
         # Creates a TrackableGroup for every uniqe tag every object has, and replaces old TrackableGroups
-        printf("ObjectManager.refreshGroups(): Refreshing Groups!")
+        printf("Refreshing Groups!")
 
         # Remove existing groups from self.__objects
         for obj in self.__objects[:]:
             # Since multiple objects are being deleted in the same array, use [:] to copy it so it doesnt change size
             if isinstance(obj, TrackableGroupObject):
-                printf("ObjectManager.refreshGroups(): Removing ", obj.name, " from self.__objects")
+                printf("Removing ", obj.name, " from self.__objects")
                 self.__objects.remove(obj)
 
         # Use a temporary dictionary to record which objs belong to which groups
@@ -108,7 +108,7 @@ class ObjectManager:
 
         # Create the TrackableGroup objects and add them
         for group in groups:
-            printf("ObjectManager.refreshGroups(): Adding group ", group)
+            printf("Adding group ", group)
             newGroupObj = TrackableGroupObject(name=group, members=groups[group])
             self.__addObject(newGroupObj)
 
@@ -171,7 +171,7 @@ class ObjectManager:
         # Checks if the object already exists. If it does, then replace the existing object with the new one.
         for obj in self.__objects:
             if newObject.name == obj.name:
-                printf("ObjectManager.addObject(): ERROR: Tried adding an object that already existed: ", obj.name)
+                printf("ERROR: Tried adding an object that already existed: ", obj.name)
                 return False
 
 
@@ -197,7 +197,7 @@ class ObjectManager:
 
 
     def deleteObject(self, objectID):
-        printf("ObjectManager.deleteObject(): Deleting ", objectID, " permanently")
+        printf("Deleting ", objectID, " permanently")
 
         for obj in self.__objects:
             if not objectID == obj.name: continue
@@ -207,11 +207,12 @@ class ObjectManager:
             if issubclass(type(obj), Resource) and not isinstance(obj, TrackableGroupObject):
                 # Get all the items in the objects folder, and delete them one by one
                 objDirectory = self.__getDirectory(obj)
-                foldersAndItems = os.listdir(objDirectory)
-                print("folders: ", foldersAndItems)
-                for item in foldersAndItems:
-                    print("deleting: ", objDirectory + item)
-                    os.remove(objDirectory + item)
+                # foldersAndItems = os.listdir(objDirectory)
+
+                # Make sure everything is deleted in the directory
+                while len(os.listdir(objDirectory)):
+                    for item in os.listdir(objDirectory):
+                        os.remove(objDirectory + item)
 
                 # Now that the folder is empty, delete it too
                 os.rmdir(objDirectory)
@@ -232,7 +233,7 @@ class ObjectManager:
             # Delete the object from the objects array
 
 
-        printf("ObjectManager.deleteObject(): Could not find object ", objectID, " in order to delete it!")
+        printf("Could not find object ", objectID, " in order to delete it!")
         return False
 
 
@@ -254,7 +255,7 @@ class Resource:
     def _load(self, directory):
         # Check if the directory exists (just in case)
         if not os.path.isdir(directory):
-            printf("Resource._load(): ERROR: Could not find directory", directory)
+            printf("ERROR: Could not find directory", directory)
             return False
 
 
@@ -264,10 +265,10 @@ class Resource:
             loadedData = json.load( open(dataFile))
             self.dataJson = loadedData
         except IOError:
-            printf("Resource._load(): ERROR: Data file ", dataFile, " was not found!")
+            printf("ERROR: Data file ", dataFile, " was not found!")
             return False
         except ValueError:
-            printf("Resource._load(): ERROR: Object in ", directory, " is corrupted!")
+            printf("ERROR: Object in ", directory, " is corrupted!")
             return False
         return True
 
@@ -344,7 +345,7 @@ class TrackableObject(Trackable):
         }
         """
 
-        printf("TrackableObject.save(): Saving self to directory ", directory)
+        printf("Saving self to directory ", directory)
 
         # Make sure the "objects" directory exists
         ensurePathExists(directory)
@@ -370,7 +371,7 @@ class TrackableObject(Trackable):
 
         # Check if the directory exists (just in case)
         if not os.path.isdir(directory):
-            printf("TrackableObject._load(): ERROR: Could not find directory", directory)
+            printf("ERROR: Could not find directory", directory)
             return False
 
 
@@ -380,10 +381,10 @@ class TrackableObject(Trackable):
             loadedData = json.load( open(dataFile))
 
         except IOError:
-            printf("TrackableObject._load(): ERROR: Data file ", dataFile, " was not found!")
+            printf("ERROR: Data file ", dataFile, " was not found!")
             return False
         except ValueError:
-            printf("TrackableObject._load(): ERROR: Object in ", directory, " is corrupted!")
+            printf("ERROR: Object in ", directory, " is corrupted!")
             return False
 
         # For each view, load the image associated with it, and build the appropriate view
@@ -393,7 +394,7 @@ class TrackableObject(Trackable):
             image     = cv2.imread(imageFile)
 
             if image is None:
-                printf("TrackableObject._load(): ERROR: Image File ", imageFile, " was unable to be loaded!")
+                printf("ERROR: Image File ", imageFile, " was unable to be loaded!")
                 return False
 
             self.addNewView(image      = image,

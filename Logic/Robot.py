@@ -42,6 +42,7 @@ class Robot:
     servo2  ->  Height Servo
     servo3  ->  Wrist Servo
     """
+
     def __init__(self):
         self.exiting = False    # When true, any time-taking functions will exit ASAP. Used for quickly ending threads.
         self.uArm    = None     # The communication protocol
@@ -74,57 +75,78 @@ class Robot:
 
 
     def getMoving(self):
+        """
+        Check if the robot is currently moving.
+        :return: True or False, if robot is moving
+        """
+
         if not self.connected() or self.exiting:
-            printf("Robot.getMoving(): Robot not found or setupThread is running, returning False")
+            printf("Robot not found or setupThread is running, returning False")
             return False
 
         with self.lock:
             return self.uArm.getIsMoving()
 
     def getTipSensor(self):
+        """
+        Get if the robots tip sensor is currently being pressed.
+        :return: True or False if the sensor is pressed
+        """
+
         if not self.connected() or self.exiting:
-            printf("Robot.getTipSensor(): Robot not found or setupThread is running, returning False")
+            printf("Robot not found or setupThread is running, returning False")
             return False
 
         with self.lock:
             return self.uArm.getTipSensor()
 
     def getCurrentCoord(self):
+        """
+        Get the current XYZ coordinates of the robot
+        :return: [X, Y, Z] List. If robot is not connect, [0.0, 0.0, 0.0]
+        """
+
         if not self.connected() or self.exiting:
-            printf("Robot.getCurrentCoord(): Robot not found or setupThread is running, return 0 for all coordinates")
+            printf("Robot not found or setupThread is running, return 0 for all coordinates")
             return [0.0, 0.0, 0.0]
 
         with self.lock:
             return self.uArm.getCurrentCoord()
 
     def getServoAngles(self):
+        """
+        Get a list of the robots current servo angle readings
+        :return: [servo0, servo1, servo2, servo3] angles
+        """
+
         if not self.connected() or self.exiting:
-            printf("Robot.getServoAngle(): Robot not found or setupThread is running, returning 0 for angle")
-            return [0, 0, 0, 0]
+            printf("Robot not found or setupThread is running, returning 0 for angle")
+            return [0.0, 0.0, 0.0, 0.0]
 
         with self.lock:
             return self.uArm.getServoAngles()
 
     def getFK(self, servo0, servo1, servo2):
+        """
+        Get the forward kinematic calculations for the robots servos.
+        :return: [X, Y, Z] list
+        """
         if not self.connected() or self.exiting:
-            printf("Robot.getServoAngle(): Robot not found or setupThread is running, returning 0 for angle")
-            return [0, 0, 0]
+            printf("Robot not found or setupThread is running, returning 0 for angle")
+            return [0.0, 0.0, 0.0]
 
         with self.lock:
             return self.uArm.getFK(servo0, servo1, servo2)
 
-    def getCacheState(self):
-        """
-            This returns a dictionary that can be fed into self.setCacheState() which will return the robot
-            to some previous state. Useful for saving position, servoangles, speed, and all of that in one go.
-        """
-        pos = self.coord[:]
+
 
 
 
 
     def setPos(self, x=None, y=None, z=None, coord=None, relative=False, wait=True):
         """
+        Set the position of the robot, with many possible parameters and ways of setting.
+        This function will not send information to the robot if the robot is already at that desired state.
 
         :param x: X position
         :param y: Y position
@@ -133,8 +155,9 @@ class Robot:
         :param relative: True or False, if true, the move will be relativ to the robots current position
         :param wait: True or False: If true, the function will wait for the robot to finish the move after sending it
         """
+
         if not self.connected() or self.exiting:
-            printf("Robot.setPos(): Robot not found or setupThread is running, canceling position change")
+            printf("Robot not found or setupThread is running, canceling position change")
             return
 
         def setVal(value, axis, relative):
@@ -162,15 +185,15 @@ class Robot:
         # Make sure all X, Y, and Z values are within a reachable range (not a permanent solution)
         if self.coord[0] is not None and self.coord[1] is not None and self.coord[2] is not None:
             if self.xMin > self.coord[0] or self.coord[0] > self.xMax:
-                printf("Robot.robot.setPos(): X is out of bounds. Requested: ", self.coord[0])
+                printf("X is out of bounds. Requested: ", self.coord[0])
                 self.coord[0] = self.clamp(self.xMin, self.coord[0], self.xMax)
 
             if self.yMin > self.coord[1] or self.coord[1] > self.yMax:
-                printf("Robot.robot.setPos(): Y is out of bounds. Requested: ", self.coord[1])
+                printf("Y is out of bounds. Requested: ", self.coord[1])
                 self.coord[1] = self.clamp(self.yMin, self.coord[1], self.yMax)
 
             if self.zMin > self.coord[2] or self.coord[2] > self.zMax:
-                printf("Robot.robot.setPos(): Z is out of bounds. Requested: ", self.coord[2])
+                printf("Z is out of bounds. Requested: ", self.coord[2])
                 self.coord[2] = self.clamp(self.zMin, self.coord[2], self.zMax)
 
 
@@ -185,22 +208,30 @@ class Robot:
                 self.__servoAttachStatus[0], self.__servoAttachStatus[1], self.__servoAttachStatus[2], self.__servoAttachStatus[3] = True, True, True, True
 
             except ValueError:
-                printf("Robot.setPos(): ERROR: Robot out of bounds and the uarm_python library crashed!")
+                printf("ERROR: Robot out of bounds and the uarm_python library crashed!")
 
             # Wait for robot to finish move, but if exiting, just continue
             if wait:
                 while self.getMoving():
                     if self.exiting:
-                        printf("Robot.setPos(): Exiting early!")
+                        printf("Exiting early!")
                         break
                     sleep(.1)
 
         self.lock.release()
 
     def setServoAngles(self, servo0=None, servo1=None, servo2=None, servo3=None, relative=False):
+        """
+        Set the angle of a servo, or as many servos as you want.
+        :param servo0:
+        :param servo1:
+        :param servo2:
+        :param servo3:
+        :param relative: If you want to move to a relative position to the servos current position
+        """
 
         if not self.connected() or self.exiting:
-            printf("Robot.setWrist(): Robot not found or setupThread is running, canceling wrist change")
+            printf("Robot not found or setupThread is running, canceling wrist change")
             return
 
         def setServoAngle(servoNum, angle, rel):
@@ -215,7 +246,7 @@ class Robot:
                 if newAngle > 180: newAngle = 180
                 if newAngle <   0: newAngle = 0
                 if not newAngle == beforeClamp:
-                    printf("Robot.setServoAngles(): Tried to set angle to a value less than 0 or greater than 180!")
+                    printf("Tried to set angle to a value less than 0 or greater than 180!")
 
 
                 # Set the value and save it in the cache
@@ -230,8 +261,18 @@ class Robot:
         if servo3 is not None: setServoAngle(3, servo3, relative)
 
     def setActiveServos(self, all=None, servo0=None, servo1=None, servo2=None, servo3=None):
+        """
+        Attach or detach a servo. Simple do True to attach and False to detach. Don't specify any servo you don't
+        want to touch.
+        :param all: Attach or detach all servos
+        :param servo0:
+        :param servo1:
+        :param servo2:
+        :param servo3:
+        """
+
         if not self.connected() or self.exiting:
-            printf("Robot.setServos(): Robot not found or setupThread is running, canceling servo change")
+            printf("Robot not found or setupThread is running, canceling servo change")
             return
 
         # If a positional servo is attached, get the robots current position and update the self.pos cache
@@ -268,8 +309,13 @@ class Robot:
             self.__servoAngleStatus = list(self.uArm.getServoAngles())
 
     def setGripper(self, status):
+        """
+        Turn the gripper on or off
+        :param status: True or False
+        """
+
         if not self.connected() or self.exiting:
-            printf("Robot.setGripper(): Robot not found or setupThread is running, canceling gripper change")
+            printf("Robot not found or setupThread is running, canceling gripper change")
             return
 
         if not self.__gripperStatus == status:
@@ -278,21 +324,34 @@ class Robot:
                 self.uArm.setGripper(self.__gripperStatus)
 
     def setBuzzer(self, frequency, duration):
+        """
+        Set the robots buzzer.
+        :param frequency: In HZ
+        :param duration:  In seconds
+        """
+
         if not self.connected() or self.exiting:
-            printf("Robot.setGripper(): Robot not found or setupThread is running, canceling buzzer change")
+            printf("Robot not found or setupThread is running, canceling buzzer change")
             return
         with self.lock:
             self.uArm.setBuzzer(frequency, duration)
 
     def setSpeed(self, speed):
+        """
+        Set the speed for future setPos moves, until speed is set again
+        :param speed: In cm/s
+        """
         # Changes a class wide variable that affects the move commands in self.refresh()
         self.__speed = speed
 
-    def setCacheState(self, stateDict):
-        pass
 
 
     def connected(self):
+        """
+        Check if the robot is currently connected
+        :return: Returns True if robot is connected properly. False if not.
+        """
+
         if self.uArm is None:         return False  # If the communication protocol class hasn't been created,
         if not self.uArm.connected(): return False  # If the Serial is not connected
         if self.__threadRunning:      return False  # If the setupThread is running
@@ -302,84 +361,56 @@ class Robot:
 
 
     def __setupThread(self, com):
-        printf("Robot.setupThread(): Thread Created")
+        """
+        This runs a thread for connecting to the robot. During this thread, the robot cannot accept any commands
+        :param com: COM port that the robot is connected to
+        """
+
+        printf("Thread Created")
 
         try:
             self.uArm = Uarm(com)
 
             # Check if the uArm was able to connect successfully
             if self.uArm.connected():
-                printf("Robot.setupThread(): uArm successfully connected")
+                printf("uArm successfully connected")
                 self.uArm.moveToWithSpeed(self.home['x'], self.home['y'], self.home['z'], self.__speed)
                 self.__threadRunning = False
                 self.setPos(**self.home)
                 self.setActiveServos(all=False)
                 return
             else:
-                printf("Robot.setupThread(): uArm was unable to connect!")
+                printf("uArm was unable to connect!")
                 self.uArm = None
 
         except serial.SerialException:
-            printf("Robot.setupThread(): ERROR: SerialException while setting uArm to ", com)
+            printf("ERROR: SerialException while setting uArm to ", com)
 
         self.__threadRunning = False
 
     def setUArm(self, com):
+        """
+        Connect a uArm, at COM port 'com'
+        :param com: COM port
+        """
+
         if com is not None and not self.__threadRunning:
             self.__threadRunning = True
-            printf("Robot.setUArm(): Setting uArm to ", com)
+            printf("Setting uArm to ", com)
             setup = Thread(target=lambda: self.__setupThread(com))
             setup.start()
 
         else:
-            printf("Robot.setUArm(): ERROR: Tried setting uArm when it was already set!")
+            printf("ERROR: Tried setting uArm when it was already set!")
 
     def setExiting(self, exiting):
+        """
+        When True, this will prevent the robot from completing any moves or lagging the program. The idea is that
+        when you are exiting a script, it has to happen quickly. This prevents any lag for waiting for the robot,
+        and cuts all communication. When False everything is normal and the robot communicates normally
+
+        :param exiting: True-> communication with robot is cut off. False -> Everything works normally
+        """
         if exiting:
-            printf("Robot.setExiting(): Setting robot to Exiting mode. All commands should be ignored")
+            printf("Setting robot to Exiting mode. All commands should be ignored")
         self.exiting = exiting
-
-
-
-
-# Functions that combine the camera and robot
-def getDirectionToTarget(targetPos, screenDimensions, tolerance):
-    """
-    Returns what direction in the x and y (relative) the robot should move
-    """
-
-    targetFocus = [screenDimensions[0] / 2, screenDimensions[1] / 2]
-    sign        = lambda x: (1.0, -1.0)[x < 0]  #sign(x) will return the sign of a number'
-
-
-    ##Calculate the pixel distance from the target focus to the target object
-    #distance = ((targetPos[0] - targetFocus[0]) ** 2 + (targetPos[1] - targetFocus[1]) ** 2) ** 0.5
-    yMove = 0.0
-    xMove = 0.0
-    xDist = targetFocus[0] - targetPos[0]
-    yDist = targetFocus[1] - targetPos[1]
-
-    #Figure out what direction to move and how much
-    if abs(yDist) >= tolerance:
-        yMove  = sign(yDist)
-
-
-    if abs(xDist) >= tolerance:
-        xMove  = sign(xDist)
-
-    # PERFORM THE MOVE
-    if not (abs(xDist) < tolerance and abs(yDist) < tolerance):
-        return xMove, -yMove
-    else:
-        return True
-
-
-def getRelative(x1, y1, baseAngle):
-    angle = math.radians(baseAngle) - math.radians(90)
-
-    x = x1 * math.cos(angle) - y1 * math.sin(angle)
-    y = x1 * math.sin(angle) + y1 * math.cos(angle)
-
-
-    return x, y
-

@@ -66,7 +66,7 @@ class VideoStream:
             self.startThread()
             self.setCamera = cameraID
         else:
-            printf("VideoStream.setNewCamera(): ERROR: Tried to set camera while camera was already being set!")
+            printf("ERROR: Tried to set camera while camera was already being set!")
 
     def setPaused(self, value):
         # Tells the main frunction to grab more frames
@@ -96,18 +96,18 @@ class VideoStream:
             self.mainThread = Thread(target=self.__videoThread)
             self.mainThread.start()
         else:
-            printf("VideoStream.startThread(): ERROR: Tried to create mainThread, but mainThread already existed.")
+            printf("ERROR: Tried to create mainThread, but mainThread already existed.")
 
     def endThread(self):
         self.running = False
 
         if self.mainThread is not None:
-            printf("VideoStream.endThread(): Ending main thread")
+            printf("Ending main thread")
             self.mainThread.join(500)
             self.mainThread = None
 
         if self.cap is not None:
-            printf("VideoStream.endThread(): Thread ended. Now gracefully closing Cap")
+            printf("Thread ended. Now gracefully closing Cap")
             self.cap.release()
 
     def __videoThread(self):
@@ -120,7 +120,7 @@ class VideoStream:
         self.frameList = []
 
         fpsTimer = FpsTimer(self.fps)
-        printf("VideoStream.videoThread(): Starting videoStream thread.")
+        printf("Starting videoStream thread.")
         while self.running:
             fpsTimer.wait()
             if not fpsTimer.ready():       continue
@@ -133,7 +133,7 @@ class VideoStream:
             ret, newFrame = self.cap.read()
 
             if not ret:  # If a frame was not successfully returned
-                printf("VideoStream.videoThread(): ERROR: while reading frame from Cam. Setting camera again...")
+                printf("ERROR: while reading frame from Cam. Setting camera again...")
                 self.__setNewCamera(self.cameraID)
                 cv2.waitKey(1000)
                 continue
@@ -182,11 +182,11 @@ class VideoStream:
             else:
                 self.filterFrame = self.frame
 
-        printf("VideoStream.videoThread(): VideoStream Thread has ended")
+        printf("VideoStream Thread has ended")
 
     def __setNewCamera(self, cameraID):
         # Set or change the current camera to a new one
-        printf("VideoStream.setNewCamera(): Setting camera to cameraID ", cameraID)
+        printf("Setting camera to cameraID ", cameraID)
 
 
         # Gracefully close the current capture if it exists
@@ -199,7 +199,7 @@ class VideoStream:
 
         # Check if the cap was opened correctly
         if not self.cap.isOpened():
-            printf("VideoStream.setNewCamera(): ERROR: Camera not opened. cam ID: ", cameraID)
+            printf("ERROR: Camera not opened. cam ID: ", cameraID)
             self.cap.release()
             self.dimensions = None
             self.cap        = None
@@ -212,7 +212,7 @@ class VideoStream:
         if ret:
             self.dimensions = [frame.shape[1], frame.shape[0]]
         else:
-            printf("VideoStream.setNewCamera(): ERROR ERROR: Camera could not read frame. cam ID: ", cameraID)
+            printf("ERROR ERROR: Camera could not read frame. cam ID: ", cameraID)
             self.cap.release()
             self.dimensions = None
             self.cap        = None
@@ -228,7 +228,7 @@ class VideoStream:
         return True
 
 
-    # Called from outside thread
+    # Get Frames and information
     def getFrame(self):
         # Returns the latest frame grabbed from the camera
         # with self.frameLock:

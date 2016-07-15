@@ -145,7 +145,7 @@ class Uarm:
             self.isConnected = True
             self.__uploadCode()
         except serial.SerialException as e:
-            printf("Uarm.connectToRobot(): Could not connect to robot on port ", port)
+            printf("Could not connect to robot on port ", port)
             self.serial = None
             self.isConnected = False
         sleep(3)
@@ -160,7 +160,7 @@ class Uarm:
         try:
             self.serial.write(cmndString)
         except serial.serialutil.SerialException as e:
-            printf("UArm.__send(): ERROR ", e, "while sending command ", cmnd, ". Disconnecting Serial!")
+            printf("ERROR ", e, "while sending command ", cmnd, ". Disconnecting Serial!")
             self.isConnected = False
             return ""
 
@@ -172,7 +172,7 @@ class Uarm:
             try:
                 response += str(self.serial.read(), 'ascii')
             except serial.serialutil.SerialException as e:
-                printf("UArm.__send(): ERROR ", e, "while sending command ", cmnd, ". Disconnecting Serial!")
+                printf("ERROR ", e, "while sending command ", cmnd, ". Disconnecting Serial!")
                 self.isConnected = False
                 return ""
 
@@ -193,7 +193,7 @@ class Uarm:
 
         # Make sure the respone has the valid start and end characters
         if not (response.count('[') == 1 and response.count(']') == 1):
-            printf("Uarm.read(): ERROR: The message ", response, " did not come with proper formatting!")
+            printf("ERROR: The message ", response, " did not come with proper formatting!")
 
 
         # Clean up the response
@@ -204,7 +204,7 @@ class Uarm:
 
         # If the robot returned an error, print that out
         if "error" in response:
-            printf("Uarm.read(): ERROR: Recieved error from robot: ", response)
+            printf("ERROR: Recieved error from robot: ", response)
 
 
         return response
@@ -215,11 +215,11 @@ class Uarm:
 
         # Do error checking, in case communication didn't work
         if message is False:
-            printf("Uarm.__parseArgs(): Since an error occured in communication, returning 0's for all arguments!")
+            printf("Since an error occured in communication, returning 0's for all arguments!")
             return responseDict
 
         if command not in message:
-            printf("Uarm.__parseArgs(): ERROR: The message did not come with the appropriate command: ", command)
+            printf("ERROR: The message did not come with the appropriate command: ", command)
             return responseDict
 
 

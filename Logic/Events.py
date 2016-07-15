@@ -150,7 +150,7 @@ class RecognizeObjectEvent(Event):
         if len(self.errors): return
 
         # Turn on tracking and add the target. DO NOT TURN ON FILTERS, that's only for GUI to do, which it will.
-        self.vision.addPlaneTarget(self.object)
+        self.vision.addTarget(self.object)
 
     def isActive(self):
         # Make sure the event won't crash if there were errors
@@ -184,7 +184,6 @@ class RecognizeCascadeEvent(Event):
 
         # Turn on tracking and add the target. DO NOT TURN ON FILTERS, that's only for GUI to do, which it will.
         self.vision.addCascadeTarget(self.parameters["objectID"])
-
 
     def isActive(self):
         # Make sure the event won't crash if there were errors

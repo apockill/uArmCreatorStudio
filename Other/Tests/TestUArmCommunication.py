@@ -30,20 +30,20 @@ uarm.setGripper(False)
 
 
 # Move to XYZ (0, -15, 15) at a speed of 20 centimeters per second
-print("Moving to 0, -15, 15")
-uarm.moveToWithSpeed(  0, -15, 15, 20)
+print("Moving to 0, 15, 15")
+uarm.moveToWithSpeed(  0, 15, 15, 20)
 
 
 while uarm.getIsMoving(): sleep(.1)
-uarm.moveToWithSpeed(-10, -15, 15, 20)
+uarm.moveToWithSpeed(-10, 15, 15, 20)
 
 
 while uarm.getIsMoving(): sleep(.1)
-uarm.moveToWithSpeed( 10, -15, 15, 20)
+uarm.moveToWithSpeed( 10, 15, 15, 20)
 
 
 while uarm.getIsMoving(): sleep(.1)
-uarm.moveToWithSpeed( 0, -10, 20, 20)
+uarm.moveToWithSpeed( 0, 10, 20, 20)
 
 
 
@@ -69,7 +69,7 @@ uarm.servoAttach(3)
 sleep(.5)
 
 # Test "Get" commands
-print("IK for X0Y-15Z15:        ", uarm.getIK(0, -15, 15))
+print("IK for X0Y-15Z15:        ", uarm.getIK(0, 15, 15))
 print("FK for A90B85.15Z43.45:  ", uarm.getFK(90, 85.15, 43.45))
 print("Current XYZ:             ", uarm.getCurrentCoord())
 print("Is Moving:               ", uarm.getIsMoving())

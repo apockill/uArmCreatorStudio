@@ -17,6 +17,7 @@ class Vision:
         self.planeTracker   = PlaneTracker(25.0, self.historyLen)
         self.cascadeTracker = CascadeTracker(self.historyLen)
 
+
         # Use these on any work functions that are intended for threading
         self.filterLock  = self.vStream.filterLock
         self.workLock    = self.vStream.workLock
@@ -24,38 +25,38 @@ class Vision:
     # Wrappers for the VideoStream object
     def waitForNewFrames(self, numFrames=1):
         # Useful for situations when you need x amount of new frames after the robot moved, before doing vision
-
         for i in range(0, numFrames):
 
             lastFrame = self.vStream.frameCount
             while self.vStream.frameCount == lastFrame:
                 if self.exiting:
-                    printf("Vision.waitForNewFrames(): Exiting early!")
+                    printf("Exiting early!")
                     break
 
                 sleep(.05)
 
 
-    # All tracker control functions
-
 
     # All Tracker Controls
-    def addPlaneTarget(self, trackable):
+    def addTarget(self, trackable):
+        """
+        Add a target to the PlaneTracker class
+        """
+
         if trackable is None:
-            printf("Vision.addPlaneTarget(): ERROR: Tried to add nonexistent trackable to the tracker!")
+            printf("ERROR: Tried to add nonexistent trackable to the tracker!")
             return
 
         views = trackable.getViews()
         with self.workLock:
             for view in views:
                 self.planeTracker.addView(view)
+
         # Make sure that the work and filter trackers are present
         self.vStream.addWork(self.planeTracker.track)
         self.vStream.addFilter(self.planeTracker.drawTracked)
 
     def addCascadeTarget(self, targetID):
-        if type(targetID) is not str:
-            print("ERROR ERROR ERROR IN VISION")
         self.cascadeTracker.addTarget(targetID)
 
         # Make sure that the tracker and filter are activated
@@ -109,7 +110,7 @@ class Vision:
         # Get a super recent frame of the object
         for i in range(0, maxAttempts):
             if self.exiting:
-                printf("Vision.getObjectBruteAccurate(): Exiting early!")
+                printf("Exiting early!")
                 break
 
             # If the frame is too old or marker doesn't exist or doesn't have enough points, exit the function
@@ -169,7 +170,7 @@ class Vision:
         avgPos /= samples
         return avgPos, avgMag, avgDir
 
-    def searchTrackedHistory(self, trackable=None, maxAge=None, minPtCount=None):
+    def searchTrackedHistory(self, trackable=None, maxAge=0, minPtCount=None):
         """
         Search through trackedHistory to find an object that meets the criteria
 
@@ -180,7 +181,7 @@ class Vision:
 
         maxFrame = maxAge + 1
         if maxFrame is None or maxFrame >= self.historyLen:
-            printf("Vision.isRecognized(): ERROR: Tried to look further in the history than was possible!")
+            printf("ERROR: Tried to look further in the history than was possible!")
             maxFrame = self.historyLen
 
         # Safely pull the relevant trackedHistory from the tracker object
@@ -218,7 +219,7 @@ class Vision:
         # GET TWO CONSECUTIVE FRAMES
         frameList = self.vStream.getFrameList()
         if len(frameList) < 10:  # Make sure there are enough frames to do the motion comparison
-            printf("getMovement():Not enough frames in self.vid.previousFrames")
+            printf("Not enough frames in self.vid.previousFrames")
             return 0  # IF PROGRAM IS RUN BEFORE THE PROGRAM HAS EVEN 10 FRAMES
 
         frame0 = frameList[0]
@@ -344,7 +345,7 @@ class Vision:
         # Used for closing threads quickly, when this is true any time-taking functions will skip through quickly
         # and return None or False or whatever their usual failure mode is. ei, waitForFrames() would exit immediately
         if exiting:
-            printf("Vision.setExiting(): Setting Vision to Exiting mode. All frame commands should exit quickly.")
+            printf("Setting Vision to Exiting mode. All frame commands should exit quickly.")
             self.endAllTrackers()
 
         self.exiting = exiting
@@ -356,6 +357,11 @@ class Tracker:
         self.targets      = []
         self.trackedHistory = [[] for i in range(self.historyLen)]
 
+        self.fFnt       = cv2.FONT_HERSHEY_PLAIN  # Font for filter functions
+        self.fColor     = (255, 255, 255)  # Default color for filter functions
+        self.fThickness = 1  # Thickness of lines
+
+
     def _addTracked(self, trackedArray):
         # Add an array of detected objects to the self.trackedHistory array, and shorten the trackedHistory array
         # so that it always remains self.historyLength long
@@ -365,6 +371,7 @@ class Tracker:
             del self.trackedHistory[-1]
 
     def clear(self):
+        self.trackedHistory = [[] for i in range(self.historyLen)]
         self.targets = []
 
 
@@ -445,7 +452,7 @@ class PlaneTracker(Tracker):
 
         for target in self.targets:
             if view == target.view:
-                printf("PlaneTracker.addTarget(): Rejected: Attempted to add two targets of the same name: ", view.name)
+                printf("Rejected: Attempted to add two targets of the same name: ", view.name)
                 return
 
         planarTarget = self.createTarget(view)
@@ -456,8 +463,9 @@ class PlaneTracker(Tracker):
 
 
     def clear(self):
+        super().clear()
+
         # Remove all targets
-        self.targets = []
         self.matcher.clear()
 
     def track(self, frame):
@@ -538,9 +546,6 @@ class PlaneTracker(Tracker):
         return keypoints, descrs
 
     def drawTracked(self, frame):
-        filterFnt   = cv2.FONT_HERSHEY_PLAIN
-        filterColor = (255, 255, 255)
-
 
         # Draw the Name and XYZ of the object
         for tracked in self.trackedHistory[0]:
@@ -555,7 +560,7 @@ class PlaneTracker(Tracker):
 
             # Draw the name of the object, and coordinates
             cv2.putText(frame, tracked.view.name, tuple(quad[1]),
-                        filterFnt, scaleFactor, color=filterColor, thickness=1)
+                        self.fFnt, scaleFactor, color=self.fColor, thickness=self.fThickness)
 
             # FOR DEUBGGING ONLY: TODO: Remove this when deploying final product
             try:
@@ -563,7 +568,8 @@ class PlaneTracker(Tracker):
                             " Y " + str(int(tracked.center[1])) + \
                             " Z " + str(int(tracked.center[2]))
                             # " R " + str(round(tracked.rotation[2], 2))
-                cv2.putText(frame, coordText, (quad[1][0], quad[1][1] + int(15*scaleFactor)),  filterFnt, scaleFactor, color=filterColor, thickness=1)
+                cv2.putText(frame, coordText, (quad[1][0], quad[1][1] + int(15*scaleFactor)),
+                            self.fFnt, scaleFactor, color=self.fColor, thickness=self.fThickness)
             except:
                 pass
 
@@ -583,6 +589,7 @@ class PlaneTracker(Tracker):
                               [     width,      -height, 0],
                               [     width,       height, 0],
                               [    -width,       height, 0]])
+
         fx              = 0.5 + self.focalLength / 50.0
         dist_coef       = np.zeros(4)
         h, w            = frame.shape[:2]
@@ -596,18 +603,21 @@ class PlaneTracker(Tracker):
 
 class CascadeTracker(Tracker):
     # This tracker is intended for tracking Haar cascade objects that are loaded with the program
-    CascadeTarget  = namedtuple('CascadeTarget', 'name, classifier, minPts')
+    CascadeTarget  = namedtuple('CascadeTarget', 'name, classifier, minPts, minSize')
+    CascadeTracked = namedtuple('CascadeTracked', 'target, quad, center')
 
     def __init__(self, historyLength):
         super(CascadeTracker, self).__init__(historyLength)
 
         self.cascades = [self.CascadeTarget(name       = "Face",
                                             classifier = cv2.CascadeClassifier(Paths.face_cascade),
-                                            minPts     = 20),
+                                            minPts     = 20,
+                                            minSize    = (30, 30)),
 
                          self.CascadeTarget(name       = "Smile",
                                             classifier = cv2.CascadeClassifier(Paths.smile_cascade),
-                                            minPts     = 30)]
+                                            minPts     = 325,
+                                            minSize    = (80, 50))]
 
     def addTarget(self, targetName):
         for target in self.cascades:
@@ -615,7 +625,7 @@ class CascadeTracker(Tracker):
                 if target not in self.targets:
                     self.targets.append(target)
                 else:
-                    printf("CascadeTracker.addTarget(): ERROR: Tried to add a target that was already there!")
+                    printf("ERROR: Tried to add a target that was already there!")
 
     def track(self, frame):
         gray  = cv2.cvtColor(frame.copy(), cv2.COLOR_BGR2GRAY)
@@ -623,19 +633,42 @@ class CascadeTracker(Tracker):
         tracked = []
         # Track any cascades that have been added to self.targets
         for target in self.targets:
-            foundList = target.classifier.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=15, minSize=(30, 30))
+            quads = target.classifier.detectMultiScale(gray,
+                                                           scaleFactor  = 1.1,
+                                                           minNeighbors = target.minPts,
+                                                           minSize      = target.minSize)
 
-            # If faces were found, append them here
-            for found in foundList:
-                tracked.append(found)
+
+            # If faces were found, create seperate "tracked" objects for them here
+            for xywh in quads:
+                # Convert xywh to a more readable set of points
+                x0, y0, x1, y1 = xywh[0], xywh[1], xywh[0] + xywh[2], xywh[1] + xywh[3]
+
+                # Make quad, a 4 point list of [p1, p2, p3, and p4]
+                quad = np.array([(x0, y0), (x1, y0), (x1, y1), (x0, y1)])
+
+                # X, Y
+                center = [int(xywh[2] / 2 + xywh[0]),
+                          int(xywh[3] / 2 + xywh[1])]
+
+
+
+                trackedObj = self.CascadeTracked(target=target, quad=quad, center=center)
+                tracked.append(trackedObj)
 
 
         self._addTracked(tracked)
 
     def drawTracked(self, frame):
         for tracked in self.trackedHistory[0]:
-            (x, y, w, h) = tracked
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 255, 255), 2)
+            quad = tracked.quad
+            currLength    = np.linalg.norm(quad[1] - quad[0]) + np.linalg.norm(quad[2] - quad[1])  # avg side len
+            scaleFactor   = currLength / 210
+
+            cv2.rectangle(frame, tuple(quad[0]), tuple(quad[2]), (255, 255, 255), 2)
+
+            cv2.putText(frame, tracked.target.name, (tracked.quad[1][0], tracked.quad[1][1] + int(15)),
+                        self.fFnt, scaleFactor, color=self.fColor, thickness=self.fThickness)
 
 # def getMotionDirection(self):
     #     frameList = self.vStream.getFrameList()
@@ -659,7 +692,7 @@ class CascadeTracker(Tracker):
         # Finds the object in the latest numFrames from the tracking history, and returns the average pos and rot
 
         if numFrames >= self.tracker.historyLen:
-            printf("Vision.getAverageObjectPosition(): ERROR: Tried to look further in the history than was possible!")
+            printf("ERROR: Tried to look further in the history than was possible!")
             numFrames = self.tracker.historyLen
 
 

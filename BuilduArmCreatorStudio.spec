@@ -54,10 +54,11 @@ iconsList = ["cancel.png"                        ,
              "command_script.png"                ,
              "command_exit_event.png"            ,
              "command_end_script.png"            ,
-             "help_lower_head.gif"  ,
-             "help_sel_marker.gif"     ,
+             "help_lower_head.gif"               ,
+             "help_sel_marker.gif"               ,
              "help_sel_obj.gif"                  ,
              "help_sel_pickuprect.gif"           ,
+             "help_add_detail.gif"               ,
              "help_cam_overview.png"             ,
              "help_make_sticker.png"             ,
              "help_marker_on_head.png"           ,
@@ -68,9 +69,11 @@ iconsList = ["cancel.png"                        ,
 # Create a list of all the necessary resources in the format that pyInstaller wants it in
 d = []
 
+# Add the icons from the icons directory
 for icon in iconsList:
     d.append((icons + icon, dir + icons + icon, 'DATA'))
 
+# Add the cascades from the resources directory
 for resource in resList:
     d.append((res + resource, dir + res + resource, 'DATA'))
 
