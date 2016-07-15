@@ -340,7 +340,7 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exit
     # Get a super recent frame of the object with high point count and accuracy
     trackedObj = vision.getObjectBruteAccurate(trackable,
                                                minPoints   = MIN_POINTS_PICKUP_OBJECT,
-                                               maxFrameAge = 0,
+                                               maxAge= 0,
                                                maxAttempts = MAX_FRAME_FAIL)
     if trackedObj is None:
         printf("Couldn't get the object accurately!")

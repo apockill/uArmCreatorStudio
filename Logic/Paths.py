@@ -23,6 +23,7 @@ exeResourcesPath   = resourcePath(resourcesLoc)
 # Used by Vision
 face_cascade       = exeResourcesPath + "face_cascade.xml"
 smile_cascade      = exeResourcesPath + "smile_cascade.xml"
+eye_cascade       = exeResourcesPath  + "eye_cascade.xml"
 
 
 ################        GUI PATHS         ################
@@ -87,6 +88,8 @@ command_script      = imageLoc + "command_script.png"
 command_exit_event  = imageLoc + "command_exit_event.png"
 command_end_script  = imageLoc + "command_end_script.png"
 command_see_obj     = imageLoc + "command_see_obj.png"
+command_run_task    = imageLoc + "window_ufactory_logo.png"
+
 
 # Tutorial
 help_lower_head     = imageLoc + "help_lower_head.gif"

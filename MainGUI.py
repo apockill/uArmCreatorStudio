@@ -36,14 +36,23 @@ class MainWindow(QtWidgets.QMainWindow):
                                                         "groundPos": None},  # The "Ground" position, in [x,y,z]
 
                                  # GUI RELATED SETTINGS
-                                 "lastOpenedFile":      None
+                                 "lastOpenedFile":      None,
+
+
+                                 "consoleSettings": {"wordWrap":    False,   #  ConsoleWidget settings
+                                                     "robot":        True,   #  What gets printed in consoleWidget
+                                                     "vision":       True,
+                                                     "serial":      False,
+                                                     "interpreter":  True,
+                                                     "script":       True,
+                                                     "gui":         False}
                                }
 
-        # Load settings
+        # Load settings before any objects are created
         configExists = self.loadSettings()
 
 
-        # Init self and objects. All objects should be capable of being started w/o filled out settings
+        # Init self and objects.
         self.fileName    = None
         self.loadData    = []  #Set when file is loaded. Used to check if the user has changed anything and prompt
         self.env         = Environment(self.settings)
@@ -57,12 +66,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.centralWidget   = QtWidgets.QStackedWidget()
         self.controlPanel    = ControlPanelGUI.ControlPanel(self.env, self.settings, parent=self)
         self.cameraWidget    = CameraWidget(self.env.getVStream().getFilteredWithID, parent=self)
-        self.consoleWidget   = Console(self)
+        self.consoleWidget   = Console(self.env.getSettings(), parent=self)
 
 
         # Connect the consoleWidget with the global print function, so the consoleWidget prints everything
         Global.printRedirectFunc = self.consoleWidget.write
         self.consoleWidget.setExecFunction(self.interpreter.evaluateExpression)
+
 
         # Create Menu items, and set the Dashboard as the main widget
         self.initUI()
@@ -82,14 +92,15 @@ class MainWindow(QtWidgets.QMainWindow):
         # Create "File" Menu
         menuBar       = self.menuBar()
 
-
+        # Connect any slots that need connecting
+        self.consoleWidget.settingsChanged.connect(lambda: self.setSettings(self.consoleWidget.settings))
 
         # Create File Menu and actions
         fileMenu      = menuBar.addMenu('File')
-        newAction     = QtWidgets.QAction(QtGui.QIcon(Paths.file_new), "New Task", self)
-        saveAction    = QtWidgets.QAction(QtGui.QIcon(Paths.file_save), "Save Task", self)
+        newAction     = QtWidgets.QAction( QtGui.QIcon(Paths.file_new),     "New Task", self)
+        saveAction    = QtWidgets.QAction(QtGui.QIcon(Paths.file_save),    "Save Task", self)
         saveAsAction  = QtWidgets.QAction(QtGui.QIcon(Paths.file_save), "Save Task As", self)
-        loadAction    = QtWidgets.QAction(QtGui.QIcon(Paths.file_load), "Load Task", self)
+        loadAction    = QtWidgets.QAction(QtGui.QIcon(Paths.file_load),    "Load Task", self)
 
         # Connect file menu actions
         newAction.triggered.connect(    lambda: self.newTask(promptSave=True))
@@ -186,7 +197,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def setSettings(self, newSettings):
-        # Apply settings
+        """
+        Apply any new settings that have been changed. If they've been changed, also save the program.
+        """
 
         # Create a quick function that will check if a setting has been changed. If it has, an action will be taken.
         isNew = lambda key: (key in newSettings) and (newSettings[key] is not None) and \
@@ -227,9 +240,17 @@ class MainWindow(QtWidgets.QMainWindow):
             printf("Updating Motion Calibrations!")
             self.settings["motionCalibrations"] = newSettings["motionCalibrations"]
 
+        # If coordCalibrations are diferent, change the settings
         if isNew("coordCalibrations"):
             settingsChanged = True
             self.settings["coordCalibrations"] = newSettings["coordCalibrations"]
+
+
+        # If the console has changed settings, update this
+        if isNew("consoleSettings"):
+            settingsChanged = True
+            printf('console settings changed')
+            self.settings["consoleSettings"] = dict(newSettings["consoleSettings"])
 
         # Save settings to a config file
         if settingsChanged:
@@ -708,6 +729,7 @@ class SettingsWindow(QtWidgets.QDialog):
 
     def getSettings(self):
         return self.settings
+
 
 
 ##########    OTHER    ##########

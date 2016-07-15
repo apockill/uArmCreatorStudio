@@ -1,7 +1,7 @@
+import math
 from time         import sleep
 from copy         import deepcopy
 from threading    import Thread
-from math         import *  # This is for setting math functions on the cleanNamespace function of interpeter
 from Logic.Global import printf, FpsTimer, wait
 from Logic.Vision import Vision
 from Logic        import Video, Events, Commands, ObjectManager, Robot, Global
@@ -151,7 +151,7 @@ class Interpreter:
 
         # Get rid of repeat errors
         # errors = set(errors)
-        printf("The following errors occured during loading: ", errors)
+        printf(len(errors), " errors occured while initializing the script.")
         return errors
 
 
@@ -269,14 +269,14 @@ class Interpreter:
             - input
 
         """
-        #
-                # Reset self.__variables with the default values/functions #
-        safeList = ['math', 'acos', 'asin', 'atan', 'atan2', 'ceil', 'cos', 'cosh', 'degrees',
+
+        # Reset self.__variables with the default values/functions #
+        safeList = ['acos', 'asin', 'atan', 'atan2', 'ceil', 'cos', 'cosh', 'degrees',
                     'e', 'exp', 'fabs', 'floor', 'fmod', 'frexp', 'hypot', 'ldexp', 'log', 'log10',
                     'modf', 'pi', 'pow', 'radians', 'sin', 'sinh', 'sqrt', 'tan', 'tanh']
-        cleanVariables   = {}
-        cleanVariables   = dict([(k, locals().get(k, None)) for k in safeList])
-        self.__variables = cleanVariables
+
+        self.__variables = dict([(k, getattr(math, k)) for k in safeList])
+        self.__variables['math'] = math
 
 
         robot         = self.env.getRobot()
@@ -306,7 +306,7 @@ class Interpreter:
                             "tuple":     tuple,      "robot":      robot,  "resources":  resources,
                            "vision":    vision,   "settings":   settings,    "vStream":    vStream,
                             "sleep":   newSleep}
-
+        execBuiltins = {"__builtins__": execBuiltins}
         self.execBuiltins = execBuiltins
 
     def setVariable(self, name, expression):
@@ -383,7 +383,7 @@ class Interpreter:
     # The following functions are *only* for interpreter to use within itself.
     def __programThread(self):
         # This is where the script you create actually gets run.
-        print("\n\n\n ##### STARTING PROGRAM #####\n")
+        printf("\n\n\n ##### STARTING PROGRAM #####\n")
 
         # self.env.getRobot().setServos(servo1=True, servo2=True, servo3=True, servo4=True)
         # self.env.getRobot().refresh()

@@ -273,7 +273,6 @@ class CommandGUI:
         cancelBtn       = QtWidgets.QPushButton('Cancel')
         prompt.applyBtn.setMaximumWidth(100)
         cancelBtn.setMaximumWidth(100)
-        prompt.applyClicked = True
         prompt.applyBtn.clicked.connect(prompt.accept)
         cancelBtn.clicked.connect(prompt.reject)
         prompt.applyBtn.setDefault(True)
@@ -314,7 +313,6 @@ class CommandGUI:
         prompt.mainVLayout.addLayout(buttonRow)  # Add button after, so hints appear above buttons
 
         # Run the info window and prevent other windows from being clicked while open:
-        printf("Finished executing self...")
         accepted = prompt.exec_()
 
         # Make sure QT properly handles the memory after this function ends
@@ -495,8 +493,8 @@ class NameCommandGUI(CommandGUI):
     def dressWindow(self, prompt):
         # Do some GUI code setup
         # Put all the objects into horizontal layouts called Rows
-        row1 = QtWidgets.QHBoxLayout()
-        prompt.content.addLayout(row1) # and so on for all of the rows
+
+        self._addRow(prompt, some GUI label, some GUI object)  # Add rows using self._addRow to keep consistency
 
         return prompt
 
@@ -1537,3 +1535,37 @@ class ScriptCommandGUI(CommandGUI):
 
 
 
+class RunTaskCommandGUI(CommandGUI):
+    title     = "Run Another Task File"
+    tooltip   = "This tool will run  another task file and run it inside of this task, until the 'End Program'\n" +\
+                "command is called within the task, then it will return to the currently running task.\n" + \
+                "All tasks are preloaded when script is launched, so if a child class runs a parent class, an error\n"+\
+                "will be returned."
+
+    icon      = Paths.command_run_task
+    logicPair = "RunTaskCommand"
+
+    def __init__(self, env, parameters=None):
+        super(RunTaskCommandGUI, self).__init__(parameters)
+
+        # If parameters do not exist, then set up the default parameters
+        if self.parameters is None:
+            # Anything done with env should be done here. Try not to save env as a class variable whenever possible
+            self.parameters = {"filename": ""}
+
+    def dressWindow(self, prompt):
+        # Do some GUI code setup
+        # Put all the objects into horizontal layouts called Rows
+
+
+        return prompt
+
+    def _extractPromptInfo(self, prompt):
+        newParameters = {}
+
+        self.parameters.update(newParameters)
+
+        return self.parameters
+
+    def _updateDescription(self):
+        self.description = ""

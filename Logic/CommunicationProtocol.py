@@ -11,9 +11,9 @@ def getConnectedRobots():
     return ports
 
 
-class Uarm:
+class Device:
 
-    def __init__(self, port, printCommands=False, printResponses=False):
+    def __init__(self, port, printCommands=True, printResponses=True):
         self.printCommands  = printCommands
         self.printResponses = printResponses
         self.isConnected    = False
@@ -181,11 +181,11 @@ class Uarm:
                 break
 
         if self.printCommands and self.printResponses:
-            print("[" + cmnd + "]" + "  \t" + response)
+            printf("[" + cmnd + "]" + " " * (30 - len(cmnd)) + response)
         elif self.printCommands:
-            print(cmndString)
+            printf(cmndString)
         elif self.printResponses:
-            print(response)
+            printf(response)
 
 
         # Save the response to a log variable, in case it's needed for debugging

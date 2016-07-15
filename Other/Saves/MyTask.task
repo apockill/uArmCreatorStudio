@@ -1,50 +1,78 @@
 [
    {
+      "parameters": {},
       "commandList": [
          {
             "parameters": {
-               "script": "print(\"Hello\")\n"
+               "description": "",
+               "script": "def ayyLmao():\n\tfor i in range(0, 10):\n\t\tprint(\"haha\"*i)\n"
             },
             "typeGUI": "ScriptCommandGUI",
             "typeLogic": "ScriptCommand"
+         },
+         {
+            "parameters": {
+               "x": "0.0",
+               "z": "0.0",
+               "y": "0.0",
+               "relative": false
+            },
+            "typeGUI": "MoveXYZCommandGUI",
+            "typeLogic": "MoveXYZCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "DropCommandGUI",
+            "typeLogic": "DropCommand"
+         },
+         {
+            "parameters": {
+               "servo4": true,
+               "servo2": true,
+               "servo3": true,
+               "servo1": true
+            },
+            "typeGUI": "AttachCommandGUI",
+            "typeLogic": "AttachCommand"
+         },
+         {
+            "parameters": {
+               "not": false,
+               "objectID": "",
+               "age": 1,
+               "ptCount": 0
+            },
+            "typeGUI": "TestObjectSeenCommandGUI",
+            "typeLogic": "TestObjectSeenCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "StartBlockCommandGUI",
+            "typeLogic": "StartBlockCommand"
+         },
+         {
+            "parameters": null,
+            "typeGUI": "EndBlockCommandGUI",
+            "typeLogic": "EndBlockCommand"
+         },
+         {
+            "parameters": {
+               "x": "0",
+               "objectID": "",
+               "z": "5",
+               "y": "0"
+            },
+            "typeGUI": "MoveRelativeToObjectCommandGUI",
+            "typeLogic": "MoveRelativeToObjectCommand"
          }
       ],
-      "parameters": null,
       "typeGUI": "InitEventGUI",
       "typeLogic": "InitEvent"
    },
    {
-      "commandList": [
-         {
-            "parameters": {
-               "expression": "speed/2",
-               "variable": "speed"
-            },
-            "typeGUI": "SetVariableCommandGUI",
-            "typeLogic": "SetVariableCommand"
-         }
-      ],
-      "parameters": {
-         "checkKey": "A"
-      },
-      "typeGUI": "KeypressEventGUI",
-      "typeLogic": "KeypressEvent"
-   },
-   {
-      "commandList": [
-         {
-            "parameters": {
-               "expression": "speed*2",
-               "variable": "speed"
-            },
-            "typeGUI": "SetVariableCommandGUI",
-            "typeLogic": "SetVariableCommand"
-         }
-      ],
-      "parameters": {
-         "checkKey": "S"
-      },
-      "typeGUI": "KeypressEventGUI",
-      "typeLogic": "KeypressEvent"
+      "parameters": {},
+      "commandList": [],
+      "typeGUI": "StepEventGUI",
+      "typeLogic": "StepEvent"
    }
 ]

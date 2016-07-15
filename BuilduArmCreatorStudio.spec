@@ -6,7 +6,8 @@ icons = res + "Icons\\"     # Icons directory in resources
 dir   = "F:\\Google Drive\\Projects\\Git Repositories\\RobotGUIProgramming\\"  # Working directory
 
 resList   = ["face_cascade.xml",
-             "smile_cascade.xml"]
+             "smile_cascade.xml",
+             "eye_cascade.xml"]
 
 iconsList = ["cancel.png"                        ,
              "delete.png"                        ,

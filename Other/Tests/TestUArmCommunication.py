@@ -1,4 +1,4 @@
-from Logic import UArmTextCommunication_1 as UArmLibrary
+from Logic import CommunicationProtocol as UArmLibrary
 from collections import Counter  # For debugging
 from time import sleep
 import sys
@@ -14,7 +14,7 @@ if len(connecteduArms) == 0:
 
 
 # Connect to the first robot, and make sure it connected correctly
-uarm = UArmLibrary.Uarm(connecteduArms[0][0], printResponses=True)
+uarm = UArmLibrary.Device(connecteduArms[0][0], printResponses=True)
 if not uarm.connected():
     print("uArm could not connect!")
     sys.exit()

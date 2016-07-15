@@ -89,10 +89,10 @@ class MoveWristCommand(Command):
             return False
 
 
-class PlayMotionRecordingCommand(Command):
+class MotionRecordingCommand(Command):
 
     def __init__(self, env, interpreter, parameters=None):
-        super(PlayMotionRecordingCommand, self).__init__(parameters)
+        super(MotionRecordingCommand, self).__init__(parameters)
 
         # Load any objects, modules, calibrations, etc  that will be used in the run Section here. Use getVerifyXXXX()
         self.robot       = self.getVerifyRobot(env)
@@ -357,7 +357,7 @@ class MoveRelativeToObjectCommand(Command):
         # Get a super recent frame of the object
         trackedObj = self.vision.getObjectBruteAccurate(self.trackable,
                                                         minPoints   = rv.MIN_POINTS_FOCUS,
-                                                        maxFrameAge = rv.MAX_FRAME_AGE_MOVE)
+                                                        maxAge= rv.MAX_FRAME_AGE_MOVE)
         if trackedObj is None: return False
 
         # Get the object position
@@ -424,7 +424,7 @@ class TestObjectSeenCommand(Command):
         printf("Testing if ", self.parameters["objectID"], " was seen")
         tracked = self.vision.searchTrackedHistory(trackable  = self.trackable,
                                                    maxAge= self.maxAge,
-                                                   minPtCount = self.minPts)
+                                                   minPoints= self.minPts)
 
         # Return if an object that matched that criteria was tracked
         if self.parameters["not"]:
@@ -494,7 +494,7 @@ class TestObjectLocationCommand(Command):
             ret =  rv.pointInPolygon(center, self.quad)
 
 
-        printf("Tested ", self.parameters["objectID"], " location. ", inCount, " points were the location:", ret)
+        printf("Tested ", self.parameters["objectID"], " location. ", inCount, " points were in location. Return ", ret)
 
         if self.parameters['not']: ret = not ret
 

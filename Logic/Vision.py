@@ -6,7 +6,21 @@ from Logic.Global import printf
 from Logic        import Paths
 
 class Vision:
+    """
+    This class is for all computer vision and frame processing that needs doing. Vision does not do any changes on
+    the video stream, that's done in the VideoStream class. What vision does is handle object tracking,
+    filters, threading locks, and handing work off to be done by the VideoStream class.
 
+    The typical workflow for Vision is to:
+        vision.addTarget(trackable)    # Start tracking some object
+
+        # Some time later in the program, look for the object. There are multiple search functions
+        getObjectBruteAccurate(trackable, minPoints, maxFrameAge, maxAttempts)  # Try to find with multiple attempts
+
+        searchTrackedHistory(trackable, maxAge, minPtCount
+
+        getObjectSpeedDirectionAvg(trackable, maxAge,
+    """
     def __init__(self, vStream):
 
         # How long the "tracker history" array is (how many frames of tracked data are kept)
@@ -95,13 +109,13 @@ class Vision:
                     return frameID, tracked
         return None, None
 
-    def getObjectBruteAccurate(self, trackable, minPoints=-1, maxFrameAge=0, maxAttempts=1):
+    def getObjectBruteAccurate(self, trackable, minPoints=-1, maxAge=0, maxAttempts=1):
         """
         This will brute-force the object finding process somewhat, and ensure a good recognition, or nothing at all.
 
         :param trackable: The TrackableObject you intend to find
         :param minPoints:    Minimum amount of recognition points that must be found in order to track. -1 means ignore
-        :param maxFrameAge:  How recent the recognition was, in "frames gotten from camera"
+        :param maxAge:  How recent the recognition was, in "frames gotten from camera"
         :param maxAttempts:  How many frames it should wait for before quitting the search.
         :return:
         """
@@ -116,7 +130,7 @@ class Vision:
             # If the frame is too old or marker doesn't exist or doesn't have enough points, exit the function
             frameAge, trackedObj = self.getObjectLatestRecognition(trackable)
 
-            if trackedObj is None or frameAge > maxFrameAge or trackedObj.ptCount < minPoints:
+            if trackedObj is None or frameAge > maxAge or trackedObj.ptCount < minPoints:
                 if i == maxAttempts - 1: break
 
                 self.waitForNewFrames()
@@ -170,13 +184,13 @@ class Vision:
         avgPos /= samples
         return avgPos, avgMag, avgDir
 
-    def searchTrackedHistory(self, trackable=None, maxAge=0, minPtCount=None):
+    def searchTrackedHistory(self, trackable=None, maxAge=0, minPoints=None):
         """
         Search through trackedHistory to find an object that meets the criteria
 
         :param trackableObject: Specify if you want to find a particular object
         :param maxAge:        Specify if you wannt to find an object that was found within X frames ago
-        :param minPtCount:      Specify if you want to find an object with a minimum amount of tracking points
+        :param minPoints:      Specify if you want to find an object with a minimum amount of tracking points
         """
 
         maxFrame = maxAge + 1
@@ -195,7 +209,7 @@ class Vision:
                 # If the object meets the criteria
                 if trackable is not None and not trackable.equalTo(tracked.view.name): continue
 
-                if minPtCount is not None and not tracked.ptCount > minPtCount: continue
+                if minPoints is not None and not tracked.ptCount > minPoints: continue
                 # print("Found object ", tracked.view.name, " with pts, ", tracked.ptCount, "maxFrames", maxFrame)
                 return tracked
         return None
@@ -617,13 +631,19 @@ class CascadeTracker(Tracker):
                          self.CascadeTarget(name       = "Smile",
                                             classifier = cv2.CascadeClassifier(Paths.smile_cascade),
                                             minPts     = 325,
-                                            minSize    = (80, 50))]
+                                            minSize    = (80, 50)),
+
+                         self.CascadeTarget(name       = "Eye",
+                                            classifier = cv2.CascadeClassifier(Paths.eye_cascade),
+                                            minPts     = 30,
+                                            minSize    = (40, 40))]
 
     def addTarget(self, targetName):
         for target in self.cascades:
             if targetName == target.name:
                 if target not in self.targets:
                     self.targets.append(target)
+                    print("appended ", target)
                 else:
                     printf("ERROR: Tried to add a target that was already there!")
 
@@ -634,9 +654,9 @@ class CascadeTracker(Tracker):
         # Track any cascades that have been added to self.targets
         for target in self.targets:
             quads = target.classifier.detectMultiScale(gray,
-                                                           scaleFactor  = 1.1,
-                                                           minNeighbors = target.minPts,
-                                                           minSize      = target.minSize)
+                                                       scaleFactor  = 1.1,
+                                                       minNeighbors = target.minPts,
+                                                       minSize      = target.minSize)
 
 
             # If faces were found, create seperate "tracked" objects for them here

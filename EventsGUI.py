@@ -192,6 +192,8 @@ class EventPromptWindow(QtWidgets.QDialog):
         notRecMnu.addAction( "Face Not Detected", lambda: newCascadeBtn({'objectID':  "Face", "not":  True}))
         recMnu.addAction(       "Smile Detected", lambda: newCascadeBtn({'objectID': "Smile", "not": False}))
         notRecMnu.addAction("Smile Not Detected", lambda: newCascadeBtn({'objectID': "Smile", "not":  True}))
+        recMnu.addAction(         "Eye Detected", lambda: newCascadeBtn({'objectID':   "Eye", "not": False}))
+        notRecMnu.addAction(  "Eye Not Detected", lambda: newCascadeBtn({'objectID':   "Eye", "not":  True}))
 
         recMnu.addSeparator()
         notRecMnu.addSeparator()

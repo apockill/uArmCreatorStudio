@@ -5,7 +5,7 @@ from threading    import Thread, RLock
 from time         import sleep  #Only use in refresh() command while querying robot if it's done moving
 from Logic.Global import printf
 
-from Logic.UArmTextCommunication_1 import Uarm
+from Logic.CommunicationProtocol import Device
 
 
 def getConnectedRobots():
@@ -369,7 +369,7 @@ class Robot:
         printf("Thread Created")
 
         try:
-            self.uArm = Uarm(com)
+            self.uArm = Device(com)
 
             # Check if the uArm was able to connect successfully
             if self.uArm.connected():

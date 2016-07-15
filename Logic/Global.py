@@ -54,7 +54,7 @@ def init():
 
     # When this function is set, all print "strings" will be sent to it before printing normally
     # The use case is for the Console widget. If printRedirectFunc = Console.write, then all prints will print on there
-    printRedirectFunc  = lambda string: None
+    printRedirectFunc  = lambda classString, string: None
 
 
 
@@ -110,9 +110,9 @@ def printf(*args):
     """
     # Create settings for the boilerplate information
     printModule   = False
-    printFunction = True    # If false, no boilerplate will be printed
+    printFunction = False    # If false, no boilerplate will be printed
     printClass    = True
-    printFunction = True
+
     indentLength  = 40      # Length of indent between boilerplate and content
 
 
@@ -131,6 +131,14 @@ def printf(*args):
 
     # Format the space between the boilerplate and content
     boilerPlate = caller_name(printModule=printModule, printClass=printClass, printFunction=printFunction)
+
+    global printRedirectFunc
+    printRedirectFunc(boilerPlate, buildString)
+
+
+    # Filter out any serial communication since it clutters up the console
+    if boilerPlate == "Device": return
+
     if len(boilerPlate) > 0:
         spaces = int((indentLength - len(boilerPlate)))       #How many spaces ahead the content column should be
         if spaces > 0:
@@ -140,8 +148,8 @@ def printf(*args):
     buildString = boilerPlate + buildString
     print(buildString)
 
-    global printRedirectFunc
-    printRedirectFunc(buildString)
+
+
 
 
 class FpsTimer:
