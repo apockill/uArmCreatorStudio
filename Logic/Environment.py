@@ -306,7 +306,7 @@ class Interpreter:
                             "tuple":     tuple,      "robot":      robot,  "resources":  resources,
                            "vision":    vision,   "settings":   settings,    "vStream":    vStream,
                             "sleep":   newSleep}
-        execBuiltins = {"__builtins__": execBuiltins}
+        execBuiltins = {"__builtins__": execBuiltins, "variables": self.__variables}
         self.execBuiltins = execBuiltins
 
     def setVariable(self, name, expression):
@@ -340,19 +340,20 @@ class Interpreter:
             return self.__variables[name], True
 
     def evaluateExpression(self, expression):
+
         # Returns value, success. Value is the output of the expression, and 'success' is whether or not it crashed.
         # If it crashes, it returns None, but some expressions might return none, so 'success' variable is still needed.
         # Side note: I would have to do ~66,000 eval operations to lag the program by one second.
 
         answer = None
+
         try:
             answer = eval(expression, self.execBuiltins, self.__variables)
         except Exception as e:
-            printf("ERROR: ", e)
+            printf("ERROR: ", type(e).__name__, " ", e)
             return None, False
 
         if answer is None:
-
             return None, False
 
         return answer, True
@@ -369,12 +370,13 @@ class Interpreter:
         #  self.__variables["scriptReturn"] = None
 
         try:
-            exec(script, self.execBuiltins, self.__variables)
+            # self.execBuiltins["globals"] = self.__variables
+            exec(script, self.execBuiltins)
 
             # if self.__variables["scriptReturn"] is not None:
             #     print("Returned ", self.__variables["scriptReturn"])
         except Exception as e:
-            printf("ERROR: ", e)
+            printf("ERROR: ", type(e).__name__, ": ", e)
             return False
 
         return True

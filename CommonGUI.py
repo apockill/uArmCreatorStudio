@@ -91,6 +91,7 @@ class LineTextWidget(QtWidgets.QFrame):
         self.edit = QtWidgets.QTextEdit()
         self.edit.setFrameStyle(QtWidgets.QFrame.NoFrame)
         self.edit.setAcceptRichText(False)
+        self.edit.setTabStopWidth(28)
 
         self.number_bar = self.NumberBar()
         self.number_bar.setTextEdit(self.edit)
@@ -176,8 +177,8 @@ Examples scripts using robot
     robot.setSpeed(10)              # Sets speed for all future moves using robot.setPos. Speed set in cm/s
     robot.connected()               # Returns True if the robot is connected and working, False if not
 
-    robot.getServoAngles()          # Returns the current angles of the robots servos, like [servo0, servo1, servo2, servo3]
-    robot.getCurrentCoord()         # Returns the current coordinate of the robot in [x, y, z] format
+    robot.getAngles()               # Returns the current angles of the robots servos, like [servo0, servo1, servo2, servo3]
+    robot.getCoords()               # Returns the current coordinate of the robot in [x, y, z] format
     robot.getTipSensor()            # Returns True or False, if the tip sensor on the robot is being pressed or not
     robot.getMoving()               # Returns True if the robot is currently moving
 
@@ -375,12 +376,23 @@ class Console(QtWidgets.QWidget):
         # Since prints might come from different threads, lock before adding stuff to self.text
         self.printLock    = RLock()
         self.execFunction = None
+        self.printBuffer  = []  # A buffer of strings to print
         self.settings     = settings.copy()
+
+
+
+        # Initialize UI Globals
         self.inputEdt     = QtWidgets.QLineEdit()
-        self.text         = QtWidgets.QTextEdit()
+        self.text         = QtWidgets.QPlainTextEdit()
 
+        # Set up the refresh timer
+        self.refreshTimer = QtCore.QTimer()
+        self.refreshTimer.timeout.connect(self.__refreshBuffer)
+        self.refreshTimer.start(1000.0/5)  # 1000 / fps
 
-        # Initialize UI
+        self.initUI()
+
+    def initUI(self):
         settingsBtn = QtWidgets.QPushButton()  # A button to add filters to the printing
 
         self.inputEdt.returnPressed.connect(self.input)
@@ -400,28 +412,16 @@ class Console(QtWidgets.QWidget):
         codeLayout.addWidget(self.inputEdt)
         codeLayout.addWidget(settingsBtn)
 
-        self.mainVLayout = QtWidgets.QVBoxLayout()
-        self.mainVLayout.addWidget(self.text)
-        self.mainVLayout.addLayout(codeLayout)
-        self.setLayout(self.mainVLayout)
+        mainVLayout = QtWidgets.QVBoxLayout()
+        mainVLayout.addWidget(self.text)
+        mainVLayout.addLayout(codeLayout)
+        self.setLayout(mainVLayout)
+
 
     def write(self, classString, printStr):
-
-        category = self.__allowString(classString)
-
-        if len(category) == 0: return
-
-        spaceFunc = lambda n: ''.join(' ' for _ in range(n))  # For printf
-
-        printStr = category + " " * (15 - len(category)) + str(printStr)
-
-        if len(printStr) == 0: return
-
+        # Add something to the printBuffer, for it to be printed later, in the refreshBuffer function
         with self.printLock:
-            self.text.insertPlainText(printStr + "\n")
-            c = self.text.textCursor()
-            c.movePosition(QtGui.QTextCursor.End)
-            self.text.setTextCursor(c)
+            self.printBuffer.append((classString, printStr))
 
     def input(self):
         with self.printLock:
@@ -430,11 +430,12 @@ class Console(QtWidgets.QWidget):
                 self.inputEdt.setText("")
                 return
 
-            command = self.inputEdt.text()
+            command =  self.inputEdt.text()
+
             self.write("Input", command)
-            ret, success = self.execFunction(command)
-            if ret is not None:
-                self.write("", ret)
+            success = self.execFunction(command)
+            # if ret is not None:
+            #     self.write("", ret)
 
 
             self.inputEdt.setText("")
@@ -448,51 +449,52 @@ class Console(QtWidgets.QWidget):
         """
         Choose whether or not this string comes from a class that should be printed or not. This is set in the settings.
         """
-        settings = self.settings["consoleSettings"]
+        with self.printLock:
+            settings = self.settings["consoleSettings"]
 
-        if len(classString) == 0:
-            return "Output"
+            if len(classString) == 0:
+                return "Output"
 
-        if classString in "Input":
-            return "Input"
+            if classString in "Input":
+                return "Input"
 
 
-        # Print anything from the Robot class
-        if classString in "Robot":
-            if settings["robot"]:
-                return "Robot"
+            # Print anything from the Robot class
+            if classString in "Robot":
+                if settings["robot"]:
+                    return "Robot"
+                return ""
+
+            # Print anything from the Vision class
+            if  classString in "Vision":
+                if settings["vision"]:
+                    return "Vision"
+                return ""
+
+            # Print any serial communication
+            if classString in "Device":
+                if settings["serial"]:
+                    return "Communication"
+                return ""
+
+            # Print anything from Interpreter
+            if classString in "Interpreter":
+                if settings["interpreter"]:
+                    return "Interpreter"
+                return ""
+
+            # Print anything from Commands.py
+            if ("Command" in classString) and not ("GUI" in classString):
+                if settings["script"]:
+                    return "Script"
+                return ""
+
+            # Print anything else that hasn't been specified
+            if settings["gui"]:
+                classString = "GUI"
+                return classString
+
             return ""
-
-        # Print anything from the Vision class
-        if  classString in "Vision":
-            if settings["vision"]:
-                return "Vision"
-            return ""
-
-        # Print any serial communication
-        if classString in "Device":
-            if settings["serial"]:
-                return "Communication"
-            return ""
-
-        # Print anything from Interpreter
-        if classString in "Interpreter":
-            if settings["interpreter"]:
-                return "Interpreter"
-            return ""
-
-        # Print anything from Commands.py
-        if ("Command" in classString) and not ("GUI" in classString):
-            if settings["script"]:
-                return "Script"
-            return ""
-
-        # Print anything else that hasn't been specified
-        if settings["gui"]:
-            classString = "GUI"
-            return classString
-
-        return ""
 
     def __openSettings(self):
         set = QtWidgets.QDialog()
@@ -543,7 +545,7 @@ class Console(QtWidgets.QWidget):
         wrapLbl   = QtWidgets.QLabel("Wrap Lines ")
         robotLbl  = QtWidgets.QLabel("Robot Logs ")
         visionLbl = QtWidgets.QLabel("Vision Logs ")
-        comLbl    = QtWidgets.QLabel("Serial Logs ")
+        comLbl    = QtWidgets.QLabel("Communication Logs ")
         interpLbl = QtWidgets.QLabel("Interpreter Logs ")
         scriptLbl = QtWidgets.QLabel("Script Logs ")
         guiLbl    = QtWidgets.QLabel("GUI Logs ")
@@ -600,7 +602,37 @@ class Console(QtWidgets.QWidget):
         set.close()
         set.deleteLater()
 
+    def __refreshBuffer(self):
+        """
+        This is where all the strings in the buffer written to the console
+        :return:
+        """
 
+
+        if len(self.printBuffer) == 0: return
+
+        with self.printLock:
+
+            for classStr, printStr in self.printBuffer:
+
+                # Check the origin of the print. If its not supported in the settings, exit
+                category = self.__allowString(classStr)
+                if len(category) == 0: continue
+
+
+                # Prepare the text to add to console
+                printStr = category + " " * (15 - len(category)) + str(printStr)
+                if len(printStr) == 0: continue
+
+                # Write to the console log
+                self.text.insertPlainText(printStr + "\n")
+
+                # Scroll to the bottom of the console
+                c = self.text.textCursor()
+                c.movePosition(QtGui.QTextCursor.End)
+                self.text.setTextCursor(c)
+
+            self.printBuffer = []
 
 # Center a window on the current screen
 def centerScreen(self):

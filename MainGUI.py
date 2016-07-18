@@ -24,9 +24,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # This is the format of an empty settings variable. It is filled in self.loadSettings() if settings exist.
         self.settings       = {
                                  # LOGIC RELATED SETTINGS
-                                 "robotID":            None,                     # COM port of the robot
+                                 "robotID":            None,  # COM port of the robot
 
-                                 "cameraID":           None,                     # The # of the camera for cv to connect
+                                 "cameraID":           None,  # The # of the camera for cv to connect
 
                                  "motionCalibrations": {"stationaryMovement": None,
                                                         "activeMovement": None},
@@ -71,7 +71,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Connect the consoleWidget with the global print function, so the consoleWidget prints everything
         Global.printRedirectFunc = self.consoleWidget.write
-        self.consoleWidget.setExecFunction(self.interpreter.evaluateExpression)
+        self.consoleWidget.setExecFunction(self.interpreter.evaluateScript)
 
 
         # Create Menu items, and set the Dashboard as the main widget
@@ -101,6 +101,8 @@ class MainWindow(QtWidgets.QMainWindow):
         saveAction    = QtWidgets.QAction(QtGui.QIcon(Paths.file_save),    "Save Task", self)
         saveAsAction  = QtWidgets.QAction(QtGui.QIcon(Paths.file_save), "Save Task As", self)
         loadAction    = QtWidgets.QAction(QtGui.QIcon(Paths.file_load),    "Load Task", self)
+
+        saveAction.setShortcut("Ctrl+S")
 
         # Connect file menu actions
         newAction.triggered.connect(    lambda: self.newTask(promptSave=True))
@@ -146,16 +148,13 @@ class MainWindow(QtWidgets.QMainWindow):
         objMngrBtn   = QtWidgets.QAction(QtGui.QIcon(Paths.objectManager), 'Resources', self)
 
         self.scriptToggleBtn.setToolTip('Run/Pause the command script (Ctrl+R)')
-        self.videoToggleBtn.setToolTip('Play/Pause the video stream (Ctrl+P)')
-        settingsBtn.setToolTip('Open Camera and Robot settings (Ctrl+T)',)
+        self.videoToggleBtn.setToolTip('Play/Pause the video stream and Vision tracking')
+        settingsBtn.setToolTip('Open Camera and Robot settings',)
         calibrateBtn.setToolTip('Open Robot and Camera Calibration Center')
         objMngrBtn.setToolTip('Open Resource Manager')
 
         self.scriptToggleBtn.setShortcut('Ctrl+R')
-        self.videoToggleBtn.setShortcut( 'Ctrl+P')
-        settingsBtn.setShortcut('Ctrl+S')
-        calibrateBtn.setShortcut('Ctrl+C')
-        objMngrBtn.setShortcut('Ctrl+O')
+
 
         self.scriptToggleBtn.triggered.connect( lambda: self.setScript("toggle"))
         self.videoToggleBtn.triggered.connect(  lambda: self.setVideo("toggle"))
@@ -437,7 +436,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def newTask(self, promptSave):
         if promptSave:
-            self.promptSave()
+            cancelPressed = self.promptSave()
+            if cancelPressed:  # If the user cancelled the close
+                return
 
         self.controlPanel.loadData([])
         self.fileName = None
@@ -449,7 +450,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # If there is no filename, ask for one
         if promptSaveLocation or self.fileName is None:
             filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save Task", "MyTask", "Task (*.task)")
-            if filename == "": return  #If user hit cancel
+            if filename == "": return False  #If user hit cancel
             self.fileName = filename
             self.setSettings({'lastOpenedFile': self.fileName})
 
@@ -464,7 +465,8 @@ class MainWindow(QtWidgets.QMainWindow):
         printf("Project Saved")
 
         self.setWindowTitle(self.programTitle + '       ' + self.fileName)
-        # self.saveSettings()
+
+        return True
 
     def loadTask(self,  **kwargs):
         # Load a save file
@@ -543,7 +545,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
             if reply == QtWidgets.QMessageBox.Yes:
                 printf("Saving changes")
-                self.saveTask(False)
+                success = self.saveTask(False)
+                return not success
 
             if reply == QtWidgets.QMessageBox.No:
                 printf("Not saving changes")
@@ -555,7 +558,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def closeEvent(self, event):
         # When window is closed, prompt for save, close the video stream, and close the control panel (thus script)
-
+        self.endScript()
 
         # Ask the user they want to save before closing anything
         cancelPressed = self.promptSave()
@@ -574,7 +577,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         # Close threads
-        self.endScript()
         self.env.close()
 
         printf("Done closing all objects and threads.")

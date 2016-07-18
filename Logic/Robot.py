@@ -100,7 +100,7 @@ class Robot:
         with self.lock:
             return self.uArm.getTipSensor()
 
-    def getCurrentCoord(self):
+    def getCoords(self):
         """
         Get the current XYZ coordinates of the robot
         :return: [X, Y, Z] List. If robot is not connect, [0.0, 0.0, 0.0]
@@ -111,9 +111,9 @@ class Robot:
             return [0.0, 0.0, 0.0]
 
         with self.lock:
-            return self.uArm.getCurrentCoord()
+            return self.uArm.getCurrentCoords()
 
-    def getServoAngles(self):
+    def getAngles(self):
         """
         Get a list of the robots current servo angle readings
         :return: [servo0, servo1, servo2, servo3] angles
@@ -304,7 +304,7 @@ class Robot:
 
         # If any positional servos have been attached, update the self.pos cache with the robots current position
         if any(attached):
-            curr = self.getCurrentCoord()
+            curr = self.getCoords()
             self.coord =  list(curr)
             self.__servoAngleStatus = list(self.uArm.getServoAngles())
 

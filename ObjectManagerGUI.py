@@ -37,14 +37,22 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         self.objTree.header().close()
 
         # CREATE OBJECTS AND LAYOUTS FOR ROW 1 COLUMN (ALL)
-        newObjBtn    = QtWidgets.QPushButton("New Trackable Object")
-        newGrpBtn    = QtWidgets.QPushButton("New Trackable Group")
+        newObjBtn    = QtWidgets.QPushButton("New Vision Object")
+        newGrpBtn    = QtWidgets.QPushButton("New Vision Group")
         newRecBtn    = QtWidgets.QPushButton("New Motion Recording")
 
+        # Set the icons for the buttons
+        newObjBtn.setIcon(QtGui.QIcon(Paths.event_recognize))
+        newGrpBtn.setIcon(QtGui.QIcon(Paths.event_recognize))
+        newRecBtn.setIcon(QtGui.QIcon(Paths.record_start))
 
-        newObjBtn.setFixedWidth(150)
-        newGrpBtn.setFixedWidth(150)
-        newRecBtn.setFixedWidth(150)
+        newObjBtn.setFixedWidth(175)
+        newGrpBtn.setFixedWidth(175)
+        newRecBtn.setFixedWidth(175)
+        newObjBtn.setFixedHeight(35)
+        newGrpBtn.setFixedHeight(35)
+        newRecBtn.setFixedHeight(35)
+
         self.objTree.setMinimumWidth(260)
 
         # Connect everything up
@@ -727,7 +735,7 @@ class MotionRecordWindow(QtWidgets.QDialog):
             gripperStatus = self.motionPath[-1][GRIPPER]
 
         t         = now - self.startTime + self.baseTime
-        angles    = self.robot.getServoAngles()
+        angles    = self.robot.getAngles()
         tip       = gripperStatus
         newAction = [round(t, 3), int(tip), angles[0], angles[1], angles[2], angles[3]]
 

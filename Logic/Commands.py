@@ -61,7 +61,7 @@ class MoveXYZCommand(Command):
             self.robot.setPos(x=newX, y=newY, z=newZ, relative=self.parameters['relative'])
             return True
         else:
-            printf("ERROR in parsing either X Y or Z: ", successX, successY, successZ)
+            printf("ERROR in evaluating either X Y or Z: ", successX, successY, successZ)
             return False
 
 
@@ -325,6 +325,7 @@ class MoveRelativeToObjectCommand(Command):
         super(MoveRelativeToObjectCommand, self).__init__(parameters)
 
         self.interpreter = interpreter
+
         # Load any objects that will be used in the run Section here
         self.robot      = self.getVerifyRobot(env)
         self.vision     = self.getVerifyVision(env)
@@ -362,7 +363,7 @@ class MoveRelativeToObjectCommand(Command):
 
         # Get the object position
         printf("Found object. Moving to XY Location now.")
-        pos = rv.getPositionTransform(trackedObj.center, self.ptPairs, direction=1)
+        pos = rv.getPositionTransform(trackedObj.center, direction="toRob", ptPairs=self.ptPairs)
 
 
         # Set the robots position
@@ -375,7 +376,6 @@ class PickupObjectCommand(Command):
     def __init__(self, env, interpreter, parameters=None):
         super(PickupObjectCommand, self).__init__(parameters)
 
-        # Load any objects that will be used in the run Section here
         coordCalib      = self.getVerifyCoordCalibrations(env)
         self.robot      = self.getVerifyRobot(env)
         self.vision     = self.getVerifyVision(env)
@@ -452,11 +452,9 @@ class TestObjectLocationCommand(Command):
         self.height, self.width, _ = frame.shape
 
         # Create the location "quad" for simplicity
-        print("Boundaries", self.parameters["location"])
         p1, p2      = self.parameters["location"]
         self.quad   = np.float32([[p1[0], p1[1]], [p2[0], p1[1]], [p2[0], p2[1]], [p1[0], p2[1]]])
 
-        print("aft: ", self.quad)
 
     def run(self):
         if len(self.errors): return False
@@ -494,12 +492,79 @@ class TestObjectLocationCommand(Command):
             ret =  rv.pointInPolygon(center, self.quad)
 
 
-        printf("Tested ", self.parameters["objectID"], " location. ", inCount, " points were in location. Return ", ret)
+
 
         if self.parameters['not']: ret = not ret
 
+        if ret:
+            printf("Tested ", self.parameters["objectID"], " location. ", inCount, " points were in location. ")
         # If 'not', flip the return value
         return ret
+
+
+class VisionMoveXYZCommand(Command):
+
+    def __init__(self, env, interpreter, parameters=None):
+        super(VisionMoveXYZCommand, self).__init__(parameters)
+
+        self.interpreter = interpreter
+
+        coordCalib       = self.getVerifyCoordCalibrations(env)
+        self.robot       = self.getVerifyRobot(env)
+        self.vision      = self.getVerifyVision(env)
+        self.rbMarker    = self.getVerifyObject(env, "Robot Marker")
+
+
+        if len(self.errors): return
+
+        self.ptPairs    = coordCalib["ptPairs"]
+
+        # Turn on tracking for the relevant object
+        self.vision.addTarget(self.rbMarker)
+
+    def run(self):
+        if len(self.errors): return
+
+        newX, successX = self.interpreter.evaluateExpression(self.parameters['x'])
+        newY, successY = self.interpreter.evaluateExpression(self.parameters['y'])
+        newZ, successZ = self.interpreter.evaluateExpression(self.parameters['z'])
+
+        printf("Moving robot to ", newX, " ", newY, " ", newZ, " using Vision assitance for accuracy")
+
+        # If the new X Y and Z position is successfully evaluated, then continue...
+        if successX and successY and successZ:
+            self.robot.setPos(x=newX, y=newY, z=newZ, relative=self.parameters['relative'])
+
+            # self.vision.waitForNewFrames(5)
+            destRobCoord = self.robot.coord[:]
+
+
+            # Get the robots marker after it stops moving
+            currentCamCoord, avgMag, avgDir = self.vision.getObjectSpeedDirectionAvg(self.rbMarker)
+
+            if currentCamCoord is None:
+                printf("Could not find robot marker after move. Exiting without Vision adjustment.")
+                return False
+
+
+            currentRobPos = rv.getPositionTransform(currentCamCoord, "toRob", self.ptPairs)
+
+            print("destRobPos", destRobCoord, "currentRobPos", currentRobPos)
+            offset        = np.asarray(destRobCoord) - np.asarray(currentRobPos)
+            magnitude = np.linalg.norm(offset)
+            if magnitude > 5:
+                printf("Correction magnitude too high. Canceling move. Offset: ", offset, "Magnitude: ", magnitude)
+                return False
+
+            print("predicted offset: ", offset, "magnitude: ", magnitude)
+            printf("Correcting move. Offset: ", offset, " Magnitude: ", magnitude)
+            self.robot.setPos(coord=offset, relative=True)
+
+            return True
+        else:
+            printf("ERROR in evaluating either X Y or Z: ", successX, successY, successZ)
+            return False
+
 
 
 

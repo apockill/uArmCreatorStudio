@@ -67,6 +67,7 @@ event_not_recognize = imageLoc + "event_not_recognize.png"
 
 # Commands
 command_xyz         = imageLoc + "command_xyz.png"
+command_xyz_vision  = imageLoc + "command_xyz_vision.png"
 command_speed       = imageLoc + "command_speed.png"
 command_move_wrist  = imageLoc + "command_move_wrist.png"
 command_play_path   = imageLoc + "command_play_path.png"
@@ -88,6 +89,7 @@ command_script      = imageLoc + "command_script.png"
 command_exit_event  = imageLoc + "command_exit_event.png"
 command_end_script  = imageLoc + "command_end_script.png"
 command_see_obj     = imageLoc + "command_see_obj.png"
+command_see_loc     = imageLoc + "command_see_loc.png"
 command_run_task    = imageLoc + "window_ufactory_logo.png"
 
 

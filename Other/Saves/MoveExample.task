@@ -1,85 +1,148 @@
 [
    {
+      "typeLogic": "InitEvent",
+      "typeGUI": "InitEventGUI",
       "commandList": [
          {
-            "typeGUI": "MoveXYZCommandGUI",
-            "typeLogic": "MoveXYZCommand",
+            "typeLogic": "AttachCommand",
+            "typeGUI": "AttachCommandGUI",
             "parameters": {
-               "x": "-10.2",
-               "z": "12.7",
-               "y": "-22.2",
-               "relative": false
-            }
-         },
-         {
-            "typeGUI": "MoveXYZCommandGUI",
-            "typeLogic": "MoveXYZCommand",
-            "parameters": {
-               "x": "1.0",
-               "z": "12.5",
-               "y": "-18.7",
-               "relative": false
-            }
-         },
-         {
-            "typeGUI": "MoveXYZCommandGUI",
-            "typeLogic": "MoveXYZCommand",
-            "parameters": {
-               "x": "13.3",
-               "z": "11.0",
-               "y": "-24.4",
-               "relative": false
-            }
-         },
-         {
-            "typeGUI": "MoveXYZCommandGUI",
-            "typeLogic": "MoveXYZCommand",
-            "parameters": {
-               "x": "13.8",
-               "z": "13.4",
-               "y": "-14.4",
-               "relative": false
-            }
-         },
-         {
-            "typeGUI": "MoveXYZCommandGUI",
-            "typeLogic": "MoveXYZCommand",
-            "parameters": {
-               "x": "5.8",
-               "z": "12.5",
-               "y": "-7.4",
-               "relative": false
-            }
-         },
-         {
-            "typeGUI": "MoveXYZCommandGUI",
-            "typeLogic": "MoveXYZCommand",
-            "parameters": {
-               "x": "-5.6",
-               "z": "12.6",
-               "y": "-7.9",
-               "relative": false
-            }
-         },
-         {
-            "typeGUI": "DetachCommandGUI",
-            "typeLogic": "DetachCommand",
-            "parameters": {
-               "servo1": true,
                "servo2": true,
+               "servo4": true,
                "servo3": true,
-               "servo4": true
+               "servo1": true
+            }
+         },
+         {
+            "typeLogic": "MoveWristCommand",
+            "typeGUI": "MoveWristCommandGUI",
+            "parameters": {
+               "relative": false,
+               "angle": "90"
+            }
+         },
+         {
+            "typeLogic": "SpeedCommand",
+            "typeGUI": "SpeedCommandGUI",
+            "parameters": {
+               "speed": "10"
+            }
+         },
+         {
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI",
+            "parameters": {
+               "y": "22.2",
+               "relative": false,
+               "z": "12.7",
+               "x": "-10.2"
+            }
+         },
+         {
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI",
+            "parameters": {
+               "y": "18.7",
+               "relative": false,
+               "z": "12.5",
+               "x": "1.0"
+            }
+         },
+         {
+            "typeLogic": "SpeedCommand",
+            "typeGUI": "SpeedCommandGUI",
+            "parameters": {
+               "speed": "20"
+            }
+         },
+         {
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI",
+            "parameters": {
+               "y": "24.4",
+               "relative": false,
+               "z": "11.0",
+               "x": "13.3"
+            }
+         },
+         {
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI",
+            "parameters": {
+               "y": "-14.4",
+               "relative": false,
+               "z": "13.4",
+               "x": "13.8"
+            }
+         },
+         {
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI",
+            "parameters": {
+               "y": "7.4",
+               "relative": false,
+               "z": "12.5",
+               "x": "5.8"
+            }
+         },
+         {
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI",
+            "parameters": {
+               "y": "7.9",
+               "relative": false,
+               "z": "12.6",
+               "x": "-5.6"
+            }
+         },
+         {
+            "typeLogic": "DetachCommand",
+            "typeGUI": "DetachCommandGUI",
+            "parameters": {
+               "servo2": true,
+               "servo4": true,
+               "servo3": true,
+               "servo1": true
+            }
+         },
+         {
+            "typeLogic": "MotionRecordingCommand",
+            "typeGUI": "MotionRecordingCommandGUI",
+            "parameters": {
+               "speed": "2.0",
+               "objectID": "Pickup pamphlet",
+               "reversed": false
+            }
+         },
+         {
+            "typeLogic": "ScriptCommand",
+            "typeGUI": "ScriptCommandGUI",
+            "parameters": {
+               "description": "Run a script to send an HTTP Requestmemes",
+               "script": ""
             }
          }
       ],
-      "typeGUI": "InitEventGUI",
-      "typeLogic": "InitEvent",
-      "parameters": null
+      "parameters": {}
    },
    {
+      "typeLogic": "TipEvent",
+      "typeGUI": "TipEventGUI",
       "commandList": [],
-      "typeGUI": "DestroyEventGUI",
+      "parameters": {}
+   },
+   {
+      "typeLogic": "KeypressEvent",
+      "typeGUI": "KeypressEventGUI",
+      "commandList": [],
+      "parameters": {
+         "checkKey": "A"
+      }
+   },
+   {
       "typeLogic": "DestroyEvent",
-      "parameters": null
+      "typeGUI": "DestroyEventGUI",
+      "commandList": [],
+      "parameters": {}
    }
 ]

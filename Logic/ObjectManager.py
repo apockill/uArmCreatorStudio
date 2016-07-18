@@ -2,6 +2,7 @@ import json
 import os
 import sys   # For getting size of oan object
 import cv2   # For image saving
+import numpy as np
 from Logic        import Paths
 from collections  import namedtuple
 from Logic.Global import printf, ensurePathExists
@@ -423,27 +424,35 @@ class TrackableObject(Trackable):
         self.__tags.remove(tagString)
 
 
-    def getIcon(self, maxWidth, maxHeight):
+    def getIcon(self, maxWidth, maxHeight, drawPickupRect=True):
         # Create an icon of a cropped image of the 1st View, and resize it to the parameters.
+        # if drawPickupRect is True, it will also overlay the position of the robots pickup area for the object
 
-
-        #  Get the cropped image of just the object
+        #  Get the full image and crop it
         fullImage = self.views[0].image
         rect      = self.views[0].rect
         image     = fullImage[rect[1]:rect[3], rect[0]:rect[2]]
 
+        # Draw the pickupArea on it before resizing
+        if drawPickupRect and self.views[0].pickupRect is not None:
+            x0, y0, x1, y1  = self.views[0].pickupRect
+            quad            = np.int32([[x0, y0], [x1, y0], [x1, y1], [x0, y1]])
+
+            print(quad)
+            cv2.polylines(image, [quad], True, (255, 255, 255), 2)
 
 
         #  Resize it to fit within maxWidth and maxHeight
         height, width, _ = image.shape
         if height > maxHeight:
-            image = cv2.resize(image, (int(float(maxHeight)/height * width), maxHeight))
+            image = cv2.resize(image, (int(float(maxHeight) / height * width), maxHeight))
 
         height, width, _ = image.shape
         if width > maxWidth:
             image = cv2.resize(image, (maxWidth, int(float(maxWidth) / width * height)))
 
         height, width, _ = image.shape
+
 
         return image.copy()
 

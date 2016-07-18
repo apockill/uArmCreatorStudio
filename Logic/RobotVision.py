@@ -23,10 +23,14 @@ MAX_FRAME_FAIL             = 15   # Maximum times a function will get a new fram
 
 
 
-
-
-
 def playMotionPath(motionPath, robot, exitFunc):
+    """
+    Play a motion recording.
+    :param motionPath: The motionpath array, with format [[TIME, GRIPPER, SERVO0, SERVO1, SERVO2, SERVO3]... []]
+    :param robot: Robot object
+    :param exitFunc: If this function ever returns true, the function will exit as quickly as possible
+    """
+
     TIME    = 0
     GRIPPER = 1
     SERVO0  = 2
@@ -50,7 +54,7 @@ def playMotionPath(motionPath, robot, exitFunc):
 
     # Get the start position and the current position. If the distance is too high, move there slowly
     startPos    = robot.getFK(action[SERVO0], action[SERVO1], action[SERVO2])
-    currentPos  = robot.getCurrentCoord()
+    currentPos  = robot.getCoords()
     if dist(startPos, currentPos) > 5:
         robot.setPos(coord=startPos)
 
@@ -129,20 +133,22 @@ def playMotionPath(motionPath, robot, exitFunc):
                 lastVal[servo] = modified
 
 
-
-
-
-
-
-# Transform math
+# Transform math``
 def createTransformFunc(ptPairs, direction):
-    # Returns a function that takes a point (x,y,z) of a camera coordinate, and returns the robot (x,y,z) for that point
-    # Direction is either 1 or -1. If -1, then it will go backwards on the ptPairs, create a Robot-->Camera transform
+    """
+    Returns a function that takes a point (x,y,z) of a camera coordinate, and returns the robot (x,y,z) for that point
+    Direction is either "toRob" or "toCam".
+    If "toCam" it will return a Robot-->Camera transform
+    If "toRob" it will return a Camera-->Robot transform
+    """
+
+
     ptPairArray = np.asarray(ptPairs)
-    if direction == 1:
+    if direction == "toRob":
         pts1 = ptPairArray[:, 0]
         pts2 = ptPairArray[:, 1]
-    elif direction == -1:
+
+    if direction == "toCam":
         pts1 = ptPairArray[:, 1]
         pts2 = ptPairArray[:, 0]
 
@@ -160,31 +166,12 @@ def createTransformFunc(ptPairs, direction):
 
     return transformFunc
 
-def getPositionTransform(posToTransform, ptPairs, direction):
+def getPositionTransform(posToTransform, direction, ptPairs):
     transform = createTransformFunc(ptPairs, direction)
     return transform(posToTransform)
 
-def getPositionCorrection(destPos, actualPos):
-    # Returns the destination position offset by the difference between actualPos and destPos
-    offset = np.asarray(destPos) - np.asarray(actualPos)
-    newPos =  np.asarray(destPos) + offset
-    return newPos.tolist()
 
-def getRelativePosition(camPos, robRelative, ptPairs):
 
-    posRob    = getPositionTransform((camPos[0], camPos[1], camPos[2]), ptPairs, direction=1)
-    posCam    = getPositionTransform(posRob, ptPairs, direction=-1)
-    staticErr = camPos - posCam
-
-    posRob    = getPositionTransform((camPos[0], camPos[1], camPos[2]), ptPairs, direction=1)
-    posRob[0] += robRelative[0]
-    posRob[1] += robRelative[1]
-    posRob[2] += robRelative[2]
-
-    posCam  = getPositionTransform(posRob, ptPairs, direction=-1)
-    posCam += staticErr
-
-    return posCam
 
 
 
@@ -193,6 +180,11 @@ def getRelativePosition(camPos, robRelative, ptPairs):
 # Coordinate math
 def dist(p1, p2):
     return ((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2 + (p2[2] - p1[2])**2)**.5
+
+def unitVector(point):
+    magnitude = sum(point**2)**.5
+    unitVec   = np.array(point) / magnitude
+    return unitVec
 
 def findCentroid(points):
     # For any array of format [[x, y], [x, y], [x,y], ... [x, y]]
@@ -262,7 +254,11 @@ def pointInPolygon(point, poly):
     return inside
 
 def smoothListGaussian(list1, degree):
-
+    """
+    Smooth a list using guassian smoothing, with degree Degree. Lists are smoothed by columns, not rows.
+    :param list1:  [[column1, column2, column3... column n], ... [element n]]
+    :param degree: The gaussian smoothing constant.
+    """
 
     window = degree * 2 - 1
 
@@ -308,7 +304,7 @@ def smoothListGaussian(list1, degree):
 def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exitFunc):
     def getRobotAccurate(rbMarker, vision, maxAttempts=10):
         # A little convenience function that is used several times in the pickup
-        moveThresh  = 10
+        moveThresh  = 15
         lowest      = [None, None]
         for s in range(0, maxAttempts):
             vision.waitForNewFrames()
@@ -346,25 +342,27 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exit
         printf("Couldn't get the object accurately!")
         return False
 
+    """
+        The following code blob does the following:
+
+        Get the position of the object in the robot coordinate array
+        Add the height of the object to the z position of the object
+        Check that the object is below ground level. if not, set the Z to be ground level
+        Convert the changed position of the object back to the camera array
+        Save the new Z position of the camera, to be used later
+    """
     center = trackedObj.center
-    posRob    = getPositionTransform((center[0], center[1], center[2]), ptPairs, direction=1)
-    print("zeroPosRob: ", posRob)
-    posCam    = getPositionTransform(posRob, ptPairs, direction=-1)
-    print("zeroPosCam: ", posCam)
-    print("original: ", center)
+    posRob    = getPositionTransform((center[0], center[1], center[2]), direction="toRob", ptPairs=ptPairs)
+    posCam    = getPositionTransform(posRob, direction="toCam", ptPairs=ptPairs)
     staticErr = center - posCam
-    print("StaticErr", staticErr, "\n\n")
-    posRob    = getPositionTransform((center[0], center[1], center[2]), ptPairs, direction=1)
-    print("NewPosRob", posRob)
+    posRob    = getPositionTransform((center[0], center[1], center[2]), direction="toRob", ptPairs=ptPairs)
     posRob[2] += trackedObj.view.height + 5
     if posRob[2] < groundHeight + 1:
         printf("Predicted position was below groundheight. Moving to groundheight instead.")
         posRob[2] = groundHeight + 1
-    print("WithHeight", posRob)
-    posCam    = getPositionTransform(posRob, ptPairs, direction=-1)
-    print("NewPosCam", posCam)
-    posCam += staticErr
-    objCamZ = posCam[2]
+    posCam    = getPositionTransform(posRob, direction="toCam", ptPairs=ptPairs)
+    posCam   += staticErr
+    objCamZ   = posCam[2]
 
 
 
@@ -385,8 +383,8 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exit
     print("Final center: ", targetCamPos)
 
     # Move to the objects position
-    pos = getPositionTransform(targetCamPos, ptPairs, direction=1)
-    # if pos[2] + 5 < groundHeight: pos[2] = groundHeight - 5  # TODO: Fix this bug
+    pos = getPositionTransform(targetCamPos, direction="toRob", ptPairs=ptPairs)
+
 
     robot.setPos(z=pos[2])
     robot.setPos(x=pos[0], y=pos[1])
@@ -401,14 +399,14 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exit
     #
     # camPos  = getPositionCorrection(targetCamPos, lastCoord)
     # jumpPos = getPositionTransform(camPos, ptPairs, 1)
-    # if jumpPos[2] < groundHeight: jumpPos[2] = groundHeight  # TODO: Fix this bug
+    # if jumpPos[2] < groundHeight: jumpPos[2] = groundHeight
     #
     # print("Jumping robot: ", jumpPos)
     # if abs(jumpPos[1] - robot.coord[1]) < 7 and abs(jumpPos[0] - robot.coord[0]) < 7:
     #     robot.setPos(x=jumpPos[0], y=jumpPos[1])
 
 
-
+    robot.setPos(y=3, relative=True)
     # Slowly move onto the target moving 1 cm towards it per move
     lastHeight     = -1
     smallStepCount = 0  # If more than 1 z moves result in little movement, quit the function
@@ -426,15 +424,17 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exit
 
         # Height Method: Original
         # Check if the robot has hit the object by seeing if the robots height is less than before, as per the camera
-        robCoord = robot.getCurrentCoord()
+        robCoord = robot.getCoords()
         heightDiff = robCoord[2] - lastHeight
         print("heightdiff", heightDiff, "lastHeight", lastHeight, "currheight", robCoord[2], "sentHeight: ", robot.coord[2])
         if heightDiff >= -1.1 and i > 4:
             smallStepCount += 1
         else:
             smallStepCount = 0
-        if (smallStepCount >= 3 or heightDiff >= 0) and not lastHeight == -1 and i >= 4:
-            printf("Robot has hit the object. Leaving down-move loop")
+
+        # If the robot has moved up, or it has had various small down moves in a row, quit the loop
+        if (heightDiff >= 0 or smallStepCount >= 3) and not lastHeight == -1 and i >= 4:
+            printf("Height has stopped decreasing- assuming robot has hit object. Leaving down-move loop")
             break
 
         lastHeight = robCoord[2]
@@ -446,33 +446,35 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exit
             robot.setGripper(False)
             return False
 
+
         # Actually find the robot using the camera
         newCoord = getRobotAccurate(rbMarker, vision)
 
-
-        # Get the robots current height
+        # Check that the robot was found. If not, tally it up and move down anyways
         if newCoord is None:
             printf("Camera was unable to see marker. Moving anyways!")
             failTrackCount += 1
             robot.setPos(z=-1.25, relative=True)
-            # if lastCoord is None:
-            #     robot.setPos(z=-1.25, relative=True)
             continue
 
         lastCoord = newCoord
 
 
         # TEST 2
-        # If its still moving down, then perform a down-move
+        # If its still moving down, then perform a down-move. JumpSize is how far it will jump to get closer to the obj
         if failTrackCount > 0:
             jumpSize = 1.75
         else:
             jumpSize = 1
-        relMove = getRelativeMoveTowards(lastCoord, targetCamPos, jumpSize, ptPairs)
-        # if robot.pos['z'] < groundHeight - 1.25:
-        #     printf("Robot is below groundHeight. Quiing downmoves")
-        #     break
-        robot.setPos(x=relMove[0], y=relMove[1], relative=True)
+
+        # Get the relative move, multiply
+        relMove   = getRelativeMoveTowards(lastCoord, targetCamPos, ptPairs)
+        unitVec   = unitVector(relMove)
+        finalMove = unitVec * jumpSize
+        print("Final move: ", finalMove)
+
+        robot.setPos(x=finalMove[0], y=finalMove[1], relative=True)
+
         robot.setPos(z=-1.25, relative=True)
 
         failTrackCount = 0
@@ -482,13 +484,15 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exit
     if newCoord is not None:
         lastCoord = newCoord
 
-    # Slowly lift the robots head
-    while robot.getTipSensor():
-        robot.setPos(z=1, relative=True)
 
-    if not lastCoord is None and pointInPolygon(lastCoord, pickupRect):
-        printf("PICKUP WAS SUCCESSFUL!!!")
-        robot.setSpeed(5)
+
+    if lastCoord is not None and pointInPolygon(lastCoord, pickupRect):
+        printf("PICKUP WAS SUCCESSFUL!")
+
+        # Slowly lift the robots head
+        while robot.getTipSensor():
+            robot.setPos(z=1, relative=True)
+
         robot.setPos(z=8, relative=True)
         return True
     else:
@@ -497,7 +501,7 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exit
         robot.setPos(z=8, relative=True)
         return False
 
-def getRelativeMoveTowards(robotCamCoord, destCamCoord, distance, ptPairs):
+def getRelativeMoveTowards(robotCamCoord, destCamCoord, ptPairs):
     """
     :param robotCoord: Cameras coordinate for the robot
     :param destCoord:  Cameras coordinate for the destination
@@ -505,21 +509,20 @@ def getRelativeMoveTowards(robotCamCoord, destCamCoord, distance, ptPairs):
     :param robot:      Robot obj
     """
 
-    transform = createTransformFunc(ptPairs, direction=-1)
-    robotRobCoord = transform(robotCamCoord)
-    destRobCoord  = transform(destCamCoord)
+    print("Robot cam coord: ", robotCamCoord, "Destination cam coord: ", destCamCoord)
+    camToRobTrans = createTransformFunc(ptPairs, direction="toRob")
+    robotRobCoord = camToRobTrans(robotCamCoord)
+    destRobCoord  = camToRobTrans(destCamCoord)
+
+    print("Current robot position: ", robotRobCoord, "Destination robot position: ", destRobCoord)
     offset = np.asarray(destRobCoord) - np.asarray(robotRobCoord)
-    # print("Offset: ", offset)
-    magnitude = sum(offset**2)**.5
-    # print("Magnitude", magnitude)
-    unitVec = offset / magnitude
-    # print("unit", unitVec)
-    relMove = unitVec * distance
-    # print("Final relative move: ", relMove)
+    print("Final robot offset", offset)
+
+
     # Actually move the robot
     # If there is no z coordinate, then just don't move along the z
 
-    return relMove
+    return offset
 
 
 
@@ -562,3 +565,32 @@ def getRelativeMoveTowards(robotCamCoord, destCamCoord, distance, ptPairs):
 
 
 
+# NOT USED
+def getPositionCorrection(destPos, actualPos):
+    # Returns the destination position offset by the difference between actualPos and destPos
+    offset = np.asarray(destPos) - np.asarray(actualPos)
+    newPos =  np.asarray(destPos) + offset
+    return newPos.tolist()
+
+def getRelativePosition(camPos, robRelative, ptPairs):
+    """
+    Insert a camera position of something, then offest it by coordinates in the robots coordinate field.
+    :param camPos: Location to be offset
+    :param robRelative: The offset, using robot coordinate points
+    :param ptPairs: Calibration info
+    :return:
+    """
+
+    posRob    = getPositionTransform((camPos[0], camPos[1], camPos[2]), direction="toRob", ptPairs=ptPairs)
+    posCam    = getPositionTransform(posRob, direction="toCam", ptPairs=ptPairs)
+    staticErr = camPos - posCam
+
+    posRob    = getPositionTransform((camPos[0], camPos[1], camPos[2]), direction="toRob", ptPairs=ptPairs)
+    posRob[0] += robRelative[0]
+    posRob[1] += robRelative[1]
+    posRob[2] += robRelative[2]
+
+    posCam  = getPositionTransform(posRob, direction="toCam", ptPairs=ptPairs)
+    posCam += staticErr
+
+    return posCam

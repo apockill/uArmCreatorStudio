@@ -42,22 +42,17 @@ class CalibrateWindow(QtWidgets.QDialog):
             # Returns a QLabel with a pixmap set with a picture from the specified path, and a caption to go next to it
             title = commandOrEvent.title
             icon  = QtGui.QPixmap(commandOrEvent.icon)
-            captionLbl = QtWidgets.QLabel(title)
             pictureLbl = QtWidgets.QLabel()
             pictureLbl.setPixmap(icon)
 
             layout = QtWidgets.QHBoxLayout()
             layout.addWidget(pictureLbl)
-            layout.addWidget(captionLbl)
             return layout
 
         motionBtn = QtWidgets.QPushButton("Calibrate Motion Detection")
         coordBtn  = QtWidgets.QPushButton("Calibrate Camera/Robot Position")
         cancelBtn = QtWidgets.QPushButton("Cancel")
         applyBtn  = QtWidgets.QPushButton("Apply")
-
-        crHint    = QtWidgets.QLabel("Required for ")
-        mdHint    = QtWidgets.QLabel("Required for ")
 
 
         motionBtn.clicked.connect(self.calibrateMotion)
@@ -83,17 +78,15 @@ class CalibrateWindow(QtWidgets.QDialog):
         row1.addWidget( self.coordLbl)
 
         row2.addStretch(1)
-        row2.addWidget(crHint)
         row2.addLayout(createIconLayout(CommandsGUI.PickupObjectCommandGUI))
         row2.addLayout(createIconLayout(CommandsGUI.MoveRelativeToObjectCommandGUI))
-
+        row2.addLayout(createIconLayout(CommandsGUI.VisionMoveXYZCommandGUI))
 
         row3.addWidget(     motionBtn)
         row3.addStretch(1)
         row3.addWidget(self.motionLbl)
 
         row4.addStretch(1)
-        row4.addWidget(mdHint)
         row4.addLayout(createIconLayout(EventsGUI.MotionEventGUI))
 
 
@@ -480,7 +473,7 @@ class CWPage2(QtWidgets.QWizardPage):
             samples = 10
             sumCoords = np.float32([0, 0, 0])
             for i in range(0, samples):
-                coord = self.robot.getCurrentCoord()
+                coord = self.robot.getCoords()
                 sumCoords += np.float32(coord)
             self.groundCoords = list(map(float, sumCoords / samples))
             self.robot.setPos(z=self.groundCoords[2] + .5)
@@ -977,7 +970,7 @@ class CWPage5(QtWidgets.QWizardPage):
 
 
         # Make sure the object was found in a recent frame
-        if not frameAge < 2 or marker.center is None:
+        if marker is None or not frameAge < 2:
             printf("Marker was not recognized.")
             newCalibrations['failPts'].append(coord)
             self.timer = singleShot()
@@ -992,15 +985,17 @@ class CWPage5(QtWidgets.QWizardPage):
 
 
 
-        # Since the camera found the object, now read the robots location through camera, and record both results
-        actCoord = robot.getCurrentCoord()
-        dist = ((actCoord[0] - coord[0])**2 + (actCoord[1] - coord[1])**2 + (actCoord[2] - coord[2])**2)**.5
-        if dist < 2:
-            newCalibrations["ptPairs"].append([marker.center, coord])
-        else:
-            printf("Using actual coord. Robot returned coordinate too far from desired pos",
-                   coord, actCoord)
-            newCalibrations["ptPairs"].append([marker.center, actCoord])
+        # # Since the camera found the object, now read the robots location through camera, and record both results
+        # actCoord = robot.getCurrentCoord()
+        # dist = ((actCoord[0] - coord[0])**2 + (actCoord[1] - coord[1])**2 + (actCoord[2] - coord[2])**2)**.5
+        # if dist < 2:
+        #     newCalibrations["ptPairs"].append([marker.center, coord])
+        # else:
+        #     printf("Using actual coord. Robot returned coordinate too far from desired pos",
+        #            coord, actCoord)
+        #     newCalibrations["ptPairs"].append([marker.center, actCoord])
+
+        newCalibrations["ptPairs"].append([marker.center, coord])
         self.timer = singleShot()
 
 
@@ -1042,8 +1037,8 @@ class CWPage5(QtWidgets.QWizardPage):
 
         def testPointSetError(testPtPairs, testPoints):
             # Test the error for every point in the transform, return a root-mean-squared error value
-            camToRob = rv.createTransformFunc(testPtPairs, direction=1)
-            robToCam = rv.createTransformFunc(testPtPairs, direction=-1)
+            camToRob = rv.createTransformFunc(testPtPairs, direction="toRob")
+            robToCam = rv.createTransformFunc(testPtPairs, direction="toCam")
 
             errorSum = 0
             for pt in testPoints:

@@ -2,7 +2,7 @@ import os
 import errno
 import inspect
 from time import time, sleep
-
+from threading import RLock
 """
 Global is a set of functions that are used in many places around the project and are very general use.
 It also holds the actual global variable "keysPressed".
@@ -58,7 +58,6 @@ def init():
 
 
 
-
 # Gets the name of the caller of a function in a neatly formatted string
 def caller_name(skip=2, printModule=True, printClass=True, printFunction=True):
     """Get a name of a caller in the format module.class.method
@@ -108,6 +107,8 @@ def printf(*args):
     This function appends the Class and Function name to every function that runs in the program. This is immeasurably
     helpful for debugging.
     """
+
+
     # Create settings for the boilerplate information
     printModule   = False
     printFunction = False    # If false, no boilerplate will be printed
@@ -146,7 +147,8 @@ def printf(*args):
             boilerPlate +=  spacesString
 
     buildString = boilerPlate + buildString
-    print(buildString)
+   #  print(buildString)
+
 
 
 

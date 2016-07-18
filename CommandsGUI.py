@@ -124,7 +124,7 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
 
         add(MoveXYZCommandGUI)
         add(MoveWristCommandGUI)
-        add(PlayMotionRecordingCommandGUI)
+        add(MotionRecordingCommandGUI)
         add(SpeedCommandGUI)
         add(AttachCommandGUI)
         add(DetachCommandGUI)
@@ -142,7 +142,7 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         vBox.setAlignment(QtCore.Qt.AlignTop)
         tabWidget.setLayout(vBox)
         add  = lambda btnType: vBox.addWidget(self.getButton(btnType))
-
+        add(VisionMoveXYZCommandGUI)
         add(MoveRelativeToObjectCommandGUI)
         add(PickupObjectCommandGUI)
         add(TestObjectSeenCommandGUI)
@@ -519,7 +519,7 @@ class MoveXYZCommandGUI(CommandGUI):
 
     def __init__(self, env, parameters=None):
         super(MoveXYZCommandGUI, self).__init__(parameters)
-        self.getCoordinates = env.getRobot().getCurrentCoord
+        self.getCoordinates = env.getRobot().getCoords
 
         if self.parameters is None:
             # If no parameters were given, it's a new command. Thus, get the robots current position and fill it in.
@@ -599,7 +599,7 @@ class MoveWristCommandGUI(CommandGUI):
 
     def __init__(self, env, parameters=None):
         super(MoveWristCommandGUI, self).__init__(parameters)
-        self.getWristAngle = lambda: env.getRobot().getServoAngles()[3]
+        self.getWristAngle = lambda: env.getRobot().getAngles()[3]
 
         if self.parameters is None:
             currentWrist = self.getWristAngle()
@@ -646,15 +646,15 @@ class MoveWristCommandGUI(CommandGUI):
         if self.parameters['relative']: self.description += '   Relative'
 
 
-class PlayMotionRecordingCommandGUI(CommandGUI):
+class MotionRecordingCommandGUI(CommandGUI):
     title     = "Play Motion Recording"
     tooltip   = "This will play back a 'motion recording' at a playback speed of your choosing. To create robot\n" + \
                 "motion recordings, simply click on 'Resources' on the toolbar and add a new recording."
     icon      = Paths.command_play_path
-    logicPair = "PlayMotionRecordingCommand"
+    logicPair = "MotionRecordingCommand"
 
     def __init__(self, env, parameters=None):
-        super(PlayMotionRecordingCommandGUI, self).__init__(parameters)
+        super(MotionRecordingCommandGUI, self).__init__(parameters)
 
         objManager = env.getObjectManager()
         self.getObjectList = lambda: objManager.getObjectNameList(objFilter=objManager.MOTIONPATH)
@@ -1092,6 +1092,39 @@ class MoveRelativeToObjectCommandGUI(CommandGUI):
                            ') relative to ' + self.parameters["objectID"]
 
 
+class MoveWristRelativeToObjectCommandGUI(CommandGUI):
+    title     = "Example Title"
+    tooltip   = "This tool does X Y and Z"
+    icon      = Paths.some_icon
+    logicPair = "NameCommand"
+
+    def __init__(self, env, parameters=None):
+        super(NameCommandGUI, self).__init__(parameters)
+
+        # If parameters do not exist, then set up the default parameters
+        if self.parameters is None:
+            # Anything done with env should be done here. Try not to save env as a class variable whenever possible
+            self.parameters = {}
+
+    def dressWindow(self, prompt):
+        # Do some GUI code setup
+        # Put all the objects into horizontal layouts called Rows
+
+        self._addRow(prompt, some GUI label, some GUI object)  # Add rows using self._addRow to keep consistency
+
+        return prompt
+
+    def _extractPromptInfo(self, prompt):
+        newParameters = {} # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
+
+        self.parameters.update(newParameters)
+
+        return self.parameters
+
+    def _updateDescription(self):
+        self.description = ""  # Some string that uses your parameters to describe the object.
+
+
 class PickupObjectCommandGUI(CommandGUI):
     title     = "Pick Up an Object"
     tooltip   = "This tool uses computer vision to recognize an object of your choice, and attempt to pick up the " \
@@ -1247,7 +1280,7 @@ class TestObjectLocationCommandGUI(CommandGUI):
     title     = "Test Location of Object"
     tooltip   = "This command will allow code in blocked brackets below it to run IF the specified object has been" \
                 "recognized and the objects location in a particular location."
-    icon      = Paths.command_see_obj
+    icon      = Paths.command_see_loc
     logicPair = "TestObjectLocationCommand"
 
 
@@ -1344,6 +1377,29 @@ class TestObjectLocationCommandGUI(CommandGUI):
         self.description = "If " + self.parameters["part"] + " of " + objName + " is"
         if self.parameters["not"]: self.description += " NOT"
         self.description += " seen within a location"
+
+
+class VisionMoveXYZCommandGUI(MoveXYZCommandGUI):
+    title     = "Vision Assisted Move XYZ"
+    tooltip   = "This works like the normal Move XYZ command, but uses vision to verify the robots position and\n"\
+                "perform a 'correction' move after an initial move. \n" \
+                "This command requires Camera/Robot Calibrations to be done."
+    icon      = Paths.command_xyz_vision
+    logicPair = "VisionMoveXYZCommand"
+
+    def __init__(self, env, parameters=None):
+        super(VisionMoveXYZCommandGUI, self).__init__(env, parameters)
+
+    def dressWindow(self, prompt):
+        super(VisionMoveXYZCommandGUI, self).dressWindow(prompt)
+        warningLbl = QtWidgets.QLabel("This function is experimental. It may not yield more accurate results.")
+        warningLbl.setWordWrap(True)
+
+        print("Prompt: ", prompt)
+        self._addRow(prompt, warningLbl)
+        return prompt
+
+
 
 
 
@@ -1515,7 +1571,7 @@ class ScriptCommandGUI(CommandGUI):
         prompt.IDE     = ScriptWidget(self.parameters["script"], prompt)
         descriptionLbl = QtWidgets.QLabel("Description: ")
 
-        prompt.descriptionEdt = QtWidgets.QLineEdit()
+        prompt.descriptionEdt = QtWidgets.QLineEdit(self.parameters["description"])
 
         self._addRow(prompt, descriptionLbl, prompt.descriptionEdt)
         prompt.content.addWidget(prompt.IDE)  # and so on for all of the rows

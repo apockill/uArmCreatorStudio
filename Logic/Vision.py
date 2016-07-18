@@ -564,6 +564,7 @@ class PlaneTracker(Tracker):
         # Draw the Name and XYZ of the object
         for tracked in self.trackedHistory[0]:
             quad = np.int32(tracked.quad)
+            # print("quad", quad)
             cv2.polylines(frame, [quad], True, (255, 255, 255), 2)
 
             # Figure out how much the text should be scaled (depends on the different in curr side len, and orig len)

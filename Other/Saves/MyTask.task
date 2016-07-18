@@ -1,78 +1,88 @@
 [
    {
-      "parameters": {},
+      "typeGUI": "InitEventGUI",
+      "typeLogic": "InitEvent",
       "commandList": [
          {
+            "typeGUI": "ScriptCommandGUI",
+            "typeLogic": "ScriptCommand",
             "parameters": {
                "description": "",
-               "script": "def ayyLmao():\n\tfor i in range(0, 10):\n\t\tprint(\"haha\"*i)\n"
-            },
+               "script": "a = 0"
+            }
+         }
+      ],
+      "parameters": {}
+   },
+   {
+      "typeGUI": "StepEventGUI",
+      "typeLogic": "StepEvent",
+      "commandList": [
+         {
             "typeGUI": "ScriptCommandGUI",
-            "typeLogic": "ScriptCommand"
-         },
-         {
+            "typeLogic": "ScriptCommand",
             "parameters": {
-               "x": "0.0",
-               "z": "0.0",
-               "y": "0.0",
-               "relative": false
-            },
+               "description": "haha",
+               "script": "sleep(1000)\n"
+            }
+         }
+      ],
+      "parameters": {}
+   },
+   {
+      "typeGUI": "KeypressEventGUI",
+      "typeLogic": "KeypressEvent",
+      "commandList": [
+         {
+            "typeGUI": "VisionMoveXYZCommandGUI",
+            "typeLogic": "VisionMoveXYZCommand",
+            "parameters": {
+               "x": "10",
+               "relative": false,
+               "z": "10",
+               "y": "10"
+            }
+         },
+         {
             "typeGUI": "MoveXYZCommandGUI",
-            "typeLogic": "MoveXYZCommand"
+            "typeLogic": "MoveXYZCommand",
+            "parameters": {
+               "x": "-1.1",
+               "relative": false,
+               "z": "21.4",
+               "y": "14.9"
+            }
          },
          {
-            "parameters": null,
-            "typeGUI": "DropCommandGUI",
-            "typeLogic": "DropCommand"
+            "typeGUI": "SpeedCommandGUI",
+            "typeLogic": "SpeedCommand",
+            "parameters": {
+               "speed": "10"
+            }
          },
          {
+            "typeGUI": "AttachCommandGUI",
+            "typeLogic": "AttachCommand",
             "parameters": {
                "servo4": true,
                "servo2": true,
-               "servo3": true,
-               "servo1": true
-            },
-            "typeGUI": "AttachCommandGUI",
-            "typeLogic": "AttachCommand"
+               "servo1": true,
+               "servo3": true
+            }
          },
          {
+            "typeGUI": "DetachCommandGUI",
+            "typeLogic": "DetachCommand",
             "parameters": {
-               "not": false,
-               "objectID": "",
-               "age": 1,
-               "ptCount": 0
-            },
-            "typeGUI": "TestObjectSeenCommandGUI",
-            "typeLogic": "TestObjectSeenCommand"
-         },
-         {
-            "parameters": null,
-            "typeGUI": "StartBlockCommandGUI",
-            "typeLogic": "StartBlockCommand"
-         },
-         {
-            "parameters": null,
-            "typeGUI": "EndBlockCommandGUI",
-            "typeLogic": "EndBlockCommand"
-         },
-         {
-            "parameters": {
-               "x": "0",
-               "objectID": "",
-               "z": "5",
-               "y": "0"
-            },
-            "typeGUI": "MoveRelativeToObjectCommandGUI",
-            "typeLogic": "MoveRelativeToObjectCommand"
+               "servo4": true,
+               "servo2": true,
+               "servo1": true,
+               "servo3": true
+            }
          }
       ],
-      "typeGUI": "InitEventGUI",
-      "typeLogic": "InitEvent"
-   },
-   {
-      "parameters": {},
-      "commandList": [],
-      "typeGUI": "StepEventGUI",
-      "typeLogic": "StepEvent"
+      "parameters": {
+         "checkKey": "A"
+      }
    }
 ]

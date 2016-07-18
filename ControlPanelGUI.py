@@ -679,13 +679,14 @@ class CommandList(QtWidgets.QListWidget):
             if dropIndex == -1: dropIndex = self.count()  # If dropped at a index past the end of list, drop at end
 
             # Add the new dragged in widget to the index that was just found
-            commandType = getattr(CommandsGUI, event.mimeData().text())
-            self.addCommand(commandType, index=dropIndex)
+            cType = getattr(CommandsGUI, event.mimeData().text())
+            self.addCommand(cType, index=dropIndex)
 
             # For easy usability, when you drop a Test command, a StartBlock and EndBlock will drop right after it.
-            if commandType is CommandsGUI.TestVariableCommandGUI    or \
-               commandType is CommandsGUI.ElseCommandGUI            or \
-               commandType is CommandsGUI.TestObjectSeenCommandGUI:
+            if cType is CommandsGUI.TestVariableCommandGUI        or \
+               cType is CommandsGUI.ElseCommandGUI                or \
+               cType is CommandsGUI.TestObjectSeenCommandGUI      or \
+               cType is CommandsGUI.TestObjectLocationCommandGUI:
 
                 self.addCommand(CommandsGUI.StartBlockCommandGUI, index=dropIndex + 1)
                 self.addCommand(CommandsGUI.EndBlockCommandGUI, index=dropIndex + 2)
