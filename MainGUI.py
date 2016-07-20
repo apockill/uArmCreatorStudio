@@ -29,23 +29,21 @@ class MainWindow(QtWidgets.QMainWindow):
                                  "cameraID":           None,  # The # of the camera for cv to connect
 
                                  "motionCalibrations": {"stationaryMovement": None,
-                                                        "activeMovement": None},
+                                                        "activeMovement":     None},
 
-                                 "coordCalibrations":  {"ptPairs":   None,   # Pairs of Camera pts and Robot pts
-                                                        "failPts":   None,   # Coordinate's where robot can't be seen
-                                                        "groundPos": None},  # The "Ground" position, in [x,y,z]
+                                 "coordCalibrations":  {"ptPairs":            None,   # Pairs of (Camera, Robot) pts
+                                                        "failPts":            None,   # Coordinate's where calib failed
+                                                        "groundPos":          None},  # The "Ground" pos, in [x,y,z]
 
                                  # GUI RELATED SETTINGS
-                                 "lastOpenedFile":      None,
-
-
-                                 "consoleSettings": {"wordWrap":    False,   #  ConsoleWidget settings
-                                                     "robot":        True,   #  What gets printed in consoleWidget
-                                                     "vision":       True,
-                                                     "serial":      False,
-                                                     "interpreter":  True,
-                                                     "script":       True,
-                                                     "gui":         False}
+                                 "consoleSettings":    {"wordWrap":           False,  #  ConsoleWidget settings
+                                                        "robot":               True,  #  What gets printed in console
+                                                        "vision":              True,
+                                                        "serial":             False,
+                                                        "interpreter":         True,
+                                                        "script":              True,
+                                                        "gui":                False},
+                                 "lastOpenedFile":      None
                                }
 
         # Load settings before any objects are created
@@ -71,7 +69,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Connect the consoleWidget with the global print function, so the consoleWidget prints everything
         Global.printRedirectFunc = self.consoleWidget.write
-        self.consoleWidget.setExecFunction(self.interpreter.evaluateScript)
+        self.consoleWidget.setExecFunction(self.interpreter.evaluateExpression)
 
 
         # Create Menu items, and set the Dashboard as the main widget

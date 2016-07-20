@@ -1,88 +1,84 @@
 [
    {
-      "typeGUI": "InitEventGUI",
+      "parameters": {},
       "typeLogic": "InitEvent",
       "commandList": [
          {
-            "typeGUI": "ScriptCommandGUI",
-            "typeLogic": "ScriptCommand",
             "parameters": {
-               "description": "",
-               "script": "a = 0"
-            }
-         }
-      ],
-      "parameters": {}
-   },
-   {
-      "typeGUI": "StepEventGUI",
-      "typeLogic": "StepEvent",
-      "commandList": [
+               "servo1": true,
+               "servo3": true,
+               "servo4": false,
+               "servo2": true
+            },
+            "typeLogic": "DetachCommand",
+            "typeGUI": "DetachCommandGUI"
+         },
          {
-            "typeGUI": "ScriptCommandGUI",
-            "typeLogic": "ScriptCommand",
             "parameters": {
-               "description": "haha",
-               "script": "sleep(1000)\n"
-            }
+               "y": "",
+               "relative": false,
+               "x": "10",
+               "z": "12"
+            },
+            "typeLogic": "MoveXYZCommand",
+            "typeGUI": "MoveXYZCommandGUI"
          }
       ],
-      "parameters": {}
+      "typeGUI": "InitEventGUI"
    },
    {
-      "typeGUI": "KeypressEventGUI",
+      "parameters": {
+         "checkKey": "A"
+      },
       "typeLogic": "KeypressEvent",
       "commandList": [
          {
-            "typeGUI": "VisionMoveXYZCommandGUI",
-            "typeLogic": "VisionMoveXYZCommand",
             "parameters": {
-               "x": "10",
-               "relative": false,
-               "z": "10",
-               "y": "10"
-            }
+               "objectID": "Pamphlet",
+               "angle": "0"
+            },
+            "typeLogic": "MoveWristRelativeToObjectCommand",
+            "typeGUI": "MoveWristRelativeToObjectCommandGUI"
          },
          {
-            "typeGUI": "MoveXYZCommandGUI",
-            "typeLogic": "MoveXYZCommand",
             "parameters": {
-               "x": "-1.1",
-               "relative": false,
-               "z": "21.4",
-               "y": "14.9"
-            }
-         },
-         {
-            "typeGUI": "SpeedCommandGUI",
-            "typeLogic": "SpeedCommand",
-            "parameters": {
-               "speed": "10"
-            }
-         },
-         {
-            "typeGUI": "AttachCommandGUI",
-            "typeLogic": "AttachCommand",
-            "parameters": {
-               "servo4": true,
-               "servo2": true,
-               "servo1": true,
-               "servo3": true
-            }
-         },
-         {
-            "typeGUI": "DetachCommandGUI",
-            "typeLogic": "DetachCommand",
-            "parameters": {
-               "servo4": true,
-               "servo2": true,
-               "servo1": true,
-               "servo3": true
-            }
+               "objectID": "Pamphlet",
+               "x": "0",
+               "y": "0",
+               "z": ""
+            },
+            "typeLogic": "MoveRelativeToObjectCommand",
+            "typeGUI": "MoveRelativeToObjectCommandGUI"
          }
       ],
+      "typeGUI": "KeypressEventGUI"
+   },
+   {
       "parameters": {
-         "checkKey": "A"
-      }
+         "checkKey": "B"
+      },
+      "typeLogic": "KeypressEvent",
+      "commandList": [
+         {
+            "parameters": {
+               "y": "15",
+               "relative": false,
+               "x": "0",
+               "z": ""
+            },
+            "typeLogic": "VisionMoveXYZCommand",
+            "typeGUI": "VisionMoveXYZCommandGUI"
+         }
+      ],
+      "typeGUI": "KeypressEventGUI"
+   },
+   {
+      "parameters": {
+         "objectID": "Robot Marker",
+         "not": false
+      },
+      "typeLogic": "RecognizeObjectEvent",
+      "commandList": [],
+      "typeGUI": "RecognizeObjectEventGUI"
    }
 ]

@@ -1,3 +1,4 @@
+import math
 import numpy as np
 from Logic             import RobotVision as rv
 from Logic.Global      import printf, wait
@@ -55,8 +56,15 @@ class MoveXYZCommand(Command):
         newY, successY = self.interpreter.evaluateExpression(self.parameters['y'])
         newZ, successZ = self.interpreter.evaluateExpression(self.parameters['z'])
 
-        printf("Moving robot to ", newX, " ", newY, " ", newZ, " ")
 
+        # Special case: If the parameter is "" set the new val to None and success to True
+        if self.parameters['x'] == "": newX, successX = None, True
+        if self.parameters['y'] == "": newY, successY = None, True
+        if self.parameters['z'] == "": newZ, successZ = None, True
+
+
+
+        printf("Moving robot to ", newX, " ", newY, " ", newZ, " ")
         if successX and successY and successZ:
             self.robot.setPos(x=newX, y=newY, z=newZ, relative=self.parameters['relative'])
             return True
@@ -225,7 +233,7 @@ class WaitCommand(Command):
 
         # Split the wait into incriments of 0.1 seconds each, and check if the thread has been stopped at each incriment
         if success:
-            printf("Waiting for", waitTime, "seconds")
+            printf("Waiting for ", waitTime, " seconds")
             wait(waitTime, self.interpreter.isExiting)
 
             return True
@@ -347,10 +355,18 @@ class MoveRelativeToObjectCommand(Command):
         newZ, successZ = self.interpreter.evaluateExpression(self.parameters['z'])
 
 
+        # Special case: If the parameter is "" set the new val to None and success to True
+        if self.parameters['x'] == "": newX, successX = None, True
+        if self.parameters['y'] == "": newY, successY = None, True
+        if self.parameters['z'] == "": newZ, successZ = None, True
+
+
+
         # If X Y and Z could not be evaluated correctly, quit
-        if not (successX and successY and successZ):
+        if not successX or not successY or not successZ:
             printf("ERROR in parsing either X Y or Z: ", successX, successY, successZ)
             return False
+
 
         printf("Moving robot to obj, relative XYZ is:  ", newX, " ", newY, " ", newZ)
 
@@ -361,13 +377,89 @@ class MoveRelativeToObjectCommand(Command):
                                                         maxAge= rv.MAX_FRAME_AGE_MOVE)
         if trackedObj is None: return False
 
+
+
         # Get the object position
         printf("Found object. Moving to XY Location now.")
-        pos = rv.getPositionTransform(trackedObj.center, direction="toRob", ptPairs=self.ptPairs)
+        pos     = rv.getPositionTransform(trackedObj.center, direction="toRob", ptPairs=self.ptPairs)
+        pos[2] += trackedObj.view.height
 
 
-        # Set the robots position
-        self.robot.setPos(x=pos[0] + newX, y=pos[1] + newY, z=pos[2] + trackedObj.view.height + newZ)
+
+        # Create a function that will return "None" if new val is None, and otherwise it will sum pos and new val
+        printf(newX is None, newX)
+        noneSum = lambda objPos, newPos: None if newPos is None else objPos + newPos
+
+
+
+        # Set the robots position. Any "None" values simply don't change anything
+        self.robot.setPos(x=noneSum(pos[0], newX),
+                          y=noneSum(pos[1], newY),
+                          z=noneSum(pos[2], newZ))
+        return True
+
+
+class MoveWristRelativeToObjectCommand(Command):
+
+    def __init__(self, env, interpreter, parameters=None):
+        super(MoveWristRelativeToObjectCommand, self).__init__(parameters)
+        self.interpreter = interpreter
+        coordCalib       = self.getVerifyCoordCalibrations(env)
+        self.robot       = self.getVerifyRobot(env)
+        self.vision      = self.getVerifyVision(env)
+        self.trackable   = self.getVerifyObject(env, self.parameters["objectID"])
+
+        if len(self.errors): return
+        # Turn on tracking for the relevant object
+
+        self.ptPairs = coordCalib["ptPairs"]
+        self.vision.addTarget(self.trackable)
+
+    def run(self):
+        if len(self.errors): return
+
+        # Before doing any tracking, evaluate the "Relative" number to make sure its valid
+        newVal, success = self.interpreter.evaluateExpression(self.parameters["angle"])
+        if not success:
+            printf("Could not determine the relative angle for the wrist. Canceling command. ")
+            return False
+
+
+        # Find the object using vision
+        _, tracked = self.vision.getObjectLatestRecognition(self.trackable)
+        if tracked is None:
+            printf("Could not find ", self.trackable.name, " in order to set wrist relative")
+            return False
+
+
+        # Get rotation of object in camera view
+        rotation = math.degrees(tracked.rotation[2])  # Get the rotation around the z
+
+
+
+
+        TOCC = tracked.center   # Tracked Object Camera Coordinates
+        ROCC = rv.getPositionTransform((0, 0, 0), "toCam", self.ptPairs)  # Robot Origin Camera Coordinates
+
+
+        relativeToRobX = 90 - math.degrees(math.atan( (ROCC[1] - TOCC[1]) / (ROCC[0] - TOCC[0])))
+        targetAngle = rotation + relativeToRobX - 90
+
+
+        # Add the "Relative" angle to the wrist
+        targetAngle += newVal
+
+        # Normalize the value so that it's between 0 and 180
+        while targetAngle < 0: targetAngle += 180
+        while targetAngle > 180: targetAngle -= 180
+
+
+        print("Modified target: ", targetAngle)
+
+        # Set the robots wrist to the new value
+        self.robot.setServoAngles(servo3 = targetAngle)
+
+
         return True
 
 
@@ -502,21 +594,19 @@ class TestObjectLocationCommand(Command):
         return ret
 
 
-class VisionMoveXYZCommand(Command):
+class VisionMoveXYZCommand(MoveXYZCommand):
 
     def __init__(self, env, interpreter, parameters=None):
-        super(VisionMoveXYZCommand, self).__init__(parameters)
+        super(VisionMoveXYZCommand, self).__init__(env, interpreter, parameters)
 
         self.interpreter = interpreter
 
         coordCalib       = self.getVerifyCoordCalibrations(env)
-        self.robot       = self.getVerifyRobot(env)
         self.vision      = self.getVerifyVision(env)
         self.rbMarker    = self.getVerifyObject(env, "Robot Marker")
 
 
         if len(self.errors): return
-
         self.ptPairs    = coordCalib["ptPairs"]
 
         # Turn on tracking for the relevant object
@@ -525,45 +615,47 @@ class VisionMoveXYZCommand(Command):
     def run(self):
         if len(self.errors): return
 
-        newX, successX = self.interpreter.evaluateExpression(self.parameters['x'])
-        newY, successY = self.interpreter.evaluateExpression(self.parameters['y'])
-        newZ, successZ = self.interpreter.evaluateExpression(self.parameters['z'])
+        # First, move to the position like the normal MoveXYZ command does
+        success = super(VisionMoveXYZCommand, self).run()
 
-        printf("Moving robot to ", newX, " ", newY, " ", newZ, " using Vision assitance for accuracy")
-
-        # If the new X Y and Z position is successfully evaluated, then continue...
-        if successX and successY and successZ:
-            self.robot.setPos(x=newX, y=newY, z=newZ, relative=self.parameters['relative'])
-
-            # self.vision.waitForNewFrames(5)
-            destRobCoord = self.robot.coord[:]
+        # Check if the parent couldn't run correctly. If not, exit
+        if not success: return False
 
 
-            # Get the robots marker after it stops moving
-            currentCamCoord, avgMag, avgDir = self.vision.getObjectSpeedDirectionAvg(self.rbMarker)
-
-            if currentCamCoord is None:
-                printf("Could not find robot marker after move. Exiting without Vision adjustment.")
-                return False
+        # Get the new position that the robot should be at
+        destRobCoord = self.robot.coord[:]
 
 
-            currentRobPos = rv.getPositionTransform(currentCamCoord, "toRob", self.ptPairs)
+        # Get the robots new position
+        currentCamCoord, avgMag, avgDir = self.vision.getObjectSpeedDirectionAvg(self.rbMarker)
 
-            print("destRobPos", destRobCoord, "currentRobPos", currentRobPos)
-            offset        = np.asarray(destRobCoord) - np.asarray(currentRobPos)
-            magnitude = np.linalg.norm(offset)
-            if magnitude > 5:
-                printf("Correction magnitude too high. Canceling move. Offset: ", offset, "Magnitude: ", magnitude)
-                return False
-
-            print("predicted offset: ", offset, "magnitude: ", magnitude)
-            printf("Correcting move. Offset: ", offset, " Magnitude: ", magnitude)
-            self.robot.setPos(coord=offset, relative=True)
-
-            return True
-        else:
-            printf("ERROR in evaluating either X Y or Z: ", successX, successY, successZ)
+        # If the robot couldn't be seen, exit
+        if currentCamCoord is None:
+            printf("Could not find robot marker after move. Exiting without Vision adjustment.")
             return False
+
+
+        # Get the robots "True" position from the cameras point of view
+        currentRobPos = rv.getPositionTransform(currentCamCoord, "toRob", self.ptPairs)
+
+
+        # Find the move offset (aka, the error and how to correct it)
+        offset        = np.asarray(destRobCoord) - np.asarray(currentRobPos)
+        magnitude = np.linalg.norm(offset)
+
+
+        # If there's too much error, something bad must have happened. Avoid doing any corrections
+        if magnitude > 5:
+            printf("Correction magnitude too high. Canceling move. Offset: ", offset, "Magnitude: ", magnitude)
+            return False
+
+
+        # Move the offset amount
+        printf("Correcting move. Offset: ", offset, " Magnitude: ", magnitude)
+        self.robot.setPos(coord=offset, relative=True)
+
+        return True
+
 
 
 
@@ -605,10 +697,19 @@ class SetVariableCommand(Command):
         self.interpreter = interpreter
 
     def run(self):
+        # If the variable does not exist yet, add it to the namespace with a value of 0
+        if self.parameters["variable"] not in self.interpreter.nameSpace:
+            script = str(self.parameters["variable"]) + " = 0"
+            self.interpreter.evaluateScript(script)
+
+
+        # Set the value of the variable by building a string of "variable = value" and running it in exec
+        script = self.parameters["variable"] + " = " + self.parameters["expression"]
+        self.interpreter.evaluateScript(script)
+
         printf("Setting ", self.parameters["variable"], " to ", self.parameters["expression"])
-        success = self.interpreter.setVariable(self.parameters["variable"],
-                                               self.parameters["expression"])
-        return success
+
+        return True
 
 
 class TestVariableCommand(Command):
@@ -621,25 +722,27 @@ class TestVariableCommand(Command):
         interpreter   = self.interpreter
 
         # Get the variable. If that doesn't work, quit
-        variableValue, successVar = interpreter.getVariable(self.parameters['variable'])
-        if not successVar: return False
+        # variableValue, successVar = interpreter.getVariable(self.parameters['variable'])
+        # if not successVar: return False
 
 
         # Evaluate the expression. If that doesn't work, quit
-        compareValue, successExp = interpreter.evaluateExpression(self.parameters['expression'])
-        if not successExp: return False
+        # compareValue, successExp = interpreter.evaluateExpression(self.parameters['expression'])
+        # print("Compare value: ", compareValue)
+        # if not successExp: return False
 
         # Compare the value of the expression using the operator from the parameters
         operations = ['==', '!=', '>', '<']
         expressionString = self.parameters['variable'] + operations[self.parameters['test']] + self.parameters["expression"]
+
         testResult, success = interpreter.evaluateExpression(expressionString)
 
-        printf("Testing if ", self.parameters['variable'],
-                                                         operations[self.parameters['test']],
-                                                         self.parameters["expression"])
+        if not success: return False
 
+        printf("Testing: ", expressionString)
+        print(testResult, success)
         # If the expression was evaluated correctly, then return the testResult. Otherwise, return False
-        return testResult and success
+        return testResult
 
 
 class ScriptCommand(Command):

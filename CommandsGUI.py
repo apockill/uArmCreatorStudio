@@ -18,7 +18,7 @@ class CommandWidget(QtWidgets.QWidget):
         # Set up UI Globals
         self.title       = QtWidgets.QLabel()
         self.description = QtWidgets.QLabel()
-        self.icon        = QtWidgets.QLabel("No Icon Found")
+        self.icon        = QtWidgets.QLabel("No Icon XFound")
         self.deleteBtn   = QtWidgets.QPushButton("")
 
 
@@ -144,6 +144,7 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         add  = lambda btnType: vBox.addWidget(self.getButton(btnType))
         add(VisionMoveXYZCommandGUI)
         add(MoveRelativeToObjectCommandGUI)
+        add(MoveWristRelativeToObjectCommandGUI)
         add(PickupObjectCommandGUI)
         add(TestObjectSeenCommandGUI)
         add(TestObjectLocationCommandGUI)
@@ -407,20 +408,34 @@ class CommandGUI:
 
         prompt.content.addLayout(row)
 
+    def _addSpacer(self, prompt):
+        """
+        Add a certain amount of pixels of spacing between two rows in the prompt window
+        """
+
+        height = 20
+        column = QtWidgets.QVBoxLayout()
+        column.addSpacing(height)
+        prompt.content.addLayout(column)
+
     def _addHint(self, prompt, hintText):
-        # Add some text (usually at the bottom of the prompt) that tells the user something to help them out
-        hintLbl = QtWidgets.QLabel(hintText)
-        hintLbl.setWordWrap(True)
+        """
+        Add some text (usually at the bottom of the prompt) that tells the user something to help them out
+        HintText is bolded by default, and always appears in the same spot.
+        """
+
+        prompt.hintLbl = QtWidgets.QLabel(hintText)
+        prompt.hintLbl.setWordWrap(True)
 
         # Make the hint bold
         bold = QtGui.QFont()
         bold.setBold(True)
-        hintLbl.setFont(bold)
+        prompt.hintLbl.setFont(bold)
 
         # Create a row for the hint
         hintRow = QtWidgets.QHBoxLayout()
         # hintRow.addStretch(1)
-        hintRow.addWidget(hintLbl)
+        hintRow.addWidget(prompt.hintLbl)
 
         # Add it to the prompt
         prompt.mainVLayout.addLayout(hintRow)
@@ -441,6 +456,11 @@ class CommandGUI:
             self._addHint(prompt, hintText)
 
     def _addRecordingHint(self, prompt, numResources):
+        """
+        This is a hint that goes onto any command that uses motion recordings, to warn the user if they have not
+        created any motion recordings
+        """
+
         if numResources == 0:
             hintText = "You have not created any Motion Recordings yet. " + \
                        "Try creating new recordings in the Resource Manager!"
@@ -513,7 +533,9 @@ class NameCommandGUI(CommandGUI):
 #   BASIC CONTROL COMMANDS
 class MoveXYZCommandGUI(CommandGUI):
     title     = "Move XYZ"
-    tooltip   = "Set the robots position.\nThe robot will move after all events are evaluated"
+    tooltip   = "Set the robots position.\nThe robot will move after all events are evaluated.\n\n"\
+                "If you don't want to set one of the robots axis, simply leave it empty. For example, put y and z \n"\
+                "empty and x to 5 will set the robots x position to 5 while keeping the current Y and Z the same."
     icon      = Paths.command_xyz
     logicPair = 'MoveXYZCommand'
 
@@ -1012,7 +1034,9 @@ class EndEventCommandGUI(CommandGUI):
 class MoveRelativeToObjectCommandGUI(CommandGUI):
     title     = "Move Relative To Object"
     tooltip   = "This tool uses computer vision to recognize an object of your choice, and position the robot directly"\
-                "\nrelative to this objects XYZ location. If XYZ = 0,0,0, the robot will move directly onto the object."
+               "\nrelative to this objects XYZ location. If XYZ = 0,0,0, the robot will move directly onto the object."\
+               "\n\nIf you don't want to set one of the robots axis, simply leave it empty. For example, put y and z \n"\
+               "empty and x to 5 will set the robots x position to objX + 5 while keeping the current Y and Z the same."
     icon      = Paths.command_move_rel_to
     logicPair = "MoveRelativeToObjectCommand"
 
@@ -1093,40 +1117,65 @@ class MoveRelativeToObjectCommandGUI(CommandGUI):
 
 
 class MoveWristRelativeToObjectCommandGUI(CommandGUI):
-    title     = "Example Title"
-    tooltip   = "This tool does X Y and Z"
-    icon      = Paths.some_icon
-    logicPair = "NameCommand"
+    title     = "Set Wrist Relative To Object"
+    tooltip   = "This tool sets the wrist angle of the robot to the angle of an object in the cameras view, plus \n" \
+                "some relative degree of your choice. The rotation of the object is determined by the orientation\n" \
+                "that it's in when you create the object. "
+    tooltip   = "This tool will look at the orientation of an object in the cameras view, and align the wrist with \n"\
+                "the rotation of the object. The rotation of the object is determined by the orientation that it was\n"\
+                "in when the object was memorized. It's recommended to experiment around a bit with this function to\n"\
+                " get a feel for how it works!"
+
+    icon      = Paths.command_wrist_rel
+    logicPair = "MoveWristRelativeToObjectCommand"
 
     def __init__(self, env, parameters=None):
-        super(NameCommandGUI, self).__init__(parameters)
+        super(MoveWristRelativeToObjectCommandGUI, self).__init__(parameters)
+        objManager         =  env.getObjectManager()
+        self.getObjectList = lambda: objManager.getObjectNameList(objFilter=objManager.TRACKABLE)
 
         # If parameters do not exist, then set up the default parameters
         if self.parameters is None:
             # Anything done with env should be done here. Try not to save env as a class variable whenever possible
-            self.parameters = {}
+            self.parameters = {"objectID": "",
+                               "angle": "0"}
 
     def dressWindow(self, prompt):
-        # Do some GUI code setup
-        # Put all the objects into horizontal layouts called Rows
 
-        self._addRow(prompt, some GUI label, some GUI object)  # Add rows using self._addRow to keep consistency
+
+        # Create the "ObjectList" choice box
+        objLbl     = QtWidgets.QLabel("Choose an Object")
+        prompt.objChoices = QtWidgets.QComboBox()
+        prompt.objChoices.addItem(self.parameters["objectID"])  # Add an empty item at the top
+        objectList = self.getObjectList()
+        for index, objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
+        self._addRow(prompt, objLbl, prompt.objChoices)
+        self._addObjectHint(prompt, len(objectList))
+
+
+        # Create the "angle" textbox
+        wristLabel       = QtWidgets.QLabel('Angle:')
+        prompt.wristEdit = QtWidgets.QLineEdit(self.parameters["angle"])
+        self._addRow(prompt, wristLabel, prompt.wristEdit)
 
         return prompt
 
     def _extractPromptInfo(self, prompt):
-        newParameters = {} # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
+        newParameters = {"objectID": str(prompt.objChoices.currentText()),
+                         'angle': self._sanitizeEval(prompt.wristEdit, self.parameters["angle"])}
 
         self.parameters.update(newParameters)
 
         return self.parameters
 
     def _updateDescription(self):
-        self.description = ""  # Some string that uses your parameters to describe the object.
+        self.title = "Set Wrist Relative To " + self.parameters["objectID"]
+        self.description = "Set the wrist " + self.parameters["angle"] + \
+                           " degrees relative to " + self.parameters["objectID"]
 
 
 class PickupObjectCommandGUI(CommandGUI):
-    title     = "Pick Up an Object"
+    title     = "Pick Up An Object"
     tooltip   = "This tool uses computer vision to recognize an object of your choice, and attempt to pick up the " \
                 "\nobject. If the object cannot be found or picked up, then False will be returned"
 
@@ -1277,7 +1326,7 @@ class TestObjectSeenCommandGUI(CommandGUI):
 
 
 class TestObjectLocationCommandGUI(CommandGUI):
-    title     = "Test Location of Object"
+    title     = "Test Location Of Object"
     tooltip   = "This command will allow code in blocked brackets below it to run IF the specified object has been" \
                 "recognized and the objects location in a particular location."
     icon      = Paths.command_see_loc
@@ -1397,9 +1446,8 @@ class VisionMoveXYZCommandGUI(MoveXYZCommandGUI):
 
         print("Prompt: ", prompt)
         self._addRow(prompt, warningLbl)
+
         return prompt
-
-
 
 
 

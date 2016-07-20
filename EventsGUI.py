@@ -166,10 +166,10 @@ class EventPromptWindow(QtWidgets.QDialog):
         newMotionBtn = lambda params: self.btnClicked(MotionEventGUI, params=params)
         motionMnu    = QtWidgets.QMenu()
 
-        motionMnu.addAction("Above 'Low' Speed", lambda: newMotionBtn({"low":  "Low", "high":  "Inf"}))
-        motionMnu.addAction("Above 'High' Speed", lambda: newMotionBtn({"low": "High", "high":  "Inf"}))
+        motionMnu.addAction("No Movement", lambda: newMotionBtn({"low": "None", "high":  "Low"}))
+        motionMnu.addAction("Any Movement", lambda: newMotionBtn({"low":  "Low", "high":  "Inf"}))
         motionMnu.addSeparator()
-        motionMnu.addAction("Less than 'Low' Speed", lambda: newMotionBtn({"low": "None", "high":  "Low"}))
+        motionMnu.addAction("Above 'High' Speed", lambda: newMotionBtn({"low": "High", "high":  "Inf"}))
         motionMnu.addAction("Less than 'High' Speed", lambda: newMotionBtn({"low": "None", "high": "High"}))
         motionMnu.addSeparator()
         motionMnu.addAction("Between 'Low' to 'High' Speed", lambda: newMotionBtn({"low":  "Low", "high": "High"}))
@@ -357,12 +357,22 @@ class MotionEventGUI(EventGUI):
         super(MotionEventGUI, self).__init__(parameters)
 
         title = ""
+        # Figure out the naming for the event
         if self.parameters["high"] == "Inf":
             title = "Above " + self.parameters["low"] + " Speed"
         elif self.parameters["low"] == "None":
-            title = "Less Then " + self.parameters["high"] + " Speed"
+            title = "Less than " + self.parameters["high"] + " Speed"
+
         elif self.parameters["low"] == "Low":
             title = "Low to High Speed"
+
+        # Special case naming
+        if self.parameters["low"] == "Low" and self.parameters["high"] == "Inf":
+            title = "Any Movement"
+
+        if self.parameters["low"] == "None" and self.parameters["high"] == "Low":
+            title = "No Movement"
+
 
         self.title = title
 

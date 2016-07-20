@@ -433,9 +433,9 @@ class Console(QtWidgets.QWidget):
             command =  self.inputEdt.text()
 
             self.write("Input", command)
-            success = self.execFunction(command)
-            # if ret is not None:
-            #     self.write("", ret)
+            ret, success = self.execFunction(command)
+            if ret is not None:
+                self.write("", ret)
 
 
             self.inputEdt.setText("")
@@ -633,6 +633,7 @@ class Console(QtWidgets.QWidget):
                 self.text.setTextCursor(c)
 
             self.printBuffer = []
+
 
 # Center a window on the current screen
 def centerScreen(self):

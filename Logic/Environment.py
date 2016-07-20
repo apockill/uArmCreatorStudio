@@ -102,9 +102,8 @@ class Interpreter:
         # For self.getStatus()
         self.currRunning  = []      # A dictionary of what has been run so far in the loop {eventIndex:[commandIndex's]}
 
-        # These two are set in self.cleanNamespace
-        self.__variables  = None
-        self.execBuiltins = None
+        # Namespace is all the builtins and variables that the user creates during a session in the interpreter
+        self.nameSpace    = None
         self.cleanNamespace()
 
 
@@ -114,7 +113,9 @@ class Interpreter:
     # Functions for GUI to use
     def loadScript(self, script, env):
         """
-        Creates each event, loads it with its appropriate commandList, and then adds that event to self.events
+        Initializes each event in the script, Initializes each command in the script,
+        places all the commands into the appropriate events,
+        and returns all errors that occured during the build process.
 
         :param      env: Environment object
         :param      script: a loaded script from a .task file
@@ -275,8 +276,8 @@ class Interpreter:
                     'e', 'exp', 'fabs', 'floor', 'fmod', 'frexp', 'hypot', 'ldexp', 'log', 'log10',
                     'modf', 'pi', 'pow', 'radians', 'sin', 'sinh', 'sqrt', 'tan', 'tanh']
 
-        self.__variables = dict([(k, getattr(math, k)) for k in safeList])
-        self.__variables['math'] = math
+        variables = dict([(k, getattr(math, k)) for k in safeList])
+        variables['math'] = math
 
 
         robot         = self.env.getRobot()
@@ -306,8 +307,8 @@ class Interpreter:
                             "tuple":     tuple,      "robot":      robot,  "resources":  resources,
                            "vision":    vision,   "settings":   settings,    "vStream":    vStream,
                             "sleep":   newSleep}
-        execBuiltins = {"__builtins__": execBuiltins, "variables": self.__variables}
-        self.execBuiltins = execBuiltins
+        execBuiltins = {"__builtins__": execBuiltins, "variables": variables}
+        self.nameSpace = execBuiltins
 
     def setVariable(self, name, expression):
         """
@@ -322,22 +323,23 @@ class Interpreter:
         """
 
         # If the variable has not been set before, add it to the variables namespace, and assign it a value of 0
-        if name not in self.__variables:
-            self.__variables[name] = 0
+        # if name not in self.__variables:
+        #     self.evaluateScript(str(name) + " = 0")  # Set the new variable to zero
 
-        newValue, success = self.evaluateExpression(expression)
+        if name not in self.nameSpace:
+            script = str(name) + " = 0"
+            self.evaluateScript(script)
 
-        self.__variables[name] = newValue
+
+        # newValue, success = self.evaluateExpression(expression)
+
+
+        self.evaluateScript(script)
+
         # if success:
         #     self.__variables[name] = round(newValue, 8)
 
-    def getVariable(self, name):
-        # Gets the value of a variable. Returns "Value, Success". Success will be false if the variable did not exist
-        # Value is 0 by default
-        if name not in self.__variables:
-            return 0, False
-        else:
-            return self.__variables[name], True
+
 
     def evaluateExpression(self, expression):
 
@@ -348,10 +350,10 @@ class Interpreter:
         answer = None
 
         try:
-            answer = eval(expression, self.execBuiltins, self.__variables)
+            answer = eval(expression, self.nameSpace)
         except Exception as e:
-            printf("ERROR: ", type(e).__name__, " ", e)
-            return None, False
+            printf("EVAL ERROR: ", type(e).__name__, " ", e)
+
 
         if answer is None:
             return None, False
@@ -359,7 +361,6 @@ class Interpreter:
         return answer, True
 
     def evaluateScript(self, script):
-
 
         # # Build the script inside of a function, so users can "return" out of it
         # script = '\n\t' + script.replace('\n', '\n\t')
@@ -371,12 +372,12 @@ class Interpreter:
 
         try:
             # self.execBuiltins["globals"] = self.__variables
-            exec(script, self.execBuiltins)
+            exec(script, self.nameSpace)
 
             # if self.__variables["scriptReturn"] is not None:
             #     print("Returned ", self.__variables["scriptReturn"])
         except Exception as e:
-            printf("ERROR: ", type(e).__name__, ": ", e)
+            printf("EXEC ERROR: ", type(e).__name__, ": ", e)
             return False
 
         return True

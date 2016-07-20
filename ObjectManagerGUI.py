@@ -818,9 +818,9 @@ class MotionRecordWindow(QtWidgets.QDialog):
 
         # Run the motion path through a gausian smoother
         # Smooth the Time values, and all the servo values
-        degree = 10
+        degree   = 5
         toSmooth = np.asarray(self.motionPath[:])[:, [TIME, SERVO0, SERVO1, SERVO2, SERVO3]].tolist()
-        smooth = rv.smoothListGaussian(toSmooth, degree)
+        smooth   = rv.smoothListGaussian(toSmooth, degree)
 
         window    = degree * 2 - 1
         otherData = np.asarray(self.motionPath)[:, [GRIPPER]]

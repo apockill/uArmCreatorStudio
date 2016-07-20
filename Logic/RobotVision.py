@@ -164,6 +164,30 @@ def createTransformFunc(ptPairs, direction):
 
     transformFunc = lambda x: np.array((M * np.vstack((np.matrix(x).reshape(3, 1), 1)))[0:3, :].reshape(1, 3))[0]
 
+    """
+    Breakdown of function. Here's an example of transforming [95, -35, 530] cam which is [5, 15, 15] in robot coordinates
+
+    First:
+    [95, -35, 530]
+
+    np.vstack((np.matrix(input).reshape(3, 1), 1))  is applied, converts it to a vertical array
+    [[ 95]
+     [-35]
+     [530]
+     [  1]]
+
+    M * np.vstack((np.matrix(x).reshape(3, 1), 1))  (transformation matrix multiplied by the previous number)
+    [[  5.8371337 ]
+     [ 15.72722685]
+     [ 14.5007519 ]]
+
+     There you go. The rest of it is simply converting that matrix into
+     [5.83, 15.72, 14.5]
+
+     but you know, without the rounding.
+
+    """
+
     return transformFunc
 
 def getPositionTransform(posToTransform, direction, ptPairs):
@@ -302,16 +326,16 @@ def smoothListGaussian(list1, degree):
 
 # Long form functions with lots of steps
 def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exitFunc):
-    def getRobotAccurate(rbMarker, vision, maxAttempts=10):
+    def getRobotAccurate(trackable, vision, maxAttempts=10):
         # A little convenience function that is used several times in the pickup
         moveThresh  = 15
-        lowest      = [None, None]
+        lowest      = [None, None]  # [coordinates of object, the speed at which it was going at]
         for s in range(0, maxAttempts):
             vision.waitForNewFrames()
             # trackRob = vision.getObjectBruteAccurate(rbMarker, minPoints   = MIN_POINTS_PICKUP_MARKER,
             #                                                    maxFrameAge = 0,
             #                                                    maxAttempts = MAX_FRAME_FAIL)
-            avgPos, avgMag, avgDir = vision.getObjectSpeedDirectionAvg(rbMarker)
+            avgPos, avgMag, avgDir = vision.getObjectSpeedDirectionAvg(trackable)
 
             if avgPos is None: continue
 
@@ -338,6 +362,7 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exit
                                                minPoints   = MIN_POINTS_PICKUP_OBJECT,
                                                maxAge= 0,
                                                maxAttempts = MAX_FRAME_FAIL)
+
     if trackedObj is None:
         printf("Couldn't get the object accurately!")
         return False
@@ -351,7 +376,8 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exit
         Convert the changed position of the object back to the camera array
         Save the new Z position of the camera, to be used later
     """
-    center = trackedObj.center
+    # center = trackedObj.center
+    center    = trackedObj.center
     posRob    = getPositionTransform((center[0], center[1], center[2]), direction="toRob", ptPairs=ptPairs)
     posCam    = getPositionTransform(posRob, direction="toCam", ptPairs=ptPairs)
     staticErr = center - posCam
@@ -463,9 +489,9 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exit
         # TEST 2
         # If its still moving down, then perform a down-move. JumpSize is how far it will jump to get closer to the obj
         if failTrackCount > 0:
-            jumpSize = 1.75
+            jumpSize = 2.0
         else:
-            jumpSize = 1
+            jumpSize = 1.0
 
         # Get the relative move, multiply
         relMove   = getRelativeMoveTowards(lastCoord, targetCamPos, ptPairs)

@@ -769,9 +769,9 @@ class CWPage5(QtWidgets.QWizardPage):
 
         # Set the robot to the home position, set the speed, and other things for the calibration
         robot.setActiveServos(all=True)
-        robot.setSpeed(15)
+        robot.setSpeed(10)
 
-        zLower = float(round(self.getGroundCoord()[2] + 1.5, 2))
+        zLower = float(round(self.getGroundCoord()[2] + 1.0, 2))
         robot.setPos(x=robot.home["x"], y=robot.home["y"], z=zLower)
         sleep(1)
 
@@ -779,22 +779,24 @@ class CWPage5(QtWidgets.QWizardPage):
         # Generate a large set of points to test the robot, and put them in testCoords
         testCoords    = []
 
-        # Test the z on 4 xy points
+        # Test the z on 3 xy points
         zTest = int(round(zLower, 0))  # Since range requires an integer, round zLower just for this case
-        for x in range(  -20, 20, 3): testCoords += [[x,  15,    15]]  # Center of XYZ grid
-        for y in range(    8, 25, 3): testCoords += [[ 0,  y,    15]]
-        for z in range(zTest, 25, 1): testCoords += [[ 0, 15,     z]]
+        for x in range(  -20, 20, 4): testCoords += [[x,  15,    15]]  # Center of XYZ grid
+        for y in range(    8, 24, 4): testCoords += [[ 0,  y,    15]]
+        for z in range(zTest, 24, 1): testCoords += [[ 0, 15,     z]]
 
         # for x in range(  -20, 20, 1): testCoords += [[x,  15, zTest]]  # Center of XY, Bottom z
         # for y in range(    8, 25, 1): testCoords += [[ 0,  y, zTest]]
         # for z in range(zTest, 25): testCoords += [[ 0, 15,     z]]
 
-        for x in range(  -20, 20, 3): testCoords += [[x,  15,    25]]  # Center of XY, top z
-        for y in range(   10, 25, 3): testCoords += [[ 0,  y,    25]]
+        for x in range(  -20, 20, 4): testCoords += [[x,  15,    25]]  # Center of XY, top z
+        for y in range(   12, 24, 4): testCoords += [[ 0,  y,    25]]
+
+
 
         direction  = int(1)
-        for y in range(8, 25, 2):
-            for x in range(-20 * direction, 20 * direction, 5 * direction):
+        for y in range(10, 25, 2):
+            for x in range(-20 * direction, 20 * direction, 2 * direction):
                 testCoords += [[x, y, zTest]]
             direction *= -1
 
@@ -955,10 +957,9 @@ class CWPage5(QtWidgets.QWizardPage):
 
         # Move the robot to the coordinate
         robot.setPos(x=coord[0], y=coord[1], z=coord[2])
-        sleep(.2)
+        vision.waitForNewFrames(3)
 
         # Now that the robot is at the desired position, get the avg location
-        vision.waitForNewFrames()
         frameAge, marker = vision.getObjectLatestRecognition(rbMarker)
 
 

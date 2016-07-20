@@ -69,7 +69,7 @@ class Robot:
 
         # Create some ranges to allow movement within (need to make a better solution)
         self.xMin, self.xMax = -30, 30
-        self.yMin, self.yMax =   5, 30
+        self.yMin, self.yMax =   0, 30
         self.zMin, self.zMax =  -5, 25
 
 
