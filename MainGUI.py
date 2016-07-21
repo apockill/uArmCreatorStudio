@@ -36,7 +36,8 @@ from PyQt5             import QtCore, QtWidgets, QtGui  # All GUI things
 from CalibrationsGUI   import CalibrateWindow           # For opening Calibrate window
 from CameraGUI         import CameraWidget              # General GUI purposes
 from Logic             import Global, Paths             # For keeping track of keypresses
-from Logic.Environment import Environment, Interpreter  # For Logic purposes
+from Logic.Environment import Environment               # Contains important variables
+from Logic.Interpreter import Interpreter               # For actually starting/stopping the script
 from Logic.Global      import printf                    # For my personal printing format
 from Logic.Robot       import getConnectedRobots        # For settingsWindow
 from Logic.Video       import getConnectedCameras       # For settingsWindow

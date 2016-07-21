@@ -32,6 +32,7 @@ from Logic        import Paths
 
 import ast  # To check if a statement is python parsible, for evals
 
+
 class LineTextWidget(QtWidgets.QFrame):
     """
     This puts line numbers on a QTextEdit widget
@@ -196,6 +197,12 @@ Builtin Variables:
         Try doing print(settings) to see what it contains.
 
 
+    isStopping()
+        This is a function that returns True if the user has pressed the "stop" button on the top left. You can use
+        this to check if your script should end, if you're doing long loops.
+
+
+
 Examples scripts using robot
     robot.setPos(x=0, y=15, z=15)   # This will set the robots position to XYZ(0, 15, 15)
     robot.setPos(x=0, y=15, z=15)   # Waits for robot to complete move before continuing
@@ -260,6 +267,36 @@ Any variable created in the scope of the script command can be used in any other
         print(someArgument)
 
     someVariableName = "This string can be used in any Script command in the program"
+
+
+
+You might notice that scripts with big loops or 'while True' statements will take a long time to end when the "stop"
+button is pressed on the GUI. Sometimes, they might freeze the program. The reason for this is because your code
+is running inside of a seperate thread/process, and when you end the program the thread has to end as well.
+
+Any drag-and-drop command will end quickly, because they have been designed to do so. However, you will have to do this
+yourself if you have a long lasting task that you want to be able to quit at any time. In order to do so, you can use
+the function "isStopping()"
+
+isStopping() # returns True if the user has attempted to end the program, and False if the program has not been ended
+
+    The typical use case is:
+
+    while True:
+        if isStopping(): break  # Break out of the loop if the program has ended
+        # ... code ...
+        # ... code ...
+        # ... code ...
+
+    or, if it's in a big loop
+
+    for i in range(0, 100000):
+        if isStopping(): break
+        # ... code ...
+        # ... code ...
+        # ... code ...
+
+
 
 """
     minWidth  = 550
