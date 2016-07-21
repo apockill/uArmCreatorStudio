@@ -1,4 +1,33 @@
+"""
+This software was designed by Alexander Thiel
+Github handle: https://github.com/apockill
+
+The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
+It is completely open source, so feel free to take it and use it as a base for your own projects.
+
+If you make any cool additions, feel free to share!
+
+
+License:
+    This file is part of uArmCreatorStudio.
+    uArmCreatorStudio is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    uArmCreatorStudio is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
+"""
+__author__ = "Alexander Thiel"
+
 import math
+import json
+from Logic        import Paths
 from time         import sleep
 from copy         import deepcopy
 from threading    import Thread
@@ -19,7 +48,7 @@ from Logic        import Video, Events, Commands, ObjectManager, Robot, Global
 class Environment:
     """
     Environment is a singleton. Do not create more than one! It is intended to help cope with the needs of GUI
-    programming, where at any point I might need access to the robot or to video. However, some rules apply: if
+    programming, where at any point I might need access to the robot, video, or settings. However, some rules apply: if
     Environment is passed to a class, do not save it to the class, instead pull what is needed from there and save
     that to the class instead.
 
@@ -32,28 +61,35 @@ class Environment:
 
 
     THE ENVIRONMENT DOES NOT HOLD THE INTERPRETER, BY DESIGN: Since an Interpreter can run an interpreter inside of it,
-    recursively, then the environment must not hold an interpreter. They are seperate.
+    recursively, then the environment must not hold an interpreter. They are seperate. An Interpreter can hold an
+    environment, however.
     """
 
-    def __init__(self, settings):
+    def __init__(self):
         # Initialize Global Variables
         Global.init()
+
+        # Load settings before any objects are created
+        self.__settings   = self.__loadSettings()
 
 
         # Set up environment objects
         self.__vStream    = Video.VideoStream()           # Gets frames constantly
         self.__robot      = Robot.Robot()
         self.__vision     = Vision(self.__vStream)  # Performs computer vision tasks, using images from vStream
-        self.__settings   = settings
         self.__objectMngr = ObjectManager.ObjectManager()
 
 
         # If the settings have any information, try to instantiate objects. Otherwise, GUI will do this as user requests
-        if settings['cameraID'] is not None:
-            self.__vStream.setNewCamera(settings['cameraID'])
+        cameraID = self.__settings['cameraID']
+        if cameraID is not None:
+            self.__vStream.setNewCamera(cameraID)
 
-        if settings['robotID'] is not None:
-            self.__robot.setUArm(settings['robotID'])
+
+        robotID = self.__settings['robotID']
+        if robotID is not None:
+            self.__robot.setUArm(robotID)
+
 
         self.__objectMngr.loadAllObjects()
 
@@ -73,12 +109,93 @@ class Environment:
     def getVision(self):
         return self.__vision
 
-    def getSettings(self):
-        return deepcopy(self.__settings)
-
     def getObjectManager(self):
         return self.__objectMngr
 
+
+    # Return all settings
+    def getSettings(self):
+        return deepcopy(self.__settings)
+
+    def getSetting(self, category):
+        return deepcopy(self.__settings[category])
+
+    def updateSettings(self, category, newSettings):
+        """
+        Apply any new settings that have been changed. If they've been changed, also save the program.
+        """
+
+        # Create a quick function that will check if a setting has been changed. If it has, an action will be taken.
+
+
+        # If settings change, then save the changes to the config file, and update the self.__settings dictionary
+        if not self.__settings[category] == newSettings and newSettings is not None:
+
+            printf("Saving setting: ", category)
+            self.__settings[category] = deepcopy(newSettings)
+
+            json.dump(self.__settings, open(Paths.settings_txt, 'w'),
+                      sort_keys=False, indent=3, separators=(',', ': '))
+        else:
+            printf("No settings changed: ", category)
+
+
+
+
+    def __loadSettings(self):
+        defaultSettings = {
+                            # LOGIC RELATED SETTINGS
+                            "robotID":            None,  # COM port of the robot
+
+
+                            "cameraID":           None,  # The # of the camera for cv to connect
+
+
+                            "motionCalibrations": {
+                                                    "stationaryMovement": None,
+                                                    "activeMovement":     None
+                                                  },
+
+
+                            "coordCalibrations":  {
+                                                    "ptPairs":            None,   # Pairs of (Camera, Robot) pts
+                                                    "failPts":            None,   # Coordinate's where calib failed
+                                                    "groundPos":          None    # The "Ground" pos, in [x,y,z]
+                                                  },
+
+
+                            # GUI RELATED SETTINGS
+                            "consoleSettings":    {
+                                                    "wordWrap":           False,  #  ConsoleWidget settings
+                                                    "robot":               True,  #  What gets printed in console
+                                                    "vision":              True,
+                                                    "serial":             False,
+                                                    "interpreter":         True,
+                                                    "script":              True,
+                                                    "gui":                False
+                                                  },
+
+
+                            "lastOpenedFile":       None
+                          }
+
+        # Load the settings config and set them
+        printf("Loading Settings")
+
+        # Try to load a settings file. If it fails, simply return the default settings
+        try:
+            newSettings = json.load(open(Paths.settings_txt))
+
+            # Replace the current settings with new settings
+            return newSettings
+
+        except IOError as e:
+            printf("No settings file detected. Using default values.")
+            return defaultSettings
+
+        except ValueError as e:
+            printf("Error while loading an existing settings file. Using default values.")
+            return defaultSettings
 
 
 
@@ -88,6 +205,14 @@ class Environment:
         self.__robot.setExiting(True)
         self.__vision.setExiting(True)
         self.__vStream.endThread()
+
+
+# class Settings:
+#     def __init__(self):
+#         self.__settingsDict =
+#
+#     def get(self, category):
+#         return deepcopy(self.__settingsDict[category])
 
 
 class Interpreter:
@@ -111,7 +236,7 @@ class Interpreter:
 
 
     # Functions for GUI to use
-    def loadScript(self, script, env):
+    def loadScript(self, script):
         """
         Initializes each event in the script, Initializes each command in the script,
         places all the commands into the appropriate events,
@@ -129,7 +254,7 @@ class Interpreter:
         for _, eventSave in enumerate(script):
             # Get the "Logic" code for this event, stored in Events.py
             eventType = getattr(Events, eventSave['typeLogic'])
-            event     = eventType(env, self, parameters=eventSave['parameters'])
+            event     = eventType(self.env, self, parameters=eventSave['parameters'])
             self.addEvent(event)
 
             # Add any commands related to the creation of this event
@@ -142,7 +267,7 @@ class Interpreter:
             for _, commandSave in enumerate(eventSave['commandList']):
                 # Get the "Logic" code command, stored in Commands.py
                 commandType = getattr(Commands, commandSave['typeLogic'])
-                command     = commandType(env, self, commandSave['parameters'])
+                command     = commandType(self.env, self, commandSave['parameters'])
                 event.addCommand(command)
 
                 for error in command.errors:
@@ -307,37 +432,9 @@ class Interpreter:
                             "tuple":     tuple,      "robot":      robot,  "resources":  resources,
                            "vision":    vision,   "settings":   settings,    "vStream":    vStream,
                             "sleep":   newSleep}
-        execBuiltins = {"__builtins__": execBuiltins, "variables": variables}
+
+        execBuiltins = {"__builtins__": execBuiltins, "variables": variables, "__author__": "Alexander Thiel"}
         self.nameSpace = execBuiltins
-
-    def setVariable(self, name, expression):
-        """
-        Sets a variable to an expression in the interpreter. It will first check if the variable exists, if not, add it
-        to the self.__variables dict with a default initial value of 0, evaluate the expression, then set the variable
-        to the new value. If the expression did not evaluate (If an error occured) it will simply not set the variable
-        to the new value.
-
-        :param name: String, variable name
-        :param expression: String, expression that evaluates to a number
-        :return:
-        """
-
-        # If the variable has not been set before, add it to the variables namespace, and assign it a value of 0
-        # if name not in self.__variables:
-        #     self.evaluateScript(str(name) + " = 0")  # Set the new variable to zero
-
-        if name not in self.nameSpace:
-            script = str(name) + " = 0"
-            self.evaluateScript(script)
-
-
-        # newValue, success = self.evaluateExpression(expression)
-
-
-        self.evaluateScript(script)
-
-        # if success:
-        #     self.__variables[name] = round(newValue, 8)
 
 
 

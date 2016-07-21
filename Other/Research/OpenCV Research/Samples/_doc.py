@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-'''
+"""
 Scans current directory for *.py files and reports
 ones with missing __doc__ string.
-'''
+"""
 
 # Python 2/3 compatibility
 from __future__ import print_function

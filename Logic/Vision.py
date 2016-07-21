@@ -1,3 +1,30 @@
+"""
+This software was designed by Alexander Thiel
+Github handle: https://github.com/apockill
+
+The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
+It is completely open source, so feel free to take it and use it as a base for your own projects.
+
+If you make any cool additions, feel free to share!
+
+
+License:
+    This file is part of uArmCreatorStudio.
+    uArmCreatorStudio is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    uArmCreatorStudio is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
+"""
+__author__ = "Alexander Thiel"
+
 from time import sleep
 import cv2
 import numpy as np
@@ -421,11 +448,13 @@ class PlaneTracker(Tracker):
                               key_size          =             12,  # 19,  # 12,  # 20,
                               multi_probe_level =              1)  # 1)   #  1)  #  2)
 
+    K = None  # Set in get3DCoordinates
+    distCoeffs = np.zeros(4)
 
     def __init__(self, focalLength, historyLength):
         super(PlaneTracker, self).__init__(historyLength)
         self.focalLength  = focalLength
-        self.detector     = cv2.ORB_create(nfeatures = 8000)
+        self.detector     = cv2.ORB_create(nfeatures = 10000)
 
         # For ORB
         self.matcher      = cv2.FlannBasedMatcher(self.flanParams, {})  # bug : need to pass empty dict (#1329)
@@ -527,9 +556,9 @@ class PlaneTracker(Tracker):
             p0, p1 = p0[status], p1[status]
 
             x0, y0, x1, y1 = target.view.rect
-
             quad = np.float32([[x0, y0], [x1, y0], [x1, y1], [x0, y1]])
             quad = cv2.perspectiveTransform(quad.reshape(1, -1, 2), H).reshape(-1, 2)
+
 
 
             # Calculate the 3d coordinates of the object
@@ -561,11 +590,28 @@ class PlaneTracker(Tracker):
 
     def drawTracked(self, frame):
 
-        # Draw the Name and XYZ of the object
-        for tracked in self.trackedHistory[0]:
+        # Sort the objects from lowest (z) to highest Z, so that they can be drawn one on top of the other
+        drawObjects = self.trackedHistory[0]
+        drawObjects = sorted(drawObjects, key=lambda obj: obj.center[2], reverse=True)
+
+        mask  = np.zeros_like(frame)
+        tMask = np.zeros_like(frame)  # Used to show transparent shapes
+
+
+        for tracked in drawObjects:
+
             quad = np.int32(tracked.quad)
-            # print("quad", quad)
-            cv2.polylines(frame, [quad], True, (255, 255, 255), 2)
+
+            # If this object is definitely higher than the other, erase everything beneath it to give the "3D" effect
+
+
+
+            cv2.fillConvexPoly(mask, quad, 0)
+
+            last = tracked
+
+            cv2.polylines(mask, [quad], True, (255, 255, 255, .5), 3)
+            cv2.polylines(tMask, [quad], True, (255, 255, 255, .5), 2)
 
             # Figure out how much the text should be scaled (depends on the different in curr side len, and orig len)
             rect          = tracked.view.rect
@@ -573,23 +619,84 @@ class PlaneTracker(Tracker):
             currLength    = np.linalg.norm(quad[1] - quad[0]) + np.linalg.norm(quad[2] - quad[1])  # avg side len
             scaleFactor   = currLength / origLength
 
-            # Draw the name of the object, and coordinates
-            cv2.putText(frame, tracked.view.name, tuple(quad[1]),
-                        self.fFnt, scaleFactor, color=self.fColor, thickness=self.fThickness)
 
-            # FOR DEUBGGING ONLY: TODO: Remove this when deploying final product
-            try:
-                coordText =  "X " + str(int(tracked.center[0])) + \
-                            " Y " + str(int(tracked.center[1])) + \
-                            " Z " + str(int(tracked.center[2]))
-                            # " R " + str(round(tracked.rotation[2], 2))
-                cv2.putText(frame, coordText, (quad[1][0], quad[1][1] + int(15*scaleFactor)),
+
+            # Do all kinds of crazy stuff here
+            x0, y0, x1, y1 = rect
+            width  = (x1 - x0) / 2
+            height = (y1 - y0) / 2
+            x0, y0, x1, y1 = -width, -height, width, height
+
+
+
+            ar_verts = np.float32([[.5,  0, 0], [.5,  1, 0], [.45, .95,   0], [.55, .95,   0],
+                                   [ 0, .5, 0], [ 1, .5, 0], [.95, .45,   0], [.95, .55,   0],
+                                   [.5, .5, 0], [.5, .5, 1], [.45,  .5, .90], [.55,  .5, .90]])
+
+            red   = (1,   1,   255)
+            green = (  1, 255,   1)
+            blue  = (  255,   1, 1)
+            ar_edges = [( 0, 1,   red), ( 2, 1,   red), ( 3, 1,   red),
+                        ( 4, 5, blue), ( 6, 5, blue), ( 7, 5, blue),
+                        ( 8, 9,  green), (10, 9,  green), (11, 9,  green)]
+
+            verts = ar_verts * [(x1 - x0), (y1 - y0), -(x1 - x0) * 0.3] + (x0, y0, 0)
+
+
+            center = np.array(tracked.center).reshape(-1, 1)
+            rotation = np.array(tracked.rotation).reshape(-1, 1)
+            verts = cv2.projectPoints(verts, rotation, center, self.K, self.distCoeffs)[0].reshape(-1, 2)
+
+
+            for i, j, color in ar_edges:
+                (x0, y0), (x1, y1) = verts[i], verts[j]
+                cv2.line(mask, (int(x0), int(y0)), (int(x1), int(y1)), color, 2)
+
+
+
+
+            # Create the text that will be drawn
+            nameText  = tracked.view.name
+
+            coordText =  "X " + str(int(tracked.center[0])) + \
+                         " Y " + str(int(tracked.center[1])) + \
+                         " Z " + str(int(tracked.center[2]))
+
+
+            # Find a location on screen to draw the name of the object
+            size, _    = cv2.getTextSize(nameText, self.fFnt, scaleFactor, thickness=self.fThickness)
+            txtW, txtH = size
+            h, w, _ = mask.shape
+            validCorners = [c for c in quad if 0 < c[1] < h]
+            validCorners = [c for c in validCorners if (0 < c[0] and c[0] + txtW < w)]
+
+
+            # If a corner was found, draw the name on that corner
+            if len(validCorners):
+                chosenCorner = tuple(validCorners[0])
+
+                # Draw the name of the object, and coordinates
+                cv2.putText(mask, nameText, chosenCorner,
                             self.fFnt, scaleFactor, color=self.fColor, thickness=self.fThickness)
-            except:
-                pass
+                cv2.putText(tMask, nameText, chosenCorner,
+                            self.fFnt, scaleFactor, color=self.fColor, thickness=self.fThickness)
+                # FOR DEUBGGING ONLY: TODO: Remove this when deploying final product
+                # try:
+                #     cv2.putText(mask, coordText, (chosenCorner[0], chosenCorner[1] + int(15 * scaleFactor)),
+                #                 self.fFnt, scaleFactor, color=self.fColor, thickness=self.fThickness)
+                # except:
+                #     pass
 
             for (x, y) in np.int32(tracked.p1):
-                cv2.circle(frame, (x, y), 2, (255, 255, 255))
+                    cv2.circle(tMask, (x, y), 2, (255, 255, 255))
+
+        # Apply the semi-transparent mask to the frame, with translucency
+        frame[tMask > 0] = tMask[tMask > 0] * .7 + frame[tMask > 0] * .3
+
+
+        # Apply the normal mask to the frame
+        frame[mask > 0] = mask[mask > 0]   #  *= mask == 0
+
 
         return frame
 
@@ -605,15 +712,19 @@ class PlaneTracker(Tracker):
                               [     width,       height, 0],
                               [    -width,       height, 0]])
 
-        fx              = 0.5 + self.focalLength / 50.0
-        dist_coef       = np.zeros(4)
-        h, w            = frame.shape[:2]
+        if self.K is None:
+            fx              = 0.5 + self.focalLength / 50.0
+            h, w            = frame.shape[:2]
+            self.K = np.float64([[fx * w,      0, 0.5 * (w - 1)],
+                                 [     0, fx * w, 0.5 * (h - 1)],
+                                 [   0.0,    0.0,          1.0]])
 
-        K = np.float64([[fx * w,      0, 0.5 * (w - 1)],
-                        [     0, fx * w, 0.5 * (h - 1)],
-                        [   0.0,    0.0,          1.0]])
-        ret, rotation, center = cv2.solvePnP(quad3d, quad, K, dist_coef)
-        return list(map(float,center)), list(map(float,rotation))
+
+
+        ret, rotation, center = cv2.solvePnP(quad3d, quad, self.K, self.distCoeffs)
+
+        # Convert every element to floats and return int in List form
+        return tuple(map(float, center)), tuple(map(float, rotation))
 
 
 class CascadeTracker(Tracker):
@@ -690,6 +801,8 @@ class CascadeTracker(Tracker):
 
             cv2.putText(frame, tracked.target.name, (tracked.quad[1][0], tracked.quad[1][1] + int(15)),
                         self.fFnt, scaleFactor, color=self.fColor, thickness=self.fThickness)
+
+        return frame
 
 # def getMotionDirection(self):
     #     frameList = self.vStream.getFrameList()

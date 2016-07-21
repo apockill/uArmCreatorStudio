@@ -1,3 +1,30 @@
+"""
+This software was designed by Alexander Thiel
+Github handle: https://github.com/apockill
+
+The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
+It is completely open source, so feel free to take it and use it as a base for your own projects.
+
+If you make any cool additions, feel free to share!
+
+
+License:
+    This file is part of uArmCreatorStudio.
+    uArmCreatorStudio is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    uArmCreatorStudio is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
+"""
+__author__ = "Alexander Thiel"
+
 import math
 import cv2
 import numpy as np
@@ -15,7 +42,7 @@ This combines with things like calibrations as well.
 MIN_POINTS_TO_LEARN_OBJECT = 150  # Minimum number of points to decide an object is valid for creating
 MAX_FRAME_AGE_MOVE         = 5    # Maximum age of a tracked object to move the robot towards it
 MIN_POINTS_PICKUP_OBJECT   = 50   # Minimum points on an object for the robot to see an object and pick it up
-MIN_POINTS_FOCUS           = 40   # Minimum tracking points to just move the robot over an object
+MIN_POINTS_FOCUS           = 25   # Minimum tracking points to just move the robot over an object
 MAX_FRAME_FAIL             = 15   # Maximum times a function will get a new frame to recognize an object before quitting
 
 
@@ -165,7 +192,7 @@ def createTransformFunc(ptPairs, direction):
     transformFunc = lambda x: np.array((M * np.vstack((np.matrix(x).reshape(3, 1), 1)))[0:3, :].reshape(1, 3))[0]
 
     """
-    Breakdown of function. Here's an example of transforming [95, -35, 530] cam which is [5, 15, 15] in robot coordinates
+    Breakdown of function. Here's an example of transforming [95, -35, 530] cam which is [5, 15, 15] in the robot grid
 
     First:
     [95, -35, 530]
@@ -236,7 +263,7 @@ def rotatePoints(origin, points, theta):
     def rotatePoint(centerPoint, point, angle):
         """Rotates a point around another centerPoint. Angle is in degrees.
         Rotation is counter-clockwise"""
-        temp_point = point[0]-centerPoint[0], point[1] - centerPoint[1]
+        temp_point = point[0] - centerPoint[0], point[1] - centerPoint[1]
         temp_point = (temp_point[0] * math.cos(angle) - temp_point[1] * math.sin(angle),
                       temp_point[0] * math.sin(angle) + temp_point[1] * math.cos(angle))
 
@@ -315,7 +342,7 @@ def smoothListGaussian(list1, degree):
 
 
     for i in range(len(smoothed)):
-        smoothing = [0.0 for i in range(len(list1[i]))] # [0.0, 0.0, 0.0]
+        smoothing = [0.0 for i in range(len(list1[i]))]  # [0.0, 0.0, 0.0]
         for e, w in zip(list1[i:i + window], weight):
             smoothing = smoothing + np.multiply(e, w)
 
@@ -452,7 +479,7 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exit
         # Check if the robot has hit the object by seeing if the robots height is less than before, as per the camera
         robCoord = robot.getCoords()
         heightDiff = robCoord[2] - lastHeight
-        print("heightdiff", heightDiff, "lastHeight", lastHeight, "currheight", robCoord[2], "sentHeight: ", robot.coord[2])
+
         if heightDiff >= -1.1 and i > 4:
             smallStepCount += 1
         else:
@@ -620,3 +647,6 @@ def getRelativePosition(camPos, robRelative, ptPairs):
     posCam += staticErr
 
     return posCam
+
+
+

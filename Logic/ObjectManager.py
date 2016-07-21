@@ -1,3 +1,30 @@
+"""
+This software was designed by Alexander Thiel
+Github handle: https://github.com/apockill
+
+The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
+It is completely open source, so feel free to take it and use it as a base for your own projects.
+
+If you make any cool additions, feel free to share!
+
+
+License:
+    This file is part of uArmCreatorStudio.
+    uArmCreatorStudio is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    uArmCreatorStudio is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
+"""
+__author__ = "Alexander Thiel"
+
 import json
 import os
 import sys   # For getting size of oan object
@@ -79,8 +106,14 @@ class ObjectManager:
         newObject.save(self.__getDirectory(newObject))
 
     def refreshGroups(self):
-        # Creates a TrackableGroup for every uniqe tag every object has, and replaces old TrackableGroups
+        """
+        Creates a TrackableGroup for every uniqe tag every object has, and replaces old TrackableGroups.
+
+        This should only be used by the GUI when a group is added or deleted, or when a vision object is deleted.
+        """
+
         printf("Refreshing Groups!")
+
 
         # Remove existing groups from self.__objects
         for obj in self.__objects[:]:
@@ -101,7 +134,7 @@ class ObjectManager:
 
             for tag in tags:
                 # Make sure groups has the appropriate keys with arrays for each tag
-                if not tag in groups: groups[tag] = []
+                if tag not in groups: groups[tag] = []
 
                 # Add the object to each tag
                 groups[tag].append(obj)  # Change to be "obj"
@@ -184,16 +217,16 @@ class ObjectManager:
         self.__objects = sorted(self.__objects, key=lambda obj: obj.name)
         return True
 
-    def __getDirectory(self, object):
+    def __getDirectory(self, obj):
         # Creates the directory name for the object with the propper formatting
         directory = self.__directory
-        if isinstance(object, TrackableObject):
+        if isinstance(obj, TrackableObject):
             directory += "Trackable"
 
-        if isinstance(object, MotionPath):
+        if isinstance(obj, MotionPath):
             directory += "MotionPath"
 
-        directory += " " + object.name + "\\"
+        directory += " " + obj.name + "\\"
         return directory
 
 
@@ -487,9 +520,6 @@ class TrackableGroupObject(Trackable):
 
     def equalTo(self, otherObjectID):
         return otherObjectID in self.__memberIDs
-
-
-
 
 
 

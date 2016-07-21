@@ -1,3 +1,31 @@
+"""
+This software was designed by Alexander Thiel
+Github handle: https://github.com/apockill
+
+The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
+It is completely open source, so feel free to take it and use it as a base for your own projects.
+
+If you make any cool additions, feel free to share!
+
+
+License:
+    This file is part of uArmCreatorStudio.
+    uArmCreatorStudio is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    uArmCreatorStudio is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
+"""
+__author__ = "Alexander Thiel"
+
+
 import json         # For saving and loading settings and tasks
 import sys          # For GUI, and overloading the default error handling
 import webbrowser   # For opening the uFactory forums under the "file" menu
@@ -22,38 +50,14 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__()
 
         # This is the format of an empty settings variable. It is filled in self.loadSettings() if settings exist.
-        self.settings       = {
-                                 # LOGIC RELATED SETTINGS
-                                 "robotID":            None,  # COM port of the robot
-
-                                 "cameraID":           None,  # The # of the camera for cv to connect
-
-                                 "motionCalibrations": {"stationaryMovement": None,
-                                                        "activeMovement":     None},
-
-                                 "coordCalibrations":  {"ptPairs":            None,   # Pairs of (Camera, Robot) pts
-                                                        "failPts":            None,   # Coordinate's where calib failed
-                                                        "groundPos":          None},  # The "Ground" pos, in [x,y,z]
-
-                                 # GUI RELATED SETTINGS
-                                 "consoleSettings":    {"wordWrap":           False,  #  ConsoleWidget settings
-                                                        "robot":               True,  #  What gets printed in console
-                                                        "vision":              True,
-                                                        "serial":             False,
-                                                        "interpreter":         True,
-                                                        "script":              True,
-                                                        "gui":                False},
-                                 "lastOpenedFile":      None
-                               }
-
-        # Load settings before any objects are created
-        configExists = self.loadSettings()
 
 
+
+        self.settings = None
         # Init self and objects.
         self.fileName    = None
         self.loadData    = []  #Set when file is loaded. Used to check if the user has changed anything and prompt
-        self.env         = Environment(self.settings)
+        self.env         = Environment()
         self.interpreter = Interpreter(self.env)
 
 
@@ -62,9 +66,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.scriptToggleBtn = QtWidgets.QAction(QtGui.QIcon(Paths.run_script), 'Run', self)
         self.videoToggleBtn  = QtWidgets.QAction(QtGui.QIcon(Paths.play_video), 'Video', self)
         self.centralWidget   = QtWidgets.QStackedWidget()
-        self.controlPanel    = ControlPanelGUI.ControlPanel(self.env, self.settings, parent=self)
+        self.controlPanel    = ControlPanelGUI.ControlPanel(self.env, parent=self)
         self.cameraWidget    = CameraWidget(self.env.getVStream().getFilteredWithID, parent=self)
-        self.consoleWidget   = Console(self.env.getSettings(), parent=self)
+        self.consoleWidget   = Console(self.env.getSetting('consoleSettings'), parent=self)
 
 
         # Connect the consoleWidget with the global print function, so the consoleWidget prints everything
@@ -78,20 +82,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         # If any file is specified in "lastOpenedFile" then load it.
-        if self.settings["lastOpenedFile"] is not None:
-            self.loadTask(filename=self.settings["lastOpenedFile"])
-
-
-        # If there is no settings File, then open the settings window first thing
-        if not configExists:
-            self.openSettings()
+        if self.env.getSetting("lastOpenedFile") is not None:
+            self.loadTask(filename=self.env.getSetting("lastOpenedFile"))
 
     def initUI(self):
         # Create "File" Menu
         menuBar       = self.menuBar()
 
         # Connect any slots that need connecting
-        self.consoleWidget.settingsChanged.connect(lambda: self.setSettings(self.consoleWidget.settings))
+        self.consoleWidget.settingsChanged.connect(lambda: self.env.updateSettings("consoleSettings",
+                                                                                   self.consoleWidget.settings))
 
         # Create File Menu and actions
         fileMenu      = menuBar.addMenu('File')
@@ -154,8 +154,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.scriptToggleBtn.setShortcut('Ctrl+R')
 
 
-        self.scriptToggleBtn.triggered.connect( lambda: self.setScript("toggle"))
-        self.videoToggleBtn.triggered.connect(  lambda: self.setVideo("toggle"))
+        self.scriptToggleBtn.triggered.connect(self.toggleScript)
+        self.videoToggleBtn.triggered.connect(lambda: self.setVideo("toggle"))
         settingsBtn.triggered.connect(self.openSettings)
         calibrateBtn.triggered.connect(self.openCalibrations)
         objMngrBtn.triggered.connect(self.openObjectManager)
@@ -193,72 +193,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.show()
 
 
-    def setSettings(self, newSettings):
-        """
-        Apply any new settings that have been changed. If they've been changed, also save the program.
-        """
-
-        # Create a quick function that will check if a setting has been changed. If it has, an action will be taken.
-        isNew = lambda key: (key in newSettings) and (newSettings[key] is not None) and \
-                            (not self.settings[key] == newSettings[key])
-
-        # If settings change, then save the changes to the config file
-        settingsChanged = False
-
-
-        # If camera has been changed
-        if isNew("cameraID"):
-            settingsChanged = True
-            printf("Changing cameraID from ",
-                  self.settings["cameraID"], "to", newSettings["cameraID"])
-            self.settings["cameraID"] = newSettings["cameraID"]
-
-
-        # If a new robot has been set, set it and reconnect to the new robot.
-        if isNew("robotID"):
-            settingsChanged = True
-            printf("Changing robotID from ",
-                  self.settings["robotID"], "to", newSettings["robotID"])
-            self.settings["robotID"] = newSettings["robotID"]
-
-
-
-        # If a new file has been opened, change the Settings file to reflect that so next time GUI is opened, so is file
-        if isNew("lastOpenedFile"):
-            settingsChanged = True
-            printf("Loading file ", str(newSettings["lastOpenedFile"]))
-            self.settings["lastOpenedFile"] = newSettings["lastOpenedFile"]
-            # self.loadTask(filename=self.settings["lastOpenedFile"])
-
-
-        # If a calibration of type Motion has been changed, reflect this in the settings
-        if isNew("motionCalibrations"):
-            settingsChanged = True
-            printf("Updating Motion Calibrations!")
-            self.settings["motionCalibrations"] = newSettings["motionCalibrations"]
-
-        # If coordCalibrations are diferent, change the settings
-        if isNew("coordCalibrations"):
-            settingsChanged = True
-            self.settings["coordCalibrations"] = newSettings["coordCalibrations"]
-
-
-        # If the console has changed settings, update this
-        if isNew("consoleSettings"):
-            settingsChanged = True
-            printf('console settings changed')
-            self.settings["consoleSettings"] = dict(newSettings["consoleSettings"])
-
-        # Save settings to a config file
-        if settingsChanged:
-            self.saveSettings()
 
     def setVideo(self, state):
-        # Change the state of the videostream. The state can be play, pause, or simply "toggle
+        """
+        Change the state of the videostream. The state can be play, pause, or simply "toggle
+        :param state: "play", "pause", or "toggle"
+        :return:
+        """
+
         printf("Setting video to state: ", state)
 
         # Don't change anything if no camera ID has been added yet
-        if self.settings["cameraID"] is None: return
+        cameraID = self.env.getSetting("cameraID")
+        if cameraID is None: return
 
 
         if state == "toggle":
@@ -271,12 +218,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         vStream = self.env.getVStream()
+
         if state == "play":
             # Make sure the videoStream object has a camera, or if the cameras changed, change it
-            if not vStream.connected() or not vStream.cameraID == self.settings["cameraID"]:
-                success = vStream.setNewCamera(self.settings["cameraID"])
-            # if not vStream.cameraID == self.settings["cameraID"]"
-
+            if not vStream.connected() or not vStream.cameraID == cameraID:
+                vStream.setNewCamera(cameraID)
 
             self.cameraWidget.play()
             vStream.setPaused(False)
@@ -289,16 +235,13 @@ class MainWindow(QtWidgets.QMainWindow):
             self.videoToggleBtn.setIcon(QtGui.QIcon(Paths.play_video))
             self.videoToggleBtn.setText("Play")
 
-    def setScript(self, state):
+
+    def toggleScript(self):
         # Run/pause the main script
-
-        if state == "toggle":
-            if self.interpreter.threadRunning():
-                self.endScript()
-            else:
-                self.startScript()
-            return
-
+        if self.interpreter.threadRunning():
+            self.endScript()
+        else:
+            self.startScript()
 
     def startScript(self):
         if self.interpreter.threadRunning():
@@ -311,7 +254,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         # Load the script, and get any relevant errors
-        errors = self.interpreter.loadScript(self.controlPanel.getSaveData(), self.env)
+        errors = self.interpreter.loadScript(self.controlPanel.getSaveData())
 
 
         # If there were during loading, present the user with the option to continue anyways
@@ -358,13 +301,14 @@ class MainWindow(QtWidgets.QMainWindow):
         # Turn off the gripper, just in case. Do this AFTER interpreter ends, so as to not use Serial twice...
         robot.setGripper(False)
         robot.setActiveServos(all=False)
-        # Make sure vision filters are stopped
 
+        # Make sure vision filters are stopped
         vision.endAllTrackers()
 
 
         self.scriptToggleBtn.setIcon(QtGui.QIcon(Paths.run_script))
         self.scriptToggleBtn.setText("Run")
+
 
 
     def openSettings(self):
@@ -383,16 +327,17 @@ class MainWindow(QtWidgets.QMainWindow):
             return
 
         printf("Apply clicked, applying settings...")
-        self.setSettings(settingsWindow.getSettings())
+        self.env.updateSettings("robotID", settingsWindow.getRobotSetting())
+        self.env.updateSettings("cameraID", settingsWindow.getCameraSetting())
 
         vStream = self.env.getVStream()
-        vStream.setNewCamera(self.settings['cameraID'])
+        vStream.setNewCamera(self.env.getSetting('cameraID'))
 
 
         # If the robots not connected, attempt to reestablish connection
         robot   = self.env.getRobot()
         if not robot.connected():
-            robot.setUArm(self.settings['robotID'])
+            robot.setUArm(self.env.getSetting('robotID'))
 
 
 
@@ -405,12 +350,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.endScript()
         self.setVideo("pause")
 
-        calibrationsWindow = CalibrateWindow(self.env, parent=self)
+        coordSettings = self.env.getSetting("coordCalibrations")
+        motionSettings = self.env.getSetting("motionCalibrations")
+        calibrationsWindow = CalibrateWindow(coordSettings, motionSettings, self.env, parent=self)
         accepted           = calibrationsWindow.exec_()
 
         if accepted:
+            # Update all the settings
             printf("Apply clicked, applying calibrations...")
-            self.setSettings(calibrationsWindow.getSettings())
+
+            # Update the settings
+            self.env.updateSettings("coordCalibrations", calibrationsWindow.getCoordSettings())
+            self.env.updateSettings("motionCalibrations", calibrationsWindow.getMotionSettings())
+
         else:
             printf("Cancel clicked, no calibrations applied.")
 
@@ -432,6 +384,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setVideo("play")
 
 
+
     def newTask(self, promptSave):
         if promptSave:
             cancelPressed = self.promptSave()
@@ -450,7 +403,7 @@ class MainWindow(QtWidgets.QMainWindow):
             filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save Task", "MyTask", "Task (*.task)")
             if filename == "": return False  #If user hit cancel
             self.fileName = filename
-            self.setSettings({'lastOpenedFile': self.fileName})
+            self.env.updateSettings("lastOpenedFile", self.fileName)
 
 
         # Update the save file
@@ -486,7 +439,7 @@ class MainWindow(QtWidgets.QMainWindow):
         except IOError:
             printf("ERROR: Task file ", filename, "not found!")
             self.fileName = None
-            self.setSettings({"lastOpenedFile": None})
+            self.env.updateSettings("lastOpenedFile", None)
             return
 
 
@@ -498,7 +451,7 @@ class MainWindow(QtWidgets.QMainWindow):
         try:
             self.controlPanel.loadData(deepcopy(self.loadData))
             self.fileName = filename
-            self.setSettings({"lastOpenedFile": filename})
+            self.env.updateSettings("lastOpenedFile", filename)
             self.setWindowTitle(self.programTitle + '      ' + self.fileName)
         except Exception as e:
             printf("ERROR: Could not load task: ", e)
@@ -507,27 +460,6 @@ class MainWindow(QtWidgets.QMainWindow):
                                     filename + "\n\n The following error occured: " + str(e), QtWidgets.QMessageBox.Ok)
 
 
-    def saveSettings(self):
-        printf("Saving Settings")
-        json.dump(self.settings, open(Paths.settings_txt, 'w'), sort_keys=False, indent=3, separators=(',', ': '))
-
-    def loadSettings(self):
-        # Load the settings config and set them
-        printf("Loading Settings")
-
-        try:
-            newSettings = json.load(open(Paths.settings_txt))
-            # printf("Loading settings: ", newSettings, "...")
-            self.setSettings(newSettings)
-            return True
-        except IOError as e:
-            printf("No settings file detected. Using default values.")
-            return False
-        except ValueError as e:
-            printf("Error while loading an existing settings file. Using default values.")
-            QtWidgets.QMessageBox.question(self, 'Error', "Could not load existing settings file."
-                                                          "\nCreating a new one.", QtWidgets.QMessageBox.Ok)
-            return False
 
     def promptSave(self):
         # Prompts the user if they want to save, but only if they've changed something in the program
@@ -538,7 +470,7 @@ class MainWindow(QtWidgets.QMainWindow):
             printf("Prompting user to save changes")
             reply = QtWidgets.QMessageBox.question(self, 'Warning',
                                     "You have unsaved changes. Would you like to save before continuing?",
-                                    QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No |QtWidgets.QMessageBox.Cancel,
+                                    QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No | QtWidgets.QMessageBox.Cancel,
                                     QtWidgets.QMessageBox.Yes)
 
             if reply == QtWidgets.QMessageBox.Yes:
@@ -552,7 +484,6 @@ class MainWindow(QtWidgets.QMainWindow):
             if reply == QtWidgets.QMessageBox.Cancel:
                 printf("User canceled- aborting close!")
                 return True
-
 
     def closeEvent(self, event):
         # When window is closed, prompt for save, close the video stream, and close the control panel (thus script)
@@ -590,8 +521,8 @@ class SettingsWindow(QtWidgets.QDialog):
 
     def __init__(self, parent):
         super(SettingsWindow, self).__init__(parent)
-        self.settings  = {"robotID": None, "cameraID": None}
-
+        self.robSetting = None  # New robotID
+        self.camSetting = None  # New cameraID
         # Init UI Globals
         self.cameraButtonGroup = None  # Radio buttons require a "group"
         self.robotButtonGroup  = None
@@ -716,10 +647,10 @@ class SettingsWindow(QtWidgets.QDialog):
 
 
     def camButtonClicked(self):
-        self.settings["cameraID"] = self.cameraButtonGroup.checkedId()
+        self.camSetting = self.cameraButtonGroup.checkedId()
 
     def robButtonClicked(self):
-        self.settings["robotID"] = str(self.robotButtonGroup.checkedButton().text())
+        self.robSetting = str(self.robotButtonGroup.checkedButton().text())
 
 
     def clearLayout(self, layout):
@@ -727,9 +658,11 @@ class SettingsWindow(QtWidgets.QDialog):
             child = layout.takeAt(0)
             child.widget().deleteLater()
 
-    def getSettings(self):
-        return self.settings
+    def getRobotSetting(self):
+        return self.robSetting
 
+    def getCameraSetting(self):
+        return self.camSetting
 
 
 ##########    OTHER    ##########

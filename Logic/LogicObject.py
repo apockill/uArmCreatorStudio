@@ -1,12 +1,38 @@
+"""
+This software was designed by Alexander Thiel
+Github handle: https://github.com/apockill
+
+The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
+It is completely open source, so feel free to take it and use it as a base for your own projects.
+
+If you make any cool additions, feel free to share!
 
 
+License:
+    This file is part of uArmCreatorStudio.
+    uArmCreatorStudio is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    uArmCreatorStudio is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
-    This is a superclass for Command and Event, and thus every command and event out there.
-    It contains functions that pertain to both, mainly related to pulling something from the environment
-    and returning errors if that thing was not valid, thus appending an "error" to self.errors
-"""
+__author__ = "Alexander Thiel"
+
+
 
 class LogicObject:
+    """
+        This is a superclass for Command and Event, and thus every command and event out there.
+        It contains functions that pertain to both, mainly related to pulling something from the environment
+        and returning errors if that thing was not valid, thus appending an "error" to self.errors
+    """
     def __init__(self):
         self.errors = []
 

@@ -31,16 +31,18 @@ import video
 import common
 from plane_tracker import PlaneTracker
 from video import presets
-import time
 
 # Simple model of a house - cube with a triangular prism "roof"
-ar_verts = np.float32([[0, 0, 0], [0, 1, 0], [1, 1, 0], [1, 0, 0],
-                       [0, 0, 1], [0, 1, 1], [1, 1, 1], [1, 0, 1],
-                       [0, 0.5, 2], [1, 0.5, 2]])
-ar_edges = [(0, 1), (1, 2), (2, 3), (3, 0),
-            (4, 5), (5, 6), (6, 7), (7, 4),
-            (0, 4), (1, 5), (2, 6), (3, 7),
-            (4, 8), (5, 8), (6, 9), (7, 9), (8, 9)]
+# ar_verts = np.float32([[0, 0, 0], [0, 1, 0], [1, 1, 0], [1, 0, 0],
+#                        [0, 0, 1], [0, 1, 1], [1, 1, 1], [1, 0, 1],
+#                        [0, 0.5, 2], [1, 0.5, 2]])
+# ar_edges = [(0, 1), (1, 2), (2, 3), (3, 0),
+#             (4, 5), (5, 6), (6, 7), (7, 4),
+#             (0, 4), (1, 5), (2, 6), (3, 7),
+#             (4, 8), (5, 8), (6, 9), (7, 9), (8, 9)]
+ar_verts = np.float32([[.5, .5, 1], [.5, .5, 0], [1, .5, 0], [.5, .5, 0], [.5, 1, .5]])
+ar_edges = [(0, 1), (1, 2), (2, 3), (3, 4)]
+
 
 class App:
     def __init__(self, src):
@@ -50,17 +52,13 @@ class App:
         self.tracker = PlaneTracker()
 
         cv2.namedWindow('plane')
-        cv2.createTrackbar('focal', 'plane', -50, 50, common.nothing)
+        cv2.createTrackbar('focal', 'plane', 25, 50, common.nothing)
         self.rect_sel = common.RectSelector('plane', self.on_rect)
 
     def on_rect(self, rect):
         self.tracker.add_target(self.frame, rect)
 
     def run(self):
-        filterFnt    = cv2.FONT_HERSHEY_PLAIN
-        filterColor  = (255, 255, 255)
-        desiredWidth = 175
-
         while True:
             playing = not self.paused and not self.rect_sel.dragging
             if playing or self.frame is None:
@@ -71,28 +69,12 @@ class App:
 
             vis = self.frame.copy()
             if playing:
-
                 tracked = self.tracker.track(self.frame)
-
-                for index, tr in enumerate(tracked):
-                    quad = np.int32(tr.quad)
-                    cv2.polylines(vis, [quad], True, (255, 255, 255), 2)
+                for tr in tracked:
+                    cv2.polylines(vis, [np.int32(tr.quad)], True, (255, 255, 255), 2)
                     for (x, y) in np.int32(tr.p1):
                         cv2.circle(vis, (x, y), 2, (255, 255, 255))
-
-                    rvec, tvec = self.draw_overlay(vis, tr)
-                    rotation = 180 + rvec[2] * 180/3.141597
-
-                    # Scale the font to be the exact width of the average side length of the object
-                    description   = "X: " + str(int(tvec[0])) + " Y: " + str(int(tvec[1])) + " Z: " + str(int(tvec[2]))\
-                                    + " R: " + str(int(rotation))
-                    baseLineWidth = cv2.getTextSize(description, filterFnt, 1, 1)[0][0]
-                    # desiredWidth  = max([np.linalg.norm(quad[1] - quad[0]), np.linalg.norm(quad[2] - quad[1])])
-
-                    scaleFactor   = 1.0 # (desiredWidth / baseLineWidth) * 650 / tvec[2]
-
-                    # Draw the name of the object
-                    cv2.putText(vis, description, tuple(quad[1]),  filterFnt, scaleFactor, color=filterColor, thickness=2)
+                    self.draw_overlay(vis, tr)
 
             self.rect_sel.draw(vis)
             cv2.imshow('plane', vis)
@@ -105,47 +87,20 @@ class App:
                 break
 
     def draw_overlay(self, vis, tracked):
-
         x0, y0, x1, y1 = tracked.target.rect
-
-        # Set the coordinate system for the object, and center the object around 0 in that coord system
-        width  = (x1 - x0) / 2
-        height = (y1 - y0) / 2
-        quad_3d = np.float32([[    -width,      -height, 0],
-                              [     width,      -height, 0],
-                              [     width,       height, 0],
-                              [    -width,       height, 0]])
-        print(cv2.getTrackbarPos('focal', 'plane'))
+        quad_3d = np.float32([[x0, y0, 0], [x1, y0, 0], [x1, y1, 0], [x0, y1, 0]])
         fx = 0.5 + cv2.getTrackbarPos('focal', 'plane') / 50.0
-
         h, w = vis.shape[:2]
-
-        K = np.float64([[fx * w,      0, 0.5 * (w - 1)],
-                        [     0, fx * w, 0.5 * (h - 1)],
-                        [   0.0,    0.0,          1.0]])
-
+        K = np.float64([[fx*w, 0, 0.5*(w-1)],
+                        [0, fx*w, 0.5*(h-1)],
+                        [0.0,0.0,      1.0]])
         dist_coef = np.zeros(4)
         ret, rvec, tvec = cv2.solvePnP(quad_3d, tracked.quad, K, dist_coef)
-
-        # print(rvec)
-
-        # center = [tvec[0] + math.cos(rvec[0])*width, math.sin(rvec[1])*width, tvec[2]]
-        # print(quad_3d)
-        return rvec, tvec
-
-
-        # print('rvec', rvec, '\ttvec', tvec)
-        
-
         verts = ar_verts * [(x1-x0), (y1-y0), -(x1-x0)*0.3] + (x0, y0, 0)
         verts = cv2.projectPoints(verts, rvec, tvec, K, dist_coef)[0].reshape(-1, 2)
-
-
         for i, j in ar_edges:
             (x0, y0), (x1, y1) = verts[i], verts[j]
             cv2.line(vis, (int(x0), int(y0)), (int(x1), int(y1)), (255, 255, 0), 2)
-
-
 
 
 if __name__ == '__main__':
@@ -155,5 +110,5 @@ if __name__ == '__main__':
     try:
         video_src = sys.argv[1]
     except:
-        video_src = 1
+        video_src = 0
     App(video_src).run()

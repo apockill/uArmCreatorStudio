@@ -1,12 +1,36 @@
+"""
+This software was designed by Alexander Thiel
+Github handle: https://github.com/apockill
+
+The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
+It is completely open source, so feel free to take it and use it as a base for your own projects.
+
+If you make any cool additions, feel free to share!
+
+
+License:
+    This file is part of uArmCreatorStudio.
+    uArmCreatorStudio is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    uArmCreatorStudio is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
+"""
+__author__ = "Alexander Thiel"
+
 from PyQt5        import QtGui, QtCore, QtWidgets
 from threading    import RLock
 from Logic.Global import printf
 from Logic        import Paths
 
 import ast  # To check if a statement is python parsible, for evals
-"""
-This module is for storing general purpose widgets
-"""
 
 class LineTextWidget(QtWidgets.QFrame):
     """
@@ -25,10 +49,11 @@ class LineTextWidget(QtWidgets.QFrame):
             self.edit = edit
 
         def update(self, *args):
-            '''
+            """
             Updates the number bar to display the current set of numbers.
             Also, adjusts the width of the number bar if necessary.
-            '''
+            """
+
             # The + 4 is used to compensate for the current line being bold.
             width = self.fontMetrics().width(str(self.highest_line)) + 4
             if self.width() != width:
@@ -55,7 +80,7 @@ class LineTextWidget(QtWidgets.QFrame):
 
                 # Check if the position of the block is out side of the visible
                 # area.
-                if position.y() > page_bottom: #gt; page_bottom:
+                if position.y() > page_bottom:
                     break
 
                 # We want the line number for the selected line to be bold.
@@ -68,7 +93,9 @@ class LineTextWidget(QtWidgets.QFrame):
 
                 # Draw the line number right justified at the y position of the
                 # line. 3 is a magic padding number. drawText(x, y, text).
-                painter.drawText(self.width() - font_metrics.width(str(line_count)) - 3, round(position.y()) - contents_y + font_metrics.ascent(), str(line_count))
+                painter.drawText(self.width() - font_metrics.width(str(line_count)) - 3,
+                                 round(position.y()) - contents_y + font_metrics.ascent(),
+                                 str(line_count))
 
                 # Remove the bold style if it was set previously.
                 if bold:
@@ -105,13 +132,14 @@ class LineTextWidget(QtWidgets.QFrame):
         self.edit.installEventFilter(self)
         self.edit.viewport().installEventFilter(self)
 
-    def eventFilter(self, object, event):
+    # noinspection PyArgumentList
+    def eventFilter(self, obj, event):
         # Update the line numbers for all events on the text edit and the viewport.
         # This is easier than connecting all necessary singals.
-        if object in (self.edit, self.edit.viewport()):
+        if obj in (self.edit, self.edit.viewport()):
             self.number_bar.update()
             return False
-        return QtWidgets.QFrame.eventFilter(object, event)
+        return QtWidgets.QFrame.eventFilter(obj, event)
 
     def setText(self, plainText):
         self.edit.setPlainText(plainText)
@@ -126,7 +154,7 @@ class LineTextWidget(QtWidgets.QFrame):
 class ScriptWidget(QtWidgets.QWidget):
     """This class is for making a text editor that will help you write python code"""
 
-    documentation = "" +\
+    documentation = "" \
 """
     Using this scripting module, the possibilities are endless. You can directly inject python code into your program
 without a hassle. You can use any of the libraries and modules that are built into this software, real time, and
@@ -177,7 +205,7 @@ Examples scripts using robot
     robot.setSpeed(10)              # Sets speed for all future moves using robot.setPos. Speed set in cm/s
     robot.connected()               # Returns True if the robot is connected and working, False if not
 
-    robot.getAngles()               # Returns the current angles of the robots servos, like [servo0, servo1, servo2, servo3]
+    robot.getAngles()               # Returns the current angles of the robots servos: [servo0, servo1, servo2, servo3]
     robot.getCoords()               # Returns the current coordinate of the robot in [x, y, z] format
     robot.getTipSensor()            # Returns True or False, if the tip sensor on the robot is being pressed or not
     robot.getMoving()               # Returns True if the robot is currently moving
@@ -185,7 +213,7 @@ Examples scripts using robot
 
 
 Example scripts using vision
-    # The first step of using vision is getting a trackable object. Make an object in Resources then access it by name here.
+    # The first step of using vision is getting a trackable object. Make an object in Resources then access it by name.
     trackableObject = resources.getObject("Ace of Spades")
 
 
@@ -326,30 +354,7 @@ Any variable created in the scope of the script command can be used in any other
 
     def verifyCode(self):
         # Checks if the users code is valid, and updates self.applyBtn
-        edit  = self.textEdit.getTextEdit()
         code  = self.textEdit.getText()
-
-        # print("Running check")
-        # print("\t" in code)
-        # newCode = code[:]
-        # newCode = newCode.replace("\t", "    ")
-        #
-        # if not newCode == code:
-        #     edit.textChanged.disconnect()
-        #     cursor    = edit.textCursor()
-        #     print("position before: ", cursor.position())
-        #     currPosition = cursor.position() + 3
-        #     edit.replace(code, newCode)
-        #
-        #     cursor.setPosition(currPosition)
-        #     print("position after: ", cursor.position())
-        #
-        #     edit.textChanged.connect(self.verifyCode)
-        #
-        #     # cursor = QtGui.QCursor()
-        #     edit.setTextCursor(cursor)
-
-
 
         error = ""
 
@@ -371,13 +376,13 @@ class Console(QtWidgets.QWidget):
     # Have clear button, settings (for which classes to display responses from), exec stuff,
     settingsChanged = QtCore.pyqtSignal()
 
-    def __init__(self, settings, parent):
+    def __init__(self, consoleSettings, parent):
         super(Console, self).__init__(parent)
         # Since prints might come from different threads, lock before adding stuff to self.text
         self.printLock    = RLock()
         self.execFunction = None
         self.printBuffer  = []  # A buffer of strings to print
-        self.settings     = settings.copy()
+        self.settings     = consoleSettings
 
 
 
@@ -388,7 +393,7 @@ class Console(QtWidgets.QWidget):
         # Set up the refresh timer
         self.refreshTimer = QtCore.QTimer()
         self.refreshTimer.timeout.connect(self.__refreshBuffer)
-        self.refreshTimer.start(1000.0/5)  # 1000 / fps
+        self.refreshTimer.start(1000.0 / 5)  # 1000 / fps
 
         self.initUI()
 
@@ -403,7 +408,8 @@ class Console(QtWidgets.QWidget):
         monospace.setStyleHint(QtGui.QFont.TypeWriter)
         self.text.setFont(monospace)
         self.text.setReadOnly(True)
-        if not self.settings["consoleSettings"]["wordWrap"]:
+
+        if not self.settings["wordWrap"]:
             self.text.setWordWrapMode(QtGui.QTextOption.NoWrap)
 
 
@@ -450,7 +456,6 @@ class Console(QtWidgets.QWidget):
         Choose whether or not this string comes from a class that should be printed or not. This is set in the settings.
         """
         with self.printLock:
-            settings = self.settings["consoleSettings"]
 
             if len(classString) == 0:
                 return "Output"
@@ -460,44 +465,44 @@ class Console(QtWidgets.QWidget):
 
 
             # Print anything from the Robot class
-            if classString in "Robot":
-                if settings["robot"]:
+            if "Robot" in classString:
+                if self.settings["robot"]:
                     return "Robot"
                 return ""
 
             # Print anything from the Vision class
-            if  classString in "Vision":
-                if settings["vision"]:
+            if "Vision" in classString:
+                if self.settings["vision"]:
                     return "Vision"
                 return ""
 
             # Print any serial communication
-            if classString in "Device":
-                if settings["serial"]:
+            if "Device" in classString:
+                if self.settings["serial"]:
                     return "Communication"
                 return ""
 
             # Print anything from Interpreter
-            if classString in "Interpreter":
-                if settings["interpreter"]:
+            if "Interpreter" in classString:
+                if self.settings["interpreter"]:
                     return "Interpreter"
                 return ""
 
             # Print anything from Commands.py
             if ("Command" in classString) and not ("GUI" in classString):
-                if settings["script"]:
+                if self.settings["script"]:
                     return "Script"
                 return ""
 
             # Print anything else that hasn't been specified
-            if settings["gui"]:
+            if self.settings["gui"]:
                 classString = "GUI"
                 return classString
 
             return ""
 
     def __openSettings(self):
-        set = QtWidgets.QDialog()
+        window = QtWidgets.QDialog()
 
         def addRow(left, right):
             right.setFixedWidth(100)
@@ -505,38 +510,36 @@ class Console(QtWidgets.QWidget):
             row.addStretch(1)
             row.addWidget(left)
             row.addWidget(right)
-            set.content.addLayout(row)
+            window.content.addLayout(row)
 
         # Create the apply/cancel buttons, connect them, and format them
-        set.okBtn = QtWidgets.QPushButton('Ok')
-        set.okBtn.setMaximumWidth(100)
-        set.okBtn.clicked.connect(set.accept)
+        window.okBtn = QtWidgets.QPushButton('Ok')
+        window.okBtn.setMaximumWidth(100)
+        window.okBtn.clicked.connect(window.accept)
 
 
         # Create a content box for the command to fill out parameters and GUI elements
-        set.content    = QtWidgets.QVBoxLayout()
-        set.content.setContentsMargins(20, 10, 20, 10)
+        window.content    = QtWidgets.QVBoxLayout()
+        window.content.setContentsMargins(20, 10, 20, 10)
 
 
         # Now that the window is 'dressed', add "Cancel" and "Apply" buttons
         buttonRow = QtWidgets.QHBoxLayout()
         buttonRow.addStretch(1)
-        buttonRow.addWidget(set.okBtn)
+        buttonRow.addWidget(window.okBtn)
 
 
         # Create the main vertical layout, add everything to it
-        set.mainVLayout = QtWidgets.QVBoxLayout()
-        set.mainVLayout.addLayout(set.content)
-        set.mainVLayout.addStretch(1)
+        window.mainVLayout = QtWidgets.QVBoxLayout()
+        window.mainVLayout.addLayout(window.content)
+        window.mainVLayout.addStretch(1)
 
 
         # Set the main layout and general window parameters
-         #set.setMinimumWidth(350)
-        # set.setMinimumHeight(350)
-        set.setLayout(set.mainVLayout)
-        set.setWindowTitle("Console Settings")
-        set.setWindowIcon(QtGui.QIcon(Paths.settings))
-        set.setWhatsThis("Here you can change settings about what you see in the console")
+        window.setLayout(window.mainVLayout)
+        window.setWindowTitle("Console Settings")
+        window.setWindowIcon(QtGui.QIcon(Paths.settings))
+        window.setWhatsThis("Here you can change settings about what you see in the console")
 
 
         # Dress the base window (this is where the child actually puts the content into the widget)
@@ -550,48 +553,48 @@ class Console(QtWidgets.QWidget):
         scriptLbl = QtWidgets.QLabel("Script Logs ")
         guiLbl    = QtWidgets.QLabel("GUI Logs ")
 
-        set.wrapChk   = QtWidgets.QCheckBox()
-        set.robotChk  = QtWidgets.QCheckBox()   # Show prints from robot class
-        set.visionChk = QtWidgets.QCheckBox()   # Show prints from vision class
-        set.comChk    = QtWidgets.QCheckBox()   # Show prints from communication protocol
-        set.interpChk = QtWidgets.QCheckBox()   # Show prints from Interpreter (Important!)
-        set.scriptChk = QtWidgets.QCheckBox()   # Show prints from GUI Elements
-        set.guiChk    = QtWidgets.QCheckBox()
+        window.wrapChk   = QtWidgets.QCheckBox()
+        window.robotChk  = QtWidgets.QCheckBox()   # Show prints from robot class
+        window.visionChk = QtWidgets.QCheckBox()   # Show prints from vision class
+        window.comChk    = QtWidgets.QCheckBox()   # Show prints from communication protocol
+        window.interpChk = QtWidgets.QCheckBox()   # Show prints from Interpreter (Important!)
+        window.scriptChk = QtWidgets.QCheckBox()   # Show prints from GUI Elements
+        window.guiChk    = QtWidgets.QCheckBox()
 
-        set.wrapChk  .setChecked(self.settings["consoleSettings"]["wordWrap"])
-        set.robotChk .setChecked(self.settings["consoleSettings"]["robot"])
-        set.visionChk.setChecked(self.settings["consoleSettings"]["vision"])
-        set.comChk   .setChecked(self.settings["consoleSettings"]["serial"])
-        set.interpChk.setChecked(self.settings["consoleSettings"]["interpreter"])
-        set.scriptChk.setChecked(self.settings["consoleSettings"]["script"])
-        set.guiChk   .setChecked(self.settings["consoleSettings"]["gui"])
+        window.wrapChk  .setChecked(self.settings["wordWrap"])
+        window.robotChk .setChecked(self.settings["robot"])
+        window.visionChk.setChecked(self.settings["vision"])
+        window.comChk   .setChecked(self.settings["serial"])
+        window.interpChk.setChecked(self.settings["interpreter"])
+        window.scriptChk.setChecked(self.settings["script"])
+        window.guiChk   .setChecked(self.settings["gui"])
 
-        set.content.addWidget(descLbl)
-        addRow(  wrapLbl,   set.wrapChk)
-        addRow( robotLbl,  set.robotChk)
-        addRow( robotLbl,  set.robotChk)
-        addRow(visionLbl, set.visionChk)
-        addRow(   comLbl,    set.comChk)
-        addRow(interpLbl, set.interpChk)
-        addRow(scriptLbl, set.scriptChk)
-        addRow(   guiLbl,    set.guiChk)
+        window.content.addWidget(descLbl)
+        addRow(wrapLbl,   window.wrapChk)
+        addRow(robotLbl,  window.robotChk)
+        addRow(robotLbl,  window.robotChk)
+        addRow(visionLbl, window.visionChk)
+        addRow(comLbl,    window.comChk)
+        addRow(interpLbl, window.interpChk)
+        addRow(scriptLbl, window.scriptChk)
+        addRow(guiLbl,    window.guiChk)
 
-        set.mainVLayout.addLayout(buttonRow)  # Add button after, so hints appear above buttons
+        window.mainVLayout.addLayout(buttonRow)  # Add button after, so hints appear above buttons
 
         # Run the info window and prevent other windows from being clicked while open:
-        accepted = set.exec_()
+        accepted = window.exec_()
 
         if accepted:
-            self.settings["consoleSettings"]["wordWrap"]    = set.wrapChk.isChecked()
-            self.settings["consoleSettings"]["robot"]       = set.robotChk.isChecked()
-            self.settings["consoleSettings"]["vision"]      = set.visionChk.isChecked()
-            self.settings["consoleSettings"]["serial"]      = set.comChk.isChecked()
-            self.settings["consoleSettings"]["interpreter"] = set.interpChk.isChecked()
-            self.settings["consoleSettings"]["script"]      = set.scriptChk.isChecked()
-            self.settings["consoleSettings"]["gui"]         = set.guiChk.isChecked()
+            self.settings["wordWrap"]    = window.wrapChk.isChecked()
+            self.settings["robot"]       = window.robotChk.isChecked()
+            self.settings["vision"]      = window.visionChk.isChecked()
+            self.settings["serial"]      = window.comChk.isChecked()
+            self.settings["interpreter"] = window.interpChk.isChecked()
+            self.settings["script"]      = window.scriptChk.isChecked()
+            self.settings["gui"]         = window.guiChk.isChecked()
 
             # Update the wordWrap settings
-            if self.settings["consoleSettings"]["wordWrap"]:
+            if self.settings["wordWrap"]:
                 self.text.setWordWrapMode(QtGui.QTextOption.WordWrap)
             else:
                 self.text.setWordWrapMode(QtGui.QTextOption.NoWrap)
@@ -599,8 +602,8 @@ class Console(QtWidgets.QWidget):
             self.settingsChanged.emit()
 
         # Make sure QT properly handles the memory after this function ends
-        set.close()
-        set.deleteLater()
+        window.close()
+        window.deleteLater()
 
     def __refreshBuffer(self):
         """
@@ -643,3 +646,12 @@ def centerScreen(self):
         frameGm.moveCenter(centerPoint)
 
         self.move(frameGm.topLeft())
+
+
+
+
+
+
+
+
+

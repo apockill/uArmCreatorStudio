@@ -1,8 +1,38 @@
+"""
+This software was designed by Alexander Thiel
+Github handle: https://github.com/apockill
+
+The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
+It is completely open source, so feel free to take it and use it as a base for your own projects.
+
+If you make any cool additions, feel free to share!
+
+
+License:
+    This file is part of uArmCreatorStudio.
+    uArmCreatorStudio is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    uArmCreatorStudio is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+__author__ = "Alexander Thiel"
+
 import cv2
 from time         import time
 from threading    import Thread, RLock
 from Logic.Global import printf, FpsTimer
 
+
+# noinspection PyArgumentList
 def getConnectedCameras():
     tries = 10
     cameraList = []
@@ -66,7 +96,7 @@ class VideoStream:
             self.startThread()
             self.setCamera = cameraID
         else:
-            printf("ERROR: Tried to set camera while camera was already being set!")
+            printf("Tried to set camera while camera was already being set! Currently setting to ", self.setCamera)
 
     def setPaused(self, value):
         # Tells the main frunction to grab more frames
@@ -171,10 +201,11 @@ class VideoStream:
                 with self.filterLock:
                     filterFrame = self.getFrame()
                     for filterFunc in self.filterList:
-                        filterFunc(filterFrame)
+                        filterFrame = filterFunc(filterFrame)
 
                     # Draw FPS on the screen
-                    cv2.putText(filterFrame, str(int(round(fpsTimer.currentFPS, 0))), (10, 20),  cv2.FONT_HERSHEY_PLAIN, 1.25, color=(255, 255, 255), thickness=2)
+                    fps = str(int(round(fpsTimer.currentFPS, 0)))
+                    cv2.putText(filterFrame, fps, (10, 20),  cv2.FONT_HERSHEY_PLAIN, 1.25, (255, 255, 255), 2)
 
                     self.filterFrame = filterFrame
 
@@ -184,6 +215,7 @@ class VideoStream:
 
         printf("VideoStream Thread has ended")
 
+    # noinspection PyArgumentList
     def __setNewCamera(self, cameraID):
         # Set or change the current camera to a new one
         printf("Setting camera to cameraID ", cameraID)
@@ -219,7 +251,7 @@ class VideoStream:
             self.setCamera  = None
             return False
 
-       #  self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 0)
+        #  self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 0)
 
 
         # Since everything worked, save the new cameraID

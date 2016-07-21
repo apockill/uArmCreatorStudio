@@ -1,3 +1,30 @@
+"""
+This software was designed by Alexander Thiel
+Github handle: https://github.com/apockill
+
+The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
+It is completely open source, so feel free to take it and use it as a base for your own projects.
+
+If you make any cool additions, feel free to share!
+
+
+License:
+    This file is part of uArmCreatorStudio.
+    uArmCreatorStudio is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    uArmCreatorStudio is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
+"""
+__author__ = "Alexander Thiel"
+
 import numpy             as np
 import Logic.RobotVision as rv
 from time                import time
@@ -178,7 +205,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
             return
 
         if isinstance(obj, self.objManager.MOTIONPATH):
-             self.setSelectionPath(obj)
+            self.setSelectionPath(obj)
 
 
     def setSelectionTrackable(self, trackableObj):
@@ -216,7 +243,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         selDescLbl.setText("Name: \n"             + trackableObj.name + "\n\n"
                            "Detail Points: \n"    + str(avgPoints)    + "\n\n"
                            "Orientations: \n"     + str(len(views))   + "\n\n"
-                           "Belongs To Groups:\n" + ''.join(['-'+tag+'\n' for tag in trackableObj.getTags()]) + "\n"
+                           "Belongs To Groups:\n" + ''.join(['-' + tag + '\n' for tag in trackableObj.getTags()]) + "\n"
                            "Image:")
 
         self.selLayout.addWidget(selDescLbl)
@@ -237,7 +264,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         # Create the appropriate description
         groupMembers = ['-' + obj.name + '\n' for obj in trackableGrp.getMembers()]
-        selDescLbl.setText("Name: \n"          + trackableGrp.name+ "\n\n"
+        selDescLbl.setText("Name: \n"          + trackableGrp.name     + "\n\n"
                            "Group Members: \n" + ''.join(groupMembers) + "\n")
 
 
@@ -647,10 +674,10 @@ class MotionRecordWindow(QtWidgets.QDialog):
         remainingWidth = tableSize % numberOfColumns
         for columnNum in range(numberOfColumns):
             if remainingWidth > 0:
-                self.motionTbl.setColumnWidth(columnNum, int(tableSize/numberOfColumns) + 1 )
+                self.motionTbl.setColumnWidth(columnNum, int(tableSize / numberOfColumns) + 1)
                 remainingWidth -= 1
             else:
-                self.motionTbl.setColumnWidth(columnNum, int(tableSize/numberOfColumns) )
+                self.motionTbl.setColumnWidth(columnNum, int(tableSize / numberOfColumns))
 
     def addActionToTable(self, action, loading=False):
         # Add a single motionpath point to the self.motionTbl
@@ -797,7 +824,7 @@ class MotionRecordWindow(QtWidgets.QDialog):
         # Subtract the time from the start to every cell in the array now
         startTime = self.motionPath[0][TIME] - .1
         for i in range(len(self.motionPath)):
-            self.motionPath[i][TIME] = self.motionPath[i][TIME] - startTime
+            self.motionPath[i][TIME] -= startTime
             if self.motionPath[i][TIME] < 0:
                 printf("ERROR: Time is negative in motionPath!")
 
@@ -818,7 +845,7 @@ class MotionRecordWindow(QtWidgets.QDialog):
 
         # Run the motion path through a gausian smoother
         # Smooth the Time values, and all the servo values
-        degree   = 5
+        degree   = 8
         toSmooth = np.asarray(self.motionPath[:])[:, [TIME, SERVO0, SERVO1, SERVO2, SERVO3]].tolist()
         smooth   = rv.smoothListGaussian(toSmooth, degree)
 
@@ -826,11 +853,11 @@ class MotionRecordWindow(QtWidgets.QDialog):
         otherData = np.asarray(self.motionPath)[:, [GRIPPER]]
 
         cutData   = otherData[int(window / 2):-(int(window / 2) + 1), :]
-        # print("CutData: ", cutData[:10], "length: ", len(cutData), "cut from/to: ", int(window / 2), (int(window / 2) + 1))
 
-        smooth         = np.asarray(smooth)
-        timeAndGripper = np.hstack((smooth[:, [0]], np.asarray(cutData)))
-        undrounded     = np.hstack((timeAndGripper, smooth[:, 1:])).tolist()
+        smooth          = np.asarray(smooth)
+        timeAndGripper  = np.hstack((smooth[:, [0]], np.asarray(cutData)))
+        unrounded       = np.hstack((timeAndGripper, smooth[:, 1:])).tolist()
+        self.motionPath = unrounded
 
         self.roundMotionPath()
 
@@ -1389,7 +1416,7 @@ def sanitizeName(name, forbiddenNames):
         hintText    Any hint text the user should have, to know why their name doesnt work. If None, name is valid!
     """
 
-        # Check if the user entered a valid name name is valid
+    # Check if the user entered a valid name name is valid
     if len(name) == 0:
         return name, "You must input a name to continue"
 
@@ -1421,3 +1448,7 @@ def sanitizeName(name, forbiddenNames):
 
     # If there were no errors, then turn the "next" button enabled, and make the error message dissapear
     return name, ''
+
+
+
+

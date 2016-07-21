@@ -1,3 +1,30 @@
+"""
+This software was designed by Alexander Thiel
+Github handle: https://github.com/apockill
+
+The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
+It is completely open source, so feel free to take it and use it as a base for your own projects.
+
+If you make any cool additions, feel free to share!
+
+
+License:
+    This file is part of uArmCreatorStudio.
+    uArmCreatorStudio is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    uArmCreatorStudio is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
+"""
+__author__ = "Alexander Thiel"
+
 import EventsGUI   as EventsGUI
 import CommandsGUI as CommandsGUI
 from PyQt5         import QtCore, QtWidgets, QtGui
@@ -16,7 +43,7 @@ class ControlPanel(QtWidgets.QWidget):
             think it"s still helpful for organization.
     """
 
-    def __init__(self, environment, settings, parent):
+    def __init__(self, environment, parent):
         super(ControlPanel, self).__init__(parent)
 
         # Set up Globals
@@ -98,10 +125,10 @@ class ControlPanel(QtWidgets.QWidget):
         self.show()
 
     def refresh(self):
-        '''
+        """
         Refresh which commandList is currently being displayed to the one the user has highlighted. It basically just
         goes over certain things and makes sure that everything that should be displaying, is displaying.
-        '''
+        """
 
 
         # Remove all widgets on the commandList stack (not delete, though!) The chosen event will be added later.
@@ -200,17 +227,17 @@ class ControlPanel(QtWidgets.QWidget):
             self.scriptTimer = None
 
             # Decolor every event
-            for index in range(0, self.eventList.count()):
-                eventItem = self.eventList.item(index)
+            for eIndex in range(0, self.eventList.count()):
+                eventItem = self.eventList.item(eIndex)
                 self.setColor(eventItem, False)
                 commandList = self.eventList.getEventFromItem(eventItem).commandList
 
                 # Decolor every command
-                for index in range(0, commandList.count()):
-                    commandItem = commandList.item(index)
+                for cIndex in range(0, commandList.count()):
+                    commandItem = commandList.item(cIndex)
                     self.setColor(commandItem, False)
 
-    def setScriptModeOn(self, interpreterStatusFunction, mainWindowEndScriptFunc):
+    def setScriptModeOn(self, interpreterStatusFunc, mainWindowEndScriptFunc):
         """
         When the script is running:
             - Add/Delete/Change event buttons will be disabled
@@ -227,7 +254,7 @@ class ControlPanel(QtWidgets.QWidget):
 
 
         self.scriptTimer = QtCore.QTimer()
-        self.scriptTimer.timeout.connect(lambda: self.refreshDrawScript(interpreterStatusFunction, mainWindowEndScriptFunc))
+        self.scriptTimer.timeout.connect(lambda: self.refreshDrawScript(interpreterStatusFunc, mainWindowEndScriptFunc))
         self.scriptTimer.start(1000.0 / 50)  # Update at same rate as the script checks events
 
 
@@ -236,7 +263,7 @@ class ControlPanel(QtWidgets.QWidget):
         return self.eventList.getSaveData()
 
     def loadData(self, data):
-        self.eventList.loadData(data, self.env)
+        self.eventList.loadData(data)
 
 
 class EventList(QtWidgets.QListWidget):
@@ -259,19 +286,19 @@ class EventList(QtWidgets.QListWidget):
         self.setFixedWidth(200)
 
 
-    def setLocked(self, bool):
+    def setLocked(self, setLock):
         # Used to lock the eventList and commandLists from changing anything while script is running
         events = self.getEventsOrdered()
         for event in events:
-            event.commandList.setEnabled(not bool)
+            event.commandList.setEnabled(not setLock)
 
 
     def getSelectedEvent(self):
-        '''
+        """
         This method returns the Event() class for the currently clicked-on event.
         This is used for displaying the correct commandList, or adding a command
         to the correct event.
-        '''
+        """
 
         selectedItem = self.getSelectedEventItem()
 
@@ -282,9 +309,9 @@ class EventList(QtWidgets.QListWidget):
         return self.getEventFromItem(selectedItem)
 
     def getSelectedEventItem(self):
-        '''
+        """
         This gets the 'widget' for the currently selected event item, not the Event() object
-        '''
+        """
 
         selectedItems = self.selectedItems()
         if len(selectedItems) == 0 or len(selectedItems) > 1:
@@ -309,15 +336,10 @@ class EventList(QtWidgets.QListWidget):
             printf("User rejected the prompt.")
 
 
-    def addEvent(self, eventType, parameters=None, commandListSave=[]):
-        '''
+    def addEvent(self, eventType, parameters=None, commandListSave=None):
 
-        :param eventType:
-        :param kwargs:
-            'parameters' for an event, to fill it in automatically, for loading a file
-            'commandListSave' for an event, if you have commandList save to load into it, then it will generate the list
-        :return: Nothing
-        '''
+
+        if commandListSave is None: commandListSave = []
 
         # If a file is loading, then optimize the process by changing it a bit.
         isLoading = len(commandListSave) > 0
@@ -452,26 +474,8 @@ class EventList(QtWidgets.QListWidget):
         return
 
 
-
-
-        #
-        # # Make sure this event does not already exist
-
-        #
-        # # Actually change the event to the new type
-        # newEvent = eventType(params)
-        # newEvent.commandList = self.getEventFromItem(selectedItem).commandList  # self.events[selectedItem].commandList
-        #
-        # # Transfer the item widget and update the looks
-        # oldWidget = self.itemWidget(selectedItem)
-        # newEvent.dressWidget(oldWidget)
-        #
-        # # Update the self.events dictionary with the new event
-        # self.events[self.itemWidget(selectedItem)] = newEvent
-
-
     def getSaveData(self):
-        '''
+        """
         Save looks like
             [
             {'typeGUI': eventType, 'typeLogic': eventLogic, 'parameters' {parameters}, 'commandList' [commandList]},
@@ -480,7 +484,7 @@ class EventList(QtWidgets.QListWidget):
             ]
 
         typeLogic is a string of the class name that holds the logic for the event or command.
-        '''
+        """
 
         eventList = []
         eventsOrdered = self.getEventsOrdered()
@@ -496,14 +500,14 @@ class EventList(QtWidgets.QListWidget):
 
         return eventList
 
-    def loadData(self, data, shared):
+    def loadData(self, data):
         self.events = {}
         self.clear()  # clear eventList
 
         # Fill event list with new data
         for eventSave in data:
-
-            self.addEvent(getattr(EventsGUI, eventSave['typeGUI']),  # This converts the string 'EventClass' to an actual class
+            # Convert the string 'EventClass' to an actual class, load its command save, and add the event
+            self.addEvent(getattr(EventsGUI, eventSave['typeGUI']),
                           commandListSave =  eventSave['commandList'],
                           parameters      =  eventSave['parameters'])
 
@@ -515,8 +519,8 @@ class EventList(QtWidgets.QListWidget):
 class CommandList(QtWidgets.QListWidget):
     minimumWidth  = 400
 
-    def __init__(self, environment, parent):  # Todo: make commandList have a parent
-        super(CommandList, self).__init__()
+    def __init__(self, environment, parent):
+        super(CommandList, self).__init__(parent)
 
         self.env = environment  # Should just be used in addCommand
 
@@ -576,13 +580,13 @@ class CommandList(QtWidgets.QListWidget):
         return self.commands[self.itemWidget(listWidgetItem)]
 
     def addCommand(self, commandType, parameters=None, index=None):
-        '''
+        """
 
         :param commandType: The command that will be generated
         :param parameters: The parameters that get fed into the command (Only for loading a file)
         :param index: Place the command at a particular index, instead of the end (Only for dropping item into list)
         :return:
-        '''
+        """
 
         # If a file is loading, then set isLoading to True. This will optimize some steps.
         isLoading = parameters is not None

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-'''
+"""
 Affine invariant feature-based image matching sample.
 
 This sample is similar to find_obj.py, but uses the affine transformation
@@ -17,7 +17,7 @@ USAGE
                to feature name to use Flann-based matcher instead bruteforce.
 
   Press left mouse button on a feature point to see its matching point.
-'''
+"""
 
 # Python 2/3 compatibility
 from __future__ import print_function

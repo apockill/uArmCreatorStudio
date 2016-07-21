@@ -1,3 +1,30 @@
+"""
+This software was designed by Alexander Thiel
+Github handle: https://github.com/apockill
+
+The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
+It is completely open source, so feel free to take it and use it as a base for your own projects.
+
+If you make any cool additions, feel free to share!
+
+
+License:
+    This file is part of uArmCreatorStudio.
+    uArmCreatorStudio is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    uArmCreatorStudio is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
+"""
+__author__ = "Alexander Thiel"
+
 import math
 import numpy as np
 from Logic             import RobotVision as rv
@@ -454,7 +481,6 @@ class MoveWristRelativeToObjectCommand(Command):
         while targetAngle > 180: targetAngle -= 180
 
 
-        print("Modified target: ", targetAngle)
 
         # Set the robots wrist to the new value
         self.robot.setServoAngles(servo3 = targetAngle)
@@ -487,7 +513,8 @@ class PickupObjectCommand(Command):
     def run(self):
         if len(self.errors) > 0: return False
 
-        ret = rv.pickupObject(self.trackable, self.rbMarker, self.ptPairs, self.grndHeight, self.robot, self.vision, self.exitFunc)
+        ret = rv.pickupObject(self.trackable, self.rbMarker, self.ptPairs, self.grndHeight,
+                              self.robot, self.vision, self.exitFunc)
 
         return ret
 
@@ -690,6 +717,13 @@ class ElseCommand(Command):
 
 
 class SetVariableCommand(Command):
+    """
+        Sets a variable to an expression in the interpreter. It will first check if the variable exists, if not, it will
+         hen set the variable to zero. After that it will set the variable to the expression to the new value.
+
+         If the expression did not evaluate (If an error occured) it will simply not set the variable
+        to the new value.
+    """
 
     def __init__(self, env, interpreter, parameters=None):
         super(SetVariableCommand, self).__init__(parameters)
@@ -732,14 +766,17 @@ class TestVariableCommand(Command):
         # if not successExp: return False
 
         # Compare the value of the expression using the operator from the parameters
-        operations = ['==', '!=', '>', '<']
-        expressionString = self.parameters['variable'] + operations[self.parameters['test']] + self.parameters["expression"]
+        operations   = ['==', '!=', '>', '<']
+        variable     = self.parameters['variable']
+        operation    = operations[self.parameters['test']]
+        expression   = self.parameters["expression"]
+        scriptString = variable + operation + expression  #
 
-        testResult, success = interpreter.evaluateExpression(expressionString)
+        testResult, success = interpreter.evaluateExpression(scriptString)
 
         if not success: return False
 
-        printf("Testing: ", expressionString)
+        printf("Testing: ", scriptString)
         print(testResult, success)
         # If the expression was evaluated correctly, then return the testResult. Otherwise, return False
         return testResult

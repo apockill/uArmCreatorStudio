@@ -1,3 +1,30 @@
+"""
+This software was designed by Alexander Thiel
+Github handle: https://github.com/apockill
+
+The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
+It is completely open source, so feel free to take it and use it as a base for your own projects.
+
+If you make any cool additions, feel free to share!
+
+
+License:
+    This file is part of uArmCreatorStudio.
+    uArmCreatorStudio is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    uArmCreatorStudio is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
+"""
+__author__ = "Alexander Thiel"
+
 from PyQt5        import QtGui, QtCore, QtWidgets
 from Logic        import Paths
 from Logic.Global import printf
@@ -41,6 +68,7 @@ class EventWidget(QtWidgets.QWidget):
         self.setToolTip(tip)
 
 
+
 class EventPromptWindow(QtWidgets.QDialog):
     def __init__(self, objectManager, parent):
         super(EventPromptWindow, self).__init__(parent)
@@ -56,7 +84,7 @@ class EventPromptWindow(QtWidgets.QDialog):
         self.buttonWidth = 150
         self.initUI()               # Actually format and place everything
 
-        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)  # TODO: Investigate adding this to command windows
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.exec_()  #Open self, and prevent anyone clicking on other windows
 
 
@@ -142,19 +170,21 @@ class EventPromptWindow(QtWidgets.QDialog):
         keyboardMnu = QtWidgets.QMenu()
 
         # Create Letters Sub Menu
-        self.lettersSubMnu = QtWidgets.QMenu("Letters") # Has to be self or something glitches with garbage collection.
-        alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I','J', 'K', 'L', 'M',
+        self.lettersSubMnu = QtWidgets.QMenu("Letters")  # Has to be self or something glitches with garbage collection
+        alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
                     'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
         for letter in alphabet:
             # About the lambda letter=letter:. I don't know why it fixes the problem, but it does. Here's a better
             # Explanation: http://stackoverflow.com/questions/4578861/connecting-slots-and-signals-in-pyqt4-in-a-loop
-            self.lettersSubMnu.addAction(letter, lambda letter=letter: self.btnClicked(KeypressEventGUI, params={"checkKey": letter}))
+            addKeyEvntFunc = lambda letter=letter: self.btnClicked(KeypressEventGUI, params={"checkKey": letter})
+            self.lettersSubMnu.addAction(letter, addKeyEvntFunc)
 
         # Create Digits Sub Menu
         self.digitsSubMnu = QtWidgets.QMenu("Digits")
         digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
         for index, digit in enumerate(digits):
-            self.digitsSubMnu.addAction(digit, lambda digit=digit: self.btnClicked(KeypressEventGUI, params={"checkKey": digit}))
+            addKeyEvntFunc = lambda digit=digit: self.btnClicked(KeypressEventGUI, params={"checkKey": digit})
+            self.digitsSubMnu.addAction(digit, addKeyEvntFunc)
 
         # Add Sub Menus
         keyboardMnu.addMenu(self.lettersSubMnu)
@@ -214,6 +244,7 @@ class EventPromptWindow(QtWidgets.QDialog):
         self.chosenParameters = kwargs.get("params", None)
         self.accepted = True
         self.close()
+
 
     def cancelClicked(self, event):
         self.close()

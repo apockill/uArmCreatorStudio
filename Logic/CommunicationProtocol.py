@@ -1,3 +1,30 @@
+"""
+This software was designed by Alexander Thiel
+Github handle: https://github.com/apockill
+
+The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
+It is completely open source, so feel free to take it and use it as a base for your own projects.
+
+If you make any cool additions, feel free to share!
+
+
+License:
+    This file is part of uArmCreatorStudio.
+    uArmCreatorStudio is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    uArmCreatorStudio is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
+"""
+__author__ = "Alexander Thiel"
+
 import serial
 import serial.tools.list_ports
 from time         import sleep, time  # Used only in connecting to the robot, while waiting for serial to connect.
@@ -143,7 +170,6 @@ class Device:
                                         bytesize = serial.EIGHTBITS,
                                         timeout  = .1)
             self.isConnected = True
-            self.__uploadCode()
         except serial.SerialException as e:
             printf("Could not connect to robot on port ", port)
             self.serial = None
@@ -242,7 +268,10 @@ class Device:
         # Parses a number so it takes the fewest amount of bits (Trailing zero's are removed
         num = float(round(num, roundTo))
 
-    def __uploadCode(self):
-        self.serial.setDTR(0)
-        sleep(0.1)
-        self.serial.setDTR(1)
+    # def __uploadCode(self):
+    #     self.serial.setDTR(0)
+    #     sleep(0.1)
+    #     self.serial.setDTR(1)
+
+
+

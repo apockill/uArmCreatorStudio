@@ -1,3 +1,30 @@
+"""
+This software was designed by Alexander Thiel
+Github handle: https://github.com/apockill
+
+The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
+It is completely open source, so feel free to take it and use it as a base for your own projects.
+
+If you make any cool additions, feel free to share!
+
+
+License:
+    This file is part of uArmCreatorStudio.
+    uArmCreatorStudio is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    uArmCreatorStudio is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
+"""
+__author__ = "Alexander Thiel"
+
 from time                import sleep  # Used only for waiting for robot in CoordCalibrations, page 5
 import numpy             as np
 import CommandsGUI
@@ -9,6 +36,7 @@ from Logic.Global        import printf
 from Logic.ObjectManager import TrackableObject
 
 
+# noinspection PyCallByClass
 class CalibrateWindow(QtWidgets.QDialog):
     """
     This is the dashboard where the user can calibrate different aspects of their robot.
@@ -16,18 +44,21 @@ class CalibrateWindow(QtWidgets.QDialog):
     visual servo-ing calibrations
     """
 
-    def __init__(self, environment, parent):
+    # noinspection PyCallByClass,PyCallByClass
+    def __init__(self, coordSettings, motionSettings, environment, parent):
         super(CalibrateWindow, self).__init__(parent)
+        self.motionSettings = motionSettings
+        self.coordSettings  = coordSettings
 
         self.env            = environment
-        self.newSettings    = self.env.getSettings()
 
         # Use this when the user doesn't have the appropriate requirements for a calibration
-        self.showError   = lambda message: QtWidgets.QMessageBox.question(self, 'Error', message, QtWidgets.QMessageBox.Ok)
+        okBtn = QtWidgets.QMessageBox.Ok
+        self.showError   = lambda message: QtWidgets.QMessageBox.question(self, 'Error', message, okBtn)
         self.cameraError = lambda: self.showError("A camera must be connected to run this calibration.")
         self.robotError  = lambda: self.showError("A robot must be connected to run this calibration.")
 
-        self.nextStep    = lambda message: QtWidgets.QMessageBox.question(self, 'Instructions', message, QtWidgets.QMessageBox.Ok)
+        self.nextStep    = lambda message: QtWidgets.QMessageBox.question(self, 'Instructions', message, okBtn)
 
 
         # The label for the current known information for each calibration test. Label is changed in updateLabels()
@@ -128,12 +159,12 @@ class CalibrateWindow(QtWidgets.QDialog):
 
     def updateLabels(self):
         # Check if motionCalibrations already exist
-        movCalib = self.newSettings["motionCalibrations"]
+        movCalib = self.motionSettings
         if movCalib["stationaryMovement"] is not None:
             self.motionLbl.setText(" Stationary Movement: " + str(movCalib["stationaryMovement"]) +
                                    "     Active Movement: " + str(movCalib["activeMovement"]))
 
-        coordCalib = self.newSettings["coordCalibrations"]
+        coordCalib = self.coordSettings
         if coordCalib["ptPairs"] is not None:
             self.coordLbl.setText("Calibration has been run before. " + str(len(coordCalib["ptPairs"])) +
                                   " points of data were collected.")
@@ -206,8 +237,8 @@ class CalibrateWindow(QtWidgets.QDialog):
         highMovement = totalMotion / samples
 
 
-        self.newSettings["motionCalibrations"]["stationaryMovement"] = round(  noMovement, 1)
-        self.newSettings["motionCalibrations"]["activeMovement"]     = round(highMovement, 1)
+        self.motionSettings["stationaryMovement"] = round(  noMovement, 1)
+        self.motionSettings["activeMovement"]     = round(highMovement, 1)
 
 
         self.updateLabels()
@@ -258,18 +289,22 @@ class CalibrateWindow(QtWidgets.QDialog):
         # If the user finished the wizard correctly, then continue
         if coordWizard.result():
             newCoordCalib   = coordWizard.getNewCoordCalibrations()
-            self.newSettings["coordCalibrations"]["ptPairs"] = newCoordCalib["ptPairs"]
-            self.newSettings["coordCalibrations"]["failPts"] = newCoordCalib["failPts"]
+            self.coordSettings["ptPairs"] = newCoordCalib["ptPairs"]
+            self.coordSettings["failPts"] = newCoordCalib["failPts"]
 
             newGroundCalib = coordWizard.getNewGroundCalibration()
-            self.newSettings["coordCalibrations"]["groundPos"] = newGroundCalib
+            self.coordSettings["groundPos"] = newGroundCalib
 
         self.updateLabels()
 
+    def getMotionSettings(self):
+        return self.motionSettings
+
+    def getCoordSettings(self):
+        return self.coordSettings
+
     def getSettings(self):
-        return self.newSettings
-
-
+        pass
 
 # class MotionWizard(QtWidgets.QWizardPage):
 
@@ -702,7 +737,7 @@ class CWPage5(QtWidgets.QWizardPage):
         self.hintLbl        = QtWidgets.QLabel("\n\n\n\n\n\t\t\t\t")  # Add newlines since window resizing is broken
         self.testLbl        = QtWidgets.QLabel()        # Updates during calibration to notify user of progress
         self.progressBar    = QtWidgets.QProgressBar()  # Tells the user how far the calibration is from completion
-
+        self.timer          = None   # Used to hold singleshot timers for getPoint during calibration
 
         self.startBtn.clicked.connect(self.startCalibration)
         self.initUI()
@@ -713,13 +748,13 @@ class CWPage5(QtWidgets.QWizardPage):
         self.progressBar.hide()
         self.testLbl.hide()
 
-        prompt = "When you press the Start Calibration button, the robot will go through a set of predefined moves\n"+\
+        prompt = "When you press the Start Calibration button, the robot will go through a set of predefined moves\n"\
                  "and record the information that it needs. The program will freeze for a minute. " \
-                 "Before beginning:\n\n\n" + \
+                 "Before beginning:\n\n\n" \
                  "1) Make sure that the robot's head is more or less centered under the cameras view, and the\n" \
                  "    Robot Marker is being tracked.\n" \
-                 "2) Make sure there is ample space for the robot to move around.\n" + \
-                 "3) Make sure the robot is immobile, and mounted to the ground. If you move the robot,\n" + \
+                 "2) Make sure there is ample space for the robot to move around.\n" \
+                 "3) Make sure the robot is immobile, and mounted to the ground. If you move the robot,\n" \
                  "    you will have to re-run this calibration.\n"
 
         step1Lbl   = QtWidgets.QLabel("\n\nFinal Step:")
@@ -814,7 +849,7 @@ class CWPage5(QtWidgets.QWizardPage):
         #
         #
         # # # Test very near the base of the robot, but avoid the actual base
-        # for x in range(-20, -10,  1): testCoords += [[x, 5, zLower]] # Anything lower than -10x will hit the robot legs
+        # for x in range(-20, -10,  1): testCoords += [[x, 5, zLower]]# Anything lower than -10x will hit the robot legs
         # for x in range( 10,  20,  1): testCoords += [[x, 5, zLower]]
         # for x in range( 20,   9, -1): testCoords += [[x, 6, zLower]]
         # for x in range( -9, -20, -1): testCoords += [[x, 6, zLower]]
@@ -1020,9 +1055,6 @@ class CWPage5(QtWidgets.QWizardPage):
         :param ptPairs:
         :return:
         """
-        import random  # TODO: Remove this after testing
-        import numpy             as np
-        import Logic.RobotVision as rv
 
         def getRandomSet(length, ptPairs):
             ptPairs     = ptPairs[:]
@@ -1063,7 +1095,7 @@ class CWPage5(QtWidgets.QWizardPage):
         bestSet    = None
         samples    = 500
         avgError   = 0
-        for i in range(0, samples):
+        for s in range(0, samples):
 
             randPtPairs, leftoverPtPairs, chosenIndexes = getRandomSet(newSize, ptPairs)
 

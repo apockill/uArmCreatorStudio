@@ -1,3 +1,30 @@
+"""
+This software was designed by Alexander Thiel
+Github handle: https://github.com/apockill
+
+The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
+It is completely open source, so feel free to take it and use it as a base for your own projects.
+
+If you make any cool additions, feel free to share!
+
+
+License:
+    This file is part of uArmCreatorStudio.
+    uArmCreatorStudio is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    uArmCreatorStudio is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
+"""
+__author__ = "Alexander Thiel"
+
 import ast  # To check if a statement is python parsible, for evals
 import re   # For variable santization
 from CameraGUI    import CameraSelector
@@ -199,6 +226,7 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
             event.ignore()
             super().mousePressEvent(event)  # pass it on up
 
+        # noinspection PyArgumentList,PyArgumentList
         def mouseMoveEvent(self, event):
             if self.mouse_down:
                 # Mouse left-clicked and is now moving. Is this the start of a
@@ -240,9 +268,9 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
             act = dragster.exec_(actions)
             defact = dragster.defaultAction()
 
-            # Display the results of the drag.
-            targ = dragster.target()  # s.b. the widget that received the drop
-            src = dragster.source()  # s.b. this very widget
+            # # Display the results of the drag.
+            # targ = dragster.target()  # s.b. the widget that received the drop
+            # src = dragster.source()  # s.b. this very widget
 
             return
 
@@ -309,7 +337,7 @@ class CommandGUI:
 
 
         # Dress the base window (this is where the child actually puts the content into the widget)
-        prompt = self.dressWindow(prompt)
+        prompt = self.dressWindow(prompt)  # Calls a child function that should have this function
 
         prompt.mainVLayout.addLayout(buttonRow)  # Add button after, so hints appear above buttons
 
@@ -481,7 +509,7 @@ Commands must have:
         - logicPair (a string of the class name of its logic counterpart in commands.py, for interpreter use only)
         - title   (Except for certain functions, such as StartBlockCommand)
     - Functions
-        - init(shared, parameters=None) function
+        - init(env, parameters=None) function
             - Must calls super(NAME, self).__init__(parent)
         - If the command has a description, it must have a updateDescription() method
         - If the command has a window, it must have the following methods:
@@ -1035,7 +1063,7 @@ class MoveRelativeToObjectCommandGUI(CommandGUI):
     title     = "Move Relative To Object"
     tooltip   = "This tool uses computer vision to recognize an object of your choice, and position the robot directly"\
                "\nrelative to this objects XYZ location. If XYZ = 0,0,0, the robot will move directly onto the object."\
-               "\n\nIf you don't want to set one of the robots axis, simply leave it empty. For example, put y and z \n"\
+               "\n\nIf you don't want to set one of the robots axis, simply leave it empty. For example, put y and z\n"\
                "empty and x to 5 will set the robots x position to objX + 5 while keeping the current Y and Z the same."
     icon      = Paths.command_move_rel_to
     logicPair = "MoveRelativeToObjectCommand"
@@ -1118,14 +1146,10 @@ class MoveRelativeToObjectCommandGUI(CommandGUI):
 
 class MoveWristRelativeToObjectCommandGUI(CommandGUI):
     title     = "Set Wrist Relative To Object"
-    tooltip   = "This tool sets the wrist angle of the robot to the angle of an object in the cameras view, plus \n" \
-                "some relative degree of your choice. The rotation of the object is determined by the orientation\n" \
-                "that it's in when you create the object. "
     tooltip   = "This tool will look at the orientation of an object in the cameras view, and align the wrist with \n"\
                 "the rotation of the object. The rotation of the object is determined by the orientation that it was\n"\
                 "in when the object was memorized. It's recommended to experiment around a bit with this function to\n"\
                 " get a feel for how it works!"
-
     icon      = Paths.command_wrist_rel
     logicPair = "MoveWristRelativeToObjectCommand"
 
@@ -1462,7 +1486,7 @@ class StartBlockCommandGUI(CommandGUI):
     tooltip   = "This is the start of a block of commands that only run if a conditional statement is met."
     logicPair = 'StartBlockCommand'
 
-    def __init__(self, shared, parameters=None):
+    def __init__(self, env, parameters=None):
         super(StartBlockCommandGUI, self).__init__(parameters)
 
 
@@ -1475,7 +1499,7 @@ class EndBlockCommandGUI(CommandGUI):
     tooltip   = "This is the end of a block of commands."
     logicPair = 'EndBlockCommand'
 
-    def __init__(self, shared, parameters=None):
+    def __init__(self, env, parameters=None):
         super(EndBlockCommandGUI, self).__init__(parameters)
 
 
@@ -1488,7 +1512,7 @@ class ElseCommandGUI(CommandGUI):
     tooltip   = "This will run commands if a test evaluates to False"
     logicPair = 'ElseCommand'
 
-    def __init__(self, shared, parameters=None):
+    def __init__(self, env, parameters=None):
         super(ElseCommandGUI, self).__init__(parameters)
 
 
@@ -1599,7 +1623,7 @@ class TestVariableCommandGUI(CommandGUI):
 
 class ScriptCommandGUI(CommandGUI):
     title     = "Run Python Code"
-    tooltip   = "This tool will execute a script made by the user.\nDO NOT RUN PROGRAMS WITH SCRIPTS WRITTEN BY OTHER"+\
+    tooltip   = "This tool will execute a script made by the user.\nDO NOT RUN PROGRAMS WITH SCRIPTS WRITTEN BY OTHER" \
                 "\nUSERS UNLESS YOU HAVE CHECKED THE SCRIPT AND KNOW WHAT YOU ARE DOING!"
     icon      = Paths.command_script
     logicPair = "ScriptCommand"
@@ -1635,15 +1659,15 @@ class ScriptCommandGUI(CommandGUI):
         return self.parameters
 
     def _updateDescription(self):
-        self.description = self.parameters["description"]  # Some string that uses your parameters to describe the object.
+        self.description = self.parameters["description"]
 
 
 
 class RunTaskCommandGUI(CommandGUI):
     title     = "Run Another Task File"
-    tooltip   = "This tool will run  another task file and run it inside of this task, until the 'End Program'\n" +\
-                "command is called within the task, then it will return to the currently running task.\n" + \
-                "All tasks are preloaded when script is launched, so if a child class runs a parent class, an error\n"+\
+    tooltip   = "This tool will run  another task file and run it inside of this task, until the 'End Program'\n" \
+                "command is called within the task, then it will return to the currently running task.\n" \
+                "All tasks are preloaded when script is launched, so if a child class runs a parent class, an error\n" \
                 "will be returned."
 
     icon      = Paths.command_run_task

@@ -1,8 +1,33 @@
 """
-This is for storing the location of directories that don't move
+This software was designed by Alexander Thiel
+Github handle: https://github.com/apockill
+
+The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
+It is completely open source, so feel free to take it and use it as a base for your own projects.
+
+If you make any cool additions, feel free to share!
+
+
+License:
+    This file is part of uArmCreatorStudio.
+    uArmCreatorStudio is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    uArmCreatorStudio is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
+__author__ = "Alexander Thiel"
+
 import os
 import sys
+
 # from Resources import CompiledImages
 
 ################        PATHS FOR ALL       ################
@@ -17,8 +42,8 @@ def resourcePath(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
     if hasattr(sys, '_MEIPASS'):
         return os.path.join(sys._MEIPASS, relative_path)
-
     return os.path.join(os.path.abspath("."), relative_path)
+
 exeResourcesPath   = resourcePath(resourcesLoc)
 # Used by Vision
 face_cascade       = exeResourcesPath + "face_cascade.xml"

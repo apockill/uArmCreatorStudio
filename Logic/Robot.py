@@ -1,3 +1,30 @@
+"""
+This software was designed by Alexander Thiel
+Github handle: https://github.com/apockill
+
+The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
+It is completely open source, so feel free to take it and use it as a base for your own projects.
+
+If you make any cool additions, feel free to share!
+
+
+License:
+    This file is part of uArmCreatorStudio.
+    uArmCreatorStudio is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    uArmCreatorStudio is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
+"""
+__author__ = "Alexander Thiel"
+
 import math
 import serial
 import serial.tools.list_ports
@@ -202,15 +229,20 @@ class Robot:
 
             try:
                 self.uArm.moveToWithSpeed(self.coord[0], self.coord[1], self.coord[2], self.__speed)
-                self.__servoAngleStatus = list(self.uArm.getIK(self.coord[0], self.coord[1], self.coord[2])) + [self.__servoAngleStatus[3]]
+
+
+                # Update the servoAngleStatus by doing inverse kinematics on the current position to get the new angles
+                posAngles = list(self.uArm.getIK(self.coord[0], self.coord[1], self.coord[2]))
+                self.__servoAngleStatus  =  posAngles + [self.__servoAngleStatus[3]]
 
                 # Since moves cause servos to attach, update the servoStatus
-                self.__servoAttachStatus[0], self.__servoAttachStatus[1], self.__servoAttachStatus[2], self.__servoAttachStatus[3] = True, True, True, True
+                self.__servoAttachStatus = [True, True, True, True]
 
             except ValueError:
                 printf("ERROR: Robot out of bounds and the uarm_python library crashed!")
 
-            # Wait for robot to finish move, but if exiting, just continue
+
+            # Wait for robot to finish move, but if in exiting mode, just continue
             if wait:
                 while self.getMoving():
                     if self.exiting:
@@ -414,3 +446,7 @@ class Robot:
         if exiting:
             printf("Setting robot to Exiting mode. All commands should be ignored")
         self.exiting = exiting
+
+
+
+

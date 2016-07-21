@@ -1,3 +1,30 @@
+"""
+This software was designed by Alexander Thiel
+Github handle: https://github.com/apockill
+
+The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
+It is completely open source, so feel free to take it and use it as a base for your own projects.
+
+If you make any cool additions, feel free to share!
+
+
+License:
+    This file is part of uArmCreatorStudio.
+    uArmCreatorStudio is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    uArmCreatorStudio is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
+"""
+__author__ = "Alexander Thiel"
+
 import os
 import errno
 import inspect
@@ -78,7 +105,6 @@ def caller_name(skip=2, printModule=True, printClass=True, printFunction=True):
 
         module = inspect.getmodule(parentframe)
         # `modname` can be None when frame is executed directly in console
-        # TODO(techtonik): consider using __main__
         if module:
             name.append(module.__name__)
 
@@ -111,7 +137,7 @@ def printf(*args):
 
     # Create settings for the boilerplate information
     printModule   = False
-    printFunction = False    # If false, no boilerplate will be printed
+    printFunction = True    # If false, no boilerplate will be printed
     printClass    = True
 
     indentLength  = 40      # Length of indent between boilerplate and content
@@ -138,17 +164,16 @@ def printf(*args):
 
 
     # Filter out any serial communication since it clutters up the console
-    if boilerPlate == "Device": return
-
-    if len(boilerPlate) > 0:
-        spaces = int((indentLength - len(boilerPlate)))       #How many spaces ahead the content column should be
-        if spaces > 0:
-            spacesString = spaceFunc(spaces)
-            boilerPlate +=  spacesString
-
-    buildString = boilerPlate + buildString
-   #  print(buildString)
-
+    # if "Device" in boilerPlate: return
+    #
+    # if len(boilerPlate) > 0:
+    #     spaces = int((indentLength - len(boilerPlate)))       #How many spaces ahead the content column should be
+    #     if spaces > 0:
+    #         spacesString = spaceFunc(spaces)
+    #         boilerPlate +=  spacesString
+    #
+    # buildString = boilerPlate + buildString
+    # print(buildString)
 
 
 
@@ -213,13 +238,13 @@ class FpsTimer:
 
 
 def ensurePathExists(path):
-    '''
+    """
         This is a cross platform, race-condition free way of checking if a directory exists. It's used every time
         an object is loaded and saved
-    '''
+    """
     try:
-        dir = os.path.dirname(path)
-        os.makedirs(dir)
+        directory = os.path.dirname(path)
+        os.makedirs(directory)
     except OSError as exception:
         if exception.errno != errno.EEXIST:
             raise
