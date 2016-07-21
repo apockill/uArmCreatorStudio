@@ -201,6 +201,9 @@ Builtin Variables:
         This is a function that returns True if the user has pressed the "stop" button on the top left. You can use
         this to check if your script should end, if you're doing long loops.
 
+        For source code on the Interpreter environment that runs your script, go to:
+        https://github.com/apockill/RobotGUIProgramming/blob/master/Logic/Interpreter.py
+
 
 
 Examples scripts using robot

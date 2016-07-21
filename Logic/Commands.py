@@ -68,6 +68,8 @@ class Command(LogicObject):
         pass
 
 
+
+
 #   BASIC CONTROL COMMANDS
 class MoveXYZCommand(Command):
 
@@ -326,28 +328,6 @@ class BuzzerCommand(Command):
             return False
 
 
-class EndProgramCommand(Command):
-
-    def __init__(self, env, interpreter, parameters=None):
-        super(EndProgramCommand, self).__init__(parameters)
-
-    def run(self):
-        printf("Attempting to shut down program now...")
-        return "Kill"
-
-
-class EndEventCommand(Command):
-
-    def __init__(self, env, interpreter, parameters=None):
-        super(EndEventCommand, self).__init__(parameters)
-
-        # Load any objects that will be used in the run Section here
-        self.interpreter = interpreter
-
-
-    def run(self):
-        printf("Exiting current event")
-        return "Exit"
 
 
 
@@ -435,6 +415,7 @@ class MoveWristRelativeToObjectCommand(Command):
         self.robot       = self.getVerifyRobot(env)
         self.vision      = self.getVerifyVision(env)
         self.trackable   = self.getVerifyObject(env, self.parameters["objectID"])
+        self.relToBase   = self.parameters["relToBase"]
 
         if len(self.errors): return
         # Turn on tracking for the relevant object
@@ -446,7 +427,7 @@ class MoveWristRelativeToObjectCommand(Command):
         if len(self.errors): return
 
         # Before doing any tracking, evaluate the "Relative" number to make sure its valid
-        newVal, success = self.interpreter.evaluateExpression(self.parameters["angle"])
+        relativeAngle, success = self.interpreter.evaluateExpression(self.parameters["angle"])
         if not success:
             printf("Could not determine the relative angle for the wrist. Canceling command. ")
             return False
@@ -459,22 +440,34 @@ class MoveWristRelativeToObjectCommand(Command):
             return False
 
 
-        # Get rotation of object in camera view
-        rotation = math.degrees(tracked.rotation[2])  # Get the rotation around the z
+        # This is the rotation of the object in degrees, derived from the camera
+        targetAngle = math.degrees(tracked.rotation[2])
 
 
 
 
-        TOCC = tracked.center   # Tracked Object Camera Coordinates
-        ROCC = rv.getPositionTransform((0, 0, 0), "toCam", self.ptPairs)  # Robot Origin Camera Coordinates
+        cntr = tracked.center
+        if self.relToBase:
+            # If the angle is relative to the base angle, do the math here and add it to target angle.
 
+            TOCC = cntr   # Tracked Object Camera Coordinates
+            ROCC = rv.getPositionTransform((0, 0, 0), "toCam", self.ptPairs)  # Robot Origin Camera Coordinates
+            baseAngle = 90 - math.degrees(math.atan( (ROCC[1] - TOCC[1]) / (ROCC[0] - TOCC[0])))
+            targetAngle += baseAngle - 90
+        else:
+            # If the angle is relative to x Axis, do different math and add it to target angle
+            a = rv.getPositionTransform((0, 0, 0), "toCam", self.ptPairs)
+            b = rv.getPositionTransform((10, 0, 0), "toCam", self.ptPairs)
 
-        relativeToRobX = 90 - math.degrees(math.atan( (ROCC[1] - TOCC[1]) / (ROCC[0] - TOCC[0])))
-        targetAngle = rotation + relativeToRobX - 90
-
+            # TORC    = rv.getPositionTransform(cntr, "toRob", self.ptPairs)  # Tracked Object Robot Coordinates
+            # RXCC    = rv.getPositionTransform((0, cntr[1], cntr[2]), "toCam", self.ptPairs)  # Robot XAxis Camera Coordinates
+            xOffset =  math.degrees(math.atan( (a[1] - b[1]) / (a[0] - b[0])))
+            targetAngle += 90 - xOffset
+            print("XOffset: ", xOffset)
+            print("Target: ", targetAngle)
 
         # Add the "Relative" angle to the wrist
-        targetAngle += newVal
+        targetAngle += relativeAngle
 
         # Normalize the value so that it's between 0 and 180
         while targetAngle < 0: targetAngle += 180
@@ -801,3 +794,26 @@ class ScriptCommand(Command):
 
         return self.interpreter.evaluateScript(self.parameters["script"])
 
+
+class EndProgramCommand(Command):
+
+    def __init__(self, env, interpreter, parameters=None):
+        super(EndProgramCommand, self).__init__(parameters)
+
+    def run(self):
+        printf("Attempting to shut down program now...")
+        return "Kill"
+
+
+class EndEventCommand(Command):
+
+    def __init__(self, env, interpreter, parameters=None):
+        super(EndEventCommand, self).__init__(parameters)
+
+        # Load any objects that will be used in the run Section here
+        self.interpreter = interpreter
+
+
+    def run(self):
+        printf("Exiting current event")
+        return "Exit"

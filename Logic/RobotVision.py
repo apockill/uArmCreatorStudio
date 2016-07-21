@@ -191,6 +191,46 @@ def createTransformFunc(ptPairs, direction):
 
     transformFunc = lambda x: np.array((M * np.vstack((np.matrix(x).reshape(3, 1), 1)))[0:3, :].reshape(1, 3))[0]
 
+
+    # # TOCAM test
+    # pts1 = ptPairArray[:, 1]
+    # pts2 = ptPairArray[:, 0]
+    # ret, M, mask = cv2.estimateAffine3D(np.float32(pts1),
+    #                                     np.float32(pts2),
+    #                                     confidence = .9999999)
+    # normalFunc  = lambda x: np.array((M * np.vstack((np.matrix(x).reshape(3, 1), 1)))[0:3, :].reshape(1, 3))[0]
+    # print("STARTING\n Normal M, toCam")
+    # m2 = np.vstack((M, [0, 0, 0, 1]))
+    # print(m2)
+    # print("Normal toCam input 15, 30, 45", normalFunc((15, 30, 45)))
+    # print("Inverse (toRob)\n", np.linalg.inv(m2))
+    #
+    #
+    #
+    # # TOROB test
+    # pts1 = ptPairArray[:, 0]
+    # pts2 = ptPairArray[:, 1]
+    # ret, M, mask = cv2.estimateAffine3D(np.float32(pts1),
+    #                                     np.float32(pts2),
+    #                                     confidence = .9999999)
+    #
+    # print("\nNormal M, toRob")
+    # m = np.vstack((M, [0, 0, 0, 1]))
+    # print(m)
+    #
+    # # print("Built inverse: ")
+    # def inverse(m):
+    #     i = np.linalg.inv(m)
+    #     #            0          1         2         3
+    #     m = [[  i[0][0],    m[][],    m[][], -1/i[3][0]],  # 0
+    #          [    m[][],  m[1][1],    m[][],    m[3][1]],  # 1
+    #          [    m[][],    i[][],  m[2][2],    m[3][2]],  # 2
+    #          [        0,        0,        0,          1]]  # 3
+    #
+    # print("Inverse (toCam)\n", np.linalg.inv(m))
+    # invFunc  = lambda x: np.array((np.linalg.inv(m) * np.vstack((np.matrix(x).reshape(3, 1), 1)))[0:3, :].reshape(1, 3))[0]
+    # print("Inverse (toCam) input 15, 30, 45", invFunc((15, 30, 45)))
+
     """
     Breakdown of function. Here's an example of transforming [95, -35, 530] cam which is [5, 15, 15] in the robot grid
 

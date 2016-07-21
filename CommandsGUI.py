@@ -375,7 +375,11 @@ class CommandGUI:
         newWidget.setDescription(self.description)
         return newWidget
 
-
+    def getSaveData(self):
+        commandSave = {   'typeGUI': self.__class__.__name__,
+                        'typeLogic': self.logicPair,
+                       'parameters': self.parameters}
+        return commandSave
     # The following functions should be empty, and only are there so that subclasses without them don't cause errors
     def _updateDescription(self):
         # This is called in openView() and will update the decription to match the parameters
@@ -604,7 +608,7 @@ class MoveXYZCommandGUI(CommandGUI):
         xLabel = QtWidgets.QLabel('X ')
         yLabel = QtWidgets.QLabel('Y ')
         zLabel = QtWidgets.QLabel('Z ')
-        rltCheck = QtWidgets.QLabel('Relative: ')
+        rltCheck = QtWidgets.QLabel('Relative ')
 
 
         # Fill the textboxes with the default parameters
@@ -670,8 +674,8 @@ class MoveWristCommandGUI(CommandGUI):
         currentAngleBtn.clicked.connect(lambda: setCurrentAngle(prompt.wristEdit))
 
         # Create the labels for the interactive stuff
-        wristLabel       = QtWidgets.QLabel('Wrist Angle:')
-        rltLabel         = QtWidgets.QLabel('Relative:')
+        wristLabel       = QtWidgets.QLabel('Wrist Angle ')
+        rltLabel         = QtWidgets.QLabel('Relative ')
 
         # Set up everything so it matches the current parameters
         prompt.wristEdit.setText(  self.parameters["angle"])
@@ -718,7 +722,7 @@ class MotionRecordingCommandGUI(CommandGUI):
     def dressWindow(self, prompt):
 
         # Choose a recording
-        choiceLbl = QtWidgets.QLabel("Choose a Recording: ")
+        choiceLbl = QtWidgets.QLabel("Choose a Recording ")
         prompt.recChoices = QtWidgets.QComboBox()
         prompt.recChoices.addItem(self.parameters["objectID"])
         recList = self.getObjectList()
@@ -727,7 +731,7 @@ class MotionRecordingCommandGUI(CommandGUI):
 
 
         # PlaybackSpeed
-        speedLbl = QtWidgets.QLabel("Playback Speed: ")
+        speedLbl = QtWidgets.QLabel("Playback Speed ")
         prompt.speedEdit = QtWidgets.QLineEdit()
         prompt.speedEdit.setText(self.parameters["speed"])
         self._addRow(prompt, speedLbl, prompt.speedEdit)
@@ -774,7 +778,7 @@ class SpeedCommandGUI(CommandGUI):
         prompt.speedEdit = QtWidgets.QLineEdit()
 
         # Set up all the labels for the inputs
-        speedLabel = QtWidgets.QLabel('Speed (cm/s): ')
+        speedLabel = QtWidgets.QLabel('Speed (cm/s) ')
 
         # Fill the textboxes with the default parameters
         prompt.speedEdit.setText(str(self.parameters['speed']))
@@ -820,10 +824,10 @@ class DetachCommandGUI(CommandGUI):
         prompt.srvo4Box = QtWidgets.QCheckBox()  # "relative" CheckBox
 
         # Set up all the labels for the inputs
-        label1 = QtWidgets.QLabel('Base Servo:')
-        label2 = QtWidgets.QLabel('Stretch Servo:')
-        label3 = QtWidgets.QLabel('Height Servo:')
-        label4 = QtWidgets.QLabel('Wrist Servo:')
+        label1 = QtWidgets.QLabel('Base Servo ')
+        label2 = QtWidgets.QLabel('Stretch Servo ')
+        label3 = QtWidgets.QLabel('Height Servo ')
+        label4 = QtWidgets.QLabel('Wrist Servo ')
 
         # Fill the textboxes with the default parameters
         prompt.srvo1Box.setChecked(self.parameters['servo1'])
@@ -885,10 +889,10 @@ class AttachCommandGUI(CommandGUI):
         prompt.srvo4Box = QtWidgets.QCheckBox()  #  "relative" CheckBox
 
         # Set up all the labels for the inputs
-        label1 = QtWidgets.QLabel('Base Servo:')
-        label2 = QtWidgets.QLabel('Stretch Servo:')
-        label3 = QtWidgets.QLabel('Height Servo:')
-        label4 = QtWidgets.QLabel('Wrist Servo:')
+        label1 = QtWidgets.QLabel('Base Servo ')
+        label2 = QtWidgets.QLabel('Stretch Servo ')
+        label3 = QtWidgets.QLabel('Height Servo ')
+        label4 = QtWidgets.QLabel('Wrist Servo ')
 
         # Fill the textboxes with the default parameters
         prompt.srvo1Box.setChecked(self.parameters['servo1'])
@@ -940,7 +944,7 @@ class WaitCommandGUI(CommandGUI):
         prompt.timeEdit = QtWidgets.QLineEdit()
 
         # Set up all the labels for the inputs
-        timeLabel = QtWidgets.QLabel('Number of seconds: ')
+        timeLabel = QtWidgets.QLabel('Number of seconds ')
 
 
         # Fill the textboxes with the default parameters
@@ -1003,9 +1007,9 @@ class BuzzerCommandGUI(CommandGUI):
         prompt.waitCheck = QtWidgets.QCheckBox()  # "override" CheckBox
 
         # Set up all the labels for the inputs
-        frqLabel = QtWidgets.QLabel('Frequency: ')
-        tmeLabel = QtWidgets.QLabel('Duration: ')
-        waitLabel = QtWidgets.QLabel('Wait: ')
+        frqLabel = QtWidgets.QLabel('Frequency ')
+        tmeLabel = QtWidgets.QLabel('Duration ')
+        waitLabel = QtWidgets.QLabel('Wait ')
 
         # Fill the textboxes with the default parameters
         prompt.frqEdit.setText(str(self.parameters['frequency']))
@@ -1035,24 +1039,6 @@ class BuzzerCommandGUI(CommandGUI):
                            self.parameters["time"] + " seconds"
 
 
-class EndProgramCommandGUI(CommandGUI):
-    title     = "End Program"
-    tooltip   = "When the code reaches this point, the program will end."
-    icon      = Paths.command_end_script
-    logicPair = "EndProgramCommand"
-
-    def __init__(self, env, parameters=None):
-        super(EndProgramCommandGUI, self).__init__(parameters)
-
-
-class EndEventCommandGUI(CommandGUI):
-    title     = "Exit Current Event"
-    tooltip   = "When the code reaches this point, the program will not process the rest of this event."
-    icon      = Paths.command_exit_event
-    logicPair = "EndEventCommand"
-
-    def __init__(self, env, parameters=None):
-        super(EndEventCommandGUI, self).__init__(parameters)
 
 
 
@@ -1089,7 +1075,7 @@ class MoveRelativeToObjectCommandGUI(CommandGUI):
 
 
         # Set up all the labels for the inputs
-        choiceLbl = QtWidgets.QLabel("Choose an object: ")
+        choiceLbl = QtWidgets.QLabel("Choose an object ")
         xLabel    = QtWidgets.QLabel('X ')
         yLabel    = QtWidgets.QLabel('Y ')
         zLabel    = QtWidgets.QLabel('Z ')
@@ -1162,7 +1148,8 @@ class MoveWristRelativeToObjectCommandGUI(CommandGUI):
         if self.parameters is None:
             # Anything done with env should be done here. Try not to save env as a class variable whenever possible
             self.parameters = {"objectID": "",
-                               "angle": "0"}
+                               "angle":   "0",
+                               "relToBase": False}
 
     def dressWindow(self, prompt):
 
@@ -1178,15 +1165,32 @@ class MoveWristRelativeToObjectCommandGUI(CommandGUI):
 
 
         # Create the "angle" textbox
-        wristLabel       = QtWidgets.QLabel('Angle:')
+        wristLabel       = QtWidgets.QLabel('Angle ')
         prompt.wristEdit = QtWidgets.QLineEdit(self.parameters["angle"])
         self._addRow(prompt, wristLabel, prompt.wristEdit)
+
+
+        # Create the "relative to 'what'" choices
+        bttnGroup = QtWidgets.QButtonGroup()
+        prompt.relToAxis = QtWidgets.QRadioButton()
+        prompt.relToBase = QtWidgets.QRadioButton()
+        bttnGroup.addButton(prompt.relToAxis)
+        bttnGroup.addButton(prompt.relToBase)
+
+        prompt.relToAxis.setChecked(not self.parameters["relToBase"])
+        prompt.relToBase.setChecked(self.parameters["relToBase"])
+
+        self._addRow(prompt,     QtWidgets.QLabel("Relative to X Axis "), prompt.relToAxis)
+        self._addRow(prompt, QtWidgets.QLabel("Relative to Robot Base "), prompt.relToBase)
 
         return prompt
 
     def _extractPromptInfo(self, prompt):
+        relToBase = prompt.relToBase.isChecked()
+
         newParameters = {"objectID": str(prompt.objChoices.currentText()),
-                         'angle': self._sanitizeEval(prompt.wristEdit, self.parameters["angle"])}
+                         'angle': self._sanitizeEval(prompt.wristEdit, self.parameters["angle"]),
+                         'relToBase': relToBase}
 
         self.parameters.update(newParameters)
 
@@ -1219,7 +1223,7 @@ class PickupObjectCommandGUI(CommandGUI):
 
     def dressWindow(self, prompt):
         # Define what happens when the user changes the object selection
-        choiceLbl = QtWidgets.QLabel("Choose an object: ")
+        choiceLbl = QtWidgets.QLabel("Choose an object ")
 
         # Create a QComboBox
 
@@ -1277,9 +1281,9 @@ class TestObjectSeenCommandGUI(CommandGUI):
 
     def dressWindow(self, prompt):
         # Define what happens when the user changes the object selection
-        choiceLbl         = QtWidgets.QLabel("If recognized: ")
-        accLbl            = QtWidgets.QLabel("Confidence level: ")
-        prompt.ageLbl     = QtWidgets.QLabel("How recently :")
+        choiceLbl         = QtWidgets.QLabel("If recognized ")
+        accLbl            = QtWidgets.QLabel("Confidence level ")
+        prompt.ageLbl     = QtWidgets.QLabel("How recently ")
         notLbl            = QtWidgets.QLabel("NOT")
 
         prompt.objChoices = QtWidgets.QComboBox()
@@ -1376,8 +1380,8 @@ class TestObjectLocationCommandGUI(CommandGUI):
 
     def dressWindow(self, prompt):
         # Define what happens when the user changes the object selection
-        choiceLbl = QtWidgets.QLabel("Choose an Object: ")
-        partLbl   = QtWidgets.QLabel("What part of object must enter the location: ")
+        choiceLbl = QtWidgets.QLabel("Choose an Object ")
+        partLbl   = QtWidgets.QLabel("What part of object must enter the location ")
         selectLbl = QtWidgets.QLabel("Click and drag the area of the screen that the object will be in")
         notLbl    = QtWidgets.QLabel("NOT")
 
@@ -1538,8 +1542,8 @@ class SetVariableCommandGUI(CommandGUI):
 
 
         # Set up all the labels for the inputs
-        namLabel = QtWidgets.QLabel('Variable Name: ')
-        valLabel = QtWidgets.QLabel('Value or Expression: ')
+        namLabel = QtWidgets.QLabel('Variable Name ')
+        valLabel = QtWidgets.QLabel('Value or Expression ')
 
         # Fill the textboxes with the default parameters
         prompt.namEdit.setText(str(self.parameters['variable']))
@@ -1591,9 +1595,9 @@ class TestVariableCommandGUI(CommandGUI):
         prompt.tstMenu.addItem('Less Then')
 
         # Set up all the labels for the inputs
-        varLabel = QtWidgets.QLabel('Variable: ')
-        tstLabel = QtWidgets.QLabel('Test: ')
-        valLabel = QtWidgets.QLabel('Value: ')
+        varLabel = QtWidgets.QLabel('Variable ')
+        tstLabel = QtWidgets.QLabel('Test ')
+        valLabel = QtWidgets.QLabel('Value ')
 
         # Fill the textboxes with the default parameters
         prompt.varEdit.setText(str(self.parameters['variable']))
@@ -1641,7 +1645,7 @@ class ScriptCommandGUI(CommandGUI):
         # Do some GUI code setup
         # Put all the objects into horizontal layouts called Rows
         prompt.IDE     = ScriptWidget(self.parameters["script"], prompt)
-        descriptionLbl = QtWidgets.QLabel("Description: ")
+        descriptionLbl = QtWidgets.QLabel("Description ")
 
         prompt.descriptionEdt = QtWidgets.QLineEdit(self.parameters["description"])
 
@@ -1662,7 +1666,28 @@ class ScriptCommandGUI(CommandGUI):
         self.description = self.parameters["description"]
 
 
+class EndProgramCommandGUI(CommandGUI):
+    title     = "End Program"
+    tooltip   = "When the code reaches this point, the program will end."
+    icon      = Paths.command_end_script
+    logicPair = "EndProgramCommand"
 
+    def __init__(self, env, parameters=None):
+        super(EndProgramCommandGUI, self).__init__(parameters)
+
+
+class EndEventCommandGUI(CommandGUI):
+    title     = "Exit Current Event"
+    tooltip   = "When the code reaches this point, the program will not process the rest of this event."
+    icon      = Paths.command_exit_event
+    logicPair = "EndEventCommand"
+
+    def __init__(self, env, parameters=None):
+        super(EndEventCommandGUI, self).__init__(parameters)
+
+
+
+# Work in progress
 class RunTaskCommandGUI(CommandGUI):
     title     = "Run Another Task File"
     tooltip   = "This tool will run  another task file and run it inside of this task, until the 'End Program'\n" \

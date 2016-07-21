@@ -68,7 +68,6 @@ class EventWidget(QtWidgets.QWidget):
         self.setToolTip(tip)
 
 
-
 class EventPromptWindow(QtWidgets.QDialog):
     def __init__(self, objectManager, parent):
         super(EventPromptWindow, self).__init__(parent)
@@ -281,6 +280,12 @@ class EventGUI:
         widget.setTip(self.tooltip)
         return widget
 
+    def getSaveData(self):
+        eventSave = {    'typeGUI': self.__class__.__name__,
+                       'typeLogic': self.logicPair,
+                      'parameters': self.parameters,
+                     'commandList': self.commandList.getSaveData()}
+        return eventSave
 
 
 ########## EVENTS ##########

@@ -24,7 +24,7 @@ License:
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
 __author__ = "Alexander Thiel"
-
+import json  # For copying/pasting commands
 import EventsGUI   as EventsGUI
 import CommandsGUI as CommandsGUI
 from PyQt5         import QtCore, QtWidgets, QtGui
@@ -83,7 +83,7 @@ class ControlPanel(QtWidgets.QWidget):
 
         # Connect Button Events
         self.addEventBtn.clicked.connect(self.eventList.promptUser)
-        self.deleteEventBtn.clicked.connect(self.eventList.deleteEvent)
+        self.deleteEventBtn.clicked.connect(self.eventList.deleteSelectedEvent)
         self.changeEventBtn.clicked.connect(self.eventList.replaceEvent)
 
 
@@ -401,8 +401,16 @@ class EventList(QtWidgets.QListWidget):
         return placeIndex                   # Returns where the object was placed
 
 
+    def deleteEvent(self, listWidgetItem):
+        event = self.events[self.itemWidget(listWidgetItem)]
+        event.commandList.deleteLater()
+        del self.events[self.itemWidget(listWidgetItem)]
+        self.itemWidget(listWidgetItem).deleteLater()
+        self.takeItem(self.row(listWidgetItem))
 
-    def deleteEvent(self):
+
+
+    def deleteSelectedEvent(self):
         printf("Removing selected event")
 
         # Get the current item it's corresponding event
@@ -424,8 +432,8 @@ class EventList(QtWidgets.QListWidget):
                 return
 
         # Delete the event item and it's corresponding event
-        del self.events[self.itemWidget(selectedItem)]
-        self.takeItem(self.currentRow())
+        self.deleteEvent(selectedItem)
+
 
     def replaceEvent(self):
         # Replace one event with another, while keeping the same commandList
@@ -462,9 +470,7 @@ class EventList(QtWidgets.QListWidget):
 
 
         # Delete the selected event
-        del self.events[self.itemWidget(eventItem)]
-        self.takeItem(self.currentRow())
-
+        self.deleteEvent(eventItem)
 
         # Make sure the changed event is selected
         index = self.addEvent(eventType, parameters=params, commandListSave=commandSave)
@@ -490,17 +496,15 @@ class EventList(QtWidgets.QListWidget):
         eventsOrdered = self.getEventsOrdered()
 
         for event in eventsOrdered:
-
-            eventSave = {    'typeGUI': event.__class__.__name__,
-                           'typeLogic': event.logicPair,
-                          'parameters': event.parameters,
-                         'commandList': event.commandList.getSaveData()}
-
-            eventList.append(eventSave)
+            eventList.append(event.getSaveData())
 
         return eventList
 
     def loadData(self, data):
+        # Perform cleanup
+        for key in self.events:
+            self.events[key].commandList.deleteLater()
+
         self.events = {}
         self.clear()  # clear eventList
 
@@ -539,17 +543,21 @@ class CommandList(QtWidgets.QListWidget):
 
         self.setMinimumWidth(self.minimumWidth)
 
+    def deleteItem(self, listWidgetItem):
+        del self.commands[self.itemWidget(listWidgetItem)]
+        self.itemWidget(listWidgetItem).deleteLater()
+        self.takeItem(self.row(listWidgetItem))
+
     def deleteSelected(self):
         # Delete all highlighted commands
 
         for item in self.selectedItems():
-            del self.commands[self.itemWidget(item)]
-            self.takeItem(self.row(item))
+            self.deleteItem(item)
 
-        self.refresh()  # This will update indents, which can change when you delete a command
+        self.refreshIndents()  # This will update indents, which can change when you delete a command
 
 
-    def refresh(self):
+    def refreshIndents(self):
         # Refreshes the order and indenting of the CommandList
         zeroAndAbove = lambda i: (i < 0) * 0 + (i >= 0) * i
         indent = 0
@@ -642,22 +650,76 @@ class CommandList(QtWidgets.QListWidget):
                 newCommand.dressWidget(newWidget)     # Dress up the widget
             else:
                 # If the user canceled, then delete the command
-                del self.commands[newWidget]
-                self.takeItem(self.row(listWidgetItem))
+                self.deleteItem(listWidgetItem)
+
 
         # Update the width of the commandList to the widest element within it
         if not isLoading:
             # self.setCurrentRow(index - 1)
-            self.refresh()
+            self.refreshIndents()
 
 
 
-
-    # For deleting items
+    # For deleting, copying, and pasting items
     def keyPressEvent(self, event):
         # Delete selected items when delete key is pressed
         if event.key() == QtCore.Qt.Key_Delete:
             self.deleteSelected()
+
+        if event == QtGui.QKeySequence.Copy:
+
+            copyData = []
+            for item in self.selectedItems():
+                command = self.commands[self.itemWidget(item)]
+                data    = command.getSaveData()
+                copyData.append(data)
+
+
+
+            # Create a JSON, convert it to a string, then a byteArray
+            byteData = bytearray(str(json.dumps(copyData)), 'utf-8')
+            byteData = QtCore.QByteArray(byteData)
+
+            # Load the byteArray into QMime Data, under the name "CommandData"
+            md = QtCore.QMimeData()
+            md.setData("CommandData", byteData)
+
+            # Load the mimeData into the clipboard, for later pasting
+            clipboard = QtWidgets.QApplication.clipboard()
+            clipboard.setMimeData(md) # json.dumps(copyData))
+            # md.setText(self.dragData)
+
+
+        if event == QtGui.QKeySequence.Paste:
+
+            # Pull the data from the clipboard, it will be a QByteArray
+            clipboard = QtWidgets.QApplication.clipboard()
+            pasteData = clipboard.mimeData().data("CommandData")
+
+            # Make sure there was something in the clipboard
+            if len(pasteData) == 0: return
+
+            # Convert the QByteArray to a normal utf-8 string, representing a JSON
+            pasteData = bytearray(pasteData)
+            pasteData = pasteData.decode('utf-8')
+
+            # Convert the string into a normal python dictionary
+            commandData = json.loads(pasteData)
+
+
+            # Figure out the index to paste the commands
+            print(commandData[0]["typeGUI"])
+            selectedItems = self.selectedItems()
+            if len(selectedItems):
+                pasteIndex = self.row(selectedItems[-1]) + 1
+            else:
+                pasteIndex = self.count()
+
+            for commandSave in reversed(commandData):
+                self.addCommand(getattr(CommandsGUI, commandSave['typeGUI']),
+                                parameters=commandSave['parameters'],
+                                index=pasteIndex )
+            print("Pasting at ", pasteIndex)
 
 
     # For clicking and dragging Command Buttons into the list, and moving items within the list
@@ -699,7 +761,7 @@ class CommandList(QtWidgets.QListWidget):
         else:
             event.setDropAction(QtCore.Qt.MoveAction)
             super(CommandList, self).dropEvent(event)
-        self.refresh()
+        self.refreshIndents()
 
 
     def selectionChangedEvent(self):
@@ -724,7 +786,7 @@ class CommandList(QtWidgets.QListWidget):
         currentWidget = self.itemWidget(clickedItem)  # Get the current itemWidget
         command.dressWidget(currentWidget)
 
-        self.refresh()
+        self.refreshIndents()
 
 
     def getSaveData(self):
@@ -732,20 +794,16 @@ class CommandList(QtWidgets.QListWidget):
         commandsOrdered = [self.getCommand(self.item(index)) for index in range(self.count())]
 
         for command in commandsOrdered:
-            commandSave = {   'typeGUI': command.__class__.__name__,
-                            'typeLogic': command.logicPair,
-                           'parameters': command.parameters}
-            commandList.append(commandSave)
+            commandList.append(command.getSaveData())
 
         return commandList
 
     def loadData(self, data):
-        # Clear all data on the current list
         self.commands = {}
         self.clear()
 
         # Fill the list with new data
         for commandSave in data:
-            self.addCommand(getattr(CommandsGUI, commandSave['typeGUI']),  # Convert from string to an actual event obj
-                            parameters=commandSave['parameters'])
-        self.refresh()
+            # Convert from string to an actual event obj
+            self.addCommand(getattr(CommandsGUI, commandSave['typeGUI']), parameters=commandSave['parameters'])
+        self.refreshIndents()

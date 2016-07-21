@@ -603,15 +603,13 @@ class PlaneTracker(Tracker):
             quad = np.int32(tracked.quad)
 
             # If this object is definitely higher than the other, erase everything beneath it to give the "3D" effect
-
-
-
             cv2.fillConvexPoly(mask, quad, 0)
 
-            last = tracked
 
-            cv2.polylines(mask, [quad], True, (255, 255, 255, .5), 3)
-            cv2.polylines(tMask, [quad], True, (255, 255, 255, .5), 2)
+            # Draw the rectangle around the object- in both the normal mask and the transparent one
+            cv2.polylines( mask, [quad], True, (255, 255, 255), 3)
+            cv2.polylines(tMask, [quad], True, (255, 255, 255), 2)
+
 
             # Figure out how much the text should be scaled (depends on the different in curr side len, and orig len)
             rect          = tracked.view.rect
@@ -628,17 +626,17 @@ class PlaneTracker(Tracker):
             x0, y0, x1, y1 = -width, -height, width, height
 
 
-
             ar_verts = np.float32([[.5,  0, 0], [.5,  1, 0], [.45, .95,   0], [.55, .95,   0],
                                    [ 0, .5, 0], [ 1, .5, 0], [.95, .45,   0], [.95, .55,   0],
                                    [.5, .5, 0], [.5, .5, 1], [.45,  .5, .90], [.55,  .5, .90]])
 
-            red   = (1,   1,   255)
-            green = (  1, 255,   1)
-            blue  = (  255,   1, 1)
-            ar_edges = [( 0, 1,   red), ( 2, 1,   red), ( 3, 1,   red),
-                        ( 4, 5, blue), ( 6, 5, blue), ( 7, 5, blue),
-                        ( 8, 9,  green), (10, 9,  green), (11, 9,  green)]
+            red      = (   1,   1, 255)
+            green    = (   1, 255,   1)
+            blue     = ( 255,   1,   1)
+
+            ar_edges = [( 0, 1,   red), ( 2, 1,   red), ( 3, 1,    red),
+                        ( 4, 5,  blue), ( 6, 5,  blue), ( 7, 5,   blue),
+                        ( 8, 9, green), (10, 9, green), (11, 9,  green)]
 
             verts = ar_verts * [(x1 - x0), (y1 - y0), -(x1 - x0) * 0.3] + (x0, y0, 0)
 

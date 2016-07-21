@@ -39,22 +39,19 @@ from Logic             import Global, Paths             # For keeping track of k
 from Logic.Environment import Environment               # Contains important variables
 from Logic.Interpreter import Interpreter               # For actually starting/stopping the script
 from Logic.Global      import printf                    # For my personal printing format
-from Logic.Robot       import getConnectedRobots        # For settingsWindow
-from Logic.Video       import getConnectedCameras       # For settingsWindow
+from Logic.Robot       import getConnectedRobots        # For deviceWindow
+from Logic.Video       import getConnectedCameras       # For deviceWindow
 from ObjectManagerGUI  import ObjectManagerWindow       # For opening ObjectManager window
 
 
 ########## MAIN WINDOW ##########
 class MainWindow(QtWidgets.QMainWindow):
-
+    # For debugging object count, use: print("CHILDREN: ", len(self.findChildren(QtCore.QObject)))
     def __init__(self):
         super(MainWindow, self).__init__()
 
-        # This is the format of an empty settings variable. It is filled in self.loadSettings() if settings exist.
 
 
-
-        self.settings = None
         # Init self and objects.
         self.fileName    = None
         self.loadData    = []  #Set when file is loaded. Used to check if the user has changed anything and prompt
@@ -142,7 +139,7 @@ class MainWindow(QtWidgets.QMainWindow):
         toolbar = self.addToolBar("MainToolbar")
         toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
 
-        settingsBtn  = QtWidgets.QAction(QtGui.QIcon(Paths.settings), 'Settings', self)
+        settingsBtn  = QtWidgets.QAction(QtGui.QIcon(Paths.settings), 'Devices', self)
         calibrateBtn = QtWidgets.QAction(QtGui.QIcon(Paths.calibrate), 'Calibrate', self)
         objMngrBtn   = QtWidgets.QAction(QtGui.QIcon(Paths.objectManager), 'Resources', self)
 
@@ -157,7 +154,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.scriptToggleBtn.triggered.connect(self.toggleScript)
         self.videoToggleBtn.triggered.connect(lambda: self.setVideo("toggle"))
-        settingsBtn.triggered.connect(self.openSettings)
+        settingsBtn.triggered.connect(self.openDevices)
         calibrateBtn.triggered.connect(self.openCalibrations)
         objMngrBtn.triggered.connect(self.openObjectManager)
 
@@ -193,7 +190,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowIcon(QtGui.QIcon(Paths.taskbar))
         self.show()
 
-
+    def keyPressEvent(self, event):
+        # TODO: Remove this when development is over
+        if event.key() == QtCore.Qt.Key_Q:
+            print("CHILDREN: ", len(self.findChildren(QtCore.QObject)))
 
     def setVideo(self, state):
         """
@@ -312,15 +312,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 
-    def openSettings(self):
+    def openDevices(self):
         # This handles the opening and closing of the Settings window.
-        printf("Opening Settings Window")
+        printf("Opening Devices Window")
 
         self.endScript()
         self.setVideo("pause")  # If you don't pause video, scanning for cameras may crash the program
 
-        settingsWindow = SettingsWindow(parent=self)
-        accepted       = settingsWindow.exec_()
+        deviceWindow = DeviceWindow(parent=self)
+        accepted     = deviceWindow.exec_()
 
         self.setVideo("play")
         if not accepted:
@@ -328,8 +328,8 @@ class MainWindow(QtWidgets.QMainWindow):
             return
 
         printf("Apply clicked, applying settings...")
-        self.env.updateSettings("robotID", settingsWindow.getRobotSetting())
-        self.env.updateSettings("cameraID", settingsWindow.getCameraSetting())
+        self.env.updateSettings("robotID", deviceWindow.getRobotSetting())
+        self.env.updateSettings("cameraID", deviceWindow.getCameraSetting())
 
         vStream = self.env.getVStream()
         vStream.setNewCamera(self.env.getSetting('cameraID'))
@@ -514,14 +514,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 ##########    VIEWS    ##########
-class SettingsWindow(QtWidgets.QDialog):
+class DeviceWindow(QtWidgets.QDialog):
     """
     Simple view that lets you select your robot and camera.
     The Apply/Cancel buttons are connected in the MainWindow class, which is why they are 'self' variables
     """
 
     def __init__(self, parent):
-        super(SettingsWindow, self).__init__(parent)
+        super(DeviceWindow, self).__init__(parent)
         self.robSetting = None  # New robotID
         self.camSetting = None  # New cameraID
         # Init UI Globals
@@ -604,7 +604,7 @@ class SettingsWindow(QtWidgets.QDialog):
 
         self.setLayout(mainHLayout)
         self.setMinimumHeight(400)
-        self.setWindowTitle('Settings')
+        self.setWindowTitle('Devices')
         self.setWindowIcon(QtGui.QIcon(Paths.settings))
 
 
@@ -680,6 +680,8 @@ class Application(QtWidgets.QApplication):
     def notify(self, receiver, event):
         # Add any keys that are pressed to keysPressed
         if event.type() == QtCore.QEvent.KeyPress:
+
+
             if event.key() not in Global.keysPressed:
                 Global.keysPressed.append(event.key())
 
