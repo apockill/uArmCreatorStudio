@@ -1,6 +1,8 @@
 """
 This software was designed by Alexander Thiel
 Github handle: https://github.com/apockill
+Email: Alex.D.Thiel@Gmail.com
+
 
 The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
 It is completely open source, so feel free to take it and use it as a base for your own projects.
@@ -23,8 +25,6 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
-__author__ = "Alexander Thiel"
-
 import json
 import os
 import sys   # For getting size of oan object
@@ -33,7 +33,7 @@ import numpy as np
 from Logic        import Paths
 from collections  import namedtuple
 from Logic.Global import printf, ensurePathExists
-
+__author__ = "Alexander Thiel"
 
 class ObjectManager:
     """

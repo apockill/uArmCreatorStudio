@@ -1,6 +1,8 @@
 """
 This software was designed by Alexander Thiel
 Github handle: https://github.com/apockill
+Email: Alex.D.Thiel@Gmail.com
+
 
 The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
 It is completely open source, so feel free to take it and use it as a base for your own projects.
@@ -23,7 +25,6 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
-__author__ = "Alexander Thiel"
 import numpy             as np
 import Logic.RobotVision as rv
 from time                import time
@@ -34,6 +35,8 @@ from Logic               import Paths
 from Logic.Global        import printf
 from Logic.ObjectManager import TrackableObject, MotionPath
 from Logic.RobotVision   import MIN_POINTS_TO_LEARN_OBJECT
+__author__ = "Alexander Thiel"
+
 
 
 class ObjectManagerWindow(QtWidgets.QDialog):
@@ -798,7 +801,6 @@ class MotionRecordWindow(QtWidgets.QDialog):
         if trimStart < len(self.motionPath) - 1:
             self.motionPath = self.motionPath[trimStart:]
 
-
         if len(self.motionPath) <= 20: return
 
 
@@ -817,7 +819,6 @@ class MotionRecordWindow(QtWidgets.QDialog):
         self.motionPath.reverse()
         if trimStart < len(self.motionPath) - 1:
             self.motionPath = self.motionPath[:-trimEnd]
-
 
 
         # Subtract the time from the start to every cell in the array now

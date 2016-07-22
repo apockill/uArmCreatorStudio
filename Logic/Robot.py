@@ -1,6 +1,8 @@
 """
 This software was designed by Alexander Thiel
 Github handle: https://github.com/apockill
+Email: Alex.D.Thiel@Gmail.com
+
 
 The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
 It is completely open source, so feel free to take it and use it as a base for your own projects.
@@ -23,7 +25,6 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
-__author__ = "Alexander Thiel"
 import math
 import serial
 import serial.tools.list_ports
@@ -32,6 +33,8 @@ from time         import sleep  #Only use in refresh() command while querying ro
 from Logic.Global import printf
 
 from Logic.CommunicationProtocol import Device
+__author__ = "Alexander Thiel"
+
 
 
 def getConnectedRobots():
@@ -107,7 +110,7 @@ class Robot:
         """
 
         if not self.connected() or self.exiting:
-            printf("Robot not found or setupThread is running, returning False")
+            printf("Robot not avaliable, returning False")
             return False
 
         with self.lock:
@@ -120,7 +123,7 @@ class Robot:
         """
 
         if not self.connected() or self.exiting:
-            printf("Robot not found or setupThread is running, returning False")
+            printf("Robot not avaliable, returning False for Tip Sensor")
             return False
 
         with self.lock:
@@ -133,7 +136,7 @@ class Robot:
         """
 
         if not self.connected() or self.exiting:
-            printf("Robot not found or setupThread is running, return 0 for all coordinates")
+            printf("Robot not avaliable, return 0 for all coordinates")
             return [0.0, 0.0, 0.0]
 
         with self.lock:
@@ -146,7 +149,7 @@ class Robot:
         """
 
         if not self.connected() or self.exiting:
-            printf("Robot not found or setupThread is running, returning 0 for angle")
+            printf("Robot not avaliable, returning 0 for angle")
             return [0.0, 0.0, 0.0, 0.0]
 
         with self.lock:
@@ -158,7 +161,7 @@ class Robot:
         :return: [X, Y, Z] list
         """
         if not self.connected() or self.exiting:
-            printf("Robot not found or setupThread is running, returning 0 for angle")
+            printf("Robot not avaliable, returning 0 for FK")
             return [0.0, 0.0, 0.0]
 
         with self.lock:
@@ -183,7 +186,7 @@ class Robot:
         """
 
         if not self.connected() or self.exiting:
-            printf("Robot not found or setupThread is running, canceling position change")
+            printf("Robot not avaliable, canceling position change")
             return
 
         def setVal(value, axis, relative):
@@ -244,9 +247,7 @@ class Robot:
             # Wait for robot to finish move, but if in exiting mode, just continue
             if wait:
                 while self.getMoving():
-                    if self.exiting:
-                        printf("Exiting early!")
-                        break
+                    if self.exiting: break
                     sleep(.1)
 
         self.lock.release()
@@ -262,7 +263,7 @@ class Robot:
         """
 
         if not self.connected() or self.exiting:
-            printf("Robot not found or setupThread is running, canceling wrist change")
+            printf("Robot not avaliable, canceling wrist change")
             return
 
         def setServoAngle(servoNum, angle, rel):
@@ -303,7 +304,7 @@ class Robot:
         """
 
         if not self.connected() or self.exiting:
-            printf("Robot not found or setupThread is running, canceling servo change")
+            printf("Robot not avaliable, canceling servo change")
             return
 
         # If a positional servo is attached, get the robots current position and update the self.pos cache
@@ -346,7 +347,7 @@ class Robot:
         """
 
         if not self.connected() or self.exiting:
-            printf("Robot not found or setupThread is running, canceling gripper change")
+            printf("Robot not avaliable, canceling gripper change")
             return
 
         if not self.__gripperStatus == status:
@@ -362,7 +363,7 @@ class Robot:
         """
 
         if not self.connected() or self.exiting:
-            printf("Robot not found or setupThread is running, canceling buzzer change")
+            printf("Robot not avaliable, canceling buzzer change")
             return
         with self.lock:
             self.uArm.setBuzzer(frequency, duration)

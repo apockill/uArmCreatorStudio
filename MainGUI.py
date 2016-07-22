@@ -1,6 +1,8 @@
 """
 This software was designed by Alexander Thiel
 Github handle: https://github.com/apockill
+Email: Alex.D.Thiel@Gmail.com
+
 
 The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
 It is completely open source, so feel free to take it and use it as a base for your own projects.
@@ -23,13 +25,11 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
-__author__ = "Alexander Thiel"
-
-
 import json         # For saving and loading settings and tasks
 import sys          # For GUI, and overloading the default error handling
 import webbrowser   # For opening the uFactory forums under the "file" menu
 import ControlPanelGUI
+from time              import sleep                     # Used when closing the interpreter thread
 from CommonGUI         import Console
 from copy              import deepcopy                  # For copying saves and comparing later
 from PyQt5             import QtCore, QtWidgets, QtGui  # All GUI things
@@ -42,6 +42,8 @@ from Logic.Global      import printf                    # For my personal printi
 from Logic.Robot       import getConnectedRobots        # For deviceWindow
 from Logic.Video       import getConnectedCameras       # For deviceWindow
 from ObjectManagerGUI  import ObjectManagerWindow       # For opening ObjectManager window
+__author__ = "Alexander Thiel"
+
 
 
 ########## MAIN WINDOW ##########
@@ -56,7 +58,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.fileName    = None
         self.loadData    = []  #Set when file is loaded. Used to check if the user has changed anything and prompt
         self.env         = Environment()
-        self.interpreter = Interpreter(self.env)
+        self.interpreter = Interpreter(self.env, None)
 
 
         # Set Global UI Variables
@@ -190,10 +192,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowIcon(QtGui.QIcon(Paths.taskbar))
         self.show()
 
-    # def keyPressEvent(self, event):
-    #     # TODO: Remove this when development is over
-    #     if event.key() == QtCore.Qt.Key_Q:
-    #         print("CHILDREN: ", len(self.findChildren(QtCore.QObject)))
 
     def setVideo(self, state):
         """
@@ -254,11 +252,11 @@ class MainWindow(QtWidgets.QMainWindow):
         vision = self.env.getVision()
 
 
-        # Load the script, and get any relevant errors
-        errors = self.interpreter.loadScript(self.controlPanel.getSaveData())
+        # Load the script with the latest changes in the controlPanel, and get any relevant errors
+        errors = self.interpreter.initializeScript(self.controlPanel.getSaveData())
 
 
-        # If there were during loading, present the user with the option to continue anyways
+        # If there were errors during loading, present the user with the option to continue anyways
         if len(errors):
             errorText = ""
             for error, errorObjects in errors.items():
@@ -284,7 +282,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Stop you from moving stuff around while script is running, and activate the visual cmmnd highlighting
         self.controlPanel.setScriptModeOn(self.interpreter.getStatus, self.endScript)
-        self.interpreter.startThread()
+        self.interpreter.startThread(threaded=True)
 
 
 
@@ -293,13 +291,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.scriptToggleBtn.setText("Stop")
 
     def endScript(self):
-        vision = self.env.getVision()
-        robot = self.env.getRobot()
+        # Tell the interpreter to exit the thread, then wait
+        if self.interpreter.threadRunning():
+            self.interpreter.setExiting(True)
+            while self.interpreter.threadRunning(): sleep(.05)
 
-        self.interpreter.endThread()
+        # Return things back to normal
+        self.interpreter.setExiting(False)
         self.controlPanel.setScriptModeOff()
 
         # Turn off the gripper, just in case. Do this AFTER interpreter ends, so as to not use Serial twice...
+        vision = self.env.getVision()
+        robot  = self.env.getRobot()
+
         robot.setGripper(False)
         robot.setActiveServos(all=False)
 
@@ -414,16 +418,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.loadData = deepcopy(saveData)  #Update what the latest saved changes are
 
 
-        printf("Project Saved")
+
 
         self.setWindowTitle(self.programTitle + '       ' + self.fileName)
-
+        printf("Project Saved Successfully")
         return True
 
     def loadTask(self,  **kwargs):
         # Load a save file
-
-        self.endScript()  # Make sure a script isn't running while you try to load something
+        self.promptSave()  # Make sure the user isn't losing progress
+        self.endScript()   # Make sure a script isn't running while you try to load something
 
         printf("Loading project")
 
@@ -431,9 +435,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # If there's no filename given, then prompt the user for what to name the task
         if filename is None:  #If no filename was specified, prompt the user for where to save
-            filename, filetype = QtWidgets.QFileDialog.getOpenFileName(self, "Load Task", "", "*.task")
+            filename, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Load Task", "", "Task (*.task)")
             if filename == "": return  #If user hit cancel
-            printf("Project Loaded:")
+
 
         try:
             self.loadData = json.load( open(filename))
@@ -445,15 +449,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 
-
-
-
         # Load the data- BUT MAKE SURE TO DEEPCOPY otherwise any change in the program will change in self.loadData
         try:
+
             self.controlPanel.loadData(deepcopy(self.loadData))
             self.fileName = filename
             self.env.updateSettings("lastOpenedFile", filename)
             self.setWindowTitle(self.programTitle + '      ' + self.fileName)
+            printf("Project loaded successfully")
         except Exception as e:
             printf("ERROR: Could not load task: ", e)
             self.newTask(promptSave=False)
@@ -500,6 +503,7 @@ class MainWindow(QtWidgets.QMainWindow):
         robot.setActiveServos(all=False)
 
         # Close and delete GUI objects, to stop their events from running
+        self.interpreter.setExiting(True)
         self.cameraWidget.close()
         self.controlPanel.close()
         self.centralWidget.close()
@@ -681,8 +685,8 @@ class Application(QtWidgets.QApplication):
         # Add any keys that are pressed to keysPressed
         if event.type() == QtCore.QEvent.KeyPress:
             #Todo: remove these two lines when development is finished
-            if event.key() == QtCore.Qt.Key_Q and len(mainWindowREMOVE):
-                print("CHILDREN: ", len(mainWindowREMOVE[0].findChildren(QtCore.QObject)))
+            if event.key() == QtCore.Qt.Key_Q and len(mainWindowReference):
+                print("CHILDREN: ", len(mainWindowReference[0].findChildren(QtCore.QObject)))
 
             if event.key() not in Global.keysPressed:
                 Global.keysPressed.append(event.key())
@@ -699,7 +703,7 @@ class Application(QtWidgets.QApplication):
 
 
 
-mainWindowREMOVE = []  #Todo: remove this line when development is finished
+mainWindowReference = []  #Todo: remove this line when development is finished
 
 
 if __name__ == '__main__':
@@ -714,9 +718,13 @@ if __name__ == '__main__':
 
     sys.excepthook   = exception_hook
 
+    # Initialize global variables
+    Global.init()
 
-    # Actually start the application
+
+    # Create the Application base
     app = Application(sys.argv)
+
 
     # Apply a theme of choice here
     # app.setStyleSheet(fancyqt.firefox.style)
@@ -728,13 +736,10 @@ if __name__ == '__main__':
     font.setPixelSize(12)
     app.setFont(font)
 
-    # Initialize global variables
-    Global.init()
 
-    # Start application
+    # Actually start the main window
     mainWindow = MainWindow()
-    mainWindowREMOVE.append(mainWindow)  #Todo: remove this line when development is finished
-    mainWindow.show()
+    mainWindowReference.append(mainWindow)  #Todo: remove this line when development is finished
     sys.exit(app.exec_())
 
 

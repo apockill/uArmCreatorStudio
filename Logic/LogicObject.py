@@ -1,6 +1,8 @@
 """
 This software was designed by Alexander Thiel
 Github handle: https://github.com/apockill
+Email: Alex.D.Thiel@Gmail.com
+
 
 The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
 It is completely open source, so feel free to take it and use it as a base for your own projects.

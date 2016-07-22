@@ -1,6 +1,8 @@
 """
 This software was designed by Alexander Thiel
 Github handle: https://github.com/apockill
+Email: Alex.D.Thiel@Gmail.com
+
 
 The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
 It is completely open source, so feel free to take it and use it as a base for your own projects.
@@ -23,14 +25,16 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
-__author__ = "Alexander Thiel"
 import ast  # To check if a statement is python parsible, for evals
 import re   # For variable santization
+from os.path      import basename
 from CameraGUI    import CameraSelector
 from PyQt5        import QtGui, QtCore, QtWidgets
 from Logic        import Paths
 from Logic.Global import printf
 from CommonGUI    import ScriptWidget
+__author__ = "Alexander Thiel"
+
 
 
 # This should only be used once, in CommandList.addCommand
@@ -45,8 +49,8 @@ class CommandWidget(QtWidgets.QWidget):
         # Set up UI Globals
         self.title       = QtWidgets.QLabel()
         self.description = QtWidgets.QLabel()
-        self.icon        = QtWidgets.QLabel("No Icon XFound")
-        self.deleteBtn   = QtWidgets.QPushButton("")
+        self.icon        = QtWidgets.QLabel()
+        self.deleteBtn   = QtWidgets.QPushButton()
 
 
         self.initUI()
@@ -66,24 +70,17 @@ class CommandWidget(QtWidgets.QWidget):
         bold.setBold(True)
         self.title.setFont(bold)
 
-        leftLayout = QtWidgets.QVBoxLayout()
+
         midLayout = QtWidgets.QVBoxLayout()
-        rightLayout = QtWidgets.QVBoxLayout()
-
-        leftLayout.addWidget(self.icon)
-
         midLayout.setSpacing(1)
         midLayout.addWidget(self.title)
         midLayout.addWidget(self.description)
 
-        rightLayout.addWidget(self.deleteBtn)
-        rightLayout.setAlignment(QtCore.Qt.AlignRight)
 
         mainHLayout = QtWidgets.QHBoxLayout()
-        mainHLayout.addLayout(leftLayout)
+        mainHLayout.addWidget(self.icon)
         mainHLayout.addLayout(midLayout, QtCore.Qt.AlignLeft)
-        mainHLayout.addLayout(rightLayout, QtCore.Qt.AlignRight)
-
+        mainHLayout.addWidget(self.deleteBtn)
         self.setLayout(mainHLayout)
 
     def setFocused(self, isFocused):
@@ -193,6 +190,7 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         add(EndBlockCommandGUI)
         add(EndEventCommandGUI)
         add(EndProgramCommandGUI)
+        add(RunTaskCommandGUI)
 
 
 
@@ -380,6 +378,7 @@ class CommandGUI:
                         'typeLogic': self.logicPair,
                        'parameters': self.parameters}
         return commandSave
+
     # The following functions should be empty, and only are there so that subclasses without them don't cause errors
     def _updateDescription(self):
         # This is called in openView() and will update the decription to match the parameters
@@ -1118,7 +1117,7 @@ class MoveRelativeToObjectCommandGUI(CommandGUI):
                          'y': self._sanitizeEval(prompt.yEdit, self.parameters["y"]),
                          'z': self._sanitizeEval(prompt.zEdit, self.parameters["z"])}
 
-        print(newParameters)
+
         self.parameters.update(newParameters)
 
         return self.parameters
@@ -1245,7 +1244,6 @@ class PickupObjectCommandGUI(CommandGUI):
         # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
         newParameters = {"objectID": str(prompt.objChoices.currentText())}
 
-        print(newParameters)
         self.parameters.update(newParameters)
 
         return self.parameters
@@ -1472,7 +1470,6 @@ class VisionMoveXYZCommandGUI(MoveXYZCommandGUI):
         warningLbl = QtWidgets.QLabel("This function is experimental. It may not yield more accurate results.")
         warningLbl.setWordWrap(True)
 
-        print("Prompt: ", prompt)
         self._addRow(prompt, warningLbl)
 
         return prompt
@@ -1689,7 +1686,7 @@ class EndEventCommandGUI(CommandGUI):
 
 # Work in progress
 class RunTaskCommandGUI(CommandGUI):
-    title     = "Run Another Task File"
+    title     = "Run Task"
     tooltip   = "This tool will run  another task file and run it inside of this task, until the 'End Program'\n" \
                 "command is called within the task, then it will return to the currently running task.\n" \
                 "All tasks are preloaded when script is launched, so if a child class runs a parent class, an error\n" \
@@ -1707,18 +1704,52 @@ class RunTaskCommandGUI(CommandGUI):
             self.parameters = {"filename": ""}
 
     def dressWindow(self, prompt):
-        # Do some GUI code setup
-        # Put all the objects into horizontal layouts called Rows
+        def updateFileLbl(prompt, label):
+            chosenFile, _ = QtWidgets.QFileDialog.getOpenFileName(prompt, "Load Task", "", "*.task")
+            if chosenFile == "": return
+            label.setText(chosenFile)
 
+        # Create the filename label
+        prompt.fileLbl = QtWidgets.QLabel(self.parameters["filename"])
+        prompt.fileLbl.setWordWrap(True)
+        prompt.fileLbl.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
+
+        fileBtn = QtWidgets.QPushButton("Select Task")
+        fileBtn.clicked.connect(lambda: updateFileLbl(prompt, prompt.fileLbl))
+
+        self._addRow(prompt, fileBtn)
+        self._addRow(prompt, prompt.fileLbl)
 
         return prompt
 
     def _extractPromptInfo(self, prompt):
-        newParameters = {}
+        newParameters = {"filename": str(prompt.fileLbl.text())}
 
         self.parameters.update(newParameters)
 
         return self.parameters
 
     def _updateDescription(self):
-        self.description = ""
+        if len(self.parameters["filename"]) == 0:
+            self.description = "No Task Selected"
+        else:
+            self.description = "Open " + basename(self.parameters["filename"]) + " and run it"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

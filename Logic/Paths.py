@@ -1,6 +1,8 @@
 """
 This software was designed by Alexander Thiel
 Github handle: https://github.com/apockill
+Email: Alex.D.Thiel@Gmail.com
+
 
 The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
 It is completely open source, so feel free to take it and use it as a base for your own projects.
@@ -23,11 +25,11 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
-__author__ = "Alexander Thiel"
 import os
 import sys
+__author__ = "Alexander Thiel"
 
-# from Resources import CompiledImages
+
 
 ################        PATHS FOR ALL       ################
 resourcesLoc = "Resources\\"
@@ -43,19 +45,19 @@ def resourcePath(relative_path):
         return os.path.join(sys._MEIPASS, relative_path)
     return os.path.join(os.path.abspath("."), relative_path)
 
-exeResourcesPath   = resourcePath(resourcesLoc)
+exeResourcesPath = resourcePath(resourcesLoc)
+
 # Used by Vision
-face_cascade       = exeResourcesPath + "face_cascade.xml"
-smile_cascade      = exeResourcesPath + "smile_cascade.xml"
-eye_cascade       = exeResourcesPath  + "eye_cascade.xml"
+face_cascade     = exeResourcesPath + "face_cascade.xml"
+smile_cascade    = exeResourcesPath + "smile_cascade.xml"
+eye_cascade      = exeResourcesPath  + "eye_cascade.xml"
 
 
 ################        GUI PATHS         ################
 imageLoc = resourcePath("Resources\\Icons\\")
 
-# Other
-# cancel             = imageLoc + "cancel.png"
-delete             = imageLoc + "delete.png"
+
+delete              = imageLoc + "delete.png"
 
 
 # "File" Menu
@@ -63,6 +65,7 @@ file_new            = imageLoc + "file_new.png"
 file_save           = imageLoc + "file_save.png"
 file_load           = imageLoc + "file_load.png"
 reddit_link         = imageLoc + "forum_link_reddit.png"
+
 
 # Toolbar
 run_script          = imageLoc + "script_run.png"
@@ -77,6 +80,7 @@ settings            = imageLoc + "window_settings.png"
 calibrate           = imageLoc + "window_calibrate.png"
 objectManager       = imageLoc + "window_object_manager.png"
 objectWizard        = imageLoc + "window_wizard.png"
+
 
 # Events
 event_creation      = imageLoc + "event_creation.png"

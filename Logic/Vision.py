@@ -1,6 +1,8 @@
 """
 This software was designed by Alexander Thiel
 Github handle: https://github.com/apockill
+Email: Alex.D.Thiel@Gmail.com
+
 
 The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
 It is completely open source, so feel free to take it and use it as a base for your own projects.
@@ -23,13 +25,14 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
-__author__ = "Alexander Thiel"
 from time import sleep
 import cv2
 import numpy as np
 from collections  import namedtuple
 from Logic.Global import printf
 from Logic        import Paths
+__author__ = "Alexander Thiel"
+
 
 class Vision:
     """
@@ -384,9 +387,9 @@ class Vision:
     def setExiting(self, exiting):
         # Used for closing threads quickly, when this is true any time-taking functions will skip through quickly
         # and return None or False or whatever their usual failure mode is. ei, waitForFrames() would exit immediately
-        if exiting:
-            printf("Setting Vision to Exiting mode. All frame commands should exit quickly.")
-            self.endAllTrackers()
+        # if exiting:
+        #     printf("Setting Vision to Exiting mode. All frame commands should exit quickly.")
+        #     self.endAllTrackers()
 
         self.exiting = exiting
 

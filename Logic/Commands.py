@@ -1,6 +1,8 @@
 """
 This software was designed by Alexander Thiel
 Github handle: https://github.com/apockill
+Email: Alex.D.Thiel@Gmail.com
+
 
 The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
 It is completely open source, so feel free to take it and use it as a base for your own projects.
@@ -23,12 +25,13 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
-__author__ = "Alexander Thiel"
 import math
-import numpy as np
 from Logic             import RobotVision as rv
 from Logic.Global      import printf, wait
 from Logic.LogicObject import LogicObject
+__author__ = "Alexander Thiel"
+
+
 
 """
 Example Class Structure
@@ -55,7 +58,6 @@ class NameCommand(Command):
         printf("A quick description, usually using parameters, of the command that is running")
         return True
 """
-
 
 
 class Command(LogicObject):
@@ -148,32 +150,13 @@ class MotionRecordingCommand(Command):
         # Evaluate the "Speed" variable
         newSpeed, success = self.interpreter.evaluateExpression(self.parameters['speed'])
 
-
         if not success or newSpeed <= 0:
             printf("ERROR: In evaluating 'speed' parameter for motionpath")
             return False
 
-        # Since x2 should mean twice as fast, and .5 should mean twice as slow, inverse the speed
-        newSpeed = 1.0 / newSpeed
-
-
-        # Multiply the motionPath by newSpeed, to change how fast it replays
-        mp = np.asarray(self.motionPath[:])
-        time = mp[:, [0]] * newSpeed
-        actions = mp[:, 1:]
-
-        # If reversed, flip the "actions" array
-        if self.parameters["reversed"]:
-            actions = actions.tolist()
-            actions = np.flipud(actions)  # Reverse the actions
-
-        # Put the "time" and "actions" array back together and return it to a list
-        mp = np.hstack((time, actions))
-        mp.tolist()
-
 
         # Send the path to the "path player"
-        rv.playMotionPath(mp.tolist(), self.robot, self.exitFunc)
+        rv.playMotionPath(self.motionPath, self.robot, self.exitFunc, speedMultiplier=newSpeed, reversed=self.parameters["reversed"])
         return True
 
 
@@ -816,3 +799,42 @@ class EndEventCommand(Command):
     def run(self):
         printf("Exiting current event")
         return "Exit"
+
+
+class RunTaskCommand(Command):
+
+    def __init__(self, env, interpreter, parameters=None):
+        super(RunTaskCommand, self).__init__(parameters)
+        self.env          = env
+        self.interpreter = interpreter
+
+
+        # # Load any objects, modules, calibrations, etc  that will be used in the run Section here. Use getVerifyXXXX()
+        # self.robot   = self.getVerifyRobot(env)
+        # self.vision  = self.getVerifyVision(env)
+
+        if len(self.errors): return
+
+        # Here, start tracking if your command requires it
+        # Add any objects to be tracked
+
+    def run(self):
+        printf("This ")
+        exitFunc = self.interpreter.parentExiting
+        if self.interpreter.parentExiting is None:
+            exitFunc = self.interpreter.isExiting
+
+        try:
+            self.interpreter.createChildInterpreter(self.parameters["filename"],
+                                                        exitFunc)
+            return True
+        except RuntimeError as e:
+            printf("ERROR: MAXIMUM RECURSION DEPTH EXCEEDED. ")
+            return False
+
+
+
+
+
+
+

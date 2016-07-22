@@ -1,6 +1,8 @@
 """
 This software was designed by Alexander Thiel
 Github handle: https://github.com/apockill
+Email: Alex.D.Thiel@Gmail.com
+
 
 The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
 It is completely open source, so feel free to take it and use it as a base for your own projects.
@@ -23,11 +25,11 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
-__author__ = "Alexander Thiel"
 import serial
 import serial.tools.list_ports
 from time         import sleep, time  # Used only in connecting to the robot, while waiting for serial to connect.
 from Logic.Global import printf
+__author__ = "Alexander Thiel"
 
 # This is a library for controlling uArms that have Alex Thiel's Arduino communication protocol uploaded
 def getConnectedRobots():
@@ -121,7 +123,7 @@ class Device:
         parsedArgs = self.__parseArgs(response, "fk", ["X", "Y", "Z"])
 
         # Return (X, Y, Z)
-        return parsedArgs["X"], -parsedArgs["Y"], parsedArgs["Z"]
+        return -parsedArgs["X"], -parsedArgs["Y"], parsedArgs["Z"]
 
     def getCurrentCoords(self):
         # Returns an array of the format [x, y, z] of the robots current location

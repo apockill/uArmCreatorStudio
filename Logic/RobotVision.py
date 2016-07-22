@@ -1,6 +1,8 @@
 """
 This software was designed by Alexander Thiel
 Github handle: https://github.com/apockill
+Email: Alex.D.Thiel@Gmail.com
+
 
 The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
 It is completely open source, so feel free to take it and use it as a base for your own projects.
@@ -23,12 +25,13 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
-__author__ = "Alexander Thiel"
 import math
 import cv2
 import numpy as np
 from time         import time, sleep
 from Logic.Global import printf, waitUntilTime
+__author__ = "Alexander Thiel"
+
 
 """
 A set of functions that use Robot and Vision classes to perform a task, all in tandem.
@@ -49,14 +52,38 @@ MAX_FRAME_FAIL             = 15   # Maximum times a function will get a new fram
 
 
 
-def playMotionPath(motionPath, robot, exitFunc):
+def playMotionPath(motionPath, robot, exitFunc, speedMultiplier=1, reversed=False):
     """
     Play a motion recording.
     :param motionPath: The motionpath array, with format [[TIME, GRIPPER, SERVO0, SERVO1, SERVO2, SERVO3]... []]
     :param robot: Robot object
+    :param speedMultiplier: a number > 0 that will change the speed the path is played at
+    :param reversed: whether or not to play the motionPath in reverse
     :param exitFunc: If this function ever returns true, the function will exit as quickly as possible
     """
 
+    # Modify the motionPath so that it fits the Speed and Reversed parameters
+    # Since x2 should mean twice as fast, and .5 should mean twice as slow, inverse the speed
+    speedMultiplier = 1.0 / speedMultiplier
+
+
+    # Multiply the motionPath by newSpeed, to change how fast it replays
+    mp         = np.asarray(motionPath[:])
+    timeColumn = mp[:, [0]] * speedMultiplier
+    actions    = mp[:, 1:]
+
+    # If reversed, flip the "actions" array
+    if reversed:
+        actions = actions.tolist()
+        actions = np.flipud(actions)  # Reverse the actions
+
+
+    # Put the "time" and "actions" array back together and return it to a list
+    motionPath = np.hstack((timeColumn, actions))
+    motionPath = motionPath.tolist()
+
+
+    # Now that the modifications are done, start the process for begining the motionPath
     TIME    = 0
     GRIPPER = 1
     SERVO0  = 2
@@ -65,16 +92,17 @@ def playMotionPath(motionPath, robot, exitFunc):
     SERVO3  = 5
 
 
-    setServo = lambda num, val: (lambda: robot.setServoAngles(servo0=val),
-                                 lambda: robot.setServoAngles(servo1=val),
-                                 lambda: robot.setServoAngles(servo2=val),
-                                 lambda: robot.setServoAngles(servo3=val))[num]()
+    # Convenience function. Example:  setServo(0, 90) will set servo #0 to 90 degrees
+    def setServo(servoNumber, angle):
+        if servoNumber == 0: robot.setServoAngles(servo0 = angle)
+        if servoNumber == 1: robot.setServoAngles(servo1 = angle)
+        if servoNumber == 2: robot.setServoAngles(servo2 = angle)
+        if servoNumber == 3: robot.setServoAngles(servo3 = angle)
 
 
-    # If the robot is far from the start position, move there first
 
 
-    # On the first iteration, move to the start position using a slow move
+    # Get the first move of the motionPath
     action = motionPath[0]
 
 
@@ -85,7 +113,7 @@ def playMotionPath(motionPath, robot, exitFunc):
         robot.setPos(coord=startPos)
 
 
-    # Set the first position, to make sure the recording starts off on the right foot
+    # Set the first position, to make sure the recording starts off on correct position
     lastVal = [action[SERVO0], action[SERVO1], action[SERVO2], action[SERVO3]]
     gripper = False
     setServo(0, lastVal[0])
@@ -94,7 +122,7 @@ def playMotionPath(motionPath, robot, exitFunc):
     setServo(3, lastVal[3])
 
 
-    # Start running through motionPath
+    # Start running through motionPath, starting on the 2nd step
     startTime = time() + action[TIME]
 
 

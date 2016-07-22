@@ -1,6 +1,8 @@
 """
 This software was designed by Alexander Thiel
 Github handle: https://github.com/apockill
+Email: Alex.D.Thiel@Gmail.com
+
 
 The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
 It is completely open source, so feel free to take it and use it as a base for your own projects.
@@ -23,12 +25,13 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
-__author__ = "Alexander Thiel"
 import json  # For copying/pasting commands
 import EventsGUI   as EventsGUI
 import CommandsGUI as CommandsGUI
 from PyQt5         import QtCore, QtWidgets, QtGui
 from Logic.Global  import printf
+__author__ = "Alexander Thiel"
+
 
 
 class ControlPanel(QtWidgets.QWidget):
@@ -613,13 +616,16 @@ class CommandList(QtWidgets.QListWidget):
         newWidget = newCommand.dressWidget(newWidget)     # Dress up the widget
 
 
+
         # Create the list widget item
         listWidgetItem = QtWidgets.QListWidgetItem(self)
         listWidgetItem.setSizeHint(newWidget.sizeHint())  # Widget will not appear without this line
 
 
+
         # Add list widget to commandList
         self.addItem(listWidgetItem)
+
 
 
         # If an index was specified, move the added widget to that index
@@ -708,7 +714,6 @@ class CommandList(QtWidgets.QListWidget):
 
 
             # Figure out the index to paste the commands
-            print(commandData[0]["typeGUI"])
             selectedItems = self.selectedItems()
             if len(selectedItems):
                 pasteIndex = self.row(selectedItems[-1]) + 1
@@ -719,7 +724,7 @@ class CommandList(QtWidgets.QListWidget):
                 self.addCommand(getattr(CommandsGUI, commandSave['typeGUI']),
                                 parameters=commandSave['parameters'],
                                 index=pasteIndex )
-            print("Pasting at ", pasteIndex)
+
 
 
     # For clicking and dragging Command Buttons into the list, and moving items within the list
@@ -790,6 +795,7 @@ class CommandList(QtWidgets.QListWidget):
 
 
     def getSaveData(self):
+        printf("Getting CommandList save data")
         commandList = []
         commandsOrdered = [self.getCommand(self.item(index)) for index in range(self.count())]
 
@@ -799,6 +805,8 @@ class CommandList(QtWidgets.QListWidget):
         return commandList
 
     def loadData(self, data):
+        printf("Loading CommandList")
+
         self.commands = {}
         self.clear()
 

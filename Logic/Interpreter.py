@@ -1,6 +1,8 @@
 """
 This software was designed by Alexander Thiel
 Github handle: https://github.com/apockill
+Email: Alex.D.Thiel@Gmail.com
+
 
 The software was designed originaly for use with a robot arm, particularly uArm (Made by uFactory, ufactory.cc)
 It is completely open source, so feel free to take it and use it as a base for your own projects.
@@ -23,13 +25,15 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
-__author__ = "Alexander Thiel"
 import math
+import json
 from time         import sleep
 from copy         import deepcopy
 from threading    import Thread
 from Logic.Global import printf, FpsTimer, wait
 from Logic        import Events, Commands
+__author__ = "Alexander Thiel"
+
 
 
 class Interpreter:
@@ -37,30 +41,54 @@ class Interpreter:
     This is where the script is actually run. The most convenient method is to create a script with the GUI,
     then use self.loadScript(script) to actually get the script into the interpreter, then use startThread()
     to begin the script.
+
+    Since an interpreter can run another interpreter inside of it, there is a
     """
 
-    def __init__(self, environment):
+    def __init__(self, environment, parentExitFunc):
 
-        self.env          = environment
-        self.mainThread   = None    # The thread on which the script runs on. Is None while thread is not running.
-        self.__exiting    = True    # When True, the script thread will attempt to close ASAP
-        self.scriptFPS    = 50      # Speed at which events are checked
-        self.events       = []      # A list of events, and their corresponding commands
+
+        self.parentExiting = parentExitFunc
+        self.env           = environment
+        self.mainThread    = None    # The thread on which the script runs on. Is None while thread is not running.
+        self.__exiting     = False   # When True, the script thread will attempt to close ASAP
+        self.events        = []      # A list of events, and their corresponding commands
 
         # For self.getStatus()
-        self.currRunning  = []      # A dictionary of what has been run so far in the loop {eventIndex:[commandIndex's]}
+        self.currRunning   = []  # A dictionary of what has been run so far in the loop {eventIndex:[commandIndex's]}
 
-        # Namespace is all the builtins and variables that the user creates during a session in the interpreter
-        self.nameSpace    = None
+        # Namespace is all  the builtins and variables that the user creates during a session in the interpreter
+        self.nameSpace     = None
         self.cleanNamespace()
 
 
-    # Functions for GUI to use
-    def loadScript(self, script):
+    def loadScriptFromFile(self, filename):
+        """
+        This is a function that will load a script from a file, then run self.loadScript on the loaded file, and return
+        the errors that occurred while loading the script.
+
+        If the script could not be found or loaded, it will return an "Could not open script" in the errors array.
+
+        The script will return a boolean, True if the script was loaded successfully, and false if there was an error.
+        """
+        try:
+            script = json.load( open(filename))
+        except IOError:
+            printf("ERROR: Task file ", filename, "not found!")
+            self.env.updateSettings("lastOpenedFile", None)
+            return False
+
+        return self.initializeScript(script)
+
+    def initializeScript(self, script):
         """
         Initializes each event in the script, Initializes each command in the script,
         places all the commands into the appropriate events,
         and returns all errors that occured during the build process.
+
+        "script" is an already loaded script, of the format that EventList.getSaveData() would return.
+        It looks something like [{Event here, commandList here}, {event here, commandList here}]
+        To load a script from file, simply use Interpreter.loadScriptFromFile(filename)
 
         :param      env: Environment object
         :param      script: a loaded script from a .task file
@@ -101,24 +129,21 @@ class Interpreter:
         return errors
 
 
-
     # Generic Functions for API and GUI to use
     def startThread(self, threaded=True):
         # Start the program thread
 
         if self.mainThread is None:
-            self.cleanNamespace()
-            robot  = self.env.getRobot()
-            vision = self.env.getVision()
+            if self.parentExiting is None:
+                self.cleanNamespace()
+                robot  = self.env.getRobot()
 
-            # Make sure vision and robot are not in exiting mode
-            vision.setExiting(False)
-            robot.setExiting(False)
-            robot.setActiveServos(all=True)
-            robot.setSpeed(10)
+                # Make sure vision and robot are not in exiting mode
+                self.setExiting(False)
 
-            self.__exiting   = False
-            self.currRunning = {}
+                robot.setActiveServos(all=True)
+                robot.setSpeed(10)
+                self.currRunning = {}
 
             if threaded:
                 self.mainThread  = Thread(target=lambda: self.__programThread())
@@ -128,32 +153,6 @@ class Interpreter:
         else:
             printf("ERROR: Tried to run programThread, but there was already one running!")
 
-    def endThread(self):
-        robot  = self.env.getRobot()
-        vision = self.env.getVision()
-
-        # Close the thread that is currently running at the first chance it gets. Return True or False
-        printf("Closing program thread.")
-
-        self.__exiting = True
-
-        # DeActivate Vision and the Robot so that exiting the thread will be very fast
-        vision.setExiting(True)
-        robot.setExiting(True)
-
-        while self.mainThread is not None: sleep(.05)
-
-
-        # Re-Activate the Robot and Vision, for any future uses
-        vision.setExiting(False)
-        robot.setExiting(False)
-
-        # Clean up interpreter variables
-        self.mainThread = None
-        self.events     = []
-
-        return True
-
     def addEvent(self, event):
         self.events.append(event)
 
@@ -161,11 +160,6 @@ class Interpreter:
     # Status functions
     def threadRunning(self):
         return self.mainThread is not None
-
-    def isExiting(self):
-        # Commands that have the potential to take a long time (wait, pickup, that sort of thing) will use this to check
-        # if they should exit immediately
-        return self.__exiting
 
     def getStatus(self):
         # Returns an index of the (event, command) that is currently being run
@@ -176,6 +170,19 @@ class Interpreter:
         currRunning = self.currRunning
 
         return currRunning
+
+    def isExiting(self):
+        # Commands that have the potential to take a long time (wait, pickup, that sort of thing) will use this to check
+        # if they should exit immediately
+        if self.parentExiting is not None and self.parentExiting():
+            self.setExiting(True)
+
+        return self.__exiting
+
+    def setExiting(self, value):
+        self.env.getRobot().setExiting(value)
+        self.env.getVision().setExiting(value)
+        self.__exiting = value
 
 
     # The following functions should never be called by user - only for Commands/Events to interact with Interpreter
@@ -298,28 +305,45 @@ class Interpreter:
 
         return True
 
+    def createChildInterpreter(self, filename, parentExitFunc):
+        """
+            This function is special, in the sense that it creates another interpreter that runs inside of this one,
+            with a specified filename or script, and starts it immediately.
+        """
+        if parentExitFunc(): return
+        print(parentExitFunc)
+        # print("Starting child interpreter")
+        child = Interpreter(self.env, parentExitFunc)
+        errors = child.loadScriptFromFile(filename)
+        if len(errors):
+            print("Errors while initializing child: ", errors)
+        child.startThread(threaded=False)
+
 
     # The following functions are *only* for interpreter to use within itself.
     def __programThread(self):
-        # This is where the script you create actually gets run.
         printf("\n\n\n ##### STARTING PROGRAM #####\n")
 
-        # self.env.getRobot().setServos(servo1=True, servo2=True, servo3=True, servo4=True)
-        # self.env.getRobot().refresh()
 
-        timer = FpsTimer(fps=self.scriptFPS)
+        fpsTimer = FpsTimer(fps=30)
 
-        while not self.__exiting:
-            timer.wait()
-            if not timer.ready(): continue
+        # Main program loop - where events are checked and run
+        while not self.isExiting():
+            # Maintain constant FPS using an FPSTimer
+            fpsTimer.wait()
+            if not fpsTimer.ready(): continue
+
+
+            # currRunning keeps track of what was run, so the GUI can draw it
+            self.currRunning = {}
 
 
             # Check every event, in order of the list
-            self.currRunning = {}
-
             for index, event in enumerate(self.events):
                 if self.isExiting(): break
                 if not event.isActive(): continue
+
+                # If the event has been activated, run the commandList
                 self.__interpretEvent(event)
 
 
@@ -327,42 +351,46 @@ class Interpreter:
         destroyEvent = list(filter(lambda event: type(event) == Events.DestroyEvent, self.events))
 
         if len(destroyEvent):
-            robot  = self.env.getRobot()
-            vision = self.env.getVision()
-
-            robot.setExiting(False)
-            vision.setExiting(False)
-            self.__exiting = False
+            # Make sure the robot, vision, and interpreter can respond before running the destroy event
+            self.setExiting(False)
             self.__interpretEvent(destroyEvent[0])
-            robot.setExiting(True)
-            vision.setExiting(True)
-            self.__exiting = True
+
+            # Set the robot, vision, and interpreter back to non-responsive mode after running the destroy event
+            self.setExiting(True)
 
         self.mainThread = None
+        self.events     = []
+        self.setExiting(False)
 
     def __interpretEvent(self, event):
-        # This will run through every command in an events commandList, and account for Conditionals and code blocks.
+        """
+        This will run through every command in an events commandList, and account for Conditionals and code blocks.
+
+        """
+
         eventIndex    = self.events.index(event)
         commandList   = event.commandList
-        index         = 0                   # The current command that is being considered for running
-        # currentIndent = 0                   # The 'bracket' level of code
+        index         = 0  # The current command that is being considered for running
 
+        # Keep track of what commands are run in this event
         self.currRunning[eventIndex] = []
+
 
         # Check each command, run the ones that should be run
         while index < len(event.commandList):
-            if self.isExiting(): break  # THis might be overrun for things like DestroyEvent
+            if self.isExiting(): break
 
+
+            # Run the command
             command    = commandList[index]
-
-            # Run command. If command is a boolean, it will return a True or False
             self.currRunning[eventIndex].append(index)
             evaluation = command.run()
 
+            if self.isExiting(): break  # This speeds up ending recursed Interpreters
 
             # If the command returned an "Exit event" command, then exit the event evaluation
             if evaluation == "Kill":
-                self.__exiting = True
+                self.setExiting(True)
                 break
             if evaluation == "Exit": break
 
