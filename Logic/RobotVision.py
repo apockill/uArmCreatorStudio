@@ -24,7 +24,6 @@ License:
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
 __author__ = "Alexander Thiel"
-
 import math
 import cv2
 import numpy as np

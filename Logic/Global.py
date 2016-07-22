@@ -24,12 +24,12 @@ License:
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
 __author__ = "Alexander Thiel"
-
 import os
 import errno
 import inspect
 from time import time, sleep
 from threading import RLock
+
 """
 Global is a set of functions that are used in many places around the project and are very general use.
 It also holds the actual global variable "keysPressed".

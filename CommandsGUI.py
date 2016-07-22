@@ -24,7 +24,6 @@ License:
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
 __author__ = "Alexander Thiel"
-
 import ast  # To check if a statement is python parsible, for evals
 import re   # For variable santization
 from CameraGUI    import CameraSelector
@@ -42,6 +41,7 @@ class CommandWidget(QtWidgets.QWidget):
         # Set up Globals
         self.indent = 0
         self.margins = None  # Is set after initUI creates it's first layout
+
         # Set up UI Globals
         self.title       = QtWidgets.QLabel()
         self.description = QtWidgets.QLabel()

@@ -24,7 +24,6 @@ License:
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
 __author__ = "Alexander Thiel"
-
 from Logic             import Global
 from Logic.LogicObject import LogicObject
 

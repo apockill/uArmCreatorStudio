@@ -24,7 +24,6 @@ License:
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
 __author__ = "Alexander Thiel"
-
 import math
 import numpy as np
 from Logic             import RobotVision as rv

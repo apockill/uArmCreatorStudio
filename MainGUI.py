@@ -190,10 +190,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowIcon(QtGui.QIcon(Paths.taskbar))
         self.show()
 
-    def keyPressEvent(self, event):
-        # TODO: Remove this when development is over
-        if event.key() == QtCore.Qt.Key_Q:
-            print("CHILDREN: ", len(self.findChildren(QtCore.QObject)))
+    # def keyPressEvent(self, event):
+    #     # TODO: Remove this when development is over
+    #     if event.key() == QtCore.Qt.Key_Q:
+    #         print("CHILDREN: ", len(self.findChildren(QtCore.QObject)))
 
     def setVideo(self, state):
         """
@@ -680,7 +680,9 @@ class Application(QtWidgets.QApplication):
     def notify(self, receiver, event):
         # Add any keys that are pressed to keysPressed
         if event.type() == QtCore.QEvent.KeyPress:
-
+            #Todo: remove these two lines when development is finished
+            if event.key() == QtCore.Qt.Key_Q and len(mainWindowREMOVE):
+                print("CHILDREN: ", len(mainWindowREMOVE[0].findChildren(QtCore.QObject)))
 
             if event.key() not in Global.keysPressed:
                 Global.keysPressed.append(event.key())
@@ -696,6 +698,8 @@ class Application(QtWidgets.QApplication):
         return super(Application, self).notify(receiver, event)
 
 
+
+mainWindowREMOVE = []  #Todo: remove this line when development is finished
 
 
 if __name__ == '__main__':
@@ -729,6 +733,7 @@ if __name__ == '__main__':
 
     # Start application
     mainWindow = MainWindow()
+    mainWindowREMOVE.append(mainWindow)  #Todo: remove this line when development is finished
     mainWindow.show()
     sys.exit(app.exec_())
 

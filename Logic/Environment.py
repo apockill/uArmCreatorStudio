@@ -23,9 +23,7 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
-
 __author__ = "Alexander Thiel"
-
 import json
 from Logic        import Paths
 from copy         import deepcopy

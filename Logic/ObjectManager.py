@@ -462,7 +462,7 @@ class TrackableObject(Trackable):
         # if drawPickupRect is True, it will also overlay the position of the robots pickup area for the object
 
         #  Get the full image and crop it
-        fullImage = self.views[0].image
+        fullImage = self.views[0].image.copy()
         rect      = self.views[0].rect
         image     = fullImage[rect[1]:rect[3], rect[0]:rect[2]]
 

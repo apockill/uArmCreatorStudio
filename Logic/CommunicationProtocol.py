@@ -24,7 +24,6 @@ License:
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
 __author__ = "Alexander Thiel"
-
 import serial
 import serial.tools.list_ports
 from time         import sleep, time  # Used only in connecting to the robot, while waiting for serial to connect.

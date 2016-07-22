@@ -24,7 +24,6 @@ License:
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
 __author__ = "Alexander Thiel"
-
 from PyQt5        import QtGui, QtCore, QtWidgets
 from threading    import RLock
 from Logic.Global import printf

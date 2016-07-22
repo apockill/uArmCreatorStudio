@@ -23,9 +23,7 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
-
 __author__ = "Alexander Thiel"
-
 import cv2
 from time         import time
 from threading    import Thread, RLock

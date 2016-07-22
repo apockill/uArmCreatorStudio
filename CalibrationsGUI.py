@@ -24,7 +24,6 @@ License:
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
 __author__ = "Alexander Thiel"
-
 from time                import sleep  # Used only for waiting for robot in CoordCalibrations, page 5
 import numpy             as np
 import CommandsGUI
