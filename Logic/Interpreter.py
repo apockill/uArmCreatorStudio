@@ -45,10 +45,14 @@ class Interpreter:
     Since an interpreter can run another interpreter inside of it, there is a
     """
 
-    def __init__(self, environment, parentExitFunc):
+    def __init__(self, environment, parentExitFunc, parentSetExitingFunc):
 
+        # This program will tell you if the highest parent interpreter is currently exiting
+        self.parentIsExiting  = parentExitFunc
 
-        self.parentExiting = parentExitFunc
+        # This function will kill all interpreters running inside of the highest heirarchy of interpreters
+        self.parentSetExiting = parentSetExitingFunc  # Example: self.parentSetExiting(True) ends all programs
+
         self.env           = environment
         self.mainThread    = None    # The thread on which the script runs on. Is None while thread is not running.
         self.__exiting     = False   # When True, the script thread will attempt to close ASAP
@@ -61,24 +65,6 @@ class Interpreter:
         self.nameSpace     = None
         self.cleanNamespace()
 
-
-    def loadScriptFromFile(self, filename):
-        """
-        This is a function that will load a script from a file, then run self.loadScript on the loaded file, and return
-        the errors that occurred while loading the script.
-
-        If the script could not be found or loaded, it will return an "Could not open script" in the errors array.
-
-        The script will return a boolean, True if the script was loaded successfully, and false if there was an error.
-        """
-        try:
-            script = json.load( open(filename))
-        except IOError:
-            printf("ERROR: Task file ", filename, "not found!")
-            self.env.updateSettings("lastOpenedFile", None)
-            return False
-
-        return self.initializeScript(script)
 
     def initializeScript(self, script):
         """
@@ -134,7 +120,7 @@ class Interpreter:
         # Start the program thread
 
         if self.mainThread is None:
-            if self.parentExiting is None:
+            if self.parentIsExiting is None:
                 self.cleanNamespace()
                 robot  = self.env.getRobot()
 
@@ -174,7 +160,7 @@ class Interpreter:
     def isExiting(self):
         # Commands that have the potential to take a long time (wait, pickup, that sort of thing) will use this to check
         # if they should exit immediately
-        if self.parentExiting is not None and self.parentExiting():
+        if self.parentIsExiting is not None and self.parentIsExiting():
             self.setExiting(True)
 
         return self.__exiting
@@ -305,18 +291,24 @@ class Interpreter:
 
         return True
 
-    def createChildInterpreter(self, filename, parentExitFunc):
+    def createChildInterpreter(self, script, parentIsExiting, parentSetExiting):
         """
             This function is special, in the sense that it creates another interpreter that runs inside of this one,
             with a specified filename or script, and starts it immediately.
         """
-        if parentExitFunc(): return
-        print(parentExitFunc)
-        # print("Starting child interpreter")
-        child = Interpreter(self.env, parentExitFunc)
-        errors = child.loadScriptFromFile(filename)
+        if parentIsExiting(): return
+
+
+        child = Interpreter(self.env, parentIsExiting, parentSetExiting)
+        errors = child.initializeScript(script)
+
         if len(errors):
-            print("Errors while initializing child: ", errors)
+            print("ERROR: Tried to run a task that did not meet the requirements. Errors:\n", errors)
+            if self.parentSetExiting is not None:
+                self.parentSetExiting(True)
+            self.setExiting(True)
+
+
         child.startThread(threaded=False)
 
 

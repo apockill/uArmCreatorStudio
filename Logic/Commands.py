@@ -808,6 +808,7 @@ class RunTaskCommand(Command):
         self.env          = env
         self.interpreter = interpreter
 
+        self.script = self.getVerifyJson(env, self.parameters["filename"])
 
         # # Load any objects, modules, calibrations, etc  that will be used in the run Section here. Use getVerifyXXXX()
         # self.robot   = self.getVerifyRobot(env)
@@ -815,22 +816,23 @@ class RunTaskCommand(Command):
 
         if len(self.errors): return
 
-        # Here, start tracking if your command requires it
-        # Add any objects to be tracked
 
     def run(self):
-        printf("This ")
-        exitFunc = self.interpreter.parentExiting
-        if self.interpreter.parentExiting is None:
-            exitFunc = self.interpreter.isExiting
+        if len(self.errors): return
 
-        try:
-            self.interpreter.createChildInterpreter(self.parameters["filename"],
-                                                        exitFunc)
-            return True
-        except RuntimeError as e:
-            printf("ERROR: MAXIMUM RECURSION DEPTH EXCEEDED. ")
-            return False
+        # Create the exit functions for the baby interpreter
+        isExitFunc  = self.interpreter.parentIsExiting
+        setExitFunc = self.interpreter.parentSetExiting
+
+        # If this command is being run in the main program, set the isExitFunc and setExitFunc to the originals
+        if isExitFunc is None:
+            isExitFunc  = self.interpreter.isExiting
+            setExitFunc = self.interpreter.setExiting
+
+        # Let the interpreter create
+        self.interpreter.createChildInterpreter(self.script, isExitFunc, setExitFunc)
+
+
 
 
 

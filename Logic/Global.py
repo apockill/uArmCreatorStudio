@@ -165,7 +165,7 @@ def printf(*args):
     global printRedirectFunc
     printRedirectFunc(boilerPlate, buildString)
 
-
+    print(buildString)
     # Filter out any serial communication since it clutters up the console
     # if "Device" in boilerPlate: return
     #

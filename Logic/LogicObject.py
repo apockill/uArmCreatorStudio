@@ -25,6 +25,7 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
+import json
 __author__ = "Alexander Thiel"
 
 
@@ -37,6 +38,18 @@ class LogicObject:
     """
     def __init__(self):
         self.errors = []
+
+    def getVerifyJson(self, env, filename):
+
+        if len(filename) == 0:
+            self.errors.append("No File Specified")
+            return None
+
+        try:
+            loadData = json.load( open(filename))
+            return loadData
+        except IOError:
+            return None
 
     def getVerifyRobot(self, env):
         robot = env.getRobot()

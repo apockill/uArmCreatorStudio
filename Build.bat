@@ -32,7 +32,7 @@ REM Create a folder for storing the uArm's communication protocol
 mkdir "Latest Build\Upload This To Your uArm"
 
 REM Copy the communication protocol to this folder
-xcopy /isvy "F:\Google Drive\Projects\Arduino Code\uArmGUICommunicationProtocol" "Latest Build\Upload This To Your uArm\uArmGUICommunicationProtocol"
+xcopy /isvy "F:\Google Drive\Projects\Arduino Code\uArmCommunicationProtocol_1" "Latest Build\Upload This To Your uArm\uArmCommunicationProtocol_1"
 
 REM Create the "Import Libraries" folder
 mkdir "Latest Build\Upload This To Your uArm\Libraries To Import"

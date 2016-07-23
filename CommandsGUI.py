@@ -1707,18 +1707,23 @@ class RunTaskCommandGUI(CommandGUI):
         def updateFileLbl(prompt, label):
             chosenFile, _ = QtWidgets.QFileDialog.getOpenFileName(prompt, "Load Task", "", "*.task")
             if chosenFile == "": return
-            label.setText(chosenFile)
+            label.setText(basename(chosenFile))
+
+        explanationLbl = QtWidgets.QLabel("\n\nMake sure the task you run has an 'End Program'\n"
+                                          "command in it, to return to this task when its finished")
+        explanationLbl.setWordWrap(True)
 
         # Create the filename label
-        prompt.fileLbl = QtWidgets.QLabel(self.parameters["filename"])
-        prompt.fileLbl.setWordWrap(True)
+        prompt.fileLbl = QtWidgets.QLabel(basename(self.parameters["filename"]))
         prompt.fileLbl.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
 
         fileBtn = QtWidgets.QPushButton("Select Task")
         fileBtn.clicked.connect(lambda: updateFileLbl(prompt, prompt.fileLbl))
 
+
         self._addRow(prompt, fileBtn)
         self._addRow(prompt, prompt.fileLbl)
+        self._addRow(prompt, explanationLbl)
 
         return prompt
 
@@ -1733,7 +1738,7 @@ class RunTaskCommandGUI(CommandGUI):
         if len(self.parameters["filename"]) == 0:
             self.description = "No Task Selected"
         else:
-            self.description = "Open " + basename(self.parameters["filename"]) + " and run it"
+            self.description = "Run " + basename(self.parameters["filename"])
 
 
 

@@ -32,7 +32,7 @@ import ControlPanelGUI
 from time              import sleep                     # Used when closing the interpreter thread
 from CommonGUI         import Console
 from copy              import deepcopy                  # For copying saves and comparing later
-from PyQt5             import QtCore, QtWidgets, QtGui  # All GUI things
+from PyQt5             import QtCore, QtWidgets, QtGui, QtMultimedia  # All GUI things
 from CalibrationsGUI   import CalibrateWindow           # For opening Calibrate window
 from CameraGUI         import CameraWidget              # General GUI purposes
 from Logic             import Global, Paths             # For keeping track of keypresses
@@ -52,13 +52,14 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
 
+        camera = QtMultimedia.QCamera(self)
 
 
         # Init self and objects.
         self.fileName    = None
         self.loadData    = []  #Set when file is loaded. Used to check if the user has changed anything and prompt
         self.env         = Environment()
-        self.interpreter = Interpreter(self.env, None)
+        self.interpreter = Interpreter(self.env, None, None)
 
 
         # Set Global UI Variables
@@ -728,6 +729,7 @@ if __name__ == '__main__':
 
     # Apply a theme of choice here
     # app.setStyleSheet(fancyqt.firefox.style)
+
 
 
     # Set Application Font
