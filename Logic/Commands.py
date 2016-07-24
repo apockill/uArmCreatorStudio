@@ -26,6 +26,7 @@ License:
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
 import math
+import numpy as np
 from Logic             import RobotVision as rv
 from Logic.Global      import printf, wait
 from Logic.LogicObject import LogicObject

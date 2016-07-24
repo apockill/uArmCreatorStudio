@@ -210,7 +210,7 @@ class CalibrateWindow(QtWidgets.QDialog):
         direction   = 1  #If the robot is going right or left next
 
         # Start position
-        robot.setSpeed(18)
+        robot.setSpeed(22)
         robot.setActiveServos(all=True)
         robot.setPos( x=-15, y=robot.home["y"], z=robot.home["z"])
 

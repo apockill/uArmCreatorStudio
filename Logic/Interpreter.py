@@ -120,16 +120,7 @@ class Interpreter:
         # Start the program thread
 
         if self.mainThread is None:
-            if self.parentIsExiting is None:
-                self.cleanNamespace()
-                robot  = self.env.getRobot()
-
-                # Make sure vision and robot are not in exiting mode
-                self.setExiting(False)
-
-                robot.setActiveServos(all=True)
-                robot.setSpeed(10)
-                self.currRunning = {}
+            self.currRunning = {}
 
             if threaded:
                 self.mainThread  = Thread(target=lambda: self.__programThread())

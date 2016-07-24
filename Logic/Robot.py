@@ -32,7 +32,7 @@ from threading    import Thread, RLock
 from time         import sleep  #Only use in refresh() command while querying robot if it's done moving
 from Logic.Global import printf
 
-from Logic.CommunicationProtocol import Device
+from Logic.CommunicationProtocol_1 import Device
 __author__ = "Alexander Thiel"
 
 
@@ -230,7 +230,7 @@ class Robot:
         if not posBefore == self.coord:
 
             try:
-                self.uArm.moveToWithSpeed(self.coord[0], self.coord[1], self.coord[2], self.__speed)
+                self.uArm.setXYZ(self.coord[0], self.coord[1], self.coord[2], self.__speed)
 
 
                 # Update the servoAngleStatus by doing inverse kinematics on the current position to get the new angles
@@ -406,7 +406,7 @@ class Robot:
             # Check if the uArm was able to connect successfully
             if self.uArm.connected():
                 printf("uArm successfully connected")
-                self.uArm.moveToWithSpeed(self.home['x'], self.home['y'], self.home['z'], self.__speed)
+                self.uArm.setXYZ(self.home['x'], self.home['y'], self.home['z'], self.__speed)
                 self.__threadRunning = False
                 self.setPos(**self.home)
                 self.setActiveServos(all=False)

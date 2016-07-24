@@ -31,19 +31,19 @@ uarm.setGripper(False)
 
 # Move to XYZ (0, -15, 15) at a speed of 20 centimeters per second
 print("Moving to 0, 15, 15")
-uarm.moveToWithSpeed(  0, 15, 15, 20)
+uarm.setXYZ(0, 15, 15, 20)
 
 
 while uarm.getIsMoving(): sleep(.1)
-uarm.moveToWithSpeed(-10, 15, 15, 20)
+uarm.setXYZ(-10, 15, 15, 20)
 
 
 while uarm.getIsMoving(): sleep(.1)
-uarm.moveToWithSpeed( 10, 15, 15, 20)
+uarm.setXYZ(10, 15, 15, 20)
 
 
 while uarm.getIsMoving(): sleep(.1)
-uarm.moveToWithSpeed( 0, 10, 20, 20)
+uarm.setXYZ(0, 10, 20, 20)
 
 
 

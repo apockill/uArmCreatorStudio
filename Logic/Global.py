@@ -162,6 +162,7 @@ def printf(*args):
     # Format the space between the boilerplate and content
     boilerPlate = caller_name(printModule=printModule, printClass=printClass, printFunction=printFunction)
 
+
     global printRedirectFunc
     printRedirectFunc(boilerPlate, buildString)
 

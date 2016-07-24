@@ -249,11 +249,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 return
         printf("Interpreter is ready. Loading script and starting program")
 
-        # Make sure the vision filters are activated
-        vision = self.env.getVision()
-
 
         # Load the script with the latest changes in the controlPanel, and get any relevant errors
+        self.interpreter.cleanNamespace()   # Clear any changes the user did while it was running
+        self.interpreter.setExiting(False)  # Make sure vision and robot are not in exiting mode
+
+
+
         errors = self.interpreter.initializeScript(self.controlPanel.getSaveData())
 
 
@@ -276,9 +278,15 @@ class MainWindow(QtWidgets.QMainWindow):
                                 QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.Cancel)
             if reply == QtWidgets.QMessageBox.Cancel:
                 printf("Script run canceled by user before starting.")
-                vision.endAllTrackers()
+                vision = self.env.getVision()
+                vision.endAllTrackers()  # Clear any tracking that was started during interpreter initialization
                 return
 
+
+        # Prep the robot to start, so it always starts with servos attached and speed at 10
+        robot  = self.env.getRobot()
+        robot.setActiveServos(all=True)
+        robot.setSpeed(10)
 
 
         # Stop you from moving stuff around while script is running, and activate the visual cmmnd highlighting
