@@ -26,8 +26,6 @@ License:
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
 import math
-import json
-from time         import sleep
 from copy         import deepcopy
 from threading    import Thread
 from Logic.Global import printf, FpsTimer, wait
@@ -123,7 +121,8 @@ class Interpreter:
             self.currRunning = {}
 
             if threaded:
-                self.mainThread  = Thread(target=lambda: self.__programThread())
+                self.mainThread  = Thread(target=self.__programThread)
+                self.mainThread.daemon = True
                 self.mainThread.start()
             else:
                 self.__programThread()
@@ -194,7 +193,6 @@ class Interpreter:
             - classmethod
             - repr
             - property
-            - __import__
             - hasattr
             - help
             - input
@@ -236,7 +234,8 @@ class Interpreter:
                               "pow":       pow,      "super":      super,      "print":     printf,
                             "tuple":     tuple,      "robot":      robot,  "resources":  resources,
                            "vision":    vision,   "settings":   settings,    "vStream":    vStream,
-                            "sleep":  newSleep, "isStopping":  isExiting}
+                            "sleep":  newSleep, "isStopping":  isExiting, "classmethod": classmethod,
+                              "object": object, "__build_class__": __build_class__, "__name__": "__main__"}
 
         execBuiltins = {"__builtins__": execBuiltins, "variables": variables, "__author__": "Alexander Thiel"}
         self.nameSpace = execBuiltins

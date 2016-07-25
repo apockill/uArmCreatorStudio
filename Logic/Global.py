@@ -52,7 +52,7 @@ def wait(waitTime, exitFunc):
     start = time()
     while time() - start < waitTime - .05:
         if exitFunc(): return
-        sleep(.05)
+        sleep(.1)
 
     sleep(waitTime - (time() - start))
 

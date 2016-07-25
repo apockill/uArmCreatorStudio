@@ -300,14 +300,18 @@ class MainWindow(QtWidgets.QMainWindow):
                     errorText += "     " + str(errObject) + "\n"
                 errorText += '\n'
 
+
             # Generate a message for the user to explain what parameters are missing
             errorStr = 'Certain Events and Commands are missing the following requirements to work properly: \n\n' + \
                        ''.join(errorText) + \
                        '\nWould you like to continue anyways? Events and commands with errors may not activate.'
-            # # .join(map(lambda err: '   -' + str(err) + '\n', errors)) + \
-            # Ask the user
+
+
+            # Warn the user
             reply = QtWidgets.QMessageBox.question(self, 'Warning', errorStr,
                                 QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.Cancel)
+
+
             if reply == QtWidgets.QMessageBox.Cancel:
                 printf("Script run canceled by user before starting.")
                 vision = self.env.getVision()
@@ -335,18 +339,31 @@ class MainWindow(QtWidgets.QMainWindow):
         # Tell the interpreter to exit the thread, then wait
         if self.interpreter.threadRunning():
             self.interpreter.setExiting(True)
-            while self.interpreter.threadRunning(): sleep(.05)
+            self.interpreter.mainThread.join(2)  # Give the thread 3 seconds to join
+
+
+        # Check to make sure the thread closed correctly
+        if self.interpreter.threadRunning():
+            # Generate a message for the user to explain what parameters are missing
+            errorStr = 'The script was unable to end. \n\n' \
+                       'If you are running Python code inside of this script, make sure you check isExiting() during' \
+                       ' loops, to exit code quickly when the stop button is pressed.'
+
+            # Warn the user
+            reply = QtWidgets.QMessageBox.question(self, 'Error', errorStr, QtWidgets.QMessageBox.Ok)
+            return
 
         # Return things back to normal
         self.interpreter.setExiting(False)
         self.controlPanel.setScriptModeOff()
 
+
         # Turn off the gripper, just in case. Do this AFTER interpreter ends, so as to not use Serial twice...
         vision = self.env.getVision()
         robot  = self.env.getRobot()
-
         robot.setGripper(False)
         robot.setActiveServos(all=False)
+
 
         # Make sure vision filters are stopped
         vision.endAllTrackers()
@@ -551,7 +568,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
 
         # End the script *after* prompting for save, in case the user wrote an endless loop and wants to save b4 leaving
-        self.endScript()
+        # self.endScript()
 
 
         # Save the window geometry as a string representation of a hex number
