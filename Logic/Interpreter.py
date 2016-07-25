@@ -87,26 +87,26 @@ class Interpreter:
         # Create each event
         for _, eventSave in enumerate(script):
             # Get the "Logic" code for this event, stored in Events.py
-            eventType = getattr(Events, eventSave['typeLogic'])
+            eventType = getattr(Events, eventSave['type'])
             event     = eventType(self.env, self, parameters=eventSave['parameters'])
             self.addEvent(event)
 
             # Add any commands related to the creation of this event
             for error in event.errors:
                     if error not in errors: errors[error] = []
-                    errors[error].append(eventSave['typeLogic'])
+                    errors[error].append(eventSave['type'])
 
 
             # Create the commandList for this event
             for _, commandSave in enumerate(eventSave['commandList']):
                 # Get the "Logic" code command, stored in Commands.py
-                commandType = getattr(Commands, commandSave['typeLogic'])
+                commandType = getattr(Commands, commandSave['type'])
                 command     = commandType(self.env, self, commandSave['parameters'])
                 event.addCommand(command)
 
                 for error in command.errors:
                     if error not in errors: errors[error] = []
-                    errors[error].append(commandSave['typeLogic'])
+                    errors[error].append(commandSave['type'])
 
 
         # Get rid of repeat errors
@@ -218,7 +218,7 @@ class Interpreter:
         newSleep      = lambda time: wait(time, self.isExiting)
         isExiting     = self.isExiting
         # Add Python builtins, and also the extra ones (above)
-        execBuiltins = {      "abs":       abs,       "dict":       dict,
+        execBuiltins = {      "abs":       abs,       "dict":       dict, "__import__": __import__,
                               "all":       all,        "hex":        hex,      "slice":      slice,
                               "any":       any,     "divmod":     divmod,     "sorted":     sorted,
                             "ascii":     ascii,  "enumerate":  enumerate,      "range":      range,

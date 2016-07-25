@@ -487,12 +487,12 @@ class EventList(QtWidgets.QListWidget):
         """
         Save looks like
             [
-            {'typeGUI': eventType, 'typeLogic': eventLogic, 'parameters' {parameters}, 'commandList' [commandList]},
-            {'typeGUI': eventType, 'typeLogic': eventLogic, 'parameters' {parameters}, 'commandList' [commandList]},
-            {'typeGUI': eventType, 'typeLogic': eventLogic, 'parameters' {parameters}, 'commandList' [commandList]},
+            {'type': eventType, 'parameters' {parameters}, 'commandList' [commandList]},
+            {'type': eventType, 'parameters' {parameters}, 'commandList' [commandList]},
+            {'type': eventType, 'parameters' {parameters}, 'commandList' [commandList]},
             ]
 
-        typeLogic is a string of the class name that holds the logic for the event or command.
+        type is a string of the class name that holds the type of the event or command.
         """
 
         eventList = []
@@ -514,7 +514,7 @@ class EventList(QtWidgets.QListWidget):
         # Fill event list with new data
         for eventSave in data:
             # Convert the string 'EventClass' to an actual class, load its command save, and add the event
-            self.addEvent(getattr(EventsGUI, eventSave['typeGUI']),
+            self.addEvent(getattr(EventsGUI, eventSave['type']),
                           commandListSave =  eventSave['commandList'],
                           parameters      =  eventSave['parameters'])
 
@@ -569,13 +569,13 @@ class CommandList(QtWidgets.QListWidget):
             command = self.getCommand(self.item(index))
             commandWidget = self.itemWidget(self.item(index))
 
-            if type(command) is CommandsGUI.StartBlockCommandGUI:
+            if type(command) is CommandsGUI.StartBlockCommand:
                 indent += 1
 
             commandWidget.setIndent(zeroAndAbove(indent))
             command.indent = zeroAndAbove(indent)
 
-            if type(command) is CommandsGUI.EndBlockCommandGUI:
+            if type(command) is CommandsGUI.EndBlockCommand:
                 indent -= 1
 
 
@@ -668,12 +668,13 @@ class CommandList(QtWidgets.QListWidget):
 
     # For deleting, copying, and pasting items
     def keyPressEvent(self, event):
-        # Delete selected items when delete key is pressed
+        # Delete selected items
         if event.key() == QtCore.Qt.Key_Delete:
             self.deleteSelected()
 
-        if event == QtGui.QKeySequence.Copy:
 
+        # Copy commands
+        if event == QtGui.QKeySequence.Copy:
             copyData = []
             for item in self.selectedItems():
                 command = self.commands[self.itemWidget(item)]
@@ -696,8 +697,8 @@ class CommandList(QtWidgets.QListWidget):
             # md.setText(self.dragData)
 
 
+        # Paste commands
         if event == QtGui.QKeySequence.Paste:
-
             # Pull the data from the clipboard, it will be a QByteArray
             clipboard = QtWidgets.QApplication.clipboard()
             pasteData = clipboard.mimeData().data("CommandData")
@@ -721,9 +722,13 @@ class CommandList(QtWidgets.QListWidget):
                 pasteIndex = self.count()
 
             for commandSave in reversed(commandData):
-                self.addCommand(getattr(CommandsGUI, commandSave['typeGUI']),
+                self.addCommand(getattr(CommandsGUI, commandSave['type']),
                                 parameters=commandSave['parameters'],
                                 index=pasteIndex )
+
+        # Select All
+        if event == QtGui.QKeySequence.SelectAll:
+            self.selectAll()
 
 
 
@@ -754,13 +759,13 @@ class CommandList(QtWidgets.QListWidget):
             self.addCommand(cType, index=dropIndex)
 
             # For easy usability, when you drop a Test command, a StartBlock and EndBlock will drop right after it.
-            if cType is CommandsGUI.TestVariableCommandGUI        or \
-               cType is CommandsGUI.ElseCommandGUI                or \
-               cType is CommandsGUI.TestObjectSeenCommandGUI      or \
-               cType is CommandsGUI.TestObjectLocationCommandGUI:
+            if cType is CommandsGUI.TestVariableCommand        or \
+               cType is CommandsGUI.ElseCommand                or \
+               cType is CommandsGUI.TestObjectSeenCommand      or \
+               cType is CommandsGUI.TestObjectLocationCommand:
 
-                self.addCommand(CommandsGUI.StartBlockCommandGUI, index=dropIndex + 1)
-                self.addCommand(CommandsGUI.EndBlockCommandGUI, index=dropIndex + 2)
+                self.addCommand(CommandsGUI.StartBlockCommand, index=dropIndex + 1)
+                self.addCommand(CommandsGUI.EndBlockCommand, index=dropIndex + 2)
 
             event.accept()
         else:
@@ -813,5 +818,5 @@ class CommandList(QtWidgets.QListWidget):
         # Fill the list with new data
         for commandSave in data:
             # Convert from string to an actual event obj
-            self.addCommand(getattr(CommandsGUI, commandSave['typeGUI']), parameters=commandSave['parameters'])
+            self.addCommand(getattr(CommandsGUI, commandSave['type']), parameters=commandSave['parameters'])
         self.refreshIndents()

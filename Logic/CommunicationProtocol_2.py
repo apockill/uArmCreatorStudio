@@ -278,7 +278,7 @@ class Device:
         # Create the return
         ret = "S" in response
 
-        return ret
+        return response
 
     def getReachablePolar(self, stretch, rotation, height):
         """
@@ -419,13 +419,18 @@ class Device:
         sleep(3)
 
     def __send(self, cmnd):
-        # This command will send a command and receive the robots response. There must always be a response!
+        """
+        This command will send a command and receive the robots response. There must always be a response!
+
+        :param cmnd: a String command, to send to the robot
+        :return: The robots response
+        """
         if not self.connected():
             print("Tried to send a command while robot was not connected!")
             return ""
 
         # Prepare and send the command to the robot
-        cmndString = bytes("[" + cmnd + "]", encoding='ascii')
+        cmndString = bytes("[" + cmnd + "]", encoding='ascii') #  "[" + cmnd + "]"
 
         try:
             self.serial.write(cmndString)
@@ -525,7 +530,7 @@ class Device:
 # TESTING PROTOCOL
 if __name__ == "__main__":
     from sys import exit
-        # Get all plugged in uArms
+
     connecteduArms = getConnectedRobots()
 
     print("Open Ports: ", connecteduArms)
@@ -545,7 +550,6 @@ if __name__ == "__main__":
         print("uArm could not connect!")
         exit()
     print("Beginning Testing")
-
 
 
 

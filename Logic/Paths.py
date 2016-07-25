@@ -35,6 +35,7 @@ __author__ = "Alexander Thiel"
 resourcesLoc = "Resources\\"
 settings_txt = resourcesLoc + "Settings.txt"
 objects_dir  = resourcesLoc + "Objects\\"         # Used by ObjectManager
+saves_dir    = resourcesLoc + "Saves\\"
 
 
 

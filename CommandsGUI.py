@@ -31,7 +31,7 @@ from os.path      import basename
 from CameraGUI    import CameraSelector
 from PyQt5        import QtGui, QtCore, QtWidgets
 from Logic        import Paths
-from Logic.Global import printf
+from Logic.Global import printf, ensurePathExists
 from CommonGUI    import ScriptWidget
 __author__ = "Alexander Thiel"
 
@@ -146,16 +146,16 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         tabWidget.setLayout(vBox)
         add  = lambda btnType: vBox.addWidget(self.getButton(btnType))
 
-        add(MoveXYZCommandGUI)
-        add(MoveWristCommandGUI)
-        add(MotionRecordingCommandGUI)
-        add(SpeedCommandGUI)
-        add(AttachCommandGUI)
-        add(DetachCommandGUI)
-        add(GripCommandGUI)
-        add(DropCommandGUI)
-        add(WaitCommandGUI)
-        add(BuzzerCommandGUI)
+        add(MoveXYZCommand)
+        add(MoveWristCommand)
+        add(MotionRecordingCommand)
+        add(SpeedCommand)
+        add(AttachCommand)
+        add(DetachCommand)
+        add(GripCommand)
+        add(DropCommand)
+        add(WaitCommand)
+        add(BuzzerCommand)
 
 
         return tabWidget
@@ -166,12 +166,12 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         vBox.setAlignment(QtCore.Qt.AlignTop)
         tabWidget.setLayout(vBox)
         add  = lambda btnType: vBox.addWidget(self.getButton(btnType))
-        add(VisionMoveXYZCommandGUI)
-        add(MoveRelativeToObjectCommandGUI)
-        add(MoveWristRelativeToObjectCommandGUI)
-        add(PickupObjectCommandGUI)
-        add(TestObjectSeenCommandGUI)
-        add(TestObjectLocationCommandGUI)
+        add(VisionMoveXYZCommand)
+        add(MoveRelativeToObjectCommand)
+        add(MoveWristRelativeToObjectCommand)
+        add(PickupObjectCommand)
+        add(TestObjectSeenCommand)
+        add(TestObjectLocationCommand)
 
         return tabWidget
 
@@ -182,15 +182,15 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         tabWidget.setLayout(vBox)
         add  = lambda btnType: vBox.addWidget(self.getButton(btnType))
 
-        add(ScriptCommandGUI)
-        add(SetVariableCommandGUI)
-        add(TestVariableCommandGUI)
-        add(ElseCommandGUI)
-        add(StartBlockCommandGUI)
-        add(EndBlockCommandGUI)
-        add(EndEventCommandGUI)
-        add(EndProgramCommandGUI)
-        add(RunTaskCommandGUI)
+        add(ScriptCommand)
+        add(SetVariableCommand)
+        add(TestVariableCommand)
+        add(ElseCommand)
+        add(StartBlockCommand)
+        add(EndBlockCommand)
+        add(EndEventCommand)
+        add(EndProgramCommand)
+        add(RunTaskCommand)
 
 
 
@@ -374,8 +374,7 @@ class CommandGUI:
         return newWidget
 
     def getSaveData(self):
-        commandSave = {   'typeGUI': self.__class__.__name__,
-                        'typeLogic': self.logicPair,
+        commandSave = {      'type': self.__class__.__name__,
                        'parameters': self.parameters}
         return commandSave
 
@@ -385,7 +384,7 @@ class CommandGUI:
         pass
 
 
-    # The following are helper functions for general CommandGUI children purposes
+    # The following are helper functions for general Command children purposes
     def _sanitizeEval(self, inputTextbox, fallback):
         """
         Checks if the eval statement is python-parsible. If it is not, it will return the "fallback" value.
@@ -509,7 +508,6 @@ Commands must have:
     - Variables
         - tooltip
         - icon
-        - logicPair (a string of the class name of its logic counterpart in commands.py, for interpreter use only)
         - title   (Except for certain functions, such as StartBlockCommand)
     - Functions
         - init(env, parameters=None) function
@@ -527,14 +525,13 @@ Special Cases:
 
 Example of a fully filled out class:
 
-class NameCommandGUI(CommandGUI):
+class NameCommand(CommandGUI):
     title     = "Example Title"
     tooltip   = "This tool does X Y and Z"
     icon      = Paths.some_icon
-    logicPair = "NameCommand"
 
     def __init__(self, env, parameters=None):
-        super(NameCommandGUI, self).__init__(parameters)
+        super(NameCommand, self).__init__(parameters)
 
         # If parameters do not exist, then set up the default parameters
         if self.parameters is None:
@@ -561,17 +558,17 @@ class NameCommandGUI(CommandGUI):
 
 """
 
+
 #   BASIC CONTROL COMMANDS
-class MoveXYZCommandGUI(CommandGUI):
+class MoveXYZCommand(CommandGUI):
     title     = "Move XYZ"
     tooltip   = "Set the robots position.\nThe robot will move after all events are evaluated.\n\n"\
                 "If you don't want to set one of the robots axis, simply leave it empty. For example, put y and z \n"\
                 "empty and x to 5 will set the robots x position to 5 while keeping the current Y and Z the same."
     icon      = Paths.command_xyz
-    logicPair = 'MoveXYZCommand'
 
     def __init__(self, env, parameters=None):
-        super(MoveXYZCommandGUI, self).__init__(parameters)
+        super(MoveXYZCommand, self).__init__(parameters)
         self.getCoordinates = env.getRobot().getCoords
 
         if self.parameters is None:
@@ -644,14 +641,13 @@ class MoveXYZCommandGUI(CommandGUI):
         if self.parameters['relative']: self.description += '   Relative'
 
 
-class MoveWristCommandGUI(CommandGUI):
+class MoveWristCommand(CommandGUI):
     title     = "Set Wrist Angle"
     tooltip   = "This command sets the angle of the robots 4th axis, the wrist."
     icon      = Paths.command_move_wrist
-    logicPair = "MoveWristCommand"
 
     def __init__(self, env, parameters=None):
-        super(MoveWristCommandGUI, self).__init__(parameters)
+        super(MoveWristCommand, self).__init__(parameters)
         self.getWristAngle = lambda: env.getRobot().getAngles()[3]
 
         if self.parameters is None:
@@ -699,15 +695,14 @@ class MoveWristCommandGUI(CommandGUI):
         if self.parameters['relative']: self.description += '   Relative'
 
 
-class MotionRecordingCommandGUI(CommandGUI):
+class MotionRecordingCommand(CommandGUI):
     title     = "Play Motion Recording"
     tooltip   = "This will play back a 'motion recording' at a playback speed of your choosing. To create robot\n" + \
                 "motion recordings, simply click on 'Resources' on the toolbar and add a new recording."
     icon      = Paths.command_play_path
-    logicPair = "MotionRecordingCommand"
 
     def __init__(self, env, parameters=None):
-        super(MotionRecordingCommandGUI, self).__init__(parameters)
+        super(MotionRecordingCommand, self).__init__(parameters)
 
         objManager = env.getObjectManager()
         self.getObjectList = lambda: objManager.getObjectNameList(objFilter=objManager.MOTIONPATH)
@@ -759,14 +754,13 @@ class MotionRecordingCommandGUI(CommandGUI):
         if self.parameters["reversed"]: self.description += " reversed"
 
 
-class SpeedCommandGUI(CommandGUI):
+class SpeedCommand(CommandGUI):
     title     = "Set Speed"
     tooltip   = "This tool sets the speed of the robot for any move commands that are done after this. "
     icon      = Paths.command_speed
-    logicPair = "SpeedCommand"
 
     def __init__(self, env, parameters=None):
-        super(SpeedCommandGUI, self).__init__(parameters)
+        super(SpeedCommand, self).__init__(parameters)
 
         if self.parameters is None:
             # Some code to set up default parameters
@@ -798,14 +792,13 @@ class SpeedCommandGUI(CommandGUI):
         self.description = 'Set robot speed to ' + str(self.parameters['speed']) + " cm/s"
 
 
-class DetachCommandGUI(CommandGUI):
+class DetachCommand(CommandGUI):
     title     = "Detach Servos"
     tooltip   = "Disengage the specified servos on the robot"
     icon      = Paths.command_detach
-    logicPair = "DetachCommand"
 
     def __init__(self, env, parameters=None):
-        super(DetachCommandGUI, self).__init__(parameters)
+        super(DetachCommand, self).__init__(parameters)
 
         if self.parameters is None:
             self.parameters = {'servo1': True,
@@ -859,7 +852,7 @@ class DetachCommandGUI(CommandGUI):
         self.description = descriptionBuild
 
 
-class AttachCommandGUI(CommandGUI):
+class AttachCommand(CommandGUI):
     """
     A command for attaching the servos of the robot
     """
@@ -867,10 +860,9 @@ class AttachCommandGUI(CommandGUI):
     title     = "Attach Servos"
     tooltip   = "Re-engage servos on the robot"
     icon      = Paths.command_attach
-    logicPair = "AttachCommand"
 
     def __init__(self, env, parameters=None):
-        super(AttachCommandGUI, self).__init__(parameters)
+        super(AttachCommand, self).__init__(parameters)
 
         if self.parameters is None:
             self.parameters = {'servo1': True,
@@ -926,14 +918,13 @@ class AttachCommandGUI(CommandGUI):
         self.description = descriptionBuild
 
 
-class WaitCommandGUI(CommandGUI):
+class WaitCommand(CommandGUI):
     title     = "Wait"
     tooltip   = "Halts the program for a preset amount of time"
     icon      = Paths.command_wait
-    logicPair = "WaitCommand"
 
     def __init__(self, env, parameters=None):
-        super(WaitCommandGUI, self).__init__(parameters)
+        super(WaitCommand, self).__init__(parameters)
 
         if self.parameters is None:
             self.parameters = {'time': 0.5}
@@ -964,34 +955,31 @@ class WaitCommandGUI(CommandGUI):
         self.description = str(self.parameters['time']) + " seconds"
 
 
-class GripCommandGUI(CommandGUI):
+class GripCommand(CommandGUI):
     title     = "Activate Gripper"
     tooltip   = "Activates the robots gripper"
     icon      = Paths.command_grip
-    logicPair = "GripCommand"
 
     def __init__(self, env, parameters=None):
-        super(GripCommandGUI, self).__init__(parameters)
+        super(GripCommand, self).__init__(parameters)
 
 
-class DropCommandGUI(CommandGUI):
+class DropCommand(CommandGUI):
     title     = "Deactivate Gripper"
     tooltip   = "Deactivates the robots gripper"
     icon      = Paths.command_drop
-    logicPair = "DropCommand"
 
     def __init__(self, env, parameters=None):
-        super(DropCommandGUI, self).__init__(parameters)
+        super(DropCommand, self).__init__(parameters)
 
 
-class BuzzerCommandGUI(CommandGUI):
+class BuzzerCommand(CommandGUI):
     title     = "Play Tone"
     tooltip   = "This tool uses the robots buzzer to play a tone at a certain frequency for a certain amount of time"
     icon      = Paths.command_buzzer
-    logicPair = "BuzzerCommand"
 
     def __init__(self, env, parameters=None):
-        super(BuzzerCommandGUI, self).__init__(parameters)
+        super(BuzzerCommand, self).__init__(parameters)
 
         if self.parameters is None:
             # Some code to set up default parameters
@@ -1044,17 +1032,16 @@ class BuzzerCommandGUI(CommandGUI):
 
 
 #   Robot + Vision COmmands
-class MoveRelativeToObjectCommandGUI(CommandGUI):
+class MoveRelativeToObjectCommand(CommandGUI):
     title     = "Move Relative To Object"
     tooltip   = "This tool uses computer vision to recognize an object of your choice, and position the robot directly"\
                "\nrelative to this objects XYZ location. If XYZ = 0,0,0, the robot will move directly onto the object."\
                "\n\nIf you don't want to set one of the robots axis, simply leave it empty. For example, put y and z\n"\
                "empty and x to 5 will set the robots x position to objX + 5 while keeping the current Y and Z the same."
     icon      = Paths.command_move_rel_to
-    logicPair = "MoveRelativeToObjectCommand"
 
     def __init__(self, env, parameters=None):
-        super(MoveRelativeToObjectCommandGUI, self).__init__(parameters)
+        super(MoveRelativeToObjectCommand, self).__init__(parameters)
 
         objManager = env.getObjectManager()
 
@@ -1129,17 +1116,16 @@ class MoveRelativeToObjectCommandGUI(CommandGUI):
                            ') relative to ' + self.parameters["objectID"]
 
 
-class MoveWristRelativeToObjectCommandGUI(CommandGUI):
+class MoveWristRelativeToObjectCommand(CommandGUI):
     title     = "Set Wrist Relative To Object"
     tooltip   = "This tool will look at the orientation of an object in the cameras view, and align the wrist with \n"\
                 "the rotation of the object. The rotation of the object is determined by the orientation that it was\n"\
                 "in when the object was memorized. It's recommended to experiment around a bit with this function to\n"\
                 " get a feel for how it works!"
     icon      = Paths.command_wrist_rel
-    logicPair = "MoveWristRelativeToObjectCommand"
 
     def __init__(self, env, parameters=None):
-        super(MoveWristRelativeToObjectCommandGUI, self).__init__(parameters)
+        super(MoveWristRelativeToObjectCommand, self).__init__(parameters)
         objManager         =  env.getObjectManager()
         self.getObjectList = lambda: objManager.getObjectNameList(objFilter=objManager.TRACKABLE)
 
@@ -1201,16 +1187,15 @@ class MoveWristRelativeToObjectCommandGUI(CommandGUI):
                            " degrees relative to " + self.parameters["objectID"]
 
 
-class PickupObjectCommandGUI(CommandGUI):
+class PickupObjectCommand(CommandGUI):
     title     = "Pick Up An Object"
     tooltip   = "This tool uses computer vision to recognize an object of your choice, and attempt to pick up the " \
                 "\nobject. If the object cannot be found or picked up, then False will be returned"
 
     icon      = Paths.command_pickup
-    logicPair = "PickupObjectCommand"
 
     def __init__(self, env, parameters=None):
-        super(PickupObjectCommandGUI, self).__init__(parameters)
+        super(PickupObjectCommand, self).__init__(parameters)
 
         objManager = env.getObjectManager()
 
@@ -1252,15 +1237,14 @@ class PickupObjectCommandGUI(CommandGUI):
         self.description = "Find " + self.parameters["objectID"] + " and move the robot over it"
 
 
-class TestObjectSeenCommandGUI(CommandGUI):
+class TestObjectSeenCommand(CommandGUI):
     title     = "Test If Object Seen"
     tooltip   = "This command will allow code in blocked brackets below it to run IF the specified object has been " \
                 "recognized."
     icon      = Paths.command_see_obj
-    logicPair = "TestObjectSeenCommand"
 
     def __init__(self, env, parameters=None):
-        super(TestObjectSeenCommandGUI, self).__init__(parameters)
+        super(TestObjectSeenCommand, self).__init__(parameters)
 
         objManager = env.getObjectManager()
         vision     = env.getVision()
@@ -1351,16 +1335,14 @@ class TestObjectSeenCommandGUI(CommandGUI):
         self.description += " " + confidenceText[self.parameters["ptCount"]] + " confident object was seen"
 
 
-class TestObjectLocationCommandGUI(CommandGUI):
+class TestObjectLocationCommand(CommandGUI):
     title     = "Test Location Of Object"
     tooltip   = "This command will allow code in blocked brackets below it to run IF the specified object has been" \
                 "recognized and the objects location in a particular location."
     icon      = Paths.command_see_loc
-    logicPair = "TestObjectLocationCommand"
-
 
     def __init__(self, env, parameters=None):
-        super(TestObjectLocationCommandGUI, self).__init__(parameters)
+        super(TestObjectLocationCommand, self).__init__(parameters)
 
         objManager         = env.getObjectManager()
         self.vStream       = env.getVStream()
@@ -1454,19 +1436,18 @@ class TestObjectLocationCommandGUI(CommandGUI):
         self.description += " seen within a location"
 
 
-class VisionMoveXYZCommandGUI(MoveXYZCommandGUI):
+class VisionMoveXYZCommand(MoveXYZCommand):
     title     = "Vision Assisted Move XYZ"
     tooltip   = "This works like the normal Move XYZ command, but uses vision to verify the robots position and\n"\
                 "perform a 'correction' move after an initial move. \n" \
                 "This command requires Camera/Robot Calibrations to be done."
     icon      = Paths.command_xyz_vision
-    logicPair = "VisionMoveXYZCommand"
 
     def __init__(self, env, parameters=None):
-        super(VisionMoveXYZCommandGUI, self).__init__(env, parameters)
+        super(VisionMoveXYZCommand, self).__init__(env, parameters)
 
     def dressWindow(self, prompt):
-        super(VisionMoveXYZCommandGUI, self).dressWindow(prompt)
+        super(VisionMoveXYZCommand, self).dressWindow(prompt)
         warningLbl = QtWidgets.QLabel("This function is experimental. It may not yield more accurate results.")
         warningLbl.setWordWrap(True)
 
@@ -1478,53 +1459,49 @@ class VisionMoveXYZCommandGUI(MoveXYZCommandGUI):
 
 
 #   LOGIC COMMANDS
-class StartBlockCommandGUI(CommandGUI):
+class StartBlockCommand(CommandGUI):
     """
     Start a block of code with this class
     """
 
     icon      = Paths.command_startblock
     tooltip   = "This is the start of a block of commands that only run if a conditional statement is met."
-    logicPair = 'StartBlockCommand'
 
     def __init__(self, env, parameters=None):
-        super(StartBlockCommandGUI, self).__init__(parameters)
+        super(StartBlockCommand, self).__init__(parameters)
 
 
-class EndBlockCommandGUI(CommandGUI):
+class EndBlockCommand(CommandGUI):
     """
     End a block of code with this command
     """
 
     icon      = Paths.command_endblock
     tooltip   = "This is the end of a block of commands."
-    logicPair = 'EndBlockCommand'
 
     def __init__(self, env, parameters=None):
-        super(EndBlockCommandGUI, self).__init__(parameters)
+        super(EndBlockCommand, self).__init__(parameters)
 
 
-class ElseCommandGUI(CommandGUI):
+class ElseCommand(CommandGUI):
     """
     End a block of code with this command
     """
 
     icon      = Paths.command_else
     tooltip   = "This will run commands if a test evaluates to False"
-    logicPair = 'ElseCommand'
 
     def __init__(self, env, parameters=None):
-        super(ElseCommandGUI, self).__init__(parameters)
+        super(ElseCommand, self).__init__(parameters)
 
 
-class SetVariableCommandGUI(CommandGUI):
+class SetVariableCommand(CommandGUI):
     title     = "Set Variable"
     tooltip   = "This command can create a variable or set an existing variable to a value or an expression."
     icon      = Paths.command_set_var
-    logicPair = "SetVariableCommand"
 
     def __init__(self, env, parameters=None):
-        super(SetVariableCommandGUI, self).__init__(parameters)
+        super(SetVariableCommand, self).__init__(parameters)
 
         if self.parameters is None:
             # Some code to set up default parameters
@@ -1566,14 +1543,13 @@ class SetVariableCommandGUI(CommandGUI):
         self.description = "Set " + self.parameters["variable"] + " to " + self.parameters["expression"]
 
 
-class TestVariableCommandGUI(CommandGUI):
+class TestVariableCommand(CommandGUI):
     title     = "Test Variable"
     tooltip   = "This will allow/disallow code to run that is in blocked brackets below it."
     icon      = Paths.command_test_var
-    logicPair = 'TestVariableCommand'
 
     def __init__(self, env, parameters=None):
-        super(TestVariableCommandGUI, self).__init__(parameters)
+        super(TestVariableCommand, self).__init__(parameters)
 
 
         if self.parameters is None:
@@ -1622,15 +1598,14 @@ class TestVariableCommandGUI(CommandGUI):
                            ' ' + self.parameters['expression'] + ' then'
 
 
-class ScriptCommandGUI(CommandGUI):
+class ScriptCommand(CommandGUI):
     title     = "Run Python Code"
     tooltip   = "This tool will execute a script made by the user.\nDO NOT RUN PROGRAMS WITH SCRIPTS WRITTEN BY OTHER" \
                 "\nUSERS UNLESS YOU HAVE CHECKED THE SCRIPT AND KNOW WHAT YOU ARE DOING!"
     icon      = Paths.command_script
-    logicPair = "ScriptCommand"
 
     def __init__(self, env, parameters=None):
-        super(ScriptCommandGUI, self).__init__(parameters)
+        super(ScriptCommand, self).__init__(parameters)
 
         # If parameters do not exist, then set up the default parameters
         if self.parameters is None:
@@ -1663,29 +1638,27 @@ class ScriptCommandGUI(CommandGUI):
         self.description = self.parameters["description"]
 
 
-class EndProgramCommandGUI(CommandGUI):
+class EndProgramCommand(CommandGUI):
     title     = "End Program"
     tooltip   = "When the code reaches this point, the program will end."
     icon      = Paths.command_end_script
-    logicPair = "EndProgramCommand"
 
     def __init__(self, env, parameters=None):
-        super(EndProgramCommandGUI, self).__init__(parameters)
+        super(EndProgramCommand, self).__init__(parameters)
 
 
-class EndEventCommandGUI(CommandGUI):
+class EndEventCommand(CommandGUI):
     title     = "Exit Current Event"
     tooltip   = "When the code reaches this point, the program will not process the rest of this event."
     icon      = Paths.command_exit_event
-    logicPair = "EndEventCommand"
 
     def __init__(self, env, parameters=None):
-        super(EndEventCommandGUI, self).__init__(parameters)
+        super(EndEventCommand, self).__init__(parameters)
 
 
 
 # Work in progress
-class RunTaskCommandGUI(CommandGUI):
+class RunTaskCommand(CommandGUI):
     title     = "Run Task"
     tooltip   = "This tool will run  another task file and run it inside of this task, until the 'End Program'\n" \
                 "command is called within the task, then it will return to the currently running task.\n" \
@@ -1693,10 +1666,9 @@ class RunTaskCommandGUI(CommandGUI):
                 "will be returned."
 
     icon      = Paths.command_run_task
-    logicPair = "RunTaskCommand"
 
     def __init__(self, env, parameters=None):
-        super(RunTaskCommandGUI, self).__init__(parameters)
+        super(RunTaskCommand, self).__init__(parameters)
 
         # If parameters do not exist, then set up the default parameters
         if self.parameters is None:
@@ -1705,9 +1677,13 @@ class RunTaskCommandGUI(CommandGUI):
 
     def dressWindow(self, prompt):
         def updateFileLbl(prompt, label):
-            chosenFile, _ = QtWidgets.QFileDialog.getOpenFileName(prompt, "Load Task", "", "*.task")
+            chosenFile, _ = QtWidgets.QFileDialog.getOpenFileName(parent=prompt,
+                                                                  caption="Load Task",
+                                                                  filter="Task (*.task)",
+                                                                  directory=Paths.saves_dir)
             if chosenFile == "": return
             label.setText(basename(chosenFile))
+        ensurePathExists(Paths.saves_dir)
 
         explanationLbl = QtWidgets.QLabel("\n\nMake sure the task you run has an 'End Program'\n"
                                           "command in it, to return to this task when its finished")

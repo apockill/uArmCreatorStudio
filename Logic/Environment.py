@@ -111,7 +111,7 @@ class Environment:
         return self.__objectMngr
 
 
-    # Return all settings
+    # Settings controls
     def getSettings(self):
         return deepcopy(self.__settings)
 
@@ -123,22 +123,22 @@ class Environment:
         Apply any new settings that have been changed. If they've been changed, also save the program.
         """
 
+        current = self.__settings[category]
         # Create a quick function that will check if a setting has been changed. If it has, an action will be taken.
 
 
         # If settings change, then save the changes to the config file, and update the self.__settings dictionary
-        if not self.__settings[category] == newSettings and newSettings is not None:
-
+        if (current is None or not current == newSettings) and newSettings is not None:
             printf("Saving setting: ", category)
+
+            # Update the self.__settings dictionary
             self.__settings[category] = deepcopy(newSettings)
 
+            # Save the settings to a file
             json.dump(self.__settings, open(Paths.settings_txt, 'w'),
                       sort_keys=False, indent=3, separators=(',', ': '))
         else:
             printf("No settings changed: ", category)
-
-
-
 
     def __loadSettings(self):
         defaultSettings = {
@@ -173,8 +173,9 @@ class Environment:
                                                     "gui":                False
                                                   },
 
-
-                            "lastOpenedFile":       None
+                            "windowGeometry":       None,  # The size and shape of the main window
+                            "windowState":          None,  # Location and size of dockWidgets on the mainWindow
+                            "lastOpenedFile":       None   # So the GUI can open the last file you had
                           }
 
         # Load the settings config and set them
@@ -188,11 +189,11 @@ class Environment:
             return newSettings
 
         except IOError as e:
-            printf("No settings file detected. Using default values.")
+            printf("ERROR: No settings file detected. Using default values. Error:", e)
             return defaultSettings
 
         except ValueError as e:
-            printf("Error while loading an existing settings file. Using default values.")
+            printf("ERROR: while loading an existing settings file. Using default values. Error: ", e)
             return defaultSettings
 
 
@@ -203,13 +204,5 @@ class Environment:
         self.__robot.setExiting(True)
         self.__vision.setExiting(True)
         self.__vStream.endThread()
-
-
-# class Settings:
-#     def __init__(self):
-#         self.__settingsDict =
-#
-#     def get(self, category):
-#         return deepcopy(self.__settingsDict[category])
 
 

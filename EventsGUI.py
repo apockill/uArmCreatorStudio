@@ -30,6 +30,7 @@ from Logic        import Paths
 from Logic.Global import printf
 __author__ = "Alexander Thiel"
 
+
 class EventWidget(QtWidgets.QWidget):
     """
     This is the widget that appears on the EventList.
@@ -132,22 +133,22 @@ class EventPromptWindow(QtWidgets.QDialog):
 
 
         # Create Event Buttons
-        self.initBtn      = self.getNewButton( 'Initialization',         InitEventGUI.icon)
-        self.destroyBtn   = self.getNewButton( 'End of Program',      DestroyEventGUI.icon)
-        self.stepBtn      = self.getNewButton(           'Step',         StepEventGUI.icon)
-        self.tipBtn       = self.getNewButton(     'Tip Sensor',          TipEventGUI.icon)
-        self.keyboardBtn  = self.getNewButton(       'Keyboard',     KeypressEventGUI.icon)
-        self.motionBtn    = self.getNewButton(         'Motion',       MotionEventGUI.icon)
-        self.seenBtn      = self.getNewButton(     'Recognized', RecognizeObjectEventGUI.icon)
+        self.initBtn      = self.getNewButton( 'Initialization',         InitEvent.icon)
+        self.destroyBtn   = self.getNewButton( 'End of Program',      DestroyEvent.icon)
+        self.stepBtn      = self.getNewButton(           'Step',         StepEvent.icon)
+        self.tipBtn       = self.getNewButton(     'Tip Sensor',          TipEvent.icon)
+        self.keyboardBtn  = self.getNewButton(       'Keyboard',     KeypressEvent.icon)
+        self.motionBtn    = self.getNewButton(         'Motion',       MotionEvent.icon)
+        self.seenBtn      = self.getNewButton(     'Recognized', RecognizeObjectEvent.icon)
         self.notSeenBtn   = self.getNewButton( 'Not Recognized', Paths.event_not_recognize)
 
 
         # CONNECT BUTTONS THAT DON'T HAVE MENUS
-        self.initBtn.clicked.connect(lambda: self.btnClicked(   InitEventGUI))
-        self.destroyBtn.clicked.connect(lambda: self.btnClicked(DestroyEventGUI))
-        self.stepBtn.clicked.connect(lambda: self.btnClicked(   StepEventGUI))
-        self.tipBtn.clicked.connect(lambda: self.btnClicked(    TipEventGUI))
-        self.motionBtn.clicked.connect(lambda: self.btnClicked( MotionEventGUI))
+        self.initBtn.clicked.connect(lambda: self.btnClicked(   InitEvent))
+        self.destroyBtn.clicked.connect(lambda: self.btnClicked(DestroyEvent))
+        self.stepBtn.clicked.connect(lambda: self.btnClicked(   StepEvent))
+        self.tipBtn.clicked.connect(lambda: self.btnClicked(    TipEvent))
+        self.motionBtn.clicked.connect(lambda: self.btnClicked( MotionEvent))
         self.cancelBtn.clicked.connect(self.cancelClicked)
 
 
@@ -175,14 +176,14 @@ class EventPromptWindow(QtWidgets.QDialog):
         for letter in alphabet:
             # About the lambda letter=letter:. I don't know why it fixes the problem, but it does. Here's a better
             # Explanation: http://stackoverflow.com/questions/4578861/connecting-slots-and-signals-in-pyqt4-in-a-loop
-            addKeyEvntFunc = lambda letter=letter: self.btnClicked(KeypressEventGUI, params={"checkKey": letter})
+            addKeyEvntFunc = lambda letter=letter: self.btnClicked(KeypressEvent, params={"checkKey": letter})
             self.lettersSubMnu.addAction(letter, addKeyEvntFunc)
 
         # Create Digits Sub Menu
         self.digitsSubMnu = QtWidgets.QMenu("Digits")
         digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
         for index, digit in enumerate(digits):
-            addKeyEvntFunc = lambda digit=digit: self.btnClicked(KeypressEventGUI, params={"checkKey": digit})
+            addKeyEvntFunc = lambda digit=digit: self.btnClicked(KeypressEvent, params={"checkKey": digit})
             self.digitsSubMnu.addAction(digit, addKeyEvntFunc)
 
         # Add Sub Menus
@@ -192,7 +193,7 @@ class EventPromptWindow(QtWidgets.QDialog):
 
 
         ######################     MOTION MENU     ######################
-        newMotionBtn = lambda params: self.btnClicked(MotionEventGUI, params=params)
+        newMotionBtn = lambda params: self.btnClicked(MotionEvent, params=params)
         motionMnu    = QtWidgets.QMenu()
 
         motionMnu.addAction("No Movement", lambda: newMotionBtn({"low": "None", "high":  "Low"}))
@@ -211,8 +212,8 @@ class EventPromptWindow(QtWidgets.QDialog):
         trackableList   = self.objManager.getObjectNameList(objFilter=self.objManager.TRACKABLE)
         ######################   RECOGNIZE/NOT MENUS    ######################
 
-        newRecognizeBtn = lambda params: self.btnClicked(    RecognizeObjectEventGUI, params=params)
-        newCascadeBtn   = lambda params: self.btnClicked(RecognizeCascadeEventGUI, params=params)
+        newRecognizeBtn = lambda params: self.btnClicked(    RecognizeObjectEvent, params=params)
+        newCascadeBtn   = lambda params: self.btnClicked(RecognizeCascadeEvent, params=params)
         recMnu          = QtWidgets.QMenu()
         notRecMnu       = QtWidgets.QMenu()
 
@@ -281,8 +282,7 @@ class EventGUI:
         return widget
 
     def getSaveData(self):
-        eventSave = {    'typeGUI': self.__class__.__name__,
-                       'typeLogic': self.logicPair,
+        eventSave = {       'type': self.__class__.__name__,
                       'parameters': self.parameters,
                      'commandList': self.commandList.getSaveData()}
         return eventSave
@@ -292,15 +292,14 @@ class EventGUI:
 """
 EXAMPLE CLASS
 
-class NameEventGUI(EventGUI):
+class NameEvent(EventGUI):
     icon      = Icons.name_event
-    logicPair = 'NameEvent'
 
     title     = "Some title"  # Unless it's a parameter event, then title and tooltip are set in self.dressWidget
     tooltip   = "Some tooltip explanation"
 
     def __init__(self, parameters):
-        super(NameEventGUI, self).__init__(parameters)
+        super(NameEvent, self).__init__(parameters)
 
 
     def dressWidget(self, widget):
@@ -312,40 +311,37 @@ class NameEventGUI(EventGUI):
 
 """
 #   SIMPLE, NO-PARAMETER EVENTS
-class InitEventGUI(EventGUI):
+class InitEvent(EventGUI):
     title     = 'Initialization'
     tooltip   = 'Activates once each time the program is run'
     icon      = Paths.event_creation
-    logicPair = 'InitEvent'
     priority  = 0
 
     def __init__(self, parameters):
-        super(InitEventGUI, self).__init__(parameters)
+        super(InitEvent, self).__init__(parameters)
 
 
-class DestroyEventGUI(EventGUI):
+class DestroyEvent(EventGUI):
     title     = 'End of Program'
     tooltip   = 'Activates once, when the program is ended'
     icon      = Paths.event_destroy
-    logicPair = 'DestroyEvent'
     priority  = 10000
 
     def __init__(self, parameters):
-        super(DestroyEventGUI, self).__init__(parameters)
+        super(DestroyEvent, self).__init__(parameters)
 
 
-class StepEventGUI(EventGUI):
+class StepEvent(EventGUI):
     title     = 'Step'
     tooltip   = 'Activates every time the events are refreshed'
     icon      = Paths.event_step
-    logicPair = 'StepEvent'
     priority  = 100
 
     def __init__(self, parameters):
-        super(StepEventGUI, self).__init__(parameters)
+        super(StepEvent, self).__init__(parameters)
 
 
-class TipEventGUI(EventGUI):
+class TipEvent(EventGUI):
     """
     This event activates when the sensor on the tip of the robots sucker is pressed/triggered
     """
@@ -353,24 +349,22 @@ class TipEventGUI(EventGUI):
     title     = 'Tip Pressed'
     tooltip   = 'Activates when the sensor on the tip of the arm is pressed'
     icon      = Paths.event_tip
-    logicPair = 'TipEvent'
     priority  = 200
 
     def __init__(self, parameters):
-        super(TipEventGUI, self).__init__(parameters)
+        super(TipEvent, self).__init__(parameters)
 
 
 
 
 #   EVENTS WITH PARAMETERS
-class KeypressEventGUI(EventGUI):
+class KeypressEvent(EventGUI):
     title     = "Key Pressed"
     icon      = Paths.event_keyboard
-    logicPair = 'KeypressEvent'
     priority  = 300
 
     def __init__(self, parameters):
-        super(KeypressEventGUI, self).__init__(parameters)
+        super(KeypressEvent, self).__init__(parameters)
 
     def dressWidget(self, widget):
         self.title = 'KeyPress ' + self.parameters["checkKey"]
@@ -380,17 +374,16 @@ class KeypressEventGUI(EventGUI):
         return widget
 
 
-class MotionEventGUI(EventGUI):
+class MotionEvent(EventGUI):
     """
     This event activates when the sensor on the tip of the robots sucker is pressed/triggered
     """
     title     = "Motion Detected"
     icon      = Paths.event_motion
-    logicPair = 'MotionEvent'
     priority  = 400
 
     def __init__(self, parameters):
-        super(MotionEventGUI, self).__init__(parameters)
+        super(MotionEvent, self).__init__(parameters)
 
         title = ""
         # Figure out the naming for the event
@@ -421,14 +414,13 @@ class MotionEventGUI(EventGUI):
         return widget
 
 
-class RecognizeObjectEventGUI(EventGUI):
+class RecognizeObjectEvent(EventGUI):
     title     = "Object Recognized"
     icon      = Paths.event_recognize   # Changes in self.dressWidget in this case
-    logicPair = 'RecognizeObjectEvent'
     priority  = 500
 
     def __init__(self, parameters):
-        super(RecognizeObjectEventGUI, self).__init__(parameters)
+        super(RecognizeObjectEvent, self).__init__(parameters)
 
         if parameters["not"]: self.priority += 10
 
@@ -446,12 +438,11 @@ class RecognizeObjectEventGUI(EventGUI):
         return widget
 
 
-class RecognizeCascadeEventGUI(RecognizeObjectEventGUI):
+class RecognizeCascadeEvent(RecognizeObjectEvent):
     title     = "Object Recognized"
-    logicPair = "RecognizeCascadeEvent"
 
     def __init__(self, parameters):
-        super(RecognizeCascadeEventGUI, self).__init__(parameters)
+        super(RecognizeCascadeEvent, self).__init__(parameters)
 
 
 

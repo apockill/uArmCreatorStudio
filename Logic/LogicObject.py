@@ -71,7 +71,7 @@ class LogicObject:
         return env.getVision()
 
     def getVerifyMotionCalibrations(self, env):
-        calib  = env.getSettings()["motionCalibrations"]
+        calib  = env.getSetting("motionCalibrations")
 
 
         # DO ERROR CHECKING
@@ -81,7 +81,7 @@ class LogicObject:
         return calib
 
     def getVerifyCoordCalibrations(self, env):
-        calib  = env.getSettings()["coordCalibrations"]
+        calib  = env.getSetting("coordCalibrations")
 
         # DO ERROR CHECKING
         # If the appropriate motionCalibrations do not exist, add it to the "compile" errors, and set self.calib to None

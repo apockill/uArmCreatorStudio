@@ -77,6 +77,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.consoleWidget.setExecFunction(self.interpreter.evaluateExpression)
 
 
+
+
+
         # Create Menu items, and set the Dashboard as the main widget
         self.initUI()
         self.setVideo("play")
@@ -85,6 +88,20 @@ class MainWindow(QtWidgets.QMainWindow):
         # If any file is specified in "lastOpenedFile" then load it.
         if self.env.getSetting("lastOpenedFile") is not None:
             self.loadTask(filename=self.env.getSetting("lastOpenedFile"))
+
+        if self.env.getSetting("windowState") is not None:
+            # Restore window geometry from settings
+            state = self.env.getSetting("windowGeometry")
+            state = bytearray(state, 'utf-8')
+            bArr = QtCore.QByteArray.fromHex(state)
+            self.restoreGeometry(bArr)
+
+
+            # Restore size and position of dockwidgets from settings
+            state = self.env.getSetting("windowState")
+            state = bytearray(state, 'utf-8')
+            bArr = QtCore.QByteArray.fromHex(state)
+            self.restoreState(bArr)
 
     def initUI(self):
         # Create "File" Menu
@@ -169,18 +186,33 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 
-        # TEST QDOCKWIDGETS HEERE
-        cameraDock = QtWidgets.QDockWidget()
-        cameraDock.setWidget(self.cameraWidget)
-        cameraDock.setWindowTitle("Camera")
+        # Add Camera Widget, as a QDockWidget
+        def createDockWidget(widget, name):
+            dockWidget = QtWidgets.QDockWidget()
+            dockWidget.setObjectName(name)  # Without this, self.restoreState() won't work
+            dockWidget.setWindowTitle(name)
+            dockWidget.setWidget(widget)
+            dockWidget.setFeatures(QtWidgets.QDockWidget.DockWidgetFloatable |
+                                   QtWidgets.QDockWidget.DockWidgetMovable)
+
+            # titleBarWidget = QtWidgets.QWidget()
+            # iconLbl = QtWidgets.QLabel()
+            # iconLbl.setPixmap(QtGui.QPixmap(icon))
+            # titleLbl = QtWidgets.QLabel(name)
+            # mainHLayout = QtWidgets.QHBoxLayout()
+            # mainHLayout.addWidget(iconLbl)
+            # mainHLayout.addWidget(titleLbl)
+            # titleBarWidget.setLayout(mainHLayout)
+            # dockWidget.setTitleBarWidget(titleBarWidget)
+            return dockWidget
+
+        cameraDock = createDockWidget(self.cameraWidget, "Camera")
+        consoleDock = createDockWidget(self.consoleWidget, "Console")
+
+
+        # Add the consoleWidgets to the window, and tabify them
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, cameraDock)
-
-
-        consoleDock = QtWidgets.QDockWidget()
-        consoleDock.setWidget(self.consoleWidget)
-        consoleDock.setWindowTitle("Console")
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, consoleDock)
-
         self.tabifyDockWidget(consoleDock, cameraDock)
 
 
@@ -414,7 +446,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # If there is no filename, ask for one
         if promptSaveLocation or self.fileName is None:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save Task", "MyTask", "Task (*.task)")
+            Global.ensurePathExists(Paths.saves_dir)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(parent=self,
+                                                                caption="Save Task",
+                                                                filter="Task (*.task)",
+                                                                directory=Paths.saves_dir)
+
             if filename == "": return False  #If user hit cancel
             self.fileName = filename
             self.env.updateSettings("lastOpenedFile", self.fileName)
@@ -444,7 +481,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # If there's no filename given, then prompt the user for what to name the task
         if filename is None:  #If no filename was specified, prompt the user for where to save
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Load Task", "", "Task (*.task)")
+            filename, _ = QtWidgets.QFileDialog.getOpenFileName(parent=self,
+                                                                caption="Load Task",
+                                                                filter="Task (*.task)",
+                                                                directory=Paths.saves_dir)
             if filename == "": return  #If user hit cancel
 
 
@@ -499,14 +539,30 @@ class MainWindow(QtWidgets.QMainWindow):
                 return True
 
     def closeEvent(self, event):
-        # When window is closed, prompt for save, close the video stream, and close the control panel (thus script)
-        self.endScript()
+        """
+            When window is closed, prompt for save, close the video stream, and close the control panel (thus script)
+        """
+
 
         # Ask the user they want to save before closing anything
         cancelPressed = self.promptSave()
         if cancelPressed:  # If the user cancelled the close
             event.ignore()
             return
+
+        # End the script *after* prompting for save, in case the user wrote an endless loop and wants to save b4 leaving
+        self.endScript()
+
+
+        # Save the window geometry as a string representation of a hex number
+        saveGeometry = ''.join([str(char) for char in self.saveGeometry().toHex()])
+        self.env.updateSettings("windowGeometry", saveGeometry)
+
+        # Save the dockWidget positions/states as a string representation of a hex number
+        saveState    = ''.join([str(char) for char in self.saveState().toHex()])
+        self.env.updateSettings("windowState", saveState)
+
+
 
         robot = self.env.getRobot()
         robot.setActiveServos(all=False)
@@ -677,6 +733,7 @@ class DeviceWindow(QtWidgets.QDialog):
 
     def getCameraSetting(self):
         return self.camSetting
+
 
 
 ##########    OTHER    ##########

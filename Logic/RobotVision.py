@@ -419,7 +419,18 @@ def smoothListGaussian(list1, degree):
 
 
 # Long form functions with lots of steps
-def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision, exitFunc):
+def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision):
+    """
+    This will pick up an object, or detect that it failed and turn off the gripper
+
+    :param trackable: Any ObjectManager.Trackable object
+    :param rbMarker: A trackable object representing some kind of marker that is on top of the robots end effector
+    :param ptPairs: The data inside of Environment.__settings["coordCalibrations"]["ptPairs"]
+    :param groundHeight: The data inside of Environment.__settings["coordCalibrations"]["groundPos"]
+    :param robot: The Robot.Robot object which controls the robot
+    :param vision: The Vision.Vision object which handles computer vision operations
+    :return: True or False, True if it successfuly picked up the object, otherwise False
+    """
     def getRobotAccurate(trackable, vision, maxAttempts=10):
         # A little convenience function that is used several times in the pickup
         moveThresh  = 15
