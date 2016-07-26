@@ -237,9 +237,8 @@ class Vision:
             for tracked in historyFromFrame:
                 # If the object meets the criteria
                 if trackable is not None and not trackable.equalTo(tracked.view.name): continue
-
                 if minPoints is not None and not tracked.ptCount > minPoints: continue
-                # print("Found object ", tracked.view.name, " with pts, ", tracked.ptCount, "maxFrames", maxFrame)
+
                 return tracked
         return None
 
@@ -402,7 +401,7 @@ class Tracker:
 
         self.fFnt       = cv2.FONT_HERSHEY_PLAIN  # Font for filter functions
         self.fColor     = (255, 255, 255)  # Default color for filter functions
-        self.fThickness = 1  # Thickness of lines
+        self.fThickness = 2  # Thickness of lines
 
 
     def _addTracked(self, trackedArray):
@@ -608,6 +607,11 @@ class PlaneTracker(Tracker):
             cv2.fillConvexPoly(mask, quad, 0)
 
 
+            # Draw the tracked points
+            for (x, y) in np.int32(tracked.p1):
+                    cv2.circle(tMask, (x, y), 2, (255, 255, 255))
+
+
             # Draw the rectangle around the object- in both the normal mask and the transparent one
             cv2.polylines( mask, [quad], True, (255, 255, 255), 3)
             cv2.polylines(tMask, [quad], True, (255, 255, 255), 2)
@@ -621,38 +625,45 @@ class PlaneTracker(Tracker):
 
 
 
-            # Do all kinds of crazy stuff here
+            # Draw coordinate grids on each object with a red, green, and blue arrow
             x0, y0, x1, y1 = rect
             width  = (x1 - x0) / 2
             height = (y1 - y0) / 2
             x0, y0, x1, y1 = -width, -height, width, height
 
 
+            #                       Line start  Triangle tip  Triangle vert1   Triangle vert2
             ar_verts = np.float32([[.5,  0, 0], [.5,  1, 0], [.45, .95,   0], [.55, .95,   0],
                                    [ 0, .5, 0], [ 1, .5, 0], [.95, .45,   0], [.95, .55,   0],
                                    [.5, .5, 0], [.5, .5, 1], [.45,  .5, .90], [.55,  .5, .90]])
 
+            # Color of each arrow
             red      = (   1,   1, 255)
             green    = (   1, 255,   1)
             blue     = ( 255,   1,   1)
 
-            ar_edges = [( 0, 1,   red), ( 2, 1,   red), ( 3, 1,    red),
-                        ( 4, 5,  blue), ( 6, 5,  blue), ( 7, 5,   blue),
-                        ( 8, 9, green), (10, 9, green), (11, 9,  green)]
+            # Which elements in ar_verts are to be connected with eachother as a line
+            ar_edges = [( 0, 1,   red),  # ( 2, 1,   red), ( 3, 1,    red),
+                        ( 4, 5,  blue),  # ( 6, 5,  blue), ( 7, 5,   blue),
+                        ( 8, 9, green)]  # , (10, 9, green), (11, 9,  green)]
 
             verts = ar_verts * [(x1 - x0), (y1 - y0), -(x1 - x0) * 0.3] + (x0, y0, 0)
 
-
+            # Project the arrows in 3D
             center = np.array(tracked.center).reshape(-1, 1)
             rotation = np.array(tracked.rotation).reshape(-1, 1)
             verts = cv2.projectPoints(verts, rotation, center, self.K, self.distCoeffs)[0].reshape(-1, 2)
 
 
+            # Draw lines for the arrows
             for i, j, color in ar_edges:
                 (x0, y0), (x1, y1) = verts[i], verts[j]
                 cv2.line(mask, (int(x0), int(y0)), (int(x1), int(y1)), color, 2)
 
-
+            # Draw triangles for the arrows
+            for i in range(0, 3):
+                row = i * 4
+                cv2.fillConvexPoly(mask, np.int32([verts[row + 1], verts[row + 2], verts[row + 3]]), ar_edges[i][2])
 
 
             # Create the text that will be drawn
@@ -676,19 +687,13 @@ class PlaneTracker(Tracker):
                 chosenCorner = tuple(validCorners[0])
 
                 # Draw the name of the object, and coordinates
-                cv2.putText(mask, nameText, chosenCorner,
+                mask  = drawOutlineText(mask, nameText, chosenCorner,
                             self.fFnt, scaleFactor, color=self.fColor, thickness=self.fThickness)
-                cv2.putText(tMask, nameText, chosenCorner,
+                tMask = drawOutlineText(tMask, nameText, chosenCorner,
                             self.fFnt, scaleFactor, color=self.fColor, thickness=self.fThickness)
-                # FOR DEUBGGING ONLY: TODO: Remove this when deploying final product
-                # try:
-                #     cv2.putText(mask, coordText, (chosenCorner[0], chosenCorner[1] + int(15 * scaleFactor)),
-                #                 self.fFnt, scaleFactor, color=self.fColor, thickness=self.fThickness)
-                # except:
-                #     pass
 
-            for (x, y) in np.int32(tracked.p1):
-                    cv2.circle(tMask, (x, y), 2, (255, 255, 255))
+
+
 
         # Apply the semi-transparent mask to the frame, with translucency
         frame[tMask > 0] = tMask[tMask > 0] * .7 + frame[tMask > 0] * .3
@@ -755,7 +760,7 @@ class CascadeTracker(Tracker):
             if targetName == target.name:
                 if target not in self.targets:
                     self.targets.append(target)
-                    print("appended ", target)
+
                 else:
                     printf("ERROR: Tried to add a target that was already there!")
 
@@ -799,7 +804,7 @@ class CascadeTracker(Tracker):
 
             cv2.rectangle(frame, tuple(quad[0]), tuple(quad[2]), (255, 255, 255), 2)
 
-            cv2.putText(frame, tracked.target.name, (tracked.quad[1][0], tracked.quad[1][1] + int(15)),
+            frame = drawOutlineText(frame, tracked.target.name, (tracked.quad[1][0], tracked.quad[1][1] + int(15)),
                         self.fFnt, scaleFactor, color=self.fColor, thickness=self.fThickness)
 
         return frame
@@ -818,6 +823,17 @@ class CascadeTracker(Tracker):
     #     cv2.imshow("window", copyframe)
     #     cv2.waitKey(1)
     #     return avg
+
+
+def drawOutlineText(frame, text, point, font, scale, color, thickness):
+    """
+        This function draws text twice, with a color on front and a color on the back
+    """
+    frame = cv2.putText(frame, text, point, font, scale, color=(1, 1, 1), thickness=thickness + 1)
+    frame = cv2.putText(frame, text, point, font, scale, color=color, thickness=thickness)
+
+    return frame
+
 
 
 """

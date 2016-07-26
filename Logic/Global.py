@@ -45,26 +45,31 @@ def wait(waitTime, exitFunc):
     quit the wait at any point that it returns True. This is so that when the interpreter is stopped, all
     commands will exit quickly and easily.
     """
+    waitUntilTime(time() + waitTime, exitFunc)
 
-    waitedTime = 0
 
-    # While sleeping, make sure that the script has not been shut down
-    start = time()
-    while time() - start < waitTime - .05:
-        if exitFunc(): return
-        sleep(.1)
-
-    sleep(waitTime - (time() - start))
+    # # While sleeping, make sure that the script has not been shut down
+    # start = time()
+    # while time() - start < waitTime - .05:
+    #     if exitFunc(): return
+    #     sleep(.1)
+    #
+    # sleep(waitTime - (time() - start))
 
 
 def waitUntilTime(timeMS, exitFunc):
-    # Waits until a certain time is reached, where timeMS is the time in miliseconds since some 1970
+    """
+    Waits until a certain time is reached
+    :param timeMS:  time in miliseconds since some 1970
+    :param exitFunc: A function that, if returns True, will exit the sleep immediately
+    :return:
+    """
 
     if exitFunc(): return
 
-    while time() < timeMS - 0.055:
+    while time() < timeMS - 0.075:
         if exitFunc(): return
-        sleep(.05)
+        sleep(.07)
 
 
     # Sleep the last little bit, for extra accuracy
@@ -84,7 +89,7 @@ def init():
 
     # When this function is set, all print "strings" will be sent to it before printing normally
     # The use case is for the Console widget. If printRedirectFunc = Console.write, then all prints will print on there
-    printRedirectFunc  = lambda classString, string: None
+    printRedirectFunc  = lambda classString, string: None  # print(classString + " "*(30 - len(classString)) + string)
 
 
 
@@ -166,7 +171,7 @@ def printf(*args):
     global printRedirectFunc
     printRedirectFunc(boilerPlate, buildString)
 
-    print(buildString)
+    # print(buildString)
     # Filter out any serial communication since it clutters up the console
     # if "Device" in boilerPlate: return
     #

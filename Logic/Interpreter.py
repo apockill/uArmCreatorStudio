@@ -37,15 +37,24 @@ __author__ = "Alexander Thiel"
 class Interpreter:
     """
     This is where the script is actually run. The most convenient method is to create a script with the GUI,
-    then use self.loadScript(script) to actually get the script into the interpreter, then use startThread()
+    then use self.initializeScript(script) to actually get the script into the interpreter, then use startThread()
     to begin the script.
-
-    Since an interpreter can run another interpreter inside of it, there is a
     """
 
-    def __init__(self, environment, parentExitFunc, parentSetExitingFunc):
+    def __init__(self, environment, parentExitFunc=None, parentSetExitingFunc=None):
+        """
+        Since interpreters can be run within themselves, the parentExitFunc and parentSetExitingFunc are exactly
+        what they sound like.
 
-        # This program will tell you if the highest parent interpreter is currently exiting
+        parentExitFunc is the first (original) interpreter's isExiting function.
+        parentSetExitingFunc is first (original) interpreters setExiting function.
+
+        If you don't know what that is, don't worry about it. It's only pertinent in Commands.RunTaskCommand
+
+        :param environment: Environment class, from Environment.py
+        """
+
+        # This function will tell you if the highest parent interpreter is currently exiting
         self.parentIsExiting  = parentExitFunc
 
         # This function will kill all interpreters running inside of the highest heirarchy of interpreters
@@ -80,7 +89,7 @@ class Interpreter:
         """
         script = deepcopy(script)
 
-        errors = {}  # Errors are returned from
+        errors = {}  # Keep track of missing components for commands that are initialized
 
         # Create each event
         for _, eventSave in enumerate(script):
@@ -89,7 +98,7 @@ class Interpreter:
             event     = eventType(self.env, self, parameters=eventSave['parameters'])
             self.addEvent(event)
 
-            # Add any commands related to the creation of this event
+            # Record any errors related to the creation of this event
             for error in event.errors:
                     if error not in errors: errors[error] = []
                     errors[error].append(eventSave['type'])
@@ -97,18 +106,17 @@ class Interpreter:
 
             # Create the commandList for this event
             for _, commandSave in enumerate(eventSave['commandList']):
-                # Get the "Logic" code command, stored in Commands.py
+                # Get the "Logic" code for this command, stored in Commands.py
                 commandType = getattr(Commands, commandSave['type'])
-                command     = commandType(self.env, self, commandSave['parameters'])
+                command     = commandType(self.env, self, parameters=commandSave['parameters'])
                 event.addCommand(command)
 
+                # Record any errors related to the creation of this command
                 for error in command.errors:
                     if error not in errors: errors[error] = []
                     errors[error].append(commandSave['type'])
 
 
-        # Get rid of repeat errors
-        # errors = set(errors)
         printf(len(errors), " errors occured while initializing the script.")
         return errors
 

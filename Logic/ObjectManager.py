@@ -112,14 +112,12 @@ class ObjectManager:
         This should only be used by the GUI when a group is added or deleted, or when a vision object is deleted.
         """
 
-        printf("Refreshing Groups!")
 
 
         # Remove existing groups from self.__objects
         for obj in self.__objects[:]:
             # Since multiple objects are being deleted in the same array, use [:] to copy it so it doesnt change size
             if isinstance(obj, TrackableGroupObject):
-                printf("Removing ", obj.name, " from self.__objects")
                 self.__objects.remove(obj)
 
         # Use a temporary dictionary to record which objs belong to which groups
@@ -142,7 +140,6 @@ class ObjectManager:
 
         # Create the TrackableGroup objects and add them
         for group in groups:
-            printf("Adding group ", group)
             newGroupObj = TrackableGroupObject(name=group, members=groups[group])
             self.__addObject(newGroupObj)
 
@@ -379,7 +376,6 @@ class TrackableObject(Trackable):
         }
         """
 
-        printf("Saving self to directory ", directory)
 
         # Make sure the "objects" directory exists
         ensurePathExists(directory)
@@ -471,7 +467,7 @@ class TrackableObject(Trackable):
             x0, y0, x1, y1  = self.views[0].pickupRect
             quad            = np.int32([[x0, y0], [x1, y0], [x1, y1], [x0, y1]])
 
-            print(quad)
+
             cv2.polylines(image, [quad], True, (255, 255, 255), 2)
 
 

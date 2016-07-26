@@ -1032,6 +1032,26 @@ class BuzzerCommand(CommandGUI):
 
 
 #   Robot + Vision COmmands
+class VisionMoveXYZCommand(MoveXYZCommand):
+    title     = "Vision Assisted Move XYZ"
+    tooltip   = "This works like the normal Move XYZ command, but uses vision to verify the robots position and\n"\
+                "perform a 'correction' move after an initial move. \n" \
+                "This command requires Camera/Robot Calibrations to be done."
+    icon      = Paths.command_xyz_vision
+
+    def __init__(self, env, parameters=None):
+        super(VisionMoveXYZCommand, self).__init__(env, parameters)
+
+    def dressWindow(self, prompt):
+        super(VisionMoveXYZCommand, self).dressWindow(prompt)
+        warningLbl = QtWidgets.QLabel("This function is experimental. It may not yield more accurate results.")
+        warningLbl.setWordWrap(True)
+
+        self._addRow(prompt, warningLbl)
+
+        return prompt
+
+
 class MoveRelativeToObjectCommand(CommandGUI):
     title     = "Move Relative To Object"
     tooltip   = "This tool uses computer vision to recognize an object of your choice, and position the robot directly"\
@@ -1436,24 +1456,6 @@ class TestObjectLocationCommand(CommandGUI):
         self.description += " seen within a location"
 
 
-class VisionMoveXYZCommand(MoveXYZCommand):
-    title     = "Vision Assisted Move XYZ"
-    tooltip   = "This works like the normal Move XYZ command, but uses vision to verify the robots position and\n"\
-                "perform a 'correction' move after an initial move. \n" \
-                "This command requires Camera/Robot Calibrations to be done."
-    icon      = Paths.command_xyz_vision
-
-    def __init__(self, env, parameters=None):
-        super(VisionMoveXYZCommand, self).__init__(env, parameters)
-
-    def dressWindow(self, prompt):
-        super(VisionMoveXYZCommand, self).dressWindow(prompt)
-        warningLbl = QtWidgets.QLabel("This function is experimental. It may not yield more accurate results.")
-        warningLbl.setWordWrap(True)
-
-        self._addRow(prompt, warningLbl)
-
-        return prompt
 
 
 

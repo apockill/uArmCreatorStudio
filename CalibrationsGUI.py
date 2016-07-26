@@ -45,7 +45,6 @@ class CalibrateWindow(QtWidgets.QDialog):
     visual servo-ing calibrations
     """
 
-    # noinspection PyCallByClass,PyCallByClass
     def __init__(self, coordSettings, motionSettings, environment, parent):
         super(CalibrateWindow, self).__init__(parent)
         self.motionSettings = motionSettings
@@ -172,7 +171,9 @@ class CalibrateWindow(QtWidgets.QDialog):
 
     def calibrateMotion(self):
         # Shake the robot left and right while getting frames to get a threshold for "high" movement between frames
-
+        showStep = lambda step, message: QtWidgets.QMessageBox.question(self, 'Step ' + str(step),
+                                                                        'Step ' + str(step) + "\n\n" + message,
+                                                                        QtWidgets.QMessageBox.Ok)
 
         vStream = self.env.getVStream()
         vision  = self.env.getVision()
@@ -193,6 +194,7 @@ class CalibrateWindow(QtWidgets.QDialog):
         # Make sure VideoStream is collecting new frames
         vStream.setPaused(False)
 
+        showStep(1, "Do not make any movement in the cameras view until the next message appears.")
 
         # Get movement while nothing is happening
         totalMotion = 0.0
@@ -202,7 +204,7 @@ class CalibrateWindow(QtWidgets.QDialog):
             totalMotion += vision.getMotion()
         noMovement = totalMotion / samples
 
-
+        showStep(2, "The robot will now move. Make sure the camera is facing the robot.")
         # Get movement while robot is moving
         totalMotion = 0.0
         moves       = 10

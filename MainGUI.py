@@ -29,10 +29,9 @@ import json         # For saving and loading settings and tasks
 import sys          # For GUI, and overloading the default error handling
 import webbrowser   # For opening the uFactory forums under the "file" menu
 import ControlPanelGUI
-from time              import sleep                     # Used when closing the interpreter thread
-from CommonGUI         import Console
+from CommonGUI         import Console                   # This is the "Console" widget on the mainWindow
 from copy              import deepcopy                  # For copying saves and comparing later
-from PyQt5             import QtCore, QtWidgets, QtGui, QtMultimedia  # All GUI things
+from PyQt5             import QtCore, QtWidgets, QtGui  # All GUI things
 from CalibrationsGUI   import CalibrateWindow           # For opening Calibrate window
 from CameraGUI         import CameraWidget              # General GUI purposes
 from Logic             import Global, Paths             # For keeping track of keypresses
@@ -45,21 +44,18 @@ from ObjectManagerGUI  import ObjectManagerWindow       # For opening ObjectMana
 __author__ = "Alexander Thiel"
 
 
-
 ########## MAIN WINDOW ##########
 class MainWindow(QtWidgets.QMainWindow):
     # For debugging object count, use: print("CHILDREN: ", len(self.findChildren(QtCore.QObject)))
     def __init__(self):
         super(MainWindow, self).__init__()
 
-        camera = QtMultimedia.QCamera(self)
-
 
         # Init self and objects.
         self.fileName    = None
         self.loadData    = []  #Set when file is loaded. Used to check if the user has changed anything and prompt
         self.env         = Environment()
-        self.interpreter = Interpreter(self.env, None, None)
+        self.interpreter = Interpreter(self.env)
 
 
         # Set Global UI Variables
@@ -800,6 +796,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     sys.excepthook   = exception_hook
+
 
     # Initialize global variables
     Global.init()
