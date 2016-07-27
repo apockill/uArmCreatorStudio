@@ -198,7 +198,6 @@ class Interpreter:
             - getattr
             - memoryview
             - compile
-            - classmethod
             - repr
             - property
             - hasattr

@@ -33,7 +33,7 @@ from PyQt5               import QtCore, QtWidgets, QtGui
 from CameraGUI           import CameraSelector
 from Logic               import Paths
 from Logic.Global        import printf
-from Logic.ObjectManager import TrackableObject
+from Logic.Resources     import TrackableObject
 __author__ = "Alexander Thiel"
 
 
@@ -171,8 +171,8 @@ class CalibrateWindow(QtWidgets.QDialog):
 
     def calibrateMotion(self):
         # Shake the robot left and right while getting frames to get a threshold for "high" movement between frames
-        showStep = lambda step, message: QtWidgets.QMessageBox.question(self, 'Step ' + str(step),
-                                                                        'Step ' + str(step) + "\n\n" + message,
+        showStep = lambda step, message: QtWidgets.QMessageBox.question(self, 'Step ' + step,
+                                                                        'Step ' + step + "\n\n" + message,
                                                                         QtWidgets.QMessageBox.Ok)
 
         vStream = self.env.getVStream()
@@ -204,7 +204,7 @@ class CalibrateWindow(QtWidgets.QDialog):
             totalMotion += vision.getMotion()
         noMovement = totalMotion / samples
 
-        showStep(2, "The robot will now move. Make sure the camera is facing the robot.")
+
         # Get movement while robot is moving
         totalMotion = 0.0
         moves       = 10
@@ -263,7 +263,7 @@ class CalibrateWindow(QtWidgets.QDialog):
             self.robotError()
             return
 
-        # If "Robot Marker" object doesn't exist
+        # If Robot Marker trackable object doesn't exist
         startFromScratch = True  # Whether or not the user skip to automated calibration or not
         if robotTracker is not None:
 
@@ -670,15 +670,17 @@ class CWPage4(QtWidgets.QWizardPage):
         self.movieLbl.setMovie(self.selMovie)
         self.movieLbl.show()
 
-        rect  = self.cameraWidget.getSelectedRect()
-        frame = self.cameraWidget.getSelectedFrame()
+        rect     = self.cameraWidget.getSelectedRect()
+        frame    = self.cameraWidget.getSelectedFrame()
+        h, w, _  = frame.shape
 
         # Get the "target" object from the image and rectangle
         trackable = TrackableObject("Robot Marker")
         trackable.addNewView(image      = frame,
                              rect       = rect,
-                             pickupRect = None,
-                             height     = None)
+                             pickupRect = [0, 0, h, w],
+                             height     = 0)
+
         target = self.vision.planeTracker.createTarget(trackable.getViews()[0])
 
         # Analyze it, and make sure it's a valid target. If not, return the camera to selection mode.

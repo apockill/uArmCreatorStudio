@@ -490,7 +490,7 @@ class PickupObjectCommand(Command):
         if len(self.errors) > 0: return False
 
         ret = rv.pickupObject(self.trackable, self.rbMarker, self.ptPairs, self.grndHeight,
-                              self.robot, self.vision, self.exitFunc)
+                              self.robot, self.vision)
 
         return ret
 

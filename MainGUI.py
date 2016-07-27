@@ -54,7 +54,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Init self and objects.
         self.fileName    = None
         self.loadData    = []  #Set when file is loaded. Used to check if the user has changed anything and prompt
-        self.env         = Environment()
+        self.env         = Environment()  # This loads settings, connects to robot, connects to camera, all at once
         self.interpreter = Interpreter(self.env)
 
 
@@ -74,8 +74,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 
-
-
         # Create Menu items, and set the Dashboard as the main widget
         self.initUI()
         self.setVideo("play")
@@ -85,19 +83,24 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.env.getSetting("lastOpenedFile") is not None:
             self.loadTask(filename=self.env.getSetting("lastOpenedFile"))
 
-        if self.env.getSetting("windowState") is not None:
-            # Restore window geometry from settings
+
+        # After initUI: Restore the window geometry to the state it was when the user last closed the window
+        if self.env.getSetting("windowGeometry") is not None:
             state = self.env.getSetting("windowGeometry")
             state = bytearray(state, 'utf-8')
             bArr = QtCore.QByteArray.fromHex(state)
             self.restoreGeometry(bArr)
 
 
-            # Restore size and position of dockwidgets from settings
+        # After initUI: Restore size and position of dockwidgets to their previous state
+        if self.env.getSetting("windowState") is not None:
             state = self.env.getSetting("windowState")
             state = bytearray(state, 'utf-8')
             bArr = QtCore.QByteArray.fromHex(state)
             self.restoreState(bArr)
+
+
+
 
     def initUI(self):
         # Create "File" Menu

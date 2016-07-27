@@ -209,7 +209,7 @@ class EventPromptWindow(QtWidgets.QDialog):
 
 
 
-        trackableList   = self.objManager.getObjectNameList(objFilter=self.objManager.TRACKABLE)
+        trackableList   = self.objManager.getObjectNameList(typeFilter=self.objManager.TRACKABLE)
         ######################   RECOGNIZE/NOT MENUS    ######################
 
         newRecognizeBtn = lambda params: self.btnClicked(    RecognizeObjectEvent, params=params)

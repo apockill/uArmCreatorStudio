@@ -31,9 +31,11 @@ from time                import time
 from PyQt5               import QtCore, QtWidgets, QtGui
 from CommonGUI           import centerScreen
 from CameraGUI           import CameraWidget, CameraSelector, cvToPixFrame
+from ControlPanelGUI     import CommandList
+from CommandsGUI         import CommandMenuWidget
 from Logic               import Paths
 from Logic.Global        import printf
-from Logic.ObjectManager import TrackableObject, MotionPath
+from Logic.Resources     import TrackableObject, MotionPath, Function
 from Logic.RobotVision   import MIN_POINTS_TO_LEARN_OBJECT
 __author__ = "Alexander Thiel"
 
@@ -58,36 +60,45 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         # Initialize the UI
         self.initUI()
         self.cameraWidget.play()
-        self.refreshObjectList()
+        self.refreshTreeWidget()
 
     def initUI(self):
         self.objTree.setIndentation(10)
         self.objTree.setHeaderLabels([""])
         self.objTree.header().close()
 
+
+
         # CREATE OBJECTS AND LAYOUTS FOR ROW 1 COLUMN (ALL)
         newObjBtn    = QtWidgets.QPushButton("New Vision Object")
         newGrpBtn    = QtWidgets.QPushButton("New Vision Group")
         newRecBtn    = QtWidgets.QPushButton("New Motion Recording")
+        newFncBtn    = QtWidgets.QPushButton("New Function")
 
         # Set the icons for the buttons
         newObjBtn.setIcon(QtGui.QIcon(Paths.event_recognize))
         newGrpBtn.setIcon(QtGui.QIcon(Paths.event_recognize))
         newRecBtn.setIcon(QtGui.QIcon(Paths.record_start))
+        newFncBtn.setIcon(QtGui.QIcon(Paths.taskbar))
 
         newObjBtn.setFixedWidth(175)
         newGrpBtn.setFixedWidth(175)
         newRecBtn.setFixedWidth(175)
+        newFncBtn.setFixedWidth(175)
+
         newObjBtn.setFixedHeight(35)
         newGrpBtn.setFixedHeight(35)
         newRecBtn.setFixedHeight(35)
+        newFncBtn.setFixedHeight(35)
 
-        self.objTree.setMinimumWidth(260)
+
 
         # Connect everything up
         newObjBtn.clicked.connect(lambda: self.openObjectWizard())
         newGrpBtn.clicked.connect(lambda: self.openGroupMenu())
         newRecBtn.clicked.connect(lambda: self.openRecordingMenu())
+        newFncBtn.clicked.connect(lambda: self.openFunctionMenu())
+
         self.objTree.itemSelectionChanged.connect(self.refreshSelected)
 
 
@@ -96,7 +107,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         listVLayout  = QtWidgets.QVBoxLayout()
         listVLayout.addWidget(self.objTree)
         listGBox.setLayout(listVLayout)
-
+        listGBox.setFixedWidth(325)
 
         # CREATE OBJECTS AND LAYOUTS FOR COLUMN 2
         selectedGBox   = QtWidgets.QGroupBox("Selected Resource")
@@ -112,6 +123,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         row1.addWidget(newObjBtn)
         row1.addWidget(newGrpBtn)
         row1.addWidget(newRecBtn)
+        row1.addWidget(newFncBtn)
         row1.addStretch(1)
 
         col1.addWidget(listGBox)
@@ -139,9 +151,9 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         self.setMinimumHeight(700)
 
 
-    def refreshObjectList(self, selectedItem=None):
+    def refreshTreeWidget(self, selectedItem=None):
         # Clear the objectList, and reload all object names from the environment
-        # If selectedItem is a string, it will try to select the item. This is for obj's added through the ObjWizard
+        # If selectedItem is a string name of an object, it will try to select the item in the TreeWidget
         # Clear the current objectList
         self.objTree.clear()
         self.vision.endAllTrackers()
@@ -157,7 +169,13 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         rcdObjs = self.objManager.getObjectNameList(self.objManager.MOTIONPATH)
         rcdObjs.sort()
 
-        tree = [["Vision Objects", visObjs], ["Vision Groups", grpObjs], ["Motion Recordings", rcdObjs]]
+        fncObjs = self.objManager.getObjectNameList(self.objManager.FUNCTION)
+        fncObjs.sort()
+
+        tree = [[   "Vision Objects", visObjs],
+                [    "Vision Groups", grpObjs],
+                ["Motion Recordings", rcdObjs],
+                [        "Functions", fncObjs]]
 
 
         for section in tree:
@@ -209,6 +227,9 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         if isinstance(obj, self.objManager.MOTIONPATH):
             self.setSelectionPath(obj)
 
+        if isinstance(obj, self.objManager.FUNCTION):
+            self.setSelectionFunction(obj)
+
 
     def setSelectionTrackable(self, trackableObj):
 
@@ -229,7 +250,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
 
         # Create a pretty icon for the object, so it's easily recognizable. Use the first sample in the objectt
-        icon = cvToPixFrame(trackableObj.getIcon(150, 350))
+        icon = cvToPixFrame(trackableObj.getIcon(150, 300))
         selImgLbl.setPixmap(icon)
 
 
@@ -301,6 +322,35 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         self.selLayout.addWidget(deleteBtn)
         self.selLayout.addStretch(1)
 
+    def setSelectionFunction(self, funcObj):
+
+        selDescLbl = QtWidgets.QLabel("")   # Description of selected object
+        deleteBtn  = QtWidgets.QPushButton("Delete")
+        editBtn    = QtWidgets.QPushButton("Edit Function")
+
+        selDescLbl.setWordWrap(True)
+
+        # Connect any buttons
+        deleteBtn.clicked.connect(self.deleteSelected)
+        editBtn.clicked.connect(lambda: self.openFunctionMenu(funcObj=funcObj))
+
+
+        # Create the appropriate description
+        commandList = funcObj.getCommandList()
+        description = funcObj.getDescription()
+
+        selDescLbl.setText("Name: \n"                + funcObj.name + "\n\n"
+                           "Number of Commands: \n"  + str(len(commandList)) + "\n\n"
+                           "Description: \n"         + description + "\n\n")
+                           # "Moves/Second:\n"         + str(round(len(motionPath) / totalTime, 1)))
+
+
+        self.selLayout.addWidget(selDescLbl)
+        self.selLayout.addWidget(editBtn)
+        self.selLayout.addWidget(deleteBtn)
+        self.selLayout.addStretch(1)
+
+
 
     def clearSelectedLayout(self):
         for cnt in reversed(range(self.selLayout.count())):
@@ -326,7 +376,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         if reply == QtWidgets.QMessageBox.Yes:
             self.objManager.deleteObject(selObject)
 
-        self.refreshObjectList()
+        self.refreshTreeWidget()
 
     def getSelected(self):
         # Returns the selected object
@@ -337,67 +387,46 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
 
     def openObjectWizard(self, trackableObj=None):
-
+        # Make sure a camera is connected
         vStream = self.env.getVStream()
         if not vStream.connected():
             message = "A camera must be connected to add new objects"
             QtWidgets.QMessageBox.question(self, 'Error', message, QtWidgets.QMessageBox.Ok)
             return
 
-        printf("Opening Object Wizard!")
-
+        # Pause the objectManager's camera
         self.cameraWidget.pause()
 
-        # Get the object information from the user using the Object Wizard
-        oWizard = ObjectWizard(trackableObj, self.env, self)
-        finished = oWizard.exec_()
 
-        # Close objectWizard, make sure that even if "cancel" was pressed, the window still closes
-        oWizard.close()
-        oWizard.deleteLater()
+        oWizard  = ObjectWizard(trackableObj, self.env, self)
+        finished = oWizard.exec_()
 
         if finished:
             oWizard.createNewObject()
-            self.refreshObjectList(selectedItem=oWizard.newObject.name)
+            self.refreshTreeWidget(selectedItem=oWizard.newObject.name)
+
+        oWizard.close()
+        oWizard.deleteLater()
+
+
 
         self.cameraWidget.play()
 
     def openGroupMenu(self, groupObj=None):
-        """ :type groupObj: Logic.ObjectManager.TrackableGroupObject """
 
-        # Opens a menu that lets people choose what objects to put into a group
-        choosableObjects = self.objManager.getObjectNameList(objFilter=self.objManager.TRACKABLEOBJ)
-        forbiddenNames   = self.objManager.getForbiddenNames()
-        if groupObj is None:
-            groupMenu = EditGroupWindow(choosableObjects, forbiddenNames, [], None, self)
-        else:
-            groupMenu = EditGroupWindow(choosableObjects, forbiddenNames, groupObj.getMembers(), groupObj.name, self)
+        groupMenu = EditGroupWindow(groupObj, self.objManager, parent=self)
+        finished  = groupMenu.exec_()
 
-        accepted = groupMenu.exec_()
-
-
-
-        if accepted:
-            # Delete the tags of the original version (if there is one) before adding a new one
-
-            grpID = groupMenu.getName()
-            self.objManager.deleteObject(grpID)
-
-            # Add the appropriate tags to every object
-            for objID in groupMenu.getSelected():
-                groupObj = self.objManager.getObject(objID)
-                groupObj.addTag(grpID)
-                self.objManager.saveObject(groupObj)
-
-            self.objManager.refreshGroups()
-            self.refreshObjectList(selectedItem=grpID)
-        else:
-            printf("User rejected prompt. Ignoring changes!")
+        if finished:
+            groupMenu.createNewObject()
+            self.refreshTreeWidget(selectedItem=groupMenu.newObject.name)
 
         groupMenu.close()
         groupMenu.deleteLater()
 
+
     def openRecordingMenu(self, pathObj=None):
+        # Make sure a robot is connected
         robot          = self.env.getRobot()
         if not robot.connected():
             message = "A robot must be connected to do motion recording."
@@ -405,18 +434,26 @@ class ObjectManagerWindow(QtWidgets.QDialog):
             return
 
 
-        forbiddenNames = self.objManager.getForbiddenNames()
-
-        recMenu        = MotionRecordWindow(forbiddenNames, pathObj, robot, self.objManager, self)
+        recMenu        = MotionRecordWindow(pathObj, robot, self.objManager, self)
         finished       = recMenu.exec_()
 
         if finished:
             recMenu.createNewObject()
-            self.refreshObjectList(selectedItem=recMenu.newObject.name)
+            self.refreshTreeWidget(selectedItem=recMenu.newObject.name)
 
         recMenu.close()
         recMenu.deleteLater()
 
+    def openFunctionMenu(self, funcObj=None):
+        funcMenu = MakeFunctionWindow(funcObj, self.env, self)
+        finished = funcMenu.exec_()
+
+        if finished:
+            funcMenu.createNewObject()
+            self.refreshTreeWidget(selectedItem=funcMenu.newObject.name)
+
+        funcMenu.close()
+        funcMenu.deleteLater()
 
 
     def closeEvent(self, event):
@@ -432,34 +469,39 @@ class EditGroupWindow(QtWidgets.QDialog):
         This opens up when "New Group" button is clicked or when "add objects to group" is clicked in ObjectManager
     """
 
-    def __init__(self, trackableObjs, forbiddenNames, previouslyChosen, currentName, parent):
+    def __init__(self, currentObj, objManager, parent):
         super(EditGroupWindow, self).__init__(parent)
-        self.objNames       = trackableObjs  # A list of strings of trackable objects
-        self.forbiddenNames = forbiddenNames
 
+        self.newObject      = currentObj
+        self.forbiddenNames = objManager.getForbiddenNames()
+        self.objManager     = objManager
 
         # Initialize UI variables
-        self.nameEdit    = QtWidgets.QLineEdit(currentName)
-        self.objList     = QtWidgets.QListWidget()
-        self.applyBtn    = QtWidgets.QPushButton("Apply", self)
-        self.hintLbl     = QtWidgets.QLabel("")
 
+        self.nameEdit   = QtWidgets.QLineEdit()
+        self.objList    = QtWidgets.QListWidget()
+        self.applyBtn   = QtWidgets.QPushButton("Apply", self)
+        self.hintLbl    = QtWidgets.QLabel("")
 
-        # If no name was passed, set a default name. If one was passed, disable the nameBox
-        if currentName is None:
-            self.nameEdit.setText("")
-        else:
-            self.nameEdit.setDisabled(True)
+        # Add trackablObjs to the objList
+        objNames      = objManager.getObjectNameList(typeFilter=objManager.TRACKABLEOBJ)
+        for i, objID in enumerate(objNames):
+            self.objList.addItem(objID)
 
         self.objList.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
 
+        # If this is in 'editing' mode, restore the last state
+        if self.newObject is not None:
+            self.nameEdit.setText(self.newObject.name)
+            self.nameEdit.setDisabled(True)
 
-        # Add trackablObjs to the objList
-        prevChosenIDs = [obj.name for obj in previouslyChosen]
-        for i, objID in enumerate(trackableObjs):
-            self.objList.addItem(objID)
-            if objID in prevChosenIDs:
-                self.objList.item(i).setSelected(True)
+            # Select any objets that are in the group
+            prevChosenIDs = [obj.name for obj in self.newObject.getMembers()]
+            for i, objID in enumerate(objNames):
+                if objID in prevChosenIDs:
+                    self.objList.item(i).setSelected(True)
+
+
 
         self.initUI()
         self.isComplete()
@@ -522,6 +564,28 @@ class EditGroupWindow(QtWidgets.QDialog):
             selectedObjs.append(item.text())
         return selectedObjs
 
+    def createNewObject(self):
+        name = self.nameEdit.text()
+
+        self.objManager.deleteObject(name)
+
+        # Get the name of every selected object
+        selectedItems = self.objList.selectedItems()
+        selectedObjs  = []
+
+        for item in selectedItems:
+            selectedObjs.append(item.text())
+
+
+        # Add the appropriate tags to every object
+        for objID in selectedObjs:
+            groupObj = self.objManager.getObject(objID)
+            groupObj.addTag(name)
+            self.objManager.saveObject(groupObj)
+
+        self.objManager.refreshGroups()
+        self.newObject = self.objManager.getObject(name)
+
     def isComplete(self):
         newHintText = ""
         if self.nameEdit.isEnabled():
@@ -546,14 +610,15 @@ class MotionRecordWindow(QtWidgets.QDialog):
         This opens up when "New Group" button is clicked or when "add objects to group" is clicked in ObjectManager
     """
 
-    def __init__(self, forbiddenNames, currentObj, robot, objManager, parent):
+    def __init__(self, currentObj, robot, objManager, parent):
         super(MotionRecordWindow, self).__init__(parent)
 
         self.robot            = robot
         self.newObject        = currentObj  # This is where the created object will go after being made in objManager
         self.objManager       = objManager
 
-        self.forbiddenNames   = forbiddenNames
+
+        self.forbiddenNames   = self.objManager.getForbiddenNames()
         self.recording        = False   # State of recording
         self.baseTime         = None    # When continuing a recording, this is the time of the last recording ending
         self.startTime        = None    # Keeps track of *when* the recording started
@@ -568,14 +633,13 @@ class MotionRecordWindow(QtWidgets.QDialog):
         self.applyBtn    = QtWidgets.QPushButton("Apply", self)
         self.hintLbl     = QtWidgets.QLabel("")
 
-        # If no name was passed, set a default name. If one was passed, disable the nameBox
-        if self.newObject is None:
-            self.nameEdit.setText("")
-        else:
+        # If this is in 'editing' mode, restore the last state
+        if self.newObject is not None:
             self.motionPath = self.newObject.getMotionPath()
             self.nameEdit.setText(self.newObject.name)
             self.nameEdit.setDisabled(True)
 
+            # Move to the last position of the current recording
             lastPos = self.motionPath[-1][2:]
             pos = robot.getFK(servo0=lastPos[0], servo1=lastPos[1], servo2=lastPos[2])
             robot.setPos(coord=pos, wait=False)
@@ -602,9 +666,11 @@ class MotionRecordWindow(QtWidgets.QDialog):
         # Create non global UI variables
         nameLbl   = QtWidgets.QLabel("Recording Name: ")
         pathLbl   = QtWidgets.QLabel("Recorded Path")
-        hint2Lbl  = QtWidgets.QLabel("While recording, press the robots suction cup to activate the pump.\n"
-                                     "When you press Apply, Gaussian smoothing will be applied, and areas of no\n"
-                                     "movement at the start and end will be trimmed out.")
+        hint2Lbl  = QtWidgets.QLabel("Press 'Record' to start recording robot movements.\n"
+                                     "While recording, press the robots suction cup to activate the pump.\n"
+                                     "When you press Apply, areas of no movement at the start and end\n"
+                                     "will be trimmed out.")
+
         cancelBtn = QtWidgets.QPushButton("Cancel", self)
 
 
@@ -878,12 +944,8 @@ class MotionRecordWindow(QtWidgets.QDialog):
         self.roundMotionPath()
         # Create an actual TrackableObject with this information
         if self.newObject is not None:
-
             name        = self.newObject.name
             motionObj   = self.objManager.getObject(name)
-            if motionObj is None:
-                printf("ERROR: Could not find object to add sample to!")
-                return
         else:
             name = self.nameEdit.text()
             motionObj = MotionPath(name)
@@ -911,6 +973,135 @@ class MotionRecordWindow(QtWidgets.QDialog):
     def close(self):
         self.robot.setGripper(False)
         self.timer.stop()
+
+
+
+# Make a Custom Function
+class MakeFunctionWindow(QtWidgets.QDialog):
+    def __init__(self, currentObj, environment, parent):
+        super(MakeFunctionWindow, self).__init__(parent)
+
+        self.commandList = CommandList(environment, parent=self)
+        self.commandMenu = CommandMenuWidget(parent=self)
+
+        self.newObject   = currentObj  # This is where the created object will go after being made in objManager
+        self.objManager  = environment.getObjectManager()
+
+
+        # OLD
+        self.forbiddenNames = self.objManager.getForbiddenNames()
+
+
+        # Initialize UI variables
+        self.nameEdit = QtWidgets.QLineEdit()
+        self.descEdit = QtWidgets.QLineEdit()
+        self.applyBtn = QtWidgets.QPushButton("Apply", self)
+        self.hintLbl  = QtWidgets.QLabel()
+
+
+        # If this is in 'editing' mode, restore the last state
+        if self.newObject is not None:
+            self.nameEdit.setText(self.newObject.name)
+            self.nameEdit.setDisabled(True)
+            self.descEdit.setText(self.newObject.getDescription())
+            self.commandList.loadData(self.newObject.getCommandList())
+
+
+        self.initUI()
+        self.isComplete()
+
+    def initUI(self):
+        self.nameEdit.textChanged.connect(self.isComplete)
+
+        # Create non global UI variables
+        nameLbl   = QtWidgets.QLabel("Function Name: ")
+        descLbl   = QtWidgets.QLabel("Function Description: ")
+
+        hint2Lbl  = QtWidgets.QLabel("Drag commands into the list to create a function")
+        cancelBtn = QtWidgets.QPushButton("Cancel", self)
+
+
+        # Connect everything
+        self.applyBtn.clicked.connect(self.accept)
+        cancelBtn.clicked.connect(self.reject)
+
+
+        # Bolden the hintLbl
+        bold = QtGui.QFont()
+        bold.setBold(True)
+        self.hintLbl.setFont(bold)
+        self.hintLbl.setWordWrap(True)
+
+
+        # Create the rows then fill them
+        row1 = QtWidgets.QHBoxLayout()
+        row2 = QtWidgets.QHBoxLayout()
+        row3 = QtWidgets.QHBoxLayout()
+        row4 = QtWidgets.QHBoxLayout()
+        row5 = QtWidgets.QHBoxLayout()
+        row6 = QtWidgets.QHBoxLayout()
+
+
+        row1.addWidget(nameLbl)
+        row1.addWidget(self.nameEdit)
+
+        row2.addWidget(descLbl)
+        row2.addWidget(self.descEdit)
+
+        row3.addWidget(self.commandList)
+        row3.addWidget(self.commandMenu)
+
+        row4.addWidget(hint2Lbl)
+
+        row5.addWidget(self.hintLbl)
+
+        row6.addWidget(cancelBtn)
+        row6.addStretch(1)
+        row6.addWidget(self.applyBtn)
+
+
+        # Add everything to the main layout then touch it up a bit
+        mainVLayout = QtWidgets.QVBoxLayout()
+        mainVLayout.addLayout(row1)
+        mainVLayout.addLayout(row2)
+        mainVLayout.addLayout(row3)
+        mainVLayout.addLayout(row4)
+        mainVLayout.addLayout(row5)
+        mainVLayout.addLayout(row6)
+
+        self.setLayout(mainVLayout)
+        self.setMinimumHeight(550)
+        self.setMinimumWidth(500)
+        self.setWindowTitle('Create a Function')
+
+    def createNewObject(self):
+        # Create an actual TrackableObject with this information
+        if self.newObject is not None:
+            name        = self.newObject.name
+            functionObj = self.objManager.getObject(name)
+        else:
+            name = self.nameEdit.text()
+            functionObj = Function(name)
+
+        functionObj.setCommandList(self.commandList.getSaveData())
+        functionObj.setDescription(str(self.descEdit.text()))
+        self.objManager.saveObject(functionObj)
+        self.newObject = functionObj
+
+    def isComplete(self):
+        newHintText = ""
+        if self.nameEdit.isEnabled():
+            newName, newHintText = sanitizeName(self.nameEdit.text(), self.forbiddenNames)
+            self.nameEdit.setText(newName)
+
+        self.hintLbl.setText(newHintText)
+
+        # if len(self.motionPath) <= 20:
+        #     self.hintLbl.setText("Recording must be longer than 20 points of data")
+
+        # Set the apply button enabled if everything is filled out correctly
+        setEnabled = len(newHintText) == 0
+        self.applyBtn.setEnabled(setEnabled)
 
 
 
@@ -948,12 +1139,6 @@ class ObjectWizard(QtWidgets.QWizard):
 
         # Center the window after building it
         self.timer    = QtCore.QTimer.singleShot(0, lambda: centerScreen(self))
-
-
-
-
-
-
 
     def createNewObject(self):
         image       = self.page2.object.view.image.copy()
@@ -1406,7 +1591,7 @@ class OWPage4(QtWidgets.QWizardPage):
 
 
 
-
+# Utility function for determining if a name is a valid name for a resource
 def sanitizeName(name, forbiddenNames):
     """
     This function takes a string name, that the user wants to name a new object with
@@ -1415,14 +1600,21 @@ def sanitizeName(name, forbiddenNames):
         newName:    A modified name, with capitalized first level and certain characters changed
         hintText    Any hint text the user should have, to know why their name doesnt work. If None, name is valid!
     """
+    # DO NAME MODIFICATIONS BEFORE CHECKING VALIDITIY
+    # If the first character is a space, remove it
+    if len(name) > 0 and name[0] == " ":
+        name = name[1:]
 
-    # Check if the user entered a valid name name is valid
+    if len(name) > 0:
+        # Make sure the first letter of each word is capitalized, and any spaces are converted to underscores
+        name = name[0].upper() + name[1:]
+        name = name.replace('_', ' ')
+
+
+    # START CHECKING FOR VALIDITIY
     if len(name) == 0:
         return name, "You must input a name to continue"
 
-    # Make sure the first letter is uppercase, and any spaces are converted to underscores
-    name = name.replace(name[0], name[0].upper())
-    name = name.replace('_', ' ')
 
 
     # Record any characters that wre not valid
@@ -1436,16 +1628,18 @@ def sanitizeName(name, forbiddenNames):
 
     # If there were errors, then display a message explaining why
     if len(invalidChars) > 0:
-        return name, 'You cannot have the following characters in your object name: ' + ''.join(invalidChars)
+        return name, 'You cannot have the following characters in the resource name: ' + ''.join(invalidChars)
 
     # Make forbiddenNames all be lowercase, for easy comparation
     forbiddenNames = [name.lower() for name in forbiddenNames]
 
     # Check if the name is the same as any of the forbidden names
     if name.lower().strip() in forbiddenNames:
-        return name, 'There is already an object named ' + name.strip() + '! \n' + \
+        return name, 'There is already a resource named ' + name.strip() + '! \n' + \
                      ' If you want to replace it, delete the original and try again.'
 
+    if len(name) > 30:
+        return name, 'That name is too long.'
     # If there were no errors, then turn the "next" button enabled, and make the error message dissapear
     return name, ''
 

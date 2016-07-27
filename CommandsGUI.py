@@ -705,7 +705,7 @@ class MotionRecordingCommand(CommandGUI):
         super(MotionRecordingCommand, self).__init__(parameters)
 
         objManager = env.getObjectManager()
-        self.getObjectList = lambda: objManager.getObjectNameList(objFilter=objManager.MOTIONPATH)
+        self.getObjectList = lambda: objManager.getObjectNameList(typeFilter=objManager.MOTIONPATH)
 
 
         if self.parameters is None:
@@ -1066,7 +1066,7 @@ class MoveRelativeToObjectCommand(CommandGUI):
         objManager = env.getObjectManager()
 
         # Save a list that gets all loaded objects. This is used only when the window is opened, to populate the objlist
-        self.getObjectList  = lambda: objManager.getObjectNameList(objFilter=objManager.PICKUP)
+        self.getObjectList  = lambda: objManager.getObjectNameList(typeFilter=objManager.TRACKABLE)
 
         if self.parameters is None:
             self.parameters = {"objectID": "",
@@ -1147,7 +1147,7 @@ class MoveWristRelativeToObjectCommand(CommandGUI):
     def __init__(self, env, parameters=None):
         super(MoveWristRelativeToObjectCommand, self).__init__(parameters)
         objManager         =  env.getObjectManager()
-        self.getObjectList = lambda: objManager.getObjectNameList(objFilter=objManager.TRACKABLE)
+        self.getObjectList = lambda: objManager.getObjectNameList(typeFilter=objManager.TRACKABLE)
 
         # If parameters do not exist, then set up the default parameters
         if self.parameters is None:
@@ -1220,7 +1220,7 @@ class PickupObjectCommand(CommandGUI):
         objManager = env.getObjectManager()
 
         # Save a list that gets all loaded objects. This is used only when the window is opened, to populate the objlist
-        self.getObjectList  = lambda: objManager.getObjectNameList(objFilter=objManager.PICKUP)
+        self.getObjectList  = lambda: objManager.getObjectNameList(typeFilter=objManager.TRACKABLE)
 
         if self.parameters is None:
             self.parameters = {"objectID": ""}
@@ -1269,7 +1269,7 @@ class TestObjectSeenCommand(CommandGUI):
         objManager = env.getObjectManager()
         vision     = env.getVision()
         self.maxAge          = vision.historyLen - 1
-        self.getObjectList   = lambda: objManager.getObjectNameList(objFilter=objManager.TRACKABLE)
+        self.getObjectList   = lambda: objManager.getObjectNameList(typeFilter=objManager.TRACKABLE)
         self.ageChoices      = ["latest frame", "last 5 frames", "last 15 frames", "last 30 frames", "last 60 frames"]
         self.accChoices      = ["low", "medium", "high"]
 
@@ -1366,7 +1366,7 @@ class TestObjectLocationCommand(CommandGUI):
 
         objManager         = env.getObjectManager()
         self.vStream       = env.getVStream()
-        self.getObjectList = lambda: objManager.getObjectNameList(objFilter=objManager.TRACKABLE)
+        self.getObjectList = lambda: objManager.getObjectNameList(typeFilter=objManager.TRACKABLE)
 
         # If parameters do not exist, then set up the default parameters
         if self.parameters is None:
@@ -1658,8 +1658,6 @@ class EndEventCommand(CommandGUI):
         super(EndEventCommand, self).__init__(parameters)
 
 
-
-# Work in progress
 class RunTaskCommand(CommandGUI):
     title     = "Run Task"
     tooltip   = "This tool will run  another task file and run it inside of this task, until the 'End Program'\n" \
@@ -1717,7 +1715,6 @@ class RunTaskCommand(CommandGUI):
             self.description = "No Task Selected"
         else:
             self.description = "Run " + basename(self.parameters["filename"])
-
 
 
 
