@@ -25,9 +25,9 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
-import json         # For saving and loading settings and tasks
-import sys          # For GUI, and overloading the default error handling
-import webbrowser   # For opening the uFactory forums under the "file" menu
+import json            # For saving and loading settings and tasks
+import sys             # For GUI, and overloading the default error handling
+import webbrowser      # For opening the uFactory forums under the "file" menu
 import ControlPanelGUI
 from CommonGUI         import Console                   # This is the "Console" widget on the mainWindow
 from copy              import deepcopy                  # For copying saves and comparing later

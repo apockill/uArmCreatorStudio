@@ -447,8 +447,6 @@ class MoveWristRelativeToObjectCommand(Command):
             # RXCC    = rv.getPositionTransform((0, cntr[1], cntr[2]), "toCam", self.ptPairs)  # Robot XAxis Camera Coordinates
             xOffset =  math.degrees(math.atan( (a[1] - b[1]) / (a[0] - b[0])))
             targetAngle += 90 - xOffset
-            print("XOffset: ", xOffset)
-            print("Target: ", targetAngle)
 
         # Add the "Relative" angle to the wrist
         targetAngle += relativeAngle
