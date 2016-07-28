@@ -36,7 +36,12 @@ This package uses several libraries within it. It should be entirely multi platf
 
 Download the repository, extract it, and keep the structure the same. If you have all of the dependencies and are ready to roll, then open MainGUI.py and run it. Assuming everything works, a window will pop up, and you're in business! If not, email me at Alex.D.Thiel@gmail.com and we can hash out the issue. I'm interested in figuring out what kinds of problems people run into to make the build process easier.
 
+If you have a uArm:
+Make sure you have the right communication protocol uploaded onto your uArm's Arduino board, or else this won't work at all. This GUI uses a custom communication protocol (although that might change soon- uFactory is adopting my com protocol). To make sure, go to Latest Builds/Upload This To Your uArm and import the approprate libraries from the Libraries To Import folder, and then upload the .ino file in the CommunicationProtocol folder to your uArm.
+
 ### Project Structure
+The project is seperated by "Logic" and "GUI" elements. This was to force myself to write completely GUI indepenedent logic code, thus you can do anything you can do in the GUI by scripting directly with Logic code. It's a pain, but it's possible!
+
 * Logic Overview
 	* Commands.py and Events.py
 		* This is where all of the logic for each command and event is defined. If you make a custom Command, you must have a CommandsGUI.py implimentation and a Commands.py implimentation, with the same name- that's how the Interpreter instantiates the object from a string. Vice versa for creating custom Events
@@ -44,14 +49,14 @@ Download the repository, extract it, and keep the structure the same. If you hav
 		* This is a singleton type of variable that holds the Robot, VideoStream, Settings, and ObjectManager classes.
 		* This was done since commands and events need various things during instantiation, and environment is a great way to pass them around. Furthermore, it simplified the seperation of Logic and GUI tremendously.
 	* Interpreter.py
-		* This is, well, the interpreter of the project. When you press "play" on the gui, all of the code gets saved as a JSON, the exact same as the save format the project uses, then passed to the Interpreter, which then instantiates all of the events from Events.py and commands from Commands.py. 
-		* The Interpreter can be run threaded or not threaded. It's designed for both. 
-		* The Interpreter can run interpreters within it. This is how the "Run Task" and "Run Function" commands work- by generating an interpreter with a seperate script and running it. 
+		* This is, well, the interpreter of the project. When you press "play" on the gui, all of the code gets saved as a JSON, the exact same as the save format the project uses, then passed to the Interpreter, which then instantiates all of the events from Events.py and commands from Commands.py.
+		* The Interpreter can be run threaded or not threaded. It's designed for both.
+		* The Interpreter can run interpreters within it. This is how the "Run Task" and "Run Function" commands work- by generating an interpreter with a seperate script and running it.
 		* Interpreters can run recursively, as well, and catch recursion limit exceptions and call for the script to end.
 		* The interpreter also handles the namespace for variables that are created and used during the script. It has a function to reset the namespace as well.
 		* Since exec and eval functions are used in the Interpreter, it is incredibly unsafe to run anyone elses .task files without checking the commands to make sure they are safe. Just like running code from someone else, make sure to check it first! I am not responsible for what other people do with this software.
 	* Vision.py
-		* This handles all vision requests throughout the GUI. 
+		* This handles all vision requests throughout the GUI.
 		* All tracking in the GUI works as such: You "add" a target to track, and vision passes work off to a VideoStream thread to look for objects. Then, you query Vision if the object has been seen recently, and it will look through a history of "tracked" objects, and tell you the latest time the object was seen, it's position, orientation, and accuracy. More info in the module.
 		* It holds references to PlaneTracker.py and CascadeTracker.py, which are the trackers I use for different tracking tasks. Almost all tracking is done with PlaneTracker.py, but I do face tracking/eye tracking/smile tracking using CascadeTracker.py. These trackers should not be called directly, always use the functions inside of Vision to use them.
 	* Video.py
@@ -75,7 +80,7 @@ Download the repository, extract it, and keep the structure the same. If you hav
  * MainGUI.py
 	  * Handles the main window, settings page, and is the center for all things GUI
  * ControlPanel.py
-	 * This contains the EventList, CommandList, and the ControlPanel widgets, which are essential. EventList is the list that holds the events, to the left of the CommandList.   Each "Event" item holds its own individual CommandList reference. The ControlPanel handles which CommandList is currently in view. 
+	 * This contains the EventList, CommandList, and the ControlPanel widgets, which are essential. EventList is the list that holds the events, to the left of the CommandList.   Each "Event" item holds its own individual CommandList reference. The ControlPanel handles which CommandList is currently in view.
  * CommandsGUI.py
 	 * Stores all of the windows for the commands, and the click-and-drag aspect of things. If you want to add a new command, you go here first.
  * Events.py
@@ -84,18 +89,18 @@ Download the repository, extract it, and keep the structure the same. If you hav
 	 * This holds the window and logic for calibrations that the user can do with the robot. If you want to run without a GUI, just use the GUI for calibration which get automatically saved in Resources/Settings.txt, then run your script using the saved calibration.
  * ObjectManagerGUI.py
 	 * This handles the "Resources" menu on the toolbar, and works with ObjectManager.py to save new objects.
- *    CommonGUI and CameraGUI: 
+ *    CommonGUI and CameraGUI:
 	 * These are convenient widgets I use throughout the project.
 
 ## Authors
-**Alex Thiel** 
-I'm a student studying a bachelors in robotics at ASU. I graduate in 2018.
+**Alex Thiel**
+I'm a student studying a bachelors in robotics at ASU and I graduate in 2018. I'm always looking for opportunities to work in the robotics field. I want to move more towards human robot interaction, and perhaps developing robotics applications using Virtual Reality.
 [Github](https://github.com/apockill)
 [Youtube](https://www.youtube.com/channel/UCIZ37TU8Exl6Pr-m2SSN-DA)
 Contact me at Alex.D.Thiel@Gmail.com
 
 ## Contributing
-**王诗阳 Shiyang Wang** - *Icon Design* 
+**王诗阳 Shiyang Wang** - *Icon Design*
 
 ## License
 

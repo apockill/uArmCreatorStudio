@@ -1,0 +1,37 @@
+{
+   "Orientations": {
+      "Orientation_1": {
+         "pickupRect": [
+            18,
+            35,
+            358,
+            92
+         ],
+         "height": 2.0,
+         "rect": [
+            75,
+            137,
+            465,
+            239
+         ]
+      },
+      "Orientation_0": {
+         "pickupRect": [
+            51,
+            40,
+            437,
+            101
+         ],
+         "height": 0.0,
+         "rect": [
+            101,
+            107,
+            578,
+            225
+         ]
+      }
+   },
+   "tags": [
+      "All"
+   ]
+}
