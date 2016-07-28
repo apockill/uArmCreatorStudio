@@ -57,8 +57,8 @@ eye_cascade      = exeResourcesPath  + "eye_cascade.xml"
 ################        GUI PATHS         ################
 imageLoc = resourcePath("Resources\\Icons\\")
 
-
-delete              = imageLoc + "delete.png"
+create              = imageLoc + "button_create.png"
+delete              = imageLoc + "button_delete.png"
 
 
 # "File" Menu

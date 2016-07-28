@@ -122,11 +122,19 @@ class Function(Resource):
     def setCommandList(self, commandList):
         self.dataJson["commandList"] = commandList
 
+
     def getDescription(self):
         return self.dataJson["description"]
 
     def setDescription(self, description):
         self.dataJson["description"] = description
+
+
+    def getArguments(self):
+        return self.dataJson["arguments"]
+
+    def setArguments(self, argumentList):
+        self.dataJson["arguments"] = argumentList
 
 
 class Trackable(Resource):

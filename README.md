@@ -58,7 +58,7 @@ The project is seperated by "Logic" and "GUI" elements. This was to force myself
 	* Vision.py
 		* This handles all vision requests throughout the GUI.
 		* All tracking in the GUI works as such: You "add" a target to track, and vision passes work off to a VideoStream thread to look for objects. Then, you query Vision if the object has been seen recently, and it will look through a history of "tracked" objects, and tell you the latest time the object was seen, it's position, orientation, and accuracy. More info in the module.
-		* It holds references to PlaneTracker.py and CascadeTracker.py, which are the trackers I use for different tracking tasks. Almost all tracking is done with PlaneTracker.py, but I do face tracking/eye tracking/smile tracking using CascadeTracker.py. These trackers should not be called directly, always use the functions inside of Vision to use them.
+		* It holds the definitions of PlaneTracker and CascadeTracker, which are the trackers I use for different tracking tasks. Almost all tracking is done with PlaneTracker, but I do face tracking/eye tracking/smile tracking using CascadeTracker. These trackers should not be called directly, always use the functions inside of Vision to use them.
 	* Video.py
 		* This holds VideoStream, which is my threaded video capturing class, which can also do computer vision work by passing "work" functions, or "filter" functions to the VideoStream. No Vision code is actually in here.
 	* Robot.py
@@ -94,8 +94,11 @@ The project is seperated by "Logic" and "GUI" elements. This was to force myself
 
 ## Authors
 **Alex Thiel**
-I'm a student studying a bachelors in robotics at ASU and I graduate in 2018. I'm always looking for opportunities to work in the robotics field. I want to move more towards human robot interaction, and perhaps developing robotics applications using Virtual Reality.
+
+I'm a student studying a bachelors in robotics at ASU, and I graduate in 2018. I'm always looking for opportunities to work in the robotics field. I want to move more towards human robot interaction, and perhaps developing robotics applications using Virtual Reality.
+
 [Github](https://github.com/apockill)
+
 [Youtube](https://www.youtube.com/channel/UCIZ37TU8Exl6Pr-m2SSN-DA)
 Contact me at Alex.D.Thiel@Gmail.com
 

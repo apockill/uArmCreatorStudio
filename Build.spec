@@ -9,7 +9,8 @@ resList   = ["face_cascade.xml",
              "eye_cascade.xml"]
 
 iconsList = ["cancel.png",
-             "delete.png",
+             "button_delete.png",
+             "button_create.png",
              "file_new.png",
              "file_save.png",
              "file_load.png",

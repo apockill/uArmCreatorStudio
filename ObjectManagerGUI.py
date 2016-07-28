@@ -978,6 +978,64 @@ class MotionRecordWindow(QtWidgets.QDialog):
 
 # Make a Custom Function
 class MakeFunctionWindow(QtWidgets.QDialog):
+    class ArgumentsList(QtWidgets.QWidget):
+        """
+        This is a list where the user can add/delete elements, its meant for setting the arguments of the function
+        """
+        def __init__(self, parent):
+            super().__init__(parent)
+            self.argList = QtWidgets.QListWidget()
+            self.argList.setMaximumHeight(55)
+            addBtn  = QtWidgets.QPushButton()
+            delBtn  = QtWidgets.QPushButton()
+            addBtn.setIcon(QtGui.QIcon(Paths.create))
+            delBtn.setIcon(QtGui.QIcon(Paths.delete))
+
+            addBtn.clicked.connect(self.addArgument)
+            delBtn.clicked.connect(self.deleteArgument)
+
+            col1 = QtWidgets.QVBoxLayout()
+            col2 = QtWidgets.QVBoxLayout()
+
+            col1.addWidget(self.argList)
+            col2.addWidget(addBtn)
+            col2.addWidget(delBtn)
+            col2.addStretch()
+
+            mainHLayout = QtWidgets.QHBoxLayout()
+            # mainHLayout.addStretch()
+            mainHLayout.addLayout(col1)
+            mainHLayout.addLayout(col2)
+            # mainHLayout.addStretch()
+            self.setLayout(mainHLayout)
+            self.layout().setContentsMargins(0, 0, 0, 0)
+
+        def addArgument(self):
+            var, accepted = QtWidgets.QInputDialog.getText(self, 'Add Argument', 'Variable Name: ')
+            if accepted:
+                self.argList.addItem(var)
+
+        def deleteArgument(self):
+
+            # If something is selected, delete that
+            selected = self.argList.selectedIndexes()
+            if len(selected) > 0:
+                self.argList.takeItem(selected[0].row())
+
+            elif self.argList.count() > 0:
+                # If nothing is selected, then just delete whatever is at the end of the list
+                self.argList.takeItem(self.argList.count() - 1)
+
+        def getArguments(self):
+            """
+            Returns a list of argument names
+            """
+            args = []
+            for index in range(self.argList.count()):
+                args.append(self.argList.item(index).text())
+            return args
+
+
     def __init__(self, currentObj, environment, parent):
         super(MakeFunctionWindow, self).__init__(parent)
 
@@ -989,6 +1047,7 @@ class MakeFunctionWindow(QtWidgets.QDialog):
         # Initialize UI variables
         self.commandList = CommandList(environment, parent=self)
         self.commandMenu = CommandMenuWidget(parent=self)
+        self.argList     = self.ArgumentsList(parent=self)
         self.nameEdit    = QtWidgets.QLineEdit()
         self.descEdit    = QtWidgets.QLineEdit()
         self.applyBtn    = QtWidgets.QPushButton("Apply", self)
@@ -1010,9 +1069,9 @@ class MakeFunctionWindow(QtWidgets.QDialog):
         self.nameEdit.textChanged.connect(self.isComplete)
 
         # Create non global UI variables
-        nameLbl   = QtWidgets.QLabel("Function Name: ")
-        descLbl   = QtWidgets.QLabel("Function Description: ")
-
+        nameLbl   = QtWidgets.QLabel("Function Name ")
+        descLbl   = QtWidgets.QLabel("Function Description ")
+        argLbl    = QtWidgets.QLabel("Arguments")
         hint2Lbl  = QtWidgets.QLabel("Drag commands into the list to create a function")
         cancelBtn = QtWidgets.QPushButton("Cancel", self)
 
@@ -1028,6 +1087,8 @@ class MakeFunctionWindow(QtWidgets.QDialog):
         self.hintLbl.setFont(bold)
         self.hintLbl.setWordWrap(True)
 
+        self.nameEdit.setFixedWidth(300)
+        self.descEdit.setFixedWidth(300)
 
         # Create the rows then fill them
         row1 = QtWidgets.QHBoxLayout()
@@ -1036,24 +1097,33 @@ class MakeFunctionWindow(QtWidgets.QDialog):
         row4 = QtWidgets.QHBoxLayout()
         row5 = QtWidgets.QHBoxLayout()
         row6 = QtWidgets.QHBoxLayout()
+        row7 = QtWidgets.QHBoxLayout()
+        row8 = QtWidgets.QHBoxLayout()
 
-
+        row1.addStretch(1)
         row1.addWidget(nameLbl)
         row1.addWidget(self.nameEdit)
 
+        row2.addStretch(1)
         row2.addWidget(descLbl)
         row2.addWidget(self.descEdit)
 
-        row3.addWidget(self.commandList)
-        row3.addWidget(self.commandMenu)
+        row3.addStretch()
+        row3.addWidget(argLbl)
+        row3.addStretch()
 
-        row4.addWidget(hint2Lbl)
+        row4.addWidget(self.argList)
 
-        row5.addWidget(self.hintLbl)
+        row5.addWidget(self.commandList)
+        row5.addWidget(self.commandMenu)
 
-        row6.addWidget(cancelBtn)
-        row6.addStretch(1)
-        row6.addWidget(self.applyBtn)
+        row6.addWidget(hint2Lbl)
+
+        row7.addWidget(self.hintLbl)
+
+        row8.addWidget(cancelBtn)
+        row8.addStretch(1)
+        row8.addWidget(self.applyBtn)
 
 
         # Add everything to the main layout then touch it up a bit
@@ -1064,6 +1134,8 @@ class MakeFunctionWindow(QtWidgets.QDialog):
         mainVLayout.addLayout(row4)
         mainVLayout.addLayout(row5)
         mainVLayout.addLayout(row6)
+        mainVLayout.addLayout(row7)
+        mainVLayout.addLayout(row8)
 
         self.setLayout(mainVLayout)
         self.setMinimumHeight(550)
@@ -1078,7 +1150,7 @@ class MakeFunctionWindow(QtWidgets.QDialog):
         else:
             name = self.nameEdit.text()
             functionObj = Function(name)
-
+        functionObj.setArguments(self.argList.getArguments())
         functionObj.setCommandList(self.commandList.getSaveData())
         functionObj.setDescription(str(self.descEdit.text()))
         self.objManager.saveObject(functionObj)
