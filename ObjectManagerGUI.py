@@ -79,7 +79,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         newObjBtn.setIcon(QtGui.QIcon(Paths.event_recognize))
         newGrpBtn.setIcon(QtGui.QIcon(Paths.event_recognize))
         newRecBtn.setIcon(QtGui.QIcon(Paths.record_start))
-        newFncBtn.setIcon(QtGui.QIcon(Paths.taskbar))
+        newFncBtn.setIcon(QtGui.QIcon(Paths.command_run_func))
 
         newObjBtn.setFixedWidth(175)
         newGrpBtn.setFixedWidth(175)
@@ -981,22 +981,18 @@ class MakeFunctionWindow(QtWidgets.QDialog):
     def __init__(self, currentObj, environment, parent):
         super(MakeFunctionWindow, self).__init__(parent)
 
-        self.commandList = CommandList(environment, parent=self)
-        self.commandMenu = CommandMenuWidget(parent=self)
-
-        self.newObject   = currentObj  # This is where the created object will go after being made in objManager
-        self.objManager  = environment.getObjectManager()
-
-
-        # OLD
+        self.newObject      = currentObj
+        self.objManager     = environment.getObjectManager()
         self.forbiddenNames = self.objManager.getForbiddenNames()
 
 
         # Initialize UI variables
-        self.nameEdit = QtWidgets.QLineEdit()
-        self.descEdit = QtWidgets.QLineEdit()
-        self.applyBtn = QtWidgets.QPushButton("Apply", self)
-        self.hintLbl  = QtWidgets.QLabel()
+        self.commandList = CommandList(environment, parent=self)
+        self.commandMenu = CommandMenuWidget(parent=self)
+        self.nameEdit    = QtWidgets.QLineEdit()
+        self.descEdit    = QtWidgets.QLineEdit()
+        self.applyBtn    = QtWidgets.QPushButton("Apply", self)
+        self.hintLbl     = QtWidgets.QLabel()
 
 
         # If this is in 'editing' mode, restore the last state

@@ -210,9 +210,11 @@ class ObjectManager:
         # Returns a list of strings that the user cannot use as the name of an object.
         # This includes names of objects, names of tags, and names of objects like Robot Marker that are reserved
         # It also includes things like "Trackable" or "TrackableObject" for good measure
+        # It also includes things like "Task" so that the user can't name things in a confusing way
+
         forbidden = self.getObjectNameList()
         forbidden += ["Trackable", "Robot Marker", "TrackableObject", "TrackableGroup", "Face", "Smile", "Eyes",
-                      "MotionPath", "Function"]
+                      "MotionPath", "Function", "Task"]
         return forbidden
 
 

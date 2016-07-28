@@ -45,19 +45,17 @@ def cvToPixFrame(image):
 
 class CameraWidget(QtWidgets.QWidget):
     """
-        Creates a widget that will update 24 times per second, by calling for a new frame from the vStream object.
+    Creates a widget that will update 24 times per second, by calling for a new frame from the vStream object.
 
-        :param getFrameFunction: A function that when called will return a frame
-                that can be put in a QLabel. In this case the frame will come from
-                a VideoStream object's getFrame function.
-        :return:
-        """
+    :param getFrameFunction: A function that when called will return a frame
+            that can be put in a QLabel. In this case the frame will come from
+            a VideoStream object's getFrame function.
+    :return:
+    """
 
 
     def __init__(self, getFrameFunction, parent, fps=24):
-        """
-        :param getFrameFunction: A function that gets an openCV frame from the vStream, for updating the screen
-        """
+
         super(CameraWidget, self).__init__(parent)
 
         # Set up globals
@@ -102,9 +100,12 @@ class CameraWidget(QtWidgets.QWidget):
 
 
     def setFrame(self, frame):
-        # Convert a CV2 frame to a QPixMap and set the frameLbl to that
-        # When paused, you might want to have a custom frame showing. This is also useful for CameraSelector
-        # The nextFrameSlot also uses it to set frames.
+        """
+            Convert a CV2 frame to a QPixMap and set the frameLbl to that
+            When paused, you might want to have a custom frame showing. This is also useful for CameraSelector
+            The nextFrameSlot also uses it to set frames.
+        """
+
         self.frameLbl.setPixmap(cvToPixFrame(frame))
 
     def nextFrameSlot(self):
@@ -247,7 +248,7 @@ class CameraSelector(CameraWidget):
         self.selectedImage = None
         self.selectedRect  = None
         self.rectangle.hide()
-        # self.declinePicBtn.setDisabled(True)
+
 
 
     def closeEvent(self, event):

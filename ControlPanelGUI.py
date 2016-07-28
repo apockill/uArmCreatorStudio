@@ -183,14 +183,13 @@ class ControlPanel(QtWidgets.QWidget):
 
 
         selectedItem = self.eventList.getSelectedEventItem()
+
         # Color any events that were active since last check, and de-color all other events
-
-
         for eventIndex in range(0, self.eventList.count()):
             eventItem = self.eventList.item(eventIndex)
 
             # Color transparent if the event is active, decolor if event is not active
-            self.setColor(eventItem, (eventIndex in currRunning))
+            self.setColor(eventItem, (eventIndex == currRunning["event"]))
 
 
             # Check if the currently selected event is also one that is being run, and if that event has run any cmmnds
@@ -202,11 +201,10 @@ class ControlPanel(QtWidgets.QWidget):
             for commandIndex in range(0, len(commandList)):
                 commandItem = commandList.item(commandIndex)
 
-                if eventIndex not in currRunning:
+                if not eventIndex == currRunning["event"]:
                     self.setColor(commandItem, False)
                 else:
-
-                    self.setColor(commandItem, (commandIndex == currRunning[eventIndex][-1]))
+                    self.setColor(commandItem, (commandIndex == currRunning["command"]))
 
             #     for commandIndex in range(0, len(commandList)):
             #         commandItem = commandList.item(commandIndex)

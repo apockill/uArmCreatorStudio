@@ -48,7 +48,8 @@ class LogicObject:
         try:
             loadData = json.load( open(filename))
             return loadData
-        except IOError:
+        except IOError as e:
+            self.errors.append("Task File Could Not Be Found")
             return None
 
     def getVerifyRobot(self, env):

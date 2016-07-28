@@ -50,6 +50,7 @@ class Vision:
 
         getObjectSpeedDirectionAvg(trackable, maxAge,
     """
+
     def __init__(self, vStream):
 
         # How long the "tracker history" array is (how many frames of tracked data are kept)
@@ -394,6 +395,12 @@ class Vision:
 
 
 class Tracker:
+    """
+        This is the base class for any object tracker.
+        All object trackers carry a "history" of tracked objects, in an array called trackedHistory.
+        This is later searched through to find objects that have been tracked.
+    """
+
     def __init__(self, historyLength):
         self.historyLen = historyLength
         self.targets      = []

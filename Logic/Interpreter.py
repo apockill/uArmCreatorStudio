@@ -58,7 +58,7 @@ class Interpreter:
         self.parentIsExiting  = parentExitFunc
 
         # This function will kill all interpreters running inside of the highest heirarchy of interpreters
-        self.parentSetExiting = parentSetExitingFunc  # Example: self.parentSetExiting(True) ends all programs
+        self.parentSetExiting = parentSetExitingFunc  # Example: self.parentSetExiting(True) ends all child Interpreters
 
         self.env           = environment
         self.mainThread    = None    # The thread on which the script runs on. Is None while thread is not running.
@@ -66,7 +66,7 @@ class Interpreter:
         self.events        = []      # A list of events, and their corresponding commands
 
         # For self.getStatus()
-        self.currRunning   = []  # A dictionary of what has been run so far in the loop {eventIndex:[commandIndex's]}
+        self.currRunning   = {"event": -1, "command": -1}  # A dictionary of what event and command is currently running
 
         # Namespace is all  the builtins and variables that the user creates during a session in the interpreter
         self.nameSpace     = None
@@ -121,16 +121,17 @@ class Interpreter:
         return errors
 
 
+
     # Generic Functions for API and GUI to use
     def startThread(self, threaded=True):
         # Start the program thread
 
         if self.mainThread is None:
-            self.currRunning = {}
+            self.currRunning = {"event": -1, "command": -1}
 
             if threaded:
                 self.mainThread  = Thread(target=self.__programThread)
-                self.mainThread.daemon = True
+                self.mainThread.setDaemon(True)
                 self.mainThread.start()
             else:
                 self.__programThread()
@@ -300,16 +301,16 @@ class Interpreter:
         errors = child.initializeScript(script)
 
         if len(errors):
-            print("ERROR: Tried to run a task that did not meet the requirements. Errors:\n", errors)
+            printf("ERROR: Tried to run a task that did not meet the requirements. Errors:\n", errors)
             if self.parentSetExiting is not None:
                 self.parentSetExiting(True)
             self.setExiting(True)
 
+        return child
 
-        child.startThread(threaded=False)
 
 
-    # The following functions are *only* for interpreter to use within itself.
+    # The following functions are for interpreter to use within itself.
     def __programThread(self):
         printf("\n\n\n ##### STARTING PROGRAM #####\n")
 
@@ -324,7 +325,7 @@ class Interpreter:
 
 
             # currRunning keeps track of what was run, so the GUI can draw it
-            self.currRunning = {}
+            self.currRunning = {"event": -1, "command": -1}
 
 
             # Check every event, in order of the list
@@ -333,7 +334,8 @@ class Interpreter:
                 if not event.isActive(): continue
 
                 # If the event has been activated, run the commandList
-                self.__interpretEvent(event)
+                self.currRunning["event"] = self.events.index(event)
+                self.interpretCommandList(event.commandList)
 
 
         # Check if a DestroyEvent exists, if so, run it's commandList
@@ -342,7 +344,7 @@ class Interpreter:
         if len(destroyEvent):
             # Make sure the robot, vision, and interpreter can respond before running the destroy event
             self.setExiting(False)
-            self.__interpretEvent(destroyEvent[0])
+            self.interpretCommandList(destroyEvent[0])
 
             # Set the robot, vision, and interpreter back to non-responsive mode after running the destroy event
             self.setExiting(True)
@@ -351,28 +353,27 @@ class Interpreter:
         self.events     = []
         self.setExiting(False)
 
-    def __interpretEvent(self, event):
+    def interpretCommandList(self, commandList):
         """
         This will run through every command in an events commandList, and account for Conditionals and code blocks.
 
         """
 
-        eventIndex    = self.events.index(event)
-        commandList   = event.commandList
         index         = 0  # The current command that is being considered for running
 
         # Keep track of what commands are run in this event
-        self.currRunning[eventIndex] = []
+
 
 
         # Check each command, run the ones that should be run
-        while index < len(event.commandList):
+        while index < len(commandList):
             if self.isExiting(): break
 
 
             # Run the command
             command    = commandList[index]
-            self.currRunning[eventIndex].append(index)
+            self.currRunning["command"] = index
+
             evaluation = command.run()
 
             if self.isExiting(): break  # This speeds up ending recursed Interpreters

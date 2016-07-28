@@ -120,8 +120,8 @@ command_exit_event  = imageLoc + "command_exit_event.png"
 command_end_script  = imageLoc + "command_end_script.png"
 command_see_obj     = imageLoc + "command_see_obj.png"
 command_see_loc     = imageLoc + "command_see_loc.png"
-command_run_task    = imageLoc + "window_ufactory_logo.png"
-
+command_run_task    = imageLoc + "command_run_task.png"
+command_run_func    = imageLoc + "command_run_func.png"
 
 # Tutorial
 help_lower_head     = imageLoc + "help_lower_head.gif"

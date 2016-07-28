@@ -191,7 +191,7 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         add(EndEventCommand)
         add(EndProgramCommand)
         add(RunTaskCommand)
-
+        add(RunFunctionCommand)
 
 
         return tabWidget
@@ -496,7 +496,12 @@ class CommandGUI:
                        "Try creating new recordings in the Resource Manager!"
             self._addHint(prompt, hintText)
 
+    def _addFunctionHint(self, prompt, numResources):
+        if numResources == 0:
+            hintText = "You have not created any Functions yet. " + \
+                        "Try creating new functions in the Resource Manager!"
 
+            self.__addHint(prompt, hintText)
 
 
 ########## COMMANDS ##########
@@ -1227,20 +1232,18 @@ class PickupObjectCommand(CommandGUI):
 
     def dressWindow(self, prompt):
         # Define what happens when the user changes the object selection
+
+
+
+        # Create a Combobox with the appropriate items
         choiceLbl = QtWidgets.QLabel("Choose an object ")
-
-        # Create a QComboBox
-
-
-
-        # Populate the comboBox with a list of all trackable objects, and select the self.parameters one if it exists
         prompt.objChoices = QtWidgets.QComboBox()
         prompt.objChoices.addItem(self.parameters["objectID"])  # Add an empty item at the top
         objectList = self.getObjectList()
         for index, objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
-
-
         self._addRow(prompt, choiceLbl, prompt.objChoices)
+
+
         self._addObjectHint(prompt, len(objectList))
 
         return prompt
@@ -1676,13 +1679,14 @@ class RunTaskCommand(CommandGUI):
             self.parameters = {"filename": ""}
 
     def dressWindow(self, prompt):
-        def updateFileLbl(prompt, label):
+        def updateFileLbl(prompt):
             chosenFile, _ = QtWidgets.QFileDialog.getOpenFileName(parent=prompt,
                                                                   caption="Load Task",
                                                                   filter="Task (*.task)",
                                                                   directory=Paths.saves_dir)
             if chosenFile == "": return
-            label.setText(basename(chosenFile))
+            prompt.fileLbl.setText(chosenFile)
+
         ensurePathExists(Paths.saves_dir)
 
         explanationLbl = QtWidgets.QLabel("\n\nMake sure the task you run has an 'End Program'\n"
@@ -1690,11 +1694,12 @@ class RunTaskCommand(CommandGUI):
         explanationLbl.setWordWrap(True)
 
         # Create the filename label
-        prompt.fileLbl = QtWidgets.QLabel(basename(self.parameters["filename"]))
+        prompt.fileLbl = QtWidgets.QLabel(self.parameters["filename"])
+        prompt.fileLbl.setWordWrap(True)
         prompt.fileLbl.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
 
         fileBtn = QtWidgets.QPushButton("Select Task")
-        fileBtn.clicked.connect(lambda: updateFileLbl(prompt, prompt.fileLbl))
+        fileBtn.clicked.connect(lambda: updateFileLbl(prompt))
 
 
         self._addRow(prompt, fileBtn)
@@ -1717,10 +1722,60 @@ class RunTaskCommand(CommandGUI):
             self.description = "Run " + basename(self.parameters["filename"])
 
 
+class RunFunctionCommand(CommandGUI):
+    title     = "Run Function"
+    tooltip   = "This tool does X Y and Z"
+    icon      = Paths.command_run_func
+
+    def __init__(self, env, parameters=None):
+        super(RunFunctionCommand, self).__init__(parameters)
+        self.objManager = env.getObjectManager()
+        self.getObjectList = lambda: self.objManager.getObjectNameList(typeFilter=self.objManager.FUNCTION)
+
+        # If parameters do not exist, then set up the default parameters
+        if self.parameters is None:
+            # Anything done with env should be done here. Try not to save env as a class variable whenever possible
+            self.parameters = {"objectID": "",
+                               "description": ""}  # Not necessary, makes saving and loading easier
+
+    def dressWindow(self, prompt):
+        def updateArguments(prompt):
+            chosenID  = str(prompt.objChoices.currentText())
+            chosenObj = self.objManager.getObject(chosenID)
 
 
 
+        # Create a Combobox with Functions made in resources
+        choiceLbl = QtWidgets.QLabel("Choose a Function ")
+        prompt.objChoices = QtWidgets.QComboBox()
+        prompt.objChoices.addItem(self.parameters["objectID"])  # Add an empty item at the top
+        objectList = self.getObjectList()
+        for index, objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
+        self._addRow(prompt, choiceLbl, prompt.objChoices)
 
+        choiceLbl.objectNameChanged.connect(lambda: updateArguments(prompt))
+
+        self._addRecordingHint(prompt, len(objectList))
+        return prompt
+
+    def _extractPromptInfo(self, prompt):
+        chosenID  = str(prompt.objChoices.currentText())
+        chosenObj = self.objManager.getObject(chosenID)
+
+        newParameters = {"objectID": chosenID,
+                         "description": chosenObj.getDescription()}
+
+        self.parameters.update(newParameters)
+
+        return self.parameters
+
+    def _updateDescription(self):
+        if len(self.parameters["objectID"]) == 0:
+            self.description = "No function selected"
+            self.title = "Run Function"
+        else:
+            self.description = self.parameters["description"]
+            self.title = "Run " + self.parameters["objectID"]
 
 
 

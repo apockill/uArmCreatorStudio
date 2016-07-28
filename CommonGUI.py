@@ -530,7 +530,7 @@ class Console(QtWidgets.QWidget):
                 return ""
 
             # Print anything from Commands.py
-            if ("Command" in classString) and not ("GUI" in classString):
+            if "Command" in classString:
                 if self.settings["script"]:
                     return "Script"
                 return ""

@@ -34,9 +34,11 @@ __author__ = "Alexander Thiel"
 
 
 """
-A set of functions that use Robot and Vision classes to perform a task, all in tandem.
-
-This combines with things like calibrations as well.
+This module is basically a set of functions that use Robot and Vision classes to perform a task, all in tandem.
+It combines with things like calibrations as well. It was created because I didn't want to put too much non-specific
+logic code in Commands.py, because a lot of these functions could be reused. So in this module there are functions
+that can work as long as you have all the necessary arguments. It might seem a bit verbose, but it's a worthy
+tradeoff to allow anyone to use a pickupObject function, for example.
 """
 
 
@@ -52,13 +54,13 @@ MAX_FRAME_FAIL             = 15   # Maximum times a function will get a new fram
 
 
 
-def playMotionPath(motionPath, robot, exitFunc, speedMultiplier=1, reversed=False):
+def playMotionPath(motionPath, robot, exitFunc, speedMultiplier=1, reverse=False):
     """
     Play a motion recording.
     :param motionPath: The motionpath array, with format [[TIME, GRIPPER, SERVO0, SERVO1, SERVO2, SERVO3]... []]
     :param robot: Robot object
     :param speedMultiplier: a number > 0 that will change the speed the path is played at
-    :param reversed: whether or not to play the motionPath in reverse
+    :param reverse: whether or not to play the motionPath in reverse
     :param exitFunc: If this function ever returns true, the function will exit as quickly as possible
     """
 
@@ -73,7 +75,7 @@ def playMotionPath(motionPath, robot, exitFunc, speedMultiplier=1, reversed=Fals
     actions    = mp[:, 1:]
 
     # If reversed, flip the "actions" array
-    if reversed:
+    if reverse:
         actions = actions.tolist()
         actions = np.flipud(actions)  # Reverse the actions
 
@@ -218,45 +220,6 @@ def createTransformFunc(ptPairs, direction):
 
     transformFunc = lambda x: np.array((M * np.vstack((np.matrix(x).reshape(3, 1), 1)))[0:3, :].reshape(1, 3))[0]
 
-
-    # # TOCAM test
-    # pts1 = ptPairArray[:, 1]
-    # pts2 = ptPairArray[:, 0]
-    # ret, M, mask = cv2.estimateAffine3D(np.float32(pts1),
-    #                                     np.float32(pts2),
-    #                                     confidence = .9999999)
-    # normalFunc  = lambda x: np.array((M * np.vstack((np.matrix(x).reshape(3, 1), 1)))[0:3, :].reshape(1, 3))[0]
-    # print("STARTING\n Normal M, toCam")
-    # m2 = np.vstack((M, [0, 0, 0, 1]))
-    # print(m2)
-    # print("Normal toCam input 15, 30, 45", normalFunc((15, 30, 45)))
-    # print("Inverse (toRob)\n", np.linalg.inv(m2))
-    #
-    #
-    #
-    # # TOROB test
-    # pts1 = ptPairArray[:, 0]
-    # pts2 = ptPairArray[:, 1]
-    # ret, M, mask = cv2.estimateAffine3D(np.float32(pts1),
-    #                                     np.float32(pts2),
-    #                                     confidence = .9999999)
-    #
-    # print("\nNormal M, toRob")
-    # m = np.vstack((M, [0, 0, 0, 1]))
-    # print(m)
-    #
-    # # print("Built inverse: ")
-    # def inverse(m):
-    #     i = np.linalg.inv(m)
-    #     #            0          1         2         3
-    #     m = [[  i[0][0],    m[][],    m[][], -1/i[3][0]],  # 0
-    #          [    m[][],  m[1][1],    m[][],    m[3][1]],  # 1
-    #          [    m[][],    i[][],  m[2][2],    m[3][2]],  # 2
-    #          [        0,        0,        0,          1]]  # 3
-    #
-    # print("Inverse (toCam)\n", np.linalg.inv(m))
-    # invFunc  = lambda x: np.array((np.linalg.inv(m) * np.vstack((np.matrix(x).reshape(3, 1), 1)))[0:3, :].reshape(1, 3))[0]
-    # print("Inverse (toCam) input 15, 30, 45", invFunc((15, 30, 45)))
 
     """
     Breakdown of function. Here's an example of transforming [95, -35, 530] cam which is [5, 15, 15] in the robot grid

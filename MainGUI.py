@@ -303,7 +303,7 @@ class MainWindow(QtWidgets.QMainWindow):
             # Generate a message for the user to explain what parameters are missing
             errorStr = 'Certain Events and Commands are missing the following requirements to work properly: \n\n' + \
                        ''.join(errorText) + \
-                       '\nWould you like to continue anyways? Events and commands with errors may not activate.'
+                       '\nWould you like to continue anyways? Events and commands with errors will not activate.'
 
 
             # Warn the user
@@ -344,7 +344,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # Check to make sure the thread closed correctly
         if self.interpreter.threadRunning():
             # Generate a message for the user to explain what parameters are missing
-            errorStr = 'The script was unable to end. \n\n' \
+            errorStr = 'The script was unable to end.\n' \
+                       'This may mean the script crashed, or it is taking time finishing.\n\n' \
                        'If you are running Python code inside of this script, make sure you check isExiting() during' \
                        ' loops, to exit code quickly when the stop button is pressed.'
 

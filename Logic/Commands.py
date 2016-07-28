@@ -27,6 +27,7 @@ License:
 """
 import math
 import numpy as np
+from Logic.Events      import InitEvent
 from Logic             import RobotVision as rv
 from Logic.Global      import printf, wait
 from Logic.LogicObject import LogicObject
@@ -157,7 +158,7 @@ class MotionRecordingCommand(Command):
 
 
         # Send the path to the "path player"
-        rv.playMotionPath(self.motionPath, self.robot, self.exitFunc, speedMultiplier=newSpeed, reversed=self.parameters["reversed"])
+        rv.playMotionPath(self.motionPath, self.robot, self.exitFunc, speedMultiplier=newSpeed, reverse=self.parameters["reversed"])
         return True
 
 
@@ -806,16 +807,10 @@ class RunTaskCommand(Command):
 
     def __init__(self, env, interpreter, parameters=None):
         super(RunTaskCommand, self).__init__(parameters)
-        self.env          = env
+
+        self.env         = env
         self.interpreter = interpreter
-
-        self.script = self.getVerifyJson(env, self.parameters["filename"])
-
-        # # Load any objects, modules, calibrations, etc  that will be used in the run Section here. Use getVerifyXXXX()
-        # self.robot   = self.getVerifyRobot(env)
-        # self.vision  = self.getVerifyVision(env)
-
-        if len(self.errors): return
+        self.script      = self.getVerifyJson(env, self.parameters["filename"])
 
 
     def run(self):
@@ -831,7 +826,44 @@ class RunTaskCommand(Command):
             setExitFunc = self.interpreter.setExiting
 
         # Let the interpreter create
-        self.interpreter.createChildInterpreter(self.script, isExitFunc, setExitFunc)
+        child = self.interpreter.createChildInterpreter(self.script, isExitFunc, setExitFunc)
+        child.startThread(threaded=False)
+
+
+class RunFunctionCommand(Command):
+
+    def __init__(self, env, interpreter, parameters=None):
+        super(RunFunctionCommand, self).__init__(parameters)
+
+        self.env         = env
+        self.interpreter = interpreter
+        self.funcObject  = self.getVerifyObject(env, self.parameters["objectID"])
+
+        if len(self.errors): return
+
+        # Create the "script" object by putting it inside an "Init" event, and putting an "end program" command after it
+        commandList = self.funcObject.getCommandList()
+
+        self.script = [{"type": "InitEvent", "parameters": {}, "commandList": commandList}]
+
+
+    def run(self):
+        if len(self.errors): return
+        print("Running function: ", self.funcObject)
+
+
+        # Create the exit functions for the baby interpreter
+        isExitFunc  = self.interpreter.parentIsExiting
+        setExitFunc = self.interpreter.parentSetExiting
+
+        # If this command is being run in the main program, set the isExitFunc and setExitFunc to the originals
+        if isExitFunc is None:
+            isExitFunc  = self.interpreter.isExiting
+            setExitFunc = self.interpreter.setExiting
+
+        # Let the interpreter create
+        child = self.interpreter.createChildInterpreter(self.script, isExitFunc, setExitFunc)
+        child.interpretCommandList(child.events[0].commandList)
 
 
 
