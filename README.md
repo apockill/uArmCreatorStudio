@@ -100,6 +100,7 @@ I'm a student studying a bachelors in robotics at ASU, and I graduate in 2018. I
 [Github](https://github.com/apockill)
 
 [Youtube](https://www.youtube.com/channel/UCIZ37TU8Exl6Pr-m2SSN-DA)
+
 Contact me at Alex.D.Thiel@Gmail.com
 
 ## Contributing
@@ -109,7 +110,7 @@ Contact me at Alex.D.Thiel@Gmail.com
 
 This file is part of uArmCreatorStudio. uArmCreatorStudio is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. uArmCreatorStudio is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with uArmCreatorStudio. If not, see <http://www.gnu.org/licenses/>.
 
- ## Acknowledgments
+## Acknowledgments
 
 Thank you to everyone at uFactory for giving me free reign over this project during my internship, and allowing me the space to be creative and develop new ideas without fear of the consequences of failure.
 
