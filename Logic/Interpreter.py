@@ -26,6 +26,7 @@ License:
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
 import math
+from Logic        import Global
 from copy         import deepcopy
 from threading    import Thread
 from Logic.Global import printf, FpsTimer, wait
@@ -33,6 +34,8 @@ from Logic        import Events, Commands
 __author__ = "Alexander Thiel"
 
 
+global exitingFlag
+exitingFlag = False
 
 class Interpreter:
     """
@@ -41,7 +44,7 @@ class Interpreter:
     to begin the script.
     """
 
-    def __init__(self, environment, parentExitFunc=None, parentSetExitingFunc=None):
+    def __init__(self, environment):
         """
         Since interpreters can be run within themselves, the parentExitFunc and parentSetExitingFunc are exactly
         what they sound like.
@@ -55,10 +58,10 @@ class Interpreter:
         """
 
         # This function will tell you if the highest parent interpreter is currently exiting
-        self.parentIsExiting  = parentExitFunc
+        # self.parentIsExiting  = parentExitFunc
 
         # This function will kill all interpreters running inside of the highest heirarchy of interpreters
-        self.parentSetExiting = parentSetExitingFunc  # Example: self.parentSetExiting(True) ends all child Interpreters
+        # self.parentSetExiting = parentSetExitingFunc  # Example: self.parentSetExiting(True) ends all child Interpreters
 
         self.env           = environment
         self.mainThread    = None    # The thread on which the script runs on. Is None while thread is not running.
@@ -157,17 +160,16 @@ class Interpreter:
         return currRunning
 
     def isExiting(self):
-        # Commands that have the potential to take a long time (wait, pickup, that sort of thing) will use this to check
-        # if they should exit immediately
-        if self.parentIsExiting is not None and self.parentIsExiting():
-            self.setExiting(True)
-
-        return self.__exiting
+        global exitingFlag
+        return exitingFlag
 
     def setExiting(self, value):
+
         self.env.getRobot().setExiting(value)
         self.env.getVision().setExiting(value)
-        self.__exiting = value
+
+        global exitingFlag
+        exitingFlag = value
 
 
     # The following functions should never be called by user - only for Commands/Events to interact with Interpreter
@@ -183,7 +185,6 @@ class Interpreter:
             - settings
             - resources
             - vStream
-
 
         Excluded Builtins
             - setattr
@@ -223,30 +224,35 @@ class Interpreter:
         vStream       = self.env.getVStream()
         newSleep      = lambda time: wait(time, self.isExiting)
         isExiting     = self.isExiting
-        # Add Python builtins, and also the extra ones (above)
-        execBuiltins = {      "abs":       abs,       "dict":       dict, "__import__": __import__,
-                              "all":       all,        "hex":        hex,      "slice":      slice,
-                              "any":       any,     "divmod":     divmod,     "sorted":     sorted,
-                            "ascii":     ascii,  "enumerate":  enumerate,      "range":      range,
-                              "bin":       bin,        "int":        int,        "str":        str,
-                             "bool":      bool, "isinstance": isinstance,        "ord":        ord,
-                        "bytearray": bytearray,     "filter":     filter, "issubclass": issubclass,
-                            "bytes":     bytes,      "float":      float,       "iter":       iter,
-                         "callable":  callable,        "len":        len,       "type":       type,
-                              "chr":       chr,  "frozenset":  frozenset,       "list":       list,
-                           "locals":    locals,        "zip":        zip,       "vars":       vars,
-                          "globals":   globals,        "map":        map,   "reversed":   reversed,
-                          "complex":   complex,        "max":        max,      "round":      round,
-                          "delattr":   delattr,       "hash":       hash,        "set":        set,
-                              "min":       min,        "oct":        oct,        "sum":        sum,
-                              "pow":       pow,      "super":      super,      "print":     printf,
-                            "tuple":     tuple,      "robot":      robot,  "resources":  resources,
-                           "vision":    vision,   "settings":   settings,    "vStream":    vStream,
-                            "sleep":  newSleep, "isStopping":  isExiting, "classmethod": classmethod,
-                              "object": object, "__build_class__": __build_class__, "__name__": "__main__"}
 
-        execBuiltins = {"__builtins__": execBuiltins, "variables": variables, "__author__": "Alexander Thiel"}
-        self.nameSpace = execBuiltins
+        # Add Python builtins, and also the extra ones (above)
+        builtins = {      "abs":       abs,            "dict":            dict,  "__import__":  __import__,
+                          "all":       all,             "hex":             hex,       "slice":       slice,
+                          "any":       any,          "divmod":          divmod,      "sorted":      sorted,
+                        "ascii":     ascii,       "enumerate":       enumerate,       "range":       range,
+                          "bin":       bin,             "int":             int,         "str":         str,
+                         "bool":      bool,      "isinstance":      isinstance,         "ord":         ord,
+                    "bytearray": bytearray,          "filter":          filter,  "issubclass":  issubclass,
+                        "bytes":     bytes,           "float":           float,        "iter":        iter,
+                     "callable":  callable,             "len":             len,        "type":        type,
+                          "chr":       chr,       "frozenset":       frozenset,        "list":        list,
+                       "locals":    locals,             "zip":             zip,        "vars":        vars,
+                      "globals":   globals,             "map":             map,    "reversed":    reversed,
+                      "complex":   complex,             "max":             max,       "round":       round,
+                      "delattr":   delattr,            "hash":            hash,         "set":         set,
+                          "min":       min,             "oct":             oct,         "sum":         sum,
+                          "pow":       pow,           "super":           super,       "print":      printf,
+                        "tuple":     tuple,           "robot":           robot,   "resources":   resources,
+                       "vision":    vision,        "settings":        settings,     "vStream":     vStream,
+                        "sleep":  newSleep,  "scriptStopping":       isExiting, "classmethod": classmethod,
+                       "object":    object, "__build_class__": __build_class__,    "__name__":  "__main__"}
+
+        namespace = {}
+        namespace.update(builtins)
+        namespace.update(variables)
+        namespace.update({"__author__": "Alexander Thiel"})
+
+        self.nameSpace = namespace
 
     def evaluateExpression(self, expression):
 
@@ -289,21 +295,22 @@ class Interpreter:
 
         return True
 
-    def createChildInterpreter(self, script, parentIsExiting, parentSetExiting):
+    def createChildInterpreter(self, script):
         """
             This function is special, in the sense that it creates another interpreter that runs inside of this one,
             with a specified filename or script, and starts it immediately.
         """
-        if parentIsExiting(): return
+        # if self.env.isInterpreterExiting: return
 
 
-        child = Interpreter(self.env, parentIsExiting, parentSetExiting)
+        child = Interpreter(self.env)
         errors = child.initializeScript(script)
 
         if len(errors):
             printf("ERROR: Tried to run a task that did not meet the requirements. Errors:\n", errors)
-            if self.parentSetExiting is not None:
-                self.parentSetExiting(True)
+            # if self.parentSetExiting is not None:
+            #     self.parentSetExiting(True)
+            Global.exitScriptFlag = True
             self.setExiting(True)
 
         return child
@@ -338,20 +345,20 @@ class Interpreter:
                 self.interpretCommandList(event.commandList)
 
 
-        # Check if a DestroyEvent exists, if so, run it's commandList
-        destroyEvent = list(filter(lambda event: type(event) == Events.DestroyEvent, self.events))
-
-        if len(destroyEvent):
-            # Make sure the robot, vision, and interpreter can respond before running the destroy event
-            self.setExiting(False)
-            self.interpretCommandList(destroyEvent[0])
-
-            # Set the robot, vision, and interpreter back to non-responsive mode after running the destroy event
-            self.setExiting(True)
+        # # Check if a DestroyEvent exists, if so, run it's commandList
+        # destroyEvent = list(filter(lambda event: type(event) == Events.DestroyEvent, self.events))
+        #
+        # if len(destroyEvent):
+        #     # Make sure the robot, vision, and interpreter can respond before running the destroy event
+        #     self.setExiting(False)
+        #     self.interpretCommandList(destroyEvent[0])
+        #
+        #     # Set the robot, vision, and interpreter back to non-responsive mode after running the destroy event
+        #     self.setExiting(True)
 
         self.mainThread = None
         self.events     = []
-        self.setExiting(False)
+        self.setExiting(True)
 
     def interpretCommandList(self, commandList):
         """
@@ -392,7 +399,6 @@ class Interpreter:
                 # If an else command is the next block, decide whether or not to skip it
                 if index + 1 < len(commandList) and type(commandList[index + 1]) is Commands.ElseCommand:
                     # If the evaluation was true, then DON'T run the else command
-
                     index = self.__getNextIndex(index + 1, commandList)
 
 

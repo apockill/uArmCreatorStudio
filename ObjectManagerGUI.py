@@ -25,6 +25,7 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
+import re
 import numpy             as np
 import Logic.RobotVision as rv
 from time                import time
@@ -199,18 +200,14 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         # Get the selected object
         selObject = self.getSelected()
-        if selObject is None:
-            self.clearSelectedLayout()
-            return
+        if selObject is None: return
 
         obj = self.objManager.getObject(selObject)
 
 
         self.vision.endAllTrackers()
 
-        if obj is None:
-            self.clearSelectedLayout()
-            return
+        if obj is None: return
 
 
         # Make the SelectedObject window reflect the information about the object (and it's type) that is curr. selected
@@ -234,10 +231,8 @@ class ObjectManagerWindow(QtWidgets.QDialog):
     def setSelectionTrackable(self, trackableObj):
 
         views = trackableObj.getViews()
-        if len(views) == 0:
-            printf("ERROR: Object returned ZERO samples!")
-            self.clearSelectedLayout()
-            return
+
+
         selDescLbl         = QtWidgets.QLabel("")   # Description of selected object
         selImgLbl          = QtWidgets.QLabel("")   # A small picture of the object
         deleteBtn          = QtWidgets.QPushButton("Delete")
@@ -338,11 +333,13 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         # Create the appropriate description
         commandList = funcObj.getCommandList()
         description = funcObj.getDescription()
+        arguments   = funcObj.getArguments()
 
         selDescLbl.setText("Name: \n"                + funcObj.name + "\n\n"
-                           "Number of Commands: \n"  + str(len(commandList)) + "\n\n"
-                           "Description: \n"         + description + "\n\n")
-                           # "Moves/Second:\n"         + str(round(len(motionPath) / totalTime, 1)))
+                           "Description: \n"         + description + "\n\n"
+                           "Length: \n"  + str(len(commandList)) + " Commands\n\n"
+                           "Arguments:\n" + ''.join(['-' + arg + '\n' for arg in arguments]) + "\n")
+
 
 
         self.selLayout.addWidget(selDescLbl)
@@ -1012,8 +1009,26 @@ class MakeFunctionWindow(QtWidgets.QDialog):
 
         def addArgument(self):
             var, accepted = QtWidgets.QInputDialog.getText(self, 'Add Argument', 'Variable Name: ')
-            if accepted:
-                self.argList.addItem(var)
+
+            # If the user canceled, don't do anything
+            if not accepted: return
+
+
+            # Make sure the variable is a valid python variable
+            possibleVariable = str(var)
+            possibleVariable = re.sub('[^0-9a-zA-Z_]', '', possibleVariable)
+            possibleVariable = re.sub('^[^a-zA-Z_]+', '', possibleVariable)
+
+            # If the variable is invalid, then warn and re-prompt the user
+            if not possibleVariable == var:
+                QtWidgets.QMessageBox.question(self, 'Invalid Variable Name',
+                                               'The argument must be a valid python variable. This means no numbers '
+                                               'in the beginning, no spaces, and only numbers and letters',
+                                               QtWidgets.QMessageBox.Ok)
+                self.addArgument()
+                return
+
+            self.argList.addItem(var)
 
         def deleteArgument(self):
 
@@ -1035,6 +1050,14 @@ class MakeFunctionWindow(QtWidgets.QDialog):
                 args.append(self.argList.item(index).text())
             return args
 
+        def setArguments(self, arguments):
+            # Delete any existing arguments
+            while self.argList.count():
+                self.argList.takeItem(0)
+
+            # Add new arguments
+            for arg in arguments:
+                self.argList.addItem(arg)
 
     def __init__(self, currentObj, environment, parent):
         super(MakeFunctionWindow, self).__init__(parent)
@@ -1060,6 +1083,7 @@ class MakeFunctionWindow(QtWidgets.QDialog):
             self.nameEdit.setDisabled(True)
             self.descEdit.setText(self.newObject.getDescription())
             self.commandList.loadData(self.newObject.getCommandList())
+            self.argList.setArguments(self.newObject.getArguments())
 
 
         self.initUI()
@@ -1071,7 +1095,7 @@ class MakeFunctionWindow(QtWidgets.QDialog):
         # Create non global UI variables
         nameLbl   = QtWidgets.QLabel("Function Name ")
         descLbl   = QtWidgets.QLabel("Function Description ")
-        argLbl    = QtWidgets.QLabel("Arguments")
+        argLbl    = QtWidgets.QLabel("Arguments (optional)")
         hint2Lbl  = QtWidgets.QLabel("Drag commands into the list to create a function")
         cancelBtn = QtWidgets.QPushButton("Cancel", self)
 

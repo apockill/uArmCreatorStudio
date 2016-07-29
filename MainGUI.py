@@ -266,7 +266,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.videoToggleBtn.setIcon(QtGui.QIcon(Paths.play_video))
             self.videoToggleBtn.setText("Play")
 
-
     def toggleScript(self):
         # Run/pause the main script
         if self.interpreter.threadRunning():
@@ -354,13 +353,15 @@ class MainWindow(QtWidgets.QMainWindow):
             return
 
         # Return things back to normal
-        self.interpreter.setExiting(False)
         self.controlPanel.setScriptModeOff()
 
 
         # Turn off the gripper, just in case. Do this AFTER interpreter ends, so as to not use Serial twice...
         vision = self.env.getVision()
         robot  = self.env.getRobot()
+        robot.setExiting(False)
+        vision.setExiting(False)
+
         robot.setGripper(False)
         robot.setActiveServos(all=False)
 
@@ -767,7 +768,7 @@ class Application(QtWidgets.QApplication):
     def notify(self, receiver, event):
         # Add any keys that are pressed to keysPressed
         if event.type() == QtCore.QEvent.KeyPress:
-            #Todo: remove these two lines when development is finished
+            # Todo: remove these two lines when development is finished
             if event.key() == QtCore.Qt.Key_Q and len(mainWindowReference):
                 print("CHILDREN: ", len(mainWindowReference[0].findChildren(QtCore.QObject)))
 

@@ -35,7 +35,8 @@ __author__ = "Alexander Thiel"
 
 """
 Global is a set of functions that are used in many places around the project and are very general use.
-It also holds the actual global variable "keysPressed".
+
+It also holds the actual global variable "keysPressed", and "printRedirectFunc". More documentation below.
 """
 
 
@@ -82,16 +83,27 @@ def waitUntilTime(timeMS, exitFunc):
 def init():
     global keysPressed
     global printRedirectFunc
+    global exitScriptFlag
 
-    # Used in keyboardEvent. Updated through Main.Application.notify() Format: ['a', 'b', '5', 'z']
-    # Characters are stored while key is pressed, and removed when key is released
+    """
+      Used in keyboardEvent. Updated through Main.Application.notify() Format: ['a', 'b', '5', 'z']
+      Characters are stored while key is pressed, and removed when key is released
+    """
     keysPressed        = []
 
-    # When this function is set, all print "strings" will be sent to it before printing normally
-    # The use case is for the Console widget. If printRedirectFunc = Console.write, then all prints will print on there
+
+    """
+      When this function is set, all print "strings" will be sent to it before printing normally
+      The use case is for the Console widget. If printRedirectFunc = Console.write, then all prints will print on there
+    """
     printRedirectFunc  = lambda classString, string: None  # print(classString + " "*(30 - len(classString)) + string)
 
-
+    """
+        This is a variable that signals to all running interpreters that they should exit the current script immediately
+        It's used when there's been an error. If this is true, no script will run the "End Program" command, they will
+        simply exit as quickly as they can.
+    """
+    exitScriptFlag = False
 
 # Gets the name of the caller of a function in a neatly formatted string
 def caller_name(skip=2, printModule=True, printClass=True, printFunction=True):
@@ -248,8 +260,8 @@ class FpsTimer:
 
 def ensurePathExists(path):
     """
-        This is a cross platform, race-condition free way of checking if a directory exists. It's used every time
-        an object is loaded and saved
+        This is a cross platform, race-condition free way of checking if a directory exists, and if it doesn't,
+        creating that directory. It's used every time an object is loaded and saved
     """
     try:
         directory = os.path.dirname(path)

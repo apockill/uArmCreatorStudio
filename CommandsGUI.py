@@ -755,7 +755,8 @@ class MotionRecordingCommand(CommandGUI):
         return self.parameters
 
     def _updateDescription(self):
-        self.description = "Play motion recording " + self.parameters["objectID"] + " x" + str(self.parameters["speed"])
+        self.description = "Play motion recording " + self.parameters["objectID"] \
+                           + " Speed x" + str(self.parameters["speed"])
         if self.parameters["reversed"]: self.description += " reversed"
 
 
@@ -1603,6 +1604,38 @@ class TestVariableCommand(CommandGUI):
                            ' ' + self.parameters['expression'] + ' then'
 
 
+# class LoopCommand(CommandGUI):
+#     title     = "Loop"
+#     tooltip   = "Repeat this section of commands"
+#     icon      = Paths.some_icon
+#
+#     def __init__(self, env, parameters=None):
+#         super(LoopCommand, self).__init__(parameters)
+#
+#         # If parameters do not exist, then set up the default parameters
+#         if self.parameters is None:
+#             # Anything done with env should be done here. Try not to save env as a class variable whenever possible
+#             self.parameters = {}
+#
+#     def dressWindow(self, prompt):
+#         # Do some GUI code setup
+#         # Put all the objects into horizontal layouts called Rows
+#
+#         # self._addRow(prompt, some GUI label, some GUI object)  # Add rows using self._addRow to keep consistency
+#
+#         return prompt
+#
+#     def _extractPromptInfo(self, prompt):
+#         newParameters = {} # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
+#
+#         self.parameters.update(newParameters)
+#
+#         return self.parameters
+#
+#     def _updateDescription(self):
+#         self.description = ""  # Some string that uses your parameters to describe the object.
+
+
 class ScriptCommand(CommandGUI):
     title     = "Run Python Code"
     tooltip   = "This tool will execute a script made by the user.\nDO NOT RUN PROGRAMS WITH SCRIPTS WRITTEN BY OTHER" \
@@ -1736,12 +1769,45 @@ class RunFunctionCommand(CommandGUI):
         if self.parameters is None:
             # Anything done with env should be done here. Try not to save env as a class variable whenever possible
             self.parameters = {"objectID": "",
-                               "description": ""}  # Not necessary, makes saving and loading easier
+                               "description": "",
+                               "arguments": {}}  # A list of {"arg": "expression", "arg2": "expression2}
 
     def dressWindow(self, prompt):
-        def updateArguments(prompt):
+
+
+        def updateArguments():
+            # Hide irrelevant arguments
+            for arg in prompt.argumentEdits: prompt.argumentEdits[arg].hide()
+            for arg in prompt.argumentLbls:  prompt.argumentLbls[arg].hide()
+
+            # Get the current object
             chosenID  = str(prompt.objChoices.currentText())
             chosenObj = self.objManager.getObject(chosenID)
+
+            # If the object does not exist anymore, exit
+            if chosenObj is None: return
+
+            # Iterate through the arguments
+            arguments = chosenObj.getArguments()
+            for arg in arguments:
+                # If the argument already has a widget associated with it, show the widget
+                if arg in prompt.argumentEdits is not None:
+                    prompt.argumentEdits[arg].show()
+                    prompt.argumentLbls[arg].show()
+                    continue
+
+                # If the argument doesn't have a widget associated with it, create it and store it
+                argLbl = QtWidgets.QLabel(arg)
+                argEdt = QtWidgets.QLineEdit()
+                argEdt.setFixedWidth(self.defaultTextBoxWidth)
+
+                prompt.argumentEdits[arg] = argEdt
+                prompt.argumentLbls[arg]  = argLbl
+                row = QtWidgets.QHBoxLayout()
+                row.addStretch()
+                row.addWidget(argLbl)
+                row.addWidget(argEdt)
+                prompt.argLayout.addLayout(row)
 
 
 
@@ -1753,7 +1819,21 @@ class RunFunctionCommand(CommandGUI):
         for index, objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
         self._addRow(prompt, choiceLbl, prompt.objChoices)
 
-        choiceLbl.objectNameChanged.connect(lambda: updateArguments(prompt))
+        prompt.argLayout = QtWidgets.QVBoxLayout()  # This is where the argument queries will be made
+        prompt.content.addLayout(prompt.argLayout)
+        prompt.objChoices.currentIndexChanged.connect(lambda: updateArguments())
+
+
+        # These two arrays store the widgets associated with each argument
+        prompt.argumentEdits = {}
+        prompt.argumentLbls  = {}
+
+        updateArguments()  # This generates the list of arguments
+
+        # Repopulate existing arguments
+        for key in prompt.argumentEdits:
+            if key in self.parameters["arguments"]:
+                prompt.argumentEdits[key].setText(self.parameters["arguments"][key])
 
         self._addRecordingHint(prompt, len(objectList))
         return prompt
@@ -1762,8 +1842,19 @@ class RunFunctionCommand(CommandGUI):
         chosenID  = str(prompt.objChoices.currentText())
         chosenObj = self.objManager.getObject(chosenID)
 
-        newParameters = {"objectID": chosenID,
-                         "description": chosenObj.getDescription()}
+        if chosenObj is not None:
+            args = chosenObj.getArguments()
+            argVals = {}
+            for arg in args:
+                argVals[arg] = prompt.argumentEdits[arg].text()
+
+            newParameters = {"objectID": chosenID,
+                             "description": chosenObj.getDescription(),
+                             "arguments": argVals}
+        else:
+            newParameters = {"objectID": chosenID,
+                             "description": "",
+                             "arguments": self.parameters["arguments"]}
 
         self.parameters.update(newParameters)
 
@@ -1776,10 +1867,6 @@ class RunFunctionCommand(CommandGUI):
         else:
             self.description = self.parameters["description"]
             self.title = "Run " + self.parameters["objectID"]
-
-
-
-
 
 
 

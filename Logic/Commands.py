@@ -752,7 +752,7 @@ class TestVariableCommand(Command):
         if not success: return False
 
         printf("Testing: ", scriptString)
-        print(testResult, success)
+
         # If the expression was evaluated correctly, then return the testResult. Otherwise, return False
         return testResult
 
@@ -814,17 +814,17 @@ class RunTaskCommand(Command):
     def run(self):
         if len(self.errors): return
 
-        # Create the exit functions for the baby interpreter
-        isExitFunc  = self.interpreter.parentIsExiting
-        setExitFunc = self.interpreter.parentSetExiting
-
-        # If this command is being run in the main program, set the isExitFunc and setExitFunc to the originals
-        if isExitFunc is None:
-            isExitFunc  = self.interpreter.isExiting
-            setExitFunc = self.interpreter.setExiting
+        # # Create the exit functions for the baby interpreter
+        # isExitFunc  = self.interpreter.parentIsExiting
+        # setExitFunc = self.interpreter.parentSetExiting
+        #
+        # # If this command is being run in the main program, set the isExitFunc and setExitFunc to the originals
+        # if isExitFunc is None:
+        #     isExitFunc  = self.interpreter.isExiting
+        #     setExitFunc = self.interpreter.setExiting
 
         # Let the interpreter create
-        child = self.interpreter.createChildInterpreter(self.script, isExitFunc, setExitFunc)
+        child = self.interpreter.createChildInterpreter(self.script)
         child.startThread(threaded=False)
 
 
@@ -847,21 +847,31 @@ class RunFunctionCommand(Command):
 
     def run(self):
         if len(self.errors): return
-        print("Running function: ", self.funcObject)
+        printf("Running function: ", self.funcObject.name)
+
+        # Evaluate every expression in self.parameters["arguments"] and create a dict of {"name": value, ...}
+        evaluatedArgs = {}
+        for arg in self.parameters["arguments"]:
+            val, success = self.interpreter.evaluateExpression(self.parameters["arguments"][arg])
+            evaluatedArgs[arg] = val
 
 
         # Create the exit functions for the baby interpreter
-        isExitFunc  = self.interpreter.parentIsExiting
-        setExitFunc = self.interpreter.parentSetExiting
+        # isExitFunc  = self.interpreter.parentIsExiting
+        # setExitFunc = self.interpreter.parentSetExiting
 
         # If this command is being run in the main program, set the isExitFunc and setExitFunc to the originals
-        if isExitFunc is None:
-            isExitFunc  = self.interpreter.isExiting
-            setExitFunc = self.interpreter.setExiting
+        # if isExitFunc is None:
+        #     isExitFunc  = self.interpreter.isExiting
+        #     setExitFunc = self.interpreter.setExiting
 
         # Let the interpreter create
-        child = self.interpreter.createChildInterpreter(self.script, isExitFunc, setExitFunc)
+        child = self.interpreter.createChildInterpreter(self.script)
+
+        # Add the arguments to the namespace
+        child.nameSpace.update(evaluatedArgs)
         child.interpretCommandList(child.events[0].commandList)
+
 
 
 

@@ -153,6 +153,7 @@ class LineTextWidget(QtWidgets.QFrame):
         return self.edit.toPlainText()
 
 
+
 class ScriptWidget(QtWidgets.QWidget):
     """This class is for making a text editor that will help you write python code"""
 
@@ -198,16 +199,18 @@ Builtin Variables:
         Try doing print(settings) to see what it contains.
 
 
-    isStopping()
+    scriptStopping()
         This is a function that returns True if the user has pressed the "stop" button on the top left. You can use
         this to check if your script should end, if you're doing long loops.
 
         For source code on the Interpreter environment that runs your script, go to:
         https://github.com/apockill/RobotGUIProgramming/blob/master/Logic/Interpreter.py
 
+    sleep
+        The usual python sleep variable has been replaced by one that will automatically stop sleeping when the user
+        presses the "stop script" button on the GUI. So don't worry about writing blocking code, that's been handled!
 
-
-Examples scripts using robot
+Examples scripts using 'robot'
     robot.setPos(x=0, y=15, z=15)   # This will set the robots position to XYZ(0, 15, 15)
     robot.setPos(x=0, y=15, z=15)   # Waits for robot to complete move before continuing
     robot.setPos(x=0)               # Will only set the x position, keeps the rest the same
@@ -223,7 +226,7 @@ Examples scripts using robot
 
 
 
-Example scripts using vision
+Example scripts using 'vision'
     # The first step of using vision is getting a trackable object. Make an object in Resources then access it by name.
     trackableObject = resources.getObject("Ace of Spades")
 
@@ -280,14 +283,14 @@ is running inside of a seperate thread/process, and when you end the program the
 
 Any drag-and-drop command will end quickly, because they have been designed to do so. However, you will have to do this
 yourself if you have a long lasting task that you want to be able to quit at any time. In order to do so, you can use
-the function "isStopping()"
+the function "scriptStopping()"
 
-isStopping() # returns True if the user has attempted to end the program, and False if the program has not been ended
+scriptStopping() returns True if the user has attempted to end the program, and False if the program has not been ended
 
     The typical use case is:
 
     while True:
-        if isStopping(): break  # Break out of the loop if the program has ended
+        if scriptStopping(): break  # Break out of the loop if the program has ended
         # ... code ...
         # ... code ...
         # ... code ...
@@ -295,12 +298,10 @@ isStopping() # returns True if the user has attempted to end the program, and Fa
     or, if it's in a big loop
 
     for i in range(0, 100000):
-        if isStopping(): break
+        if scriptStopping(): break
         # ... code ...
         # ... code ...
         # ... code ...
-
-
 
 """
     minWidth  = 550

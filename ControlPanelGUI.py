@@ -798,7 +798,6 @@ class CommandList(QtWidgets.QListWidget):
 
 
     def getSaveData(self):
-        printf("Getting CommandList save data")
         commandList = []
         commandsOrdered = [self.getCommand(self.item(index)) for index in range(self.count())]
 
@@ -808,8 +807,6 @@ class CommandList(QtWidgets.QListWidget):
         return commandList
 
     def loadData(self, data):
-        printf("Loading CommandList")
-
         self.commands = {}
         self.clear()
 
