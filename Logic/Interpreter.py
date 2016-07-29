@@ -37,6 +37,7 @@ __author__ = "Alexander Thiel"
 global exitingFlag
 exitingFlag = False
 
+
 class Interpreter:
     """
     This is where the script is actually run. The most convenient method is to create a script with the GUI,
@@ -345,20 +346,8 @@ class Interpreter:
                 self.interpretCommandList(event.commandList)
 
 
-        # # Check if a DestroyEvent exists, if so, run it's commandList
-        # destroyEvent = list(filter(lambda event: type(event) == Events.DestroyEvent, self.events))
-        #
-        # if len(destroyEvent):
-        #     # Make sure the robot, vision, and interpreter can respond before running the destroy event
-        #     self.setExiting(False)
-        #     self.interpretCommandList(destroyEvent[0])
-        #
-        #     # Set the robot, vision, and interpreter back to non-responsive mode after running the destroy event
-        #     self.setExiting(True)
-
         self.mainThread = None
         self.events     = []
-        self.setExiting(True)
 
     def interpretCommandList(self, commandList):
         """

@@ -98,8 +98,7 @@ class EventPromptWindow(QtWidgets.QDialog):
         # Left column
         grid.addWidget(      self.initBtn, 0, 0, QtCore.Qt.AlignLeft)
         grid.addWidget(      self.stepBtn, 1, 0, QtCore.Qt.AlignLeft)
-        grid.addWidget(   self.destroyBtn, 2, 0, QtCore.Qt.AlignLeft)
-        grid.addWidget(       self.tipBtn, 3, 0, QtCore.Qt.AlignLeft)
+        grid.addWidget(       self.tipBtn, 2, 0, QtCore.Qt.AlignLeft)
 
         # Right column
         grid.addWidget(  self.keyboardBtn, 0, 1, QtCore.Qt.AlignLeft)
@@ -134,7 +133,6 @@ class EventPromptWindow(QtWidgets.QDialog):
 
         # Create Event Buttons
         self.initBtn      = self.getNewButton( 'Initialization',         InitEvent.icon)
-        self.destroyBtn   = self.getNewButton( 'End of Program',      DestroyEvent.icon)
         self.stepBtn      = self.getNewButton(           'Step',         StepEvent.icon)
         self.tipBtn       = self.getNewButton(     'Tip Sensor',          TipEvent.icon)
         self.keyboardBtn  = self.getNewButton(       'Keyboard',     KeypressEvent.icon)
@@ -145,7 +143,6 @@ class EventPromptWindow(QtWidgets.QDialog):
 
         # CONNECT BUTTONS THAT DON'T HAVE MENUS
         self.initBtn.clicked.connect(lambda: self.btnClicked(   InitEvent))
-        self.destroyBtn.clicked.connect(lambda: self.btnClicked(DestroyEvent))
         self.stepBtn.clicked.connect(lambda: self.btnClicked(   StepEvent))
         self.tipBtn.clicked.connect(lambda: self.btnClicked(    TipEvent))
         self.motionBtn.clicked.connect(lambda: self.btnClicked( MotionEvent))
@@ -320,15 +317,15 @@ class InitEvent(EventGUI):
     def __init__(self, parameters):
         super(InitEvent, self).__init__(parameters)
 
-
-class DestroyEvent(EventGUI):
-    title     = 'End of Program'
-    tooltip   = 'Activates once, when the program is ended'
-    icon      = Paths.event_destroy
-    priority  = 10000
-
-    def __init__(self, parameters):
-        super(DestroyEvent, self).__init__(parameters)
+#
+# class DestroyEvent(EventGUI):
+#     title     = 'End of Program'
+#     tooltip   = 'Activates once, when the program is ended'
+#     icon      = Paths.event_destroy
+#     priority  = 10000
+#
+#     def __init__(self, parameters):
+#         super(DestroyEvent, self).__init__(parameters)
 
 
 class StepEvent(EventGUI):

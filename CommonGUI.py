@@ -493,53 +493,57 @@ class Console(QtWidgets.QWidget):
         self.execFunction = execFunction
 
 
-    def __allowString(self, classString):
+    def __allowString(self, moduleString):
         """
         Choose whether or not this string comes from a class that should be printed or not. This is set in the settings.
         """
         with self.printLock:
-
-            if len(classString) == 0:
+            print("Module", moduleString)
+            if len(moduleString) == 0:
                 return "Output"
 
-            if classString in "Input":
+            if moduleString in "Input":
                 return "Input"
 
+            # Print anything from a GUI module
+            if "GUI" in moduleString or "__main__" in moduleString:
+                if self.settings["gui"]:
+                    return "GUI"
+                return ""
 
-            # Print anything from the Robot class
-            if "Robot" in classString:
+            # Print anything from the Robot module
+            if "Robot" in moduleString:
                 if self.settings["robot"]:
                     return "Robot"
                 return ""
 
-            # Print anything from the Vision class
-            if "Vision" in classString:
+            # Print anything from the Vision module
+            if "Vision" in moduleString:
                 if self.settings["vision"]:
                     return "Vision"
                 return ""
 
-            # Print any serial communication
-            if "Device" in classString:
+            # Print anything from the communication module
+            if "CommunicationProtocol" in moduleString:
                 if self.settings["serial"]:
                     return "Communication"
                 return ""
 
-            # Print anything from Interpreter
-            if "Interpreter" in classString:
+            # Print anything from the Interpreter module
+            if "Interpreter" in moduleString:
                 if self.settings["interpreter"]:
                     return "Interpreter"
                 return ""
 
-            # Print anything from Commands.py
-            if "Command" in classString:
+            # Print anything from Commands
+            if "Commands" in moduleString or "Events" in moduleString:
                 if self.settings["script"]:
                     return "Script"
                 return ""
 
-            # Print anything else that hasn't been specified
-            if self.settings["gui"]:
-                classString = "GUI"
-                return classString
+            # If the user wants everything to be printed, just in case, then send "Other" as the category
+            if self.settings["other"]:
+                return "Other"
 
             return ""
 
@@ -594,14 +598,16 @@ class Console(QtWidgets.QWidget):
         interpLbl = QtWidgets.QLabel("Interpreter Logs ")
         scriptLbl = QtWidgets.QLabel("Script Logs ")
         guiLbl    = QtWidgets.QLabel("GUI Logs ")
+        othLbl    = QtWidgets.QLabel("Other Logs ")
 
         window.wrapChk   = QtWidgets.QCheckBox()
         window.robotChk  = QtWidgets.QCheckBox()   # Show prints from robot class
         window.visionChk = QtWidgets.QCheckBox()   # Show prints from vision class
         window.comChk    = QtWidgets.QCheckBox()   # Show prints from communication protocol
         window.interpChk = QtWidgets.QCheckBox()   # Show prints from Interpreter (Important!)
-        window.scriptChk = QtWidgets.QCheckBox()   # Show prints from GUI Elements
-        window.guiChk    = QtWidgets.QCheckBox()
+        window.scriptChk = QtWidgets.QCheckBox()   # Show prints from Command and Event Elements
+        window.guiChk    = QtWidgets.QCheckBox()   # Show prints from GUI Elements
+        window.othChk    = QtWidgets.QCheckBox()   # Show prints from anything else
 
         window.wrapChk  .setChecked(self.settings["wordWrap"])
         window.robotChk .setChecked(self.settings["robot"])
@@ -610,6 +616,7 @@ class Console(QtWidgets.QWidget):
         window.interpChk.setChecked(self.settings["interpreter"])
         window.scriptChk.setChecked(self.settings["script"])
         window.guiChk   .setChecked(self.settings["gui"])
+        window.othChk   .setChecked(self.settings["other"])
 
         window.content.addWidget(descLbl)
         addRow(wrapLbl,   window.wrapChk)
@@ -620,6 +627,7 @@ class Console(QtWidgets.QWidget):
         addRow(interpLbl, window.interpChk)
         addRow(scriptLbl, window.scriptChk)
         addRow(guiLbl,    window.guiChk)
+        addRow(othLbl,    window.othChk)
 
         window.mainVLayout.addLayout(buttonRow)  # Add button after, so hints appear above buttons
 
@@ -634,6 +642,7 @@ class Console(QtWidgets.QWidget):
             self.settings["interpreter"] = window.interpChk.isChecked()
             self.settings["script"]      = window.scriptChk.isChecked()
             self.settings["gui"]         = window.guiChk.isChecked()
+            self.settings["other"]       = window.othChk.isChecked()
 
             # Update the wordWrap settings
             if self.settings["wordWrap"]:

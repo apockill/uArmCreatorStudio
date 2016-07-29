@@ -156,9 +156,9 @@ def printf(*args):
 
 
     # Create settings for the boilerplate information
-    printModule   = False
-    printFunction = True    # If false, no boilerplate will be printed
-    printClass    = True
+    printModule   = True
+    printFunction = False    # If false, no boilerplate will be printed
+    printClass    = False
 
     indentLength  = 40      # Length of indent between boilerplate and content
 

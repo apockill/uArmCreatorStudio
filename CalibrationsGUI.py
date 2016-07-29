@@ -1039,8 +1039,20 @@ class CWPage5(QtWidgets.QWizardPage):
         newCalibrations["ptPairs"].append([marker.center, coord])
         self.timer = singleShot()
 
+    def isComplete(self):
+
+        return self.newCalibrations is not None
+
+    def close(self):
+        self.cancelTest = True  # Stops the calibration from creating another singleshot
+
+        vision = self.env.getVision()
+        robot  = self.env.getRobot()
+        vision.endAllTrackers()
+        robot.setPos(wait=False, **robot.home)
 
 
+    # DEPRECATED FUNCTION
     def pruneCalibrationSet(self, newSize, ptPairs):
         """
         This function looks a bit complicated, but its purpose is simple: input a list of ptPairs, and it will return
@@ -1135,17 +1147,6 @@ class CWPage5(QtWidgets.QWizardPage):
             printf("Found set is worse than the average. Returning bestSet.")
             return bestScore, bestSet
 
-    def isComplete(self):
-
-        return self.newCalibrations is not None
-
-    def close(self):
-        self.cancelTest = True  # Stops the calibration from creating another singleshot
-
-        vision = self.env.getVision()
-        robot  = self.env.getRobot()
-        vision.endAllTrackers()
-        robot.setPos(wait=False, **robot.home)
 
 
 

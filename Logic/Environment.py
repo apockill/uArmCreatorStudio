@@ -142,6 +142,11 @@ class Environment:
             printf("No settings changed: ", category)
 
     def __loadSettings(self):
+        """
+        Load a settings file, and update the default values with the loaded values, then set that as settings.
+
+        If the settins file could not be loaded, just return the default values.
+        """
         defaultSettings = {
                             # LOGIC RELATED SETTINGS
                             "robotID":            None,  # COM port of the robot
@@ -171,7 +176,8 @@ class Environment:
                                                     "serial":             False,
                                                     "interpreter":         True,
                                                     "script":              True,
-                                                    "gui":                False
+                                                    "gui":                False,
+                                                    "other":               True,
                                                   },
 
                             "windowGeometry":       None,  # The size and shape of the main window
@@ -184,10 +190,32 @@ class Environment:
 
         # Try to load a settings file. If it fails, simply return the default settings
         try:
+            def updateDictionary(default, new):
+                """
+                This is a custom function for updating dictionaries that have nested dictionaries. The idea is that if
+                I ever change the save format for the Settings file, there won't be any corruption issues- it will
+                simply input a default value for keys that aren't in the old save file, and get rid of keys that
+                aren't in the new format. Compatibility is not much easier!
+
+                It's better than dictionary.update(newdictionary), because it handles nested dictionaries and their
+                values as well. Works great!
+                """
+                for key in default:
+                    if key in new:
+                        if isinstance(new[key], dict):
+                            updateDictionary(default[key], new[key])
+                        else:
+                            default[key] = new[key]
+
+
+
             newSettings = json.load(open(self.__settingsPath))
 
+
+            updateDictionary(defaultSettings, newSettings)
+
             # Replace the current settings with new settings
-            return newSettings
+            return defaultSettings
 
         except IOError as e:
             printf("ERROR: No settings file detected. Using default values. Error:", e)
