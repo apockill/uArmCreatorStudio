@@ -757,10 +757,11 @@ class CommandList(QtWidgets.QListWidget):
             self.addCommand(cType, index=dropIndex)
 
             # For easy usability, when you drop a Test command, a StartBlock and EndBlock will drop right after it.
-            if cType is CommandsGUI.TestVariableCommand        or \
-               cType is CommandsGUI.ElseCommand                or \
-               cType is CommandsGUI.TestObjectSeenCommand      or \
-               cType is CommandsGUI.TestObjectLocationCommand:
+            if type(cType) in CommandsGUI.testTypes or cType == CommandsGUI.LoopCommand:
+               #  CommandsGUI.TestVariableCommand        or \
+               # cType is CommandsGUI.ElseCommand                or \
+               # cType is CommandsGUI.TestObjectSeenCommand      or \
+               # cType is CommandsGUI.TestObjectLocationCommand:
 
                 self.addCommand(CommandsGUI.StartBlockCommand, index=dropIndex + 1)
                 self.addCommand(CommandsGUI.EndBlockCommand, index=dropIndex + 2)

@@ -185,6 +185,7 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         add(ScriptCommand)
         add(SetVariableCommand)
         add(TestVariableCommand)
+        add(LoopCommand)
         add(ElseCommand)
         add(StartBlockCommand)
         add(EndBlockCommand)
@@ -419,7 +420,7 @@ class CommandGUI:
 
 
     # The following are helper functions for modifying the prompt window in a consistent way
-    def _addRow(self, prompt, *args, alignRight=True):
+    def _addRow(self, prompt, *args, alignRight=True, resizeBox=True):
         # If any argument is of the following type, then set the width to self.defaultTextBoxWidth
         setWidthOnTypes = [QtWidgets.QLineEdit, QtWidgets.QComboBox, QtWidgets.QPushButton]
 
@@ -430,7 +431,7 @@ class CommandGUI:
 
         for widget in args:
             # Set the width if it is a typ
-            if type(widget) in setWidthOnTypes:   # any([isinstance(widget, wType) for wType in  setWidthOnTypes]):
+            if type(widget) in setWidthOnTypes and resizeBox:
                 widget.setFixedWidth(self.defaultTextBoxWidth)
 
             # Creates and adds a row to prompt.content, with proper formatting
@@ -562,6 +563,7 @@ class NameCommand(CommandGUI):
         self.description = ""  # Some string that uses your parameters to describe the object.
 
 """
+
 
 
 #   BASIC CONTROL COMMANDS
@@ -725,7 +727,7 @@ class MotionRecordingCommand(CommandGUI):
         prompt.recChoices = QtWidgets.QComboBox()
         prompt.recChoices.addItem(self.parameters["objectID"])
         recList = self.getObjectList()
-        for index, objectID in enumerate(recList): prompt.recChoices.addItem(objectID)
+        for objectID in enumerate(recList): prompt.recChoices.addItem(objectID)
         self._addRow(prompt, choiceLbl, prompt.recChoices)
 
 
@@ -1097,7 +1099,7 @@ class MoveRelativeToObjectCommand(CommandGUI):
         prompt.objChoices = QtWidgets.QComboBox()
         prompt.objChoices.addItem(self.parameters["objectID"])
         objectList = self.getObjectList()
-        for index, objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
+        for objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
 
 
         prompt.xEdit = QtWidgets.QLineEdit()
@@ -1170,7 +1172,7 @@ class MoveWristRelativeToObjectCommand(CommandGUI):
         prompt.objChoices = QtWidgets.QComboBox()
         prompt.objChoices.addItem(self.parameters["objectID"])  # Add an empty item at the top
         objectList = self.getObjectList()
-        for index, objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
+        for objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
         self._addRow(prompt, objLbl, prompt.objChoices)
         self._addObjectHint(prompt, len(objectList))
 
@@ -1217,7 +1219,6 @@ class PickupObjectCommand(CommandGUI):
     title     = "Pick Up An Object"
     tooltip   = "This tool uses computer vision to recognize an object of your choice, and attempt to pick up the " \
                 "\nobject. If the object cannot be found or picked up, then False will be returned"
-
     icon      = Paths.command_pickup
 
     def __init__(self, env, parameters=None):
@@ -1241,7 +1242,7 @@ class PickupObjectCommand(CommandGUI):
         prompt.objChoices = QtWidgets.QComboBox()
         prompt.objChoices.addItem(self.parameters["objectID"])  # Add an empty item at the top
         objectList = self.getObjectList()
-        for index, objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
+        for objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
         self._addRow(prompt, choiceLbl, prompt.objChoices)
 
 
@@ -1258,7 +1259,7 @@ class PickupObjectCommand(CommandGUI):
         return self.parameters
 
     def _updateDescription(self):
-        self.description = "Find " + self.parameters["objectID"] + " and move the robot over it"
+        self.description = "Find " + self.parameters["objectID"] + " and pick it up"
 
 
 class TestObjectSeenCommand(CommandGUI):
@@ -1301,7 +1302,7 @@ class TestObjectSeenCommand(CommandGUI):
         # Populate the comboBox with a list of all trackable objects, and select the self.parameters one if it exists
         prompt.objChoices.addItem(self.parameters["objectID"])  # Add the previously selected item at the top
         objectList = self.getObjectList()
-        for index, objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
+        for objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
 
 
         # Populate the accuracayChoices with a list of different possible accuracies
@@ -1400,7 +1401,7 @@ class TestObjectLocationCommand(CommandGUI):
         # Populate the ObjectList with trackable objects
         prompt.objChoices.addItem(self.parameters["objectID"])  # Add the previously selected item at the top
         objectList = self.getObjectList()
-        for index, objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
+        for objectID in objectList: prompt.objChoices.addItem(objectID)
 
 
         # Populate the "parts choices" with trackable objects
@@ -1559,14 +1560,14 @@ class TestVariableCommand(CommandGUI):
 
 
         if self.parameters is None:
-            self.parameters = {'variable': '',
+            self.parameters = {'expressionA': '',
                                'test': 0,
-                               'expression': ''}
+                               'expressionB': ''}
 
     def dressWindow(self, prompt):
-        prompt.varEdit = QtWidgets.QLineEdit()  # "Variable" edit
+        prompt.valAEdit = QtWidgets.QLineEdit()  # "Variable" edit
         prompt.tstMenu = QtWidgets.QComboBox()
-        prompt.valEdit = QtWidgets.QLineEdit()
+        prompt.valBEdit = QtWidgets.QLineEdit()
 
         prompt.tstMenu.addItem('Equal To')
         prompt.tstMenu.addItem('Not Equal To')
@@ -1574,66 +1575,101 @@ class TestVariableCommand(CommandGUI):
         prompt.tstMenu.addItem('Less Then')
 
         # Set up all the labels for the inputs
-        varLabel = QtWidgets.QLabel('Variable ')
-        tstLabel = QtWidgets.QLabel('Test ')
-        valLabel = QtWidgets.QLabel('Value ')
+        valALabel = QtWidgets.QLabel('Variable or Expression ')
+        tstLabel  = QtWidgets.QLabel('Test ')
+        valBLabel = QtWidgets.QLabel('Variable or Expression ')
 
         # Fill the textboxes with the default parameters
-        prompt.varEdit.setText(str(self.parameters['variable']))
+        prompt.valAEdit.setText(str(self.parameters['expressionA']))
         prompt.tstMenu.setCurrentIndex(self.parameters['test'])
-        prompt.valEdit.setText(str(self.parameters['expression']))
+        prompt.valBEdit.setText(str(self.parameters['expressionB']))
         # prompt.notCheck.setChecked(self.parameters['not'])
 
-        self._addRow(prompt, varLabel, prompt.varEdit)
+        self._addRow(prompt, valALabel, prompt.valAEdit)
         self._addRow(prompt, tstLabel, prompt.tstMenu)
-        self._addRow(prompt, valLabel, prompt.valEdit)
+        self._addRow(prompt, valBLabel, prompt.valBEdit)
 
         return prompt
 
     def _extractPromptInfo(self, prompt):
-        newParameters = {'variable': self._sanitizeVariable(prompt.varEdit, self.parameters['variable']),
+        newParameters = {'expressionA': self._sanitizeEval(prompt.valAEdit, self.parameters['expressionA']),
                          'test': prompt.tstMenu.currentIndex(),
-                         'expression': str(prompt.valEdit.text())}  # This can't be sanitized, unfortunately :/
+                         'expressionB': self._sanitizeEval(prompt.valBEdit, self.parameters['expressionB'])}  # This can't be sanitized, unfortunately :/
 
         self.parameters.update(newParameters)
         return self.parameters
 
     def _updateDescription(self):
         operations = [' equal to', ' not equal to', ' greater than', ' less than']
-        self.description = 'If ' + str(self.parameters['variable']) + ' is' + operations[self.parameters['test']] + \
-                           ' ' + self.parameters['expression'] + ' then'
+        self.description = 'If ' + str(self.parameters['expressionA']) + ' is' + operations[self.parameters['test']] + \
+                           ' ' + self.parameters['expressionB'] + ' then'
 
 
-# class LoopCommand(CommandGUI):
-#     title     = "Loop"
-#     tooltip   = "Repeat this section of commands"
-#     icon      = Paths.some_icon
-#
-#     def __init__(self, env, parameters=None):
-#         super(LoopCommand, self).__init__(parameters)
-#
-#         # If parameters do not exist, then set up the default parameters
-#         if self.parameters is None:
-#             # Anything done with env should be done here. Try not to save env as a class variable whenever possible
-#             self.parameters = {}
-#
-#     def dressWindow(self, prompt):
-#         # Do some GUI code setup
-#         # Put all the objects into horizontal layouts called Rows
-#
-#         # self._addRow(prompt, some GUI label, some GUI object)  # Add rows using self._addRow to keep consistency
-#
-#         return prompt
-#
-#     def _extractPromptInfo(self, prompt):
-#         newParameters = {} # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
-#
-#         self.parameters.update(newParameters)
-#
-#         return self.parameters
-#
-#     def _updateDescription(self):
-#         self.description = ""  # Some string that uses your parameters to describe the object.
+class LoopCommand(CommandGUI):
+    title     = "Loop While Test Is True"
+    tooltip   = "Repeat this section of commands"
+    icon      = Paths.command_loop
+
+    def __init__(self, env, parameters=None):
+        super(LoopCommand, self).__init__(parameters)
+
+        # If parameters do not exist, then set up the default parameters
+        if self.parameters is None:
+            # Anything done with env should be done here. Try not to save env as a class variable whenever possible
+            self.parameters = {"testType": "",
+                               "testParameters": {}}
+
+    def dressWindow(self, prompt):
+        def updateTestParameters():
+            pass
+
+        # Do some GUI code setup
+        # Put all the objects into horizontal layouts called Rows
+
+        # Create a Combobox with the appropriate items
+        choiceLbl = QtWidgets.QLabel("Choose a Test")
+        prompt.testChoices = QtWidgets.QComboBox()
+
+        prompt.titleTypeHash = {}
+
+
+        # Get the title of the currently selected testType when loading
+        for testType in testTypes:
+            prompt.titleTypeHash[testType.title] = testType
+
+            if self.parameters["testType"] == testType.__name__:
+                prompt.testChoices.addItem(testType.title)
+                break
+
+        for testType in testTypes: prompt.testChoices.addItem(testType.title)
+
+        testLayout = QtWidgets.QHBoxLayout()
+        testLayout.contents = QtWidgets.QHBoxLayout()
+
+        prompt.testChoices.currentIndexChanged(updateTestParameters)
+        self._addRow(prompt, choiceLbl, prompt.testChoices, resizeBox=False)
+
+
+        return prompt
+
+    def _extractPromptInfo(self, prompt):
+        # Get the chosen type by looking at the type with the matching title
+        chosenType = ""
+        for testType in testTypes:
+            if testType.title == prompt.testChoices.currentText():
+                chosenType = testType
+                break
+
+
+        # Find the matching type for the currently selected title
+        newParameters = {"testType": chosenType.__name__}  # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
+
+        self.parameters.update(newParameters)
+
+        return self.parameters
+
+    def _updateDescription(self):
+        self.description = ""  # Some string that uses your parameters to describe the object.
 
 
 class ScriptCommand(CommandGUI):
@@ -1816,7 +1852,7 @@ class RunFunctionCommand(CommandGUI):
         prompt.objChoices = QtWidgets.QComboBox()
         prompt.objChoices.addItem(self.parameters["objectID"])  # Add an empty item at the top
         objectList = self.getObjectList()
-        for index, objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
+        for objectID in objectList: prompt.objChoices.addItem(objectID)
         self._addRow(prompt, choiceLbl, prompt.objChoices)
 
         prompt.argLayout = QtWidgets.QVBoxLayout()  # This is where the argument queries will be made
@@ -1870,8 +1906,8 @@ class RunFunctionCommand(CommandGUI):
 
 
 
-
-
+# All commands that do "Tests"
+testTypes = [TestVariableCommand, TestObjectSeenCommand, TestObjectLocationCommand]
 
 
 

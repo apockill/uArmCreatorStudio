@@ -369,9 +369,9 @@ class Interpreter:
             # Run the command
             command    = commandList[index]
             self.currRunning["command"] = index
-
+            # print(type(command))
             evaluation = command.run()
-
+            wait(.3, self.isExiting)
             if self.isExiting(): break  # This speeds up ending recursed Interpreters
 
             # If the command returned an "Exit event" command, then exit the event evaluation
@@ -390,12 +390,20 @@ class Interpreter:
                     # If the evaluation was true, then DON'T run the else command
                     index = self.__getNextIndex(index + 1, commandList)
 
+            # Every time you hit an "End Block", check if it's a loop, and if so, go back to that area
+            if index - 1 >  0 and type(command) is Commands.EndBlockCommand:  # TODO: Test start cases and end cases
+                lastIndex = self.__getLastIndex(index, commandList)
+                print(type(commandList[lastIndex + 1]))
+
+                if lastIndex + 1 < len(commandList) and type(commandList[lastIndex + 1]) is Commands.LoopCommand:  # type(commandList[lastIndex]) is Commands.LoopCommand:
+                    index = lastIndex
 
             index += 1
 
     def __getNextIndex(self, index, commandList):
-        # If its false, skip to the next indent of the same indentation, or an "Else" command
-
+        """
+        Find the next index that has the same indentation level as the current index
+        """
 
         skipToIndent = 0
         nextIndent   = 0
@@ -414,6 +422,34 @@ class Interpreter:
 
             if type(commandList[i]) is Commands.EndBlockCommand:   nextIndent -= 1
 
+        return index
 
+
+    def __getLastIndex(self, index, commandList):
+        """
+        Find the last index that has the same indentation level as the current index
+        """
+
+
+        skipToIndent = 0
+        nextIndent   = 0
+        for i in range(index,  0, -1):
+
+            if type(commandList[i]) is Commands.EndBlockCommand:   nextIndent += 1
+
+            if nextIndent == skipToIndent:
+                index = i - 1
+                break
+
+            # If there are no commands
+            if i == 0:
+                index = i
+                break
+
+            if type(commandList[i]) is Commands.StartBlockCommand: nextIndent -= 1
+
+        # if index - 1 >= 0:
+        #     index -= 1
 
         return index
+

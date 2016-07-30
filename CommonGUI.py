@@ -498,7 +498,6 @@ class Console(QtWidgets.QWidget):
         Choose whether or not this string comes from a class that should be printed or not. This is set in the settings.
         """
         with self.printLock:
-            print("Module", moduleString)
             if len(moduleString) == 0:
                 return "Output"
 

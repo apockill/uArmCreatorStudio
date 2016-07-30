@@ -742,10 +742,10 @@ class TestVariableCommand(Command):
 
         # Compare the value of the expression using the operator from the parameters
         operations   = ['==', '!=', '>', '<']
-        variable     = self.parameters['variable']
+        expressionA  = self.parameters['expressionA']
         operation    = operations[self.parameters['test']]
-        expression   = self.parameters["expression"]
-        scriptString = variable + operation + expression  #
+        expressionB  = self.parameters["expressionB"]
+        scriptString = expressionA + operation + expressionB  #
 
         testResult, success = interpreter.evaluateExpression(scriptString)
 
@@ -755,6 +755,17 @@ class TestVariableCommand(Command):
 
         # If the expression was evaluated correctly, then return the testResult. Otherwise, return False
         return testResult
+
+
+class LoopCommand(TestVariableCommand):
+
+    def __init__(self, env, interpreter, parameters=None):
+        super(LoopCommand, self).__init__(env, interpreter, parameters)
+
+    #
+    # def run(self):
+    #     printf("Test loop")
+    #     return True
 
 
 class ScriptCommand(Command):
