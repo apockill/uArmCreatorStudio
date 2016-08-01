@@ -124,7 +124,7 @@ command_see_loc     = imageLoc + "command_see_loc.png"
 command_run_task    = imageLoc + "command_run_task.png"
 command_run_func    = imageLoc + "command_run_func.png"
 
-# Tutorial
+# Tutorial Materials
 help_lower_head     = imageLoc + "help_lower_head.gif"
 help_sel_marker     = imageLoc + "help_sel_marker.gif"
 help_sel_obj        = imageLoc + "help_sel_obj.gif"

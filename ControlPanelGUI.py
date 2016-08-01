@@ -167,6 +167,47 @@ class ControlPanel(QtWidgets.QWidget):
 
 
 
+    def setScriptModeOff(self):
+        self.addEventBtn.setEnabled(True)
+        self.deleteEventBtn.setEnabled(True)
+        self.changeEventBtn.setEnabled(True)
+        self.eventList.setLocked(False)
+
+        if self.scriptTimer is not None:
+            self.scriptTimer.stop()
+            self.scriptTimer = None
+
+            # Decolor every event
+            for eIndex in range(0, self.eventList.count()):
+                eventItem = self.eventList.item(eIndex)
+                self.setColor(eventItem, False)
+                commandList = self.eventList.getEventFromItem(eventItem).commandList
+
+                # Decolor every command
+                for cIndex in range(0, commandList.count()):
+                    commandItem = commandList.item(cIndex)
+                    self.setColor(commandItem, False)
+
+    def setScriptModeOn(self, interpreterStatusFunc, mainWindowEndScriptFunc):
+        """
+        When the script is running:
+            - Add/Delete/Change event buttons will be disabled
+            - All CommandMenuWidget buttons will be disabled
+            - CommandList will not allow deleting of widgets
+            - CommandList will not allow rearranging of widgets
+        """
+
+        # Enable or disable buttons according to whether or not the script is starting or stopping
+        self.addEventBtn.setEnabled(False)
+        self.deleteEventBtn.setEnabled(False)
+        self.changeEventBtn.setEnabled(False)
+        self.eventList.setLocked(True)
+
+
+        self.scriptTimer = QtCore.QTimer()
+        self.scriptTimer.timeout.connect(lambda: self.refreshDrawScript(interpreterStatusFunc, mainWindowEndScriptFunc))
+        self.scriptTimer.start(1000.0 / 50)  # Update at same rate as the script checks events
+
     def refreshDrawScript(self, getStatusFunc, mainWindowEndScriptFunc):
         """
         This command runs while the script runs, and highlights which Event and Command is currently running.
@@ -217,46 +258,6 @@ class ControlPanel(QtWidgets.QWidget):
             #         self.setColor(commandItem, (commandIndex in commandsRun))
             #         print(commandsRun)
 
-    def setScriptModeOff(self):
-        self.addEventBtn.setEnabled(True)
-        self.deleteEventBtn.setEnabled(True)
-        self.changeEventBtn.setEnabled(True)
-        self.eventList.setLocked(False)
-
-        if self.scriptTimer is not None:
-            self.scriptTimer.stop()
-            self.scriptTimer = None
-
-            # Decolor every event
-            for eIndex in range(0, self.eventList.count()):
-                eventItem = self.eventList.item(eIndex)
-                self.setColor(eventItem, False)
-                commandList = self.eventList.getEventFromItem(eventItem).commandList
-
-                # Decolor every command
-                for cIndex in range(0, commandList.count()):
-                    commandItem = commandList.item(cIndex)
-                    self.setColor(commandItem, False)
-
-    def setScriptModeOn(self, interpreterStatusFunc, mainWindowEndScriptFunc):
-        """
-        When the script is running:
-            - Add/Delete/Change event buttons will be disabled
-            - All CommandMenuWidget buttons will be disabled
-            - CommandList will not allow deleting of widgets
-            - CommandList will not allow rearranging of widgets
-        """
-
-        # Enable or disable buttons according to whether or not the script is starting or stopping
-        self.addEventBtn.setEnabled(False)
-        self.deleteEventBtn.setEnabled(False)
-        self.changeEventBtn.setEnabled(False)
-        self.eventList.setLocked(True)
-
-
-        self.scriptTimer = QtCore.QTimer()
-        self.scriptTimer.timeout.connect(lambda: self.refreshDrawScript(interpreterStatusFunc, mainWindowEndScriptFunc))
-        self.scriptTimer.start(1000.0 / 50)  # Update at same rate as the script checks events
 
 
 
@@ -291,7 +292,7 @@ class EventList(QtWidgets.QListWidget):
         # Used to lock the eventList and commandLists from changing anything while script is running
         events = self.getEventsOrdered()
         for event in events:
-            event.commandList.setEnabled(not setLock)
+            event.commandList.setLocked(not setLock)
 
 
     def getSelectedEvent(self):
@@ -535,14 +536,15 @@ class CommandList(QtWidgets.QListWidget):
         # Set up the drag/drop parameters (both for dragging within the commandList, and dragging from outside
         self.setDragDropMode(QtWidgets.QAbstractItemView.DragDrop)
         self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-        self.setAcceptDrops(True)
+        # self.setAcceptDrops(True)
 
         # self.itemSelectionChanged.connect(self.setFocusedCommand)
 
-        self.itemDoubleClicked.connect(self.doubleClickEvent)  # For opening the widget's window
-        self.itemSelectionChanged.connect(self.selectionChangedEvent)
+        # self.itemDoubleClicked.connect(self.doubleClickEvent)  # For opening the widget's window
+        # self.itemSelectionChanged.connect(self.selectionChangedEvent)
 
         self.setMinimumWidth(self.minimumWidth)
+        self.setLocked(False)
 
     def deleteItem(self, listWidgetItem):
         del self.commands[self.itemWidget(listWidgetItem)]
@@ -556,6 +558,17 @@ class CommandList(QtWidgets.QListWidget):
             self.deleteItem(item)
 
         self.refreshIndents()  # This will update indents, which can change when you delete a command
+
+    def setLocked(self, isLocked):
+        print("Setting locked: ", isLocked)
+        if not isLocked:
+            self.itemDoubleClicked.connect(self.doubleClickEvent)  # For opening the widget's window
+            self.itemSelectionChanged.connect(self.selectionChangedEvent)
+        else:
+            self.itemDoubleClicked.disconnect()  # For opening the widget's window
+            self.itemSelectionChanged.disconnect()
+
+        self.setAcceptDrops(not isLocked)
 
 
     def refreshIndents(self):
@@ -723,6 +736,9 @@ class CommandList(QtWidgets.QListWidget):
                 self.addCommand(getattr(CommandsGUI, commandSave['type']),
                                 parameters=commandSave['parameters'],
                                 index=pasteIndex )
+
+            # Since indents don't get refreshed in self.addCommand when parameters are specified, do it here
+            self.refreshIndents()
 
         # Select All
         if event == QtGui.QKeySequence.SelectAll:

@@ -294,7 +294,7 @@ class MainWindow(QtWidgets.QMainWindow):
             errorText = ""
             for error, errorObjects in errors.items():
                 errorText += "" + str(error) + "\n"
-                for errObject in list(set(errorObjects)):
+                for errObject in errorObjects:
                     errorText += "     " + str(errObject) + "\n"
                 errorText += '\n'
 
@@ -355,9 +355,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # Return things back to normal
         self.controlPanel.setScriptModeOff()
 
-
         # Turn off the gripper, just in case. Do this AFTER interpreter ends, so as to not use Serial twice...
         vision = self.env.getVision()
+
         robot  = self.env.getRobot()
         robot.setExiting(False)
         vision.setExiting(False)
@@ -372,6 +372,20 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.scriptToggleBtn.setIcon(QtGui.QIcon(Paths.run_script))
         self.scriptToggleBtn.setText("Run")
+
+        # If the Interpreter ended because it encountered a problem, then print out the exit error
+        exitErrors = self.interpreter.getExitErrors()
+        if exitErrors is not None:
+            errorText = ""
+            for error, errorObjects in exitErrors.items():
+                errorText += "" + str(error) + "\n"
+                for errObject in errorObjects:
+                    errorText += "     " + str(errObject) + "\n"
+                errorText += '\n'
+
+            errorStr = "The script ended prematurely because of the following error(s) \n\n" + errorText
+            QtWidgets.QMessageBox.question(self, 'Warning', errorStr, QtWidgets.QMessageBox.Ok)
+        print(self.interpreter.getExitErrors())
 
 
 

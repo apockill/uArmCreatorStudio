@@ -90,7 +90,6 @@ class Environment:
             self.__robot.setUArm(robotID)
 
 
-        self.__objectMngr.loadAllObjects()
 
 
 

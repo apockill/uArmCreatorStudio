@@ -33,9 +33,23 @@ from Logic.Global import printf, FpsTimer, wait
 from Logic        import Events, Commands
 __author__ = "Alexander Thiel"
 
-
+"""
+This is a global call for only the interpreter to pay attention to, and when it is True, the Interpreter and any command
+inside of it will try to exit as quickly as possible. This global is so that recursively running Interpreters can
+exit quickly, and there's passing around of an exit variable all the time.
+"""
 global exitingFlag
 exitingFlag = False
+
+
+"""
+This variable is so that if the Interpreter needs to end abruptly, it'll write down the erros,
+and the GUI will later display them to the user in a message.
+
+This variable can be retrieved using Interpreter.getExitErrors()
+"""
+global exitErrors
+exitErrors = None
 
 
 class Interpreter:
@@ -121,6 +135,10 @@ class Interpreter:
                     errors[error].append(commandSave['type'])
 
 
+        # Get rid of duplicates in the errors
+        for error in errors:
+            errors[error] = list(set(errors[error]))
+
         printf(len(errors), " errors occured while initializing the script.")
         return errors
 
@@ -132,6 +150,8 @@ class Interpreter:
 
         if self.mainThread is None:
             self.currRunning = {"event": -1, "command": -1}
+            global exitErrors
+            exitErrors = None
 
             if threaded:
                 self.mainThread  = Thread(target=self.__programThread)
@@ -159,6 +179,11 @@ class Interpreter:
         currRunning = self.currRunning
 
         return currRunning
+
+    def getExitErrors(self):
+        # If the interpreter exited itself without being told by the program or user, it will have an exitError
+        global exitErrors
+        return exitErrors
 
     def isExiting(self):
         global exitingFlag
@@ -314,6 +339,10 @@ class Interpreter:
             Global.exitScriptFlag = True
             self.setExiting(True)
 
+            # Set the crashErrors so that the GUI can later show a message to the user explaining why the program ended
+            global exitErrors
+            exitErrors = errors
+
         return child
 
 
@@ -371,14 +400,18 @@ class Interpreter:
             self.currRunning["command"] = index
             # print(type(command))
             evaluation = command.run()
-            wait(.3, self.isExiting)
+
             if self.isExiting(): break  # This speeds up ending recursed Interpreters
 
+
             # If the command returned an "Exit event" command, then exit the event evaluation
-            if evaluation == "Kill":
+            if evaluation == "ExitProgram":
                 self.setExiting(True)
                 break
-            if evaluation == "Exit": break
+
+            # If the command returned an "Exit Program" command, exit the program
+            if evaluation == "ExitEvent":
+                break
 
 
             # If its false, skip to the next indent of the same indentation, or an "Else" command
@@ -390,10 +423,10 @@ class Interpreter:
                     # If the evaluation was true, then DON'T run the else command
                     index = self.__getNextIndex(index + 1, commandList)
 
+
             # Every time you hit an "End Block", check if it's a loop, and if so, go back to that area
             if index - 1 >  0 and type(command) is Commands.EndBlockCommand:  # TODO: Test start cases and end cases
                 lastIndex = self.__getLastIndex(index, commandList)
-                print(type(commandList[lastIndex + 1]))
 
                 if lastIndex + 1 < len(commandList) and type(commandList[lastIndex + 1]) is Commands.LoopCommand:  # type(commandList[lastIndex]) is Commands.LoopCommand:
                     index = lastIndex

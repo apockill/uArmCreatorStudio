@@ -1599,7 +1599,6 @@ class OWPage4(QtWidgets.QWizardPage):
 
         self.initUI()
 
-
     def initUI(self):
         # Create the instructions
         desc = "You're almost done!\n\n" +\

@@ -422,7 +422,7 @@ class CommandGUI:
     # The following are helper functions for modifying the prompt window in a consistent way
     def _addRow(self, prompt, *args, alignRight=True, resizeBox=True):
         # If any argument is of the following type, then set the width to self.defaultTextBoxWidth
-        setWidthOnTypes = [QtWidgets.QLineEdit, QtWidgets.QComboBox, QtWidgets.QPushButton]
+        setWidthOnTypes = [QtWidgets.QLineEdit, QtWidgets.QComboBox, QtWidgets.QPushButton, QtWidgets.QSlider]
 
         row = QtWidgets.QHBoxLayout()
 
@@ -469,7 +469,7 @@ class CommandGUI:
         hintRow.addWidget(prompt.hintLbl)
 
         # Add it to the prompt
-        prompt.mainVLayout.addLayout(hintRow)
+        prompt.content.addLayout(hintRow)
 
     def _addObjectHint(self, prompt, numResources):
         """
@@ -727,7 +727,7 @@ class MotionRecordingCommand(CommandGUI):
         prompt.recChoices = QtWidgets.QComboBox()
         prompt.recChoices.addItem(self.parameters["objectID"])
         recList = self.getObjectList()
-        for objectID in enumerate(recList): prompt.recChoices.addItem(objectID)
+        for objectID in recList: prompt.recChoices.addItem(objectID)
         self._addRow(prompt, choiceLbl, prompt.recChoices)
 
 
@@ -1099,7 +1099,7 @@ class MoveRelativeToObjectCommand(CommandGUI):
         prompt.objChoices = QtWidgets.QComboBox()
         prompt.objChoices.addItem(self.parameters["objectID"])
         objectList = self.getObjectList()
-        for objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
+        for objectID in objectList: prompt.objChoices.addItem(objectID)
 
 
         prompt.xEdit = QtWidgets.QLineEdit()
@@ -1172,9 +1172,9 @@ class MoveWristRelativeToObjectCommand(CommandGUI):
         prompt.objChoices = QtWidgets.QComboBox()
         prompt.objChoices.addItem(self.parameters["objectID"])  # Add an empty item at the top
         objectList = self.getObjectList()
-        for objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
+        for objectID in objectList: prompt.objChoices.addItem(objectID)
         self._addRow(prompt, objLbl, prompt.objChoices)
-        self._addObjectHint(prompt, len(objectList))
+
 
 
         # Create the "angle" textbox
@@ -1195,6 +1195,7 @@ class MoveWristRelativeToObjectCommand(CommandGUI):
 
         self._addRow(prompt,     QtWidgets.QLabel("Relative to X Axis "), prompt.relToAxis)
         self._addRow(prompt, QtWidgets.QLabel("Relative to Robot Base "), prompt.relToBase)
+        self._addObjectHint(prompt, len(objectList))
 
         return prompt
 
@@ -1242,7 +1243,7 @@ class PickupObjectCommand(CommandGUI):
         prompt.objChoices = QtWidgets.QComboBox()
         prompt.objChoices.addItem(self.parameters["objectID"])  # Add an empty item at the top
         objectList = self.getObjectList()
-        for objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
+        for objectID in objectList: prompt.objChoices.addItem(objectID)
         self._addRow(prompt, choiceLbl, prompt.objChoices)
 
 
@@ -1290,7 +1291,7 @@ class TestObjectSeenCommand(CommandGUI):
         # Define what happens when the user changes the object selection
         choiceLbl         = QtWidgets.QLabel("If recognized ")
         accLbl            = QtWidgets.QLabel("Confidence level ")
-        prompt.ageLbl     = QtWidgets.QLabel("How recently ")
+        prompt.ageLbl     = QtWidgets.QLabel("When ")
         notLbl            = QtWidgets.QLabel("NOT")
 
         prompt.objChoices = QtWidgets.QComboBox()
@@ -1302,7 +1303,7 @@ class TestObjectSeenCommand(CommandGUI):
         # Populate the comboBox with a list of all trackable objects, and select the self.parameters one if it exists
         prompt.objChoices.addItem(self.parameters["objectID"])  # Add the previously selected item at the top
         objectList = self.getObjectList()
-        for objectID in enumerate(objectList): prompt.objChoices.addItem(objectID)
+        for objectID in objectList: prompt.objChoices.addItem(objectID)
 
 
         # Populate the accuracayChoices with a list of different possible accuracies
@@ -1314,11 +1315,11 @@ class TestObjectSeenCommand(CommandGUI):
         # Set up the Age slider
         def updateAgeSliderLabel():
             # Create the text next to the "How Recently" label
-            newText = "How Recently: "
+            newText = "When: "
             if prompt.ageSlider.value() == 1:
                 newText += "Just now"
             else:
-                newText += "< " + str(prompt.ageSlider.value()) + " frames ago"
+                newText += "< " + str(prompt.ageSlider.value()) + " frames"
             prompt.ageLbl.setText(newText)
         prompt.ageSlider.valueChanged.connect(updateAgeSliderLabel)
         prompt.ageSlider.setMinimum(1)
@@ -1458,7 +1459,7 @@ class TestObjectLocationCommand(CommandGUI):
 
         self.description = "If " + self.parameters["part"] + " of " + objName + " is"
         if self.parameters["not"]: self.description += " NOT"
-        self.description += " seen within a location"
+        self.description += " seen within a region"
 
 
 
@@ -1551,7 +1552,7 @@ class SetVariableCommand(CommandGUI):
 
 
 class TestVariableCommand(CommandGUI):
-    title     = "Test Variable"
+    title     = "Test Value"
     tooltip   = "This will allow/disallow code to run that is in blocked brackets below it."
     icon      = Paths.command_test_var
 
@@ -1607,21 +1608,39 @@ class TestVariableCommand(CommandGUI):
 
 class LoopCommand(CommandGUI):
     title     = "Loop While Test Is True"
-    tooltip   = "Repeat this section of commands"
+    tooltip   = "Repeat this section of commands while a certain test returns true. You can choose what type of test\n"\
+                "will be used. "
     icon      = Paths.command_loop
 
     def __init__(self, env, parameters=None):
         super(LoopCommand, self).__init__(parameters)
-
+        self.env = env
         # If parameters do not exist, then set up the default parameters
         if self.parameters is None:
             # Anything done with env should be done here. Try not to save env as a class variable whenever possible
             self.parameters = {"testType": "",
-                               "testParameters": {}}
+                               "testParameters": None,
+                               "description": "Loops commands while a chosen test is true"}
 
     def dressWindow(self, prompt):
         def updateTestParameters():
-            pass
+            clearLayout(prompt.fakePrompt.content)
+            currTitle = prompt.testChoices.currentText()
+
+            testType = prompt.titleTypeHash[currTitle]
+
+            # print(self.parameters["testType"] == testType, self.parameters["testType"], testType)
+            if self.parameters["testType"] == testType.__name__:
+                params = self.parameters["testParameters"]
+            else:
+                params = None
+
+            # Create the object and dress the window with the custom widget that emulates being "prompt"
+            prompt.commandObject = testType(self.env, params)
+            prompt.commandObject.dressWindow(prompt.fakePrompt)
+
+            # Refresh the window to match the side of the new widget. Do it with a timer so GUI can render the wndow 1st
+            QtCore.QTimer.singleShot(10, lambda: prompt.resize(prompt.sizeHint()))
 
         # Do some GUI code setup
         # Put all the objects into horizontal layouts called Rows
@@ -1639,37 +1658,42 @@ class LoopCommand(CommandGUI):
 
             if self.parameters["testType"] == testType.__name__:
                 prompt.testChoices.addItem(testType.title)
-                break
+
 
         for testType in testTypes: prompt.testChoices.addItem(testType.title)
 
-        testLayout = QtWidgets.QHBoxLayout()
-        testLayout.contents = QtWidgets.QHBoxLayout()
 
-        prompt.testChoices.currentIndexChanged(updateTestParameters)
+
+        prompt.testChoices.currentIndexChanged.connect(updateTestParameters)
         self._addRow(prompt, choiceLbl, prompt.testChoices, resizeBox=False)
 
+        prompt.fakePrompt = QtWidgets.QWidget()
+        prompt.fakePrompt.content = QtWidgets.QVBoxLayout()
+        prompt.fakePrompt.setLayout(prompt.fakePrompt.content)
+        prompt.content.addWidget(prompt.fakePrompt)
 
+        updateTestParameters()
         return prompt
 
     def _extractPromptInfo(self, prompt):
-        # Get the chosen type by looking at the type with the matching title
-        chosenType = ""
-        for testType in testTypes:
-            if testType.title == prompt.testChoices.currentText():
-                chosenType = testType
-                break
+        prompt.commandObject._extractPromptInfo(prompt.fakePrompt)
+        prompt.commandObject._updateDescription()
 
+        chosenType = type(prompt.commandObject)
+        chosenParams = prompt.commandObject.parameters
+        description  = prompt.commandObject.description
 
         # Find the matching type for the currently selected title
-        newParameters = {"testType": chosenType.__name__}  # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
+        newParameters = {"testType": chosenType.__name__,
+                         "testParameters": chosenParams,
+                         "description": description}  # Get the parameters from the 'prompt' GUI elements. Put numbers through self.sanitizeFloat
 
         self.parameters.update(newParameters)
 
         return self.parameters
 
     def _updateDescription(self):
-        self.description = ""  # Some string that uses your parameters to describe the object.
+        self.description = self.parameters["description"]  # Some string that uses your parameters to describe the object.
 
 
 class ScriptCommand(CommandGUI):
@@ -1902,10 +1926,17 @@ class RunFunctionCommand(CommandGUI):
             self.title = "Run Function"
         else:
             self.description = self.parameters["description"]
-            self.title = "Run " + self.parameters["objectID"]
+            self.title = self.parameters["objectID"]
 
 
-
+def clearLayout(layout):
+    if layout is not None:
+        while layout.count():
+            child = layout.takeAt(0)
+            if child.widget() is not None:
+                child.widget().deleteLater()
+            elif child.layout() is not None:
+                clearLayout(child.layout())
 # All commands that do "Tests"
 testTypes = [TestVariableCommand, TestObjectSeenCommand, TestObjectLocationCommand]
 

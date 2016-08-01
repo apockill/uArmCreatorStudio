@@ -62,50 +62,8 @@ class ObjectManager:
         self.FUNCTION       = Resources.Function
         self.PICKUP         = "PICKUP"  # Any trackable object + group, NOT incuding the Robot Marker object
 
+        self.__loadAllObjects()
 
-    def loadAllObjects(self):
-        # Load all objects into the ObjectManager
-
-        foldersAndItems = os.listdir(self.__directory)
-
-
-
-        for folder in foldersAndItems:
-            path = self.__directory + "\\" + folder
-
-
-            if not os.path.isdir(path):
-                printf("ERROR: Could not find directory ", path)
-                continue
-
-
-            # Get the type and name of the object by breaking up the filename into words
-            words = folder.split(' ', 1)
-            if len(words) < 2:
-                printf("ERROR: File ", folder, " did not have the correct format!")
-                continue   # If there isn't a 'TYPE NAME' format
-            newType = str(words[0])
-            name    = words[1]
-
-
-            # Check that that type of resource exists
-            if not hasattr(Resources, newType):
-                printf("ERROR: Tried to create a resource that is not in Resources.py!")
-                continue
-
-            # Get the type, then instantiate it
-            newType = getattr(Resources, newType)
-            newObj = newType(name, path)
-
-
-            # # Check that loading is complete and add the object if it was created successfully
-            # if newObj is None:
-            #     printf("ERROR: Could not find relevant object for folder: ", folder)
-            #     continue
-
-            if newObj.loadSuccess: self.__addObject(newObj)
-
-        self.refreshGroups()
 
     def saveObject(self, newObject):
         # If not new, replace self
@@ -217,36 +175,6 @@ class ObjectManager:
                       "MotionPath", "Function", "Task"]
         return forbidden
 
-
-    def __addObject(self, newObject):
-        # The reason this is private is because objects should only be added through self.saveNewObject or loadAllObj's
-
-        # Checks if the object already exists. If it does, then replace the existing object with the new one.
-        for obj in self.__objects:
-            if newObject.name == obj.name:
-                printf("ERROR: Tried adding an object that already existed: ", obj.name)
-                return False
-
-
-        # If the object doesn't already exist, adds the object to the pool of loaded objects.
-        self.__objects.append(newObject)
-
-
-        # Sort in alphabetical order, by name, for simplicity in GUI functions that display objects
-        self.__objects = sorted(self.__objects, key=lambda obj: obj.name)
-        return True
-
-    def __getDirectory(self, obj):
-        """
-        Creates the directory name for the object with the propper formatting
-        :param obj: Any object that is a subclass of Resource
-        """
-        directory = self.__directory
-        directory += obj.__class__.__name__
-        directory += " " + obj.name + "\\"
-        return directory
-
-
     def deleteObject(self, objectID):
         printf("Deleting ", objectID, " permanently")
 
@@ -288,6 +216,80 @@ class ObjectManager:
 
         printf("Could not find object ", objectID, " in order to delete it!")
         return False
+
+
+
+    def __addObject(self, newObject):
+        # The reason this is private is because objects should only be added through self.saveNewObject or loadAllObj's
+
+        # Checks if the object already exists. If it does, then replace the existing object with the new one.
+        for obj in self.__objects:
+            if newObject.name == obj.name:
+                printf("ERROR: Tried adding an object that already existed: ", obj.name)
+                return False
+
+
+        # If the object doesn't already exist, adds the object to the pool of loaded objects.
+        self.__objects.append(newObject)
+
+
+        # Sort in alphabetical order, by name, for simplicity in GUI functions that display objects
+        self.__objects = sorted(self.__objects, key=lambda obj: obj.name)
+        return True
+
+    def __getDirectory(self, obj):
+        """
+        Creates the directory name for the object with the propper formatting
+        :param obj: Any object that is a subclass of Resource
+        """
+        directory = self.__directory
+        directory += obj.__class__.__name__
+        directory += " " + obj.name + "\\"
+        return directory
+
+    def __loadAllObjects(self):
+        # Load all objects into the ObjectManager
+
+        foldersAndItems = os.listdir(self.__directory)
+
+
+
+        for folder in foldersAndItems:
+            path = self.__directory + "\\" + folder
+
+
+            if not os.path.isdir(path):
+                printf("ERROR: Could not find directory ", path)
+                continue
+
+
+            # Get the type and name of the object by breaking up the filename into words
+            words = folder.split(' ', 1)
+            if len(words) < 2:
+                printf("ERROR: File ", folder, " did not have the correct format!")
+                continue   # If there isn't a 'TYPE NAME' format
+            newType = str(words[0])
+            name    = words[1]
+
+
+            # Check that that type of resource exists
+            if not hasattr(Resources, newType):
+                printf("ERROR: Tried to create a resource that is not in Resources.py!")
+                continue
+
+            # Get the type, then instantiate it
+            newType = getattr(Resources, newType)
+            newObj = newType(name, path)
+
+
+            # # Check that loading is complete and add the object if it was created successfully
+            # if newObj is None:
+            #     printf("ERROR: Could not find relevant object for folder: ", folder)
+            #     continue
+
+            if newObj.loadSuccess: self.__addObject(newObj)
+
+        self.refreshGroups()
 
 
 

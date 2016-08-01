@@ -27,6 +27,7 @@ License:
 """
 import math
 import numpy as np
+import sys
 from Logic.Events      import InitEvent
 from Logic             import RobotVision as rv
 from Logic.Global      import printf, wait
@@ -316,7 +317,6 @@ class BuzzerCommand(Command):
 
 
 
-
 #   Robot + Vision Commands
 class MoveRelativeToObjectCommand(Command):
 
@@ -513,7 +513,7 @@ class TestObjectSeenCommand(Command):
         self.minPts = self.vision.planeTracker.MIN_MATCH_COUNT * (self.parameters["ptCount"] + 1)
 
     def run(self):
-        if len(self.errors): return
+        if len(self.errors): return False
 
         printf("Testing if ", self.parameters["objectID"], " was seen")
         tracked = self.vision.searchTrackedHistory(trackable  = self.trackable,
@@ -757,15 +757,25 @@ class TestVariableCommand(Command):
         return testResult
 
 
-class LoopCommand(TestVariableCommand):
+class LoopCommand(Command):
 
     def __init__(self, env, interpreter, parameters=None):
-        super(LoopCommand, self).__init__(env, interpreter, parameters)
+        super(LoopCommand, self).__init__(parameters)
 
-    #
-    # def run(self):
-    #     printf("Test loop")
-    #     return True
+        Commands = sys.modules[__name__]
+
+
+        testType = getattr(Commands, self.parameters["testType"])
+        testParams = self.parameters["testParameters"]
+
+        self.test = testType(env, interpreter, parameters=testParams)
+
+
+        self.errors = self.test.errors
+
+    def run(self):
+        return self.test.run()
+
 
 
 class ScriptCommand(Command):
@@ -795,7 +805,7 @@ class EndProgramCommand(Command):
 
     def run(self):
         printf("Attempting to shut down program now...")
-        return "Kill"
+        return "ExitProgram"
 
 
 class EndEventCommand(Command):
@@ -809,7 +819,7 @@ class EndEventCommand(Command):
 
     def run(self):
         printf("Exiting current event")
-        return "Exit"
+        return "ExitEvent"
 
 
 class RunTaskCommand(Command):
@@ -824,15 +834,6 @@ class RunTaskCommand(Command):
 
     def run(self):
         if len(self.errors): return
-
-        # # Create the exit functions for the baby interpreter
-        # isExitFunc  = self.interpreter.parentIsExiting
-        # setExitFunc = self.interpreter.parentSetExiting
-        #
-        # # If this command is being run in the main program, set the isExitFunc and setExitFunc to the originals
-        # if isExitFunc is None:
-        #     isExitFunc  = self.interpreter.isExiting
-        #     setExitFunc = self.interpreter.setExiting
 
         # Let the interpreter create
         child = self.interpreter.createChildInterpreter(self.script)
@@ -866,22 +867,14 @@ class RunFunctionCommand(Command):
             val, success = self.interpreter.evaluateExpression(self.parameters["arguments"][arg])
             evaluatedArgs[arg] = val
 
-
-        # Create the exit functions for the baby interpreter
-        # isExitFunc  = self.interpreter.parentIsExiting
-        # setExitFunc = self.interpreter.parentSetExiting
-
-        # If this command is being run in the main program, set the isExitFunc and setExitFunc to the originals
-        # if isExitFunc is None:
-        #     isExitFunc  = self.interpreter.isExiting
-        #     setExitFunc = self.interpreter.setExiting
-
         # Let the interpreter create
         child = self.interpreter.createChildInterpreter(self.script)
 
         # Add the arguments to the namespace
         child.nameSpace.update(evaluatedArgs)
         child.interpretCommandList(child.events[0].commandList)
+
+
 
 
 
