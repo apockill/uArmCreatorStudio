@@ -73,7 +73,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         # CREATE OBJECTS AND LAYOUTS FOR ROW 1 COLUMN (ALL)
         newObjBtn    = QtWidgets.QPushButton("New Vision Object")
         newGrpBtn    = QtWidgets.QPushButton("New Vision Group")
-        newRecBtn    = QtWidgets.QPushButton("New Motion Recording")
+        newRecBtn    = QtWidgets.QPushButton("New Move Recording")
         newFncBtn    = QtWidgets.QPushButton("New Function")
 
         # Set the icons for the buttons
@@ -173,10 +173,10 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         fncObjs = self.objManager.getObjectNameList(self.objManager.FUNCTION)
         fncObjs.sort()
 
-        tree = [[   "Vision Objects", visObjs],
-                [    "Vision Groups", grpObjs],
-                ["Motion Recordings", rcdObjs],
-                [        "Functions", fncObjs]]
+        tree = [[     "Vision Objects", visObjs],
+                [      "Vision Groups", grpObjs],
+                ["Movement Recordings", rcdObjs],
+                [          "Functions", fncObjs]]
 
 
         for section in tree:
@@ -426,7 +426,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         # Make sure a robot is connected
         robot          = self.env.getRobot()
         if not robot.connected():
-            message = "A robot must be connected to do motion recording."
+            message = "A robot must be connected to do movement recording."
             QtWidgets.QMessageBox.question(self, 'Error', message, QtWidgets.QMessageBox.Ok)
             return
 
@@ -724,7 +724,7 @@ class MotionRecordWindow(QtWidgets.QDialog):
         self.setLayout(mainVLayout)
         self.setMinimumHeight(550)
         self.setMinimumWidth(500)
-        self.setWindowTitle('Create a Motion Recording')
+        self.setWindowTitle('Create a Movement Recording')
 
 
     # Table events
@@ -1371,11 +1371,11 @@ class OWPage2(QtWidgets.QWizardPage):
         # Create a tutorial gif that will be next to the video
         movieLbl   = QtWidgets.QLabel("")
 
+
         # Set the animated gif on the movieLbl
         movie = QtGui.QMovie(Paths.help_sel_obj)
         movieLbl.setMovie(movie)
         movie.start()
-
 
         # Create a special row for the camera that will force it to remain in the center, regardless of size changes
 
@@ -1501,7 +1501,7 @@ class OWPage3(QtWidgets.QWizardPage):
 
         # Create GUI objects
         self.errorLbl  = QtWidgets.QLabel("")  # Tells the user why the height is invalid
-        self.heightTxt = QtWidgets.QLineEdit()
+        self.heightTxt = QtWidgets.QLineEdit("0")
 
         self.heightTxt.textChanged.connect(self.completeChanged)
 
@@ -1625,7 +1625,7 @@ class OWPage4(QtWidgets.QWizardPage):
         movie = QtGui.QMovie(Paths.help_sel_pickuprect)
         movieLbl.setMovie(movie)
         movie.start()
-        movieLbl.resize(320, 320)
+
 
         # Create a special row for the camera that will force it to remain in the center, regardless of size changes
         camRow = QtWidgets.QHBoxLayout()

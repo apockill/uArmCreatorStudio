@@ -129,22 +129,21 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         self.initUI()
 
     def initUI(self):
+        self.setStyleSheet("QTabBar::tab{width:23px; height:90;}")
 
-        self.addTab( self.generateBasicTab(), "Basic")
-        self.addTab(self.generateVisionTab(), "Vision")
-        self.addTab( self.generateLogicTab(), "Logic")
+        self.addTab(self.generateBasicTab(),     "Basic")
+        self.addTab(self.generateVisionTab(),    "Vision")
+        self.addTab(self.generateLogicTab(),     "Logic")
+        self.addTab(self.generateFunctionsTab(), "Functions")
 
         self.setTabPosition(QtWidgets.QTabWidget.East)
+
         self.setFixedWidth(85)
 
 
-
+    # Put Commands into the menu in these functions
     def generateBasicTab(self):
-        tabWidget = QtWidgets.QWidget()
-        vBox = QtWidgets.QVBoxLayout()
-        vBox.setAlignment(QtCore.Qt.AlignTop)
-        tabWidget.setLayout(vBox)
-        add  = lambda btnType: vBox.addWidget(self.getButton(btnType))
+        tabWidget, add = self.generateTabWidget()
 
         add(MoveXYZCommand)
         add(MoveWristCommand)
@@ -161,28 +160,21 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         return tabWidget
 
     def generateVisionTab(self):
-        tabWidget = QtWidgets.QWidget()
-        vBox = QtWidgets.QVBoxLayout()
-        vBox.setAlignment(QtCore.Qt.AlignTop)
-        tabWidget.setLayout(vBox)
-        add  = lambda btnType: vBox.addWidget(self.getButton(btnType))
-        add(VisionMoveXYZCommand)
+        tabWidget, add = self.generateTabWidget()
+
+
         add(MoveRelativeToObjectCommand)
         add(MoveWristRelativeToObjectCommand)
         add(PickupObjectCommand)
         add(TestObjectSeenCommand)
         add(TestObjectLocationCommand)
+        add(VisionMoveXYZCommand)
 
         return tabWidget
 
     def generateLogicTab(self):
-        tabWidget = QtWidgets.QWidget()
-        vBox = QtWidgets.QVBoxLayout()
-        vBox.setAlignment(QtCore.Qt.AlignTop)
-        tabWidget.setLayout(vBox)
-        add  = lambda btnType: vBox.addWidget(self.getButton(btnType))
+        tabWidget, add = self.generateTabWidget()
 
-        add(ScriptCommand)
         add(SetVariableCommand)
         add(TestVariableCommand)
         add(LoopCommand)
@@ -191,6 +183,14 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         add(EndBlockCommand)
         add(EndEventCommand)
         add(EndProgramCommand)
+
+
+        return tabWidget
+
+    def generateFunctionsTab(self):
+        tabWidget, add = self.generateTabWidget()
+
+        add(ScriptCommand)
         add(RunTaskCommand)
         add(RunFunctionCommand)
 
@@ -198,14 +198,41 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         return tabWidget
 
 
-    def getButton(self, commandType):
+    # Other
+    def generateButton(self, commandType):
+        """
+        Creates a button with the icon of a command, that can be clicked and dragged onto a CommandList
+        """
+
         newButton = self.DraggableButton(str(commandType.__name__), self)
+
+
         newButton.setIcon(QtGui.QIcon(commandType.icon))
         newButton.setIconSize(QtCore.QSize(32, 32))
         newButton.setToolTip(commandType.tooltip)
+        newButton.setFixedHeight(40)
+        newButton.setFixedWidth(40)
+
+
 
         newButton.customContextMenuRequested.connect(lambda: self.addCommandFunc(commandType))
         return newButton
+
+    def generateTabWidget(self):
+        """
+        Creates a tab widget, and an "add" function that can be used to add widgets to the main layout of the tab.
+        This simplifies a lot, I promise.
+        :return:
+        """
+        tabWidget = QtWidgets.QWidget()
+        vBox = QtWidgets.QVBoxLayout()
+        vBox.setAlignment(QtCore.Qt.AlignTop)
+        tabWidget.setLayout(vBox)
+
+        add  = lambda btnType: vBox.addWidget(self.generateButton(btnType))
+
+        return tabWidget, add
+
 
     class DraggableButton(QtWidgets.QPushButton):
         def __init__(self, dragData, parent):
@@ -502,7 +529,7 @@ class CommandGUI:
             hintText = "You have not created any Functions yet. " + \
                         "Try creating new functions in the Resource Manager!"
 
-            self.__addHint(prompt, hintText)
+            self._addHint(prompt, hintText)
 
 
 ########## COMMANDS ##########
@@ -569,8 +596,8 @@ class NameCommand(CommandGUI):
 #   BASIC CONTROL COMMANDS
 class MoveXYZCommand(CommandGUI):
     title     = "Move XYZ"
-    tooltip   = "Set the robots position.\nThe robot will move after all events are evaluated.\n\n"\
-                "If you don't want to set one of the robots axis, simply leave it empty. For example, put y and z \n"\
+    tooltip   = "Set the robots position.\n"\
+                "If you do not want to set one of the robots axis, simply leave it empty. For example, put y and z \n"\
                 "empty and x to 5 will set the robots x position to 5 while keeping the current Y and Z the same."
     icon      = Paths.command_xyz
 
@@ -676,7 +703,7 @@ class MoveWristCommand(CommandGUI):
         currentAngleBtn.clicked.connect(lambda: setCurrentAngle(prompt.wristEdit))
 
         # Create the labels for the interactive stuff
-        wristLabel       = QtWidgets.QLabel('Wrist Angle ')
+        wristLabel       = QtWidgets.QLabel('Angle ')
         rltLabel         = QtWidgets.QLabel('Relative ')
 
         # Set up everything so it matches the current parameters
@@ -764,7 +791,9 @@ class MotionRecordingCommand(CommandGUI):
 
 class SpeedCommand(CommandGUI):
     title     = "Set Speed"
-    tooltip   = "This tool sets the speed of the robot for any move commands that are done after this. "
+    tooltip   = "This tool sets the speed of the robot for any move commands that are done after this. \n" \
+                "For example, if you set the speed to 20, then do two Move XYZ commands, the robot will move to \n" \
+                "those locations with a speed of 20 cm/s. The default robot speed is 10 cm/s. "
     icon      = Paths.command_speed
 
     def __init__(self, env, parameters=None):
@@ -809,10 +838,10 @@ class DetachCommand(CommandGUI):
         super(DetachCommand, self).__init__(parameters)
 
         if self.parameters is None:
-            self.parameters = {'servo1': True,
+            self.parameters = {'servo0': True,
+                               'servo1': True,
                                'servo2': True,
-                               'servo3': True,
-                               'servo4': True}
+                               'servo3': True}
 
 
     def dressWindow(self, prompt):
@@ -830,10 +859,10 @@ class DetachCommand(CommandGUI):
         label4 = QtWidgets.QLabel('Wrist Servo ')
 
         # Fill the textboxes with the default parameters
-        prompt.srvo1Box.setChecked(self.parameters['servo1'])
-        prompt.srvo2Box.setChecked(self.parameters['servo2'])
-        prompt.srvo3Box.setChecked(self.parameters['servo3'])
-        prompt.srvo4Box.setChecked(self.parameters['servo4'])
+        prompt.srvo1Box.setChecked(self.parameters['servo0'])
+        prompt.srvo2Box.setChecked(self.parameters['servo1'])
+        prompt.srvo3Box.setChecked(self.parameters['servo2'])
+        prompt.srvo4Box.setChecked(self.parameters['servo3'])
         self._addRow(prompt, label1, prompt.srvo1Box)
         self._addRow(prompt, label2, prompt.srvo2Box)
         self._addRow(prompt, label3, prompt.srvo3Box)
@@ -841,10 +870,10 @@ class DetachCommand(CommandGUI):
         return prompt
 
     def _extractPromptInfo(self, prompt):
-        newParameters = {'servo1': prompt.srvo1Box.isChecked(),
-                         'servo2': prompt.srvo2Box.isChecked(),
-                         'servo3': prompt.srvo3Box.isChecked(),
-                         'servo4': prompt.srvo4Box.isChecked()}
+        newParameters = {'servo0': prompt.srvo1Box.isChecked(),
+                         'servo1': prompt.srvo2Box.isChecked(),
+                         'servo2': prompt.srvo3Box.isChecked(),
+                         'servo3': prompt.srvo4Box.isChecked()}
 
         self.parameters.update(newParameters)
 
@@ -852,10 +881,10 @@ class DetachCommand(CommandGUI):
 
     def _updateDescription(self):
         descriptionBuild = "Servos"
-        if self.parameters["servo1"]: descriptionBuild += "  Base"
-        if self.parameters["servo2"]: descriptionBuild += "  Stretch"
-        if self.parameters["servo3"]: descriptionBuild += "  Height"
-        if self.parameters["servo4"]: descriptionBuild += "  Wrist"
+        if self.parameters["servo0"]: descriptionBuild += "  Base"
+        if self.parameters["servo1"]: descriptionBuild += "  Stretch"
+        if self.parameters["servo2"]: descriptionBuild += "  Height"
+        if self.parameters["servo3"]: descriptionBuild += "  Wrist"
 
         self.description = descriptionBuild
 
@@ -866,17 +895,17 @@ class AttachCommand(CommandGUI):
     """
 
     title     = "Attach Servos"
-    tooltip   = "Re-engage servos on the robot"
+    tooltip   = "Re-engage servos on the robot. This will 'stiffen' the servos, and they will resist movement."
     icon      = Paths.command_attach
 
     def __init__(self, env, parameters=None):
         super(AttachCommand, self).__init__(parameters)
 
         if self.parameters is None:
-            self.parameters = {'servo1': True,
+            self.parameters = {'servo0': True,
+                               'servo1': True,
                                'servo2': True,
-                               'servo3': True,
-                               'servo4': True}
+                               'servo3': True}
 
 
     def dressWindow(self, prompt):
@@ -894,10 +923,10 @@ class AttachCommand(CommandGUI):
         label4 = QtWidgets.QLabel('Wrist Servo ')
 
         # Fill the textboxes with the default parameters
-        prompt.srvo1Box.setChecked(self.parameters['servo1'])
-        prompt.srvo2Box.setChecked(self.parameters['servo2'])
-        prompt.srvo3Box.setChecked(self.parameters['servo3'])
-        prompt.srvo4Box.setChecked(self.parameters['servo4'])
+        prompt.srvo1Box.setChecked(self.parameters['servo0'])
+        prompt.srvo2Box.setChecked(self.parameters['servo1'])
+        prompt.srvo3Box.setChecked(self.parameters['servo2'])
+        prompt.srvo4Box.setChecked(self.parameters['servo3'])
 
         self._addRow(prompt, label1, prompt.srvo1Box)
         self._addRow(prompt, label2, prompt.srvo2Box)
@@ -907,10 +936,10 @@ class AttachCommand(CommandGUI):
         return prompt
 
     def _extractPromptInfo(self, prompt):
-        newParameters = {'servo1': prompt.srvo1Box.isChecked(),
-                         'servo2': prompt.srvo2Box.isChecked(),
-                         'servo3': prompt.srvo3Box.isChecked(),
-                         'servo4': prompt.srvo4Box.isChecked()}
+        newParameters = {'servo0': prompt.srvo1Box.isChecked(),
+                         'servo1': prompt.srvo2Box.isChecked(),
+                         'servo2': prompt.srvo3Box.isChecked(),
+                         'servo3': prompt.srvo4Box.isChecked()}
 
         self.parameters.update(newParameters)
 
@@ -918,17 +947,26 @@ class AttachCommand(CommandGUI):
 
     def _updateDescription(self):
         descriptionBuild = "Servos"
-        if self.parameters["servo1"]: descriptionBuild += "  Base"
-        if self.parameters["servo2"]: descriptionBuild += "  Stretch"
-        if self.parameters["servo3"]: descriptionBuild += "  Height"
-        if self.parameters["servo4"]: descriptionBuild += "  Wrist"
+        if self.parameters["servo0"]: descriptionBuild += "  Base"
+        if self.parameters["servo1"]: descriptionBuild += "  Stretch"
+        if self.parameters["servo2"]: descriptionBuild += "  Height"
+        if self.parameters["servo3"]: descriptionBuild += "  Wrist"
 
         self.description = descriptionBuild
 
 
+class GripCommand(CommandGUI):
+    title     = "Activate Gripper"
+    tooltip   = "Activates the robots gripper"
+    icon      = Paths.command_grip
+
+    def __init__(self, env, parameters=None):
+        super(GripCommand, self).__init__(parameters)
+
+
 class WaitCommand(CommandGUI):
     title     = "Wait"
-    tooltip   = "Halts the program for a preset amount of time"
+    tooltip   = "This command will wait for a certain amount of time. Time is measured in seconds."
     icon      = Paths.command_wait
 
     def __init__(self, env, parameters=None):
@@ -961,15 +999,6 @@ class WaitCommand(CommandGUI):
 
     def _updateDescription(self):
         self.description = str(self.parameters['time']) + " seconds"
-
-
-class GripCommand(CommandGUI):
-    title     = "Activate Gripper"
-    tooltip   = "Activates the robots gripper"
-    icon      = Paths.command_grip
-
-    def __init__(self, env, parameters=None):
-        super(GripCommand, self).__init__(parameters)
 
 
 class DropCommand(CommandGUI):
@@ -1040,27 +1069,7 @@ class BuzzerCommand(CommandGUI):
 
 
 #   Robot + Vision COmmands
-class VisionMoveXYZCommand(MoveXYZCommand):
-    title     = "Vision Assisted Move XYZ"
-    tooltip   = "This works like the normal Move XYZ command, but uses vision to verify the robots position and\n"\
-                "perform a 'correction' move after an initial move. \n" \
-                "This command requires Camera/Robot Calibrations to be done."
-    icon      = Paths.command_xyz_vision
-
-    def __init__(self, env, parameters=None):
-        super(VisionMoveXYZCommand, self).__init__(env, parameters)
-
-    def dressWindow(self, prompt):
-        super(VisionMoveXYZCommand, self).dressWindow(prompt)
-        warningLbl = QtWidgets.QLabel("This function is experimental. It may not yield more accurate results.")
-        warningLbl.setWordWrap(True)
-
-        self._addRow(prompt, warningLbl)
-
-        return prompt
-
-
-class MoveRelativeToObjectCommand(CommandGUI):
+class GUI(CommandGUI):
     title     = "Move Relative To Object"
     tooltip   = "This tool uses computer vision to recognize an object of your choice, and position the robot directly"\
                "\nrelative to this objects XYZ location. If XYZ = 0,0,0, the robot will move directly onto the object."\
@@ -1462,6 +1471,24 @@ class TestObjectLocationCommand(CommandGUI):
         self.description += " seen within a region"
 
 
+class VisionMoveXYZCommand(MoveXYZCommand):
+    title     = "Vision Assisted Move XYZ"
+    tooltip   = "This works like the normal Move XYZ command, but uses vision to verify the robots position and\n"\
+                "perform a 'correction' move after an initial move. \n" \
+                "This command requires Camera/Robot Calibrations to be done."
+    icon      = Paths.command_xyz_vision
+
+    def __init__(self, env, parameters=None):
+        super(VisionMoveXYZCommand, self).__init__(env, parameters)
+
+    def dressWindow(self, prompt):
+        super(VisionMoveXYZCommand, self).dressWindow(prompt)
+        warningLbl = QtWidgets.QLabel("This function is experimental. It may not yield more accurate results.")
+        warningLbl.setWordWrap(True)
+
+        self._addRow(prompt, warningLbl)
+
+        return prompt
 
 
 
@@ -1525,7 +1552,7 @@ class SetVariableCommand(CommandGUI):
 
         # Set up all the labels for the inputs
         namLabel = QtWidgets.QLabel('Variable Name ')
-        valLabel = QtWidgets.QLabel('Value or Expression ')
+        valLabel = QtWidgets.QLabel('Expression ')
 
         # Fill the textboxes with the default parameters
         prompt.namEdit.setText(str(self.parameters['variable']))
@@ -1576,9 +1603,9 @@ class TestVariableCommand(CommandGUI):
         prompt.tstMenu.addItem('Less Then')
 
         # Set up all the labels for the inputs
-        valALabel = QtWidgets.QLabel('Variable or Expression ')
+        valALabel = QtWidgets.QLabel('Expression ')
         tstLabel  = QtWidgets.QLabel('Test ')
-        valBLabel = QtWidgets.QLabel('Variable or Expression ')
+        valBLabel = QtWidgets.QLabel('Expression ')
 
         # Fill the textboxes with the default parameters
         prompt.valAEdit.setText(str(self.parameters['expressionA']))
@@ -1696,6 +1723,27 @@ class LoopCommand(CommandGUI):
         self.description = self.parameters["description"]  # Some string that uses your parameters to describe the object.
 
 
+class EndProgramCommand(CommandGUI):
+    title     = "End Program"
+    tooltip   = "When the code reaches this point, the program will end."
+    icon      = Paths.command_end_script
+
+    def __init__(self, env, parameters=None):
+        super(EndProgramCommand, self).__init__(parameters)
+
+
+class EndEventCommand(CommandGUI):
+    title     = "Exit Current Event"
+    tooltip   = "When the code reaches this point, the program will not process the rest of this event."
+    icon      = Paths.command_exit_event
+
+    def __init__(self, env, parameters=None):
+        super(EndEventCommand, self).__init__(parameters)
+
+
+
+
+#   FUNCTION COMMANDS
 class ScriptCommand(CommandGUI):
     title     = "Run Python Code"
     tooltip   = "This tool will execute a script made by the user.\nDO NOT RUN PROGRAMS WITH SCRIPTS WRITTEN BY OTHER" \
@@ -1736,24 +1784,6 @@ class ScriptCommand(CommandGUI):
         self.description = self.parameters["description"]
 
 
-class EndProgramCommand(CommandGUI):
-    title     = "End Program"
-    tooltip   = "When the code reaches this point, the program will end."
-    icon      = Paths.command_end_script
-
-    def __init__(self, env, parameters=None):
-        super(EndProgramCommand, self).__init__(parameters)
-
-
-class EndEventCommand(CommandGUI):
-    title     = "Exit Current Event"
-    tooltip   = "When the code reaches this point, the program will not process the rest of this event."
-    icon      = Paths.command_exit_event
-
-    def __init__(self, env, parameters=None):
-        super(EndEventCommand, self).__init__(parameters)
-
-
 class RunTaskCommand(CommandGUI):
     title     = "Run Task"
     tooltip   = "This tool will run  another task file and run it inside of this task, until the 'End Program'\n" \
@@ -1769,7 +1799,8 @@ class RunTaskCommand(CommandGUI):
         # If parameters do not exist, then set up the default parameters
         if self.parameters is None:
             # Anything done with env should be done here. Try not to save env as a class variable whenever possible
-            self.parameters = {"filename": ""}
+            self.parameters = {"filename": "",
+                               "shareScope": False}
 
     def dressWindow(self, prompt):
         def updateFileLbl(prompt):
@@ -1790,19 +1821,25 @@ class RunTaskCommand(CommandGUI):
         prompt.fileLbl = QtWidgets.QLabel(self.parameters["filename"])
         prompt.fileLbl.setWordWrap(True)
         prompt.fileLbl.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
-
         fileBtn = QtWidgets.QPushButton("Select Task")
         fileBtn.clicked.connect(lambda: updateFileLbl(prompt))
 
+        # Create the "Share Variables" checkbox
+        shareLbl = QtWidgets.QLabel("Share Current Tasks Variables")
+        prompt.shareChk = QtWidgets.QCheckBox()
+        prompt.shareChk.setChecked(self.parameters["shareScope"])
 
-        self._addRow(prompt, fileBtn)
-        self._addRow(prompt, prompt.fileLbl)
+        # self._addRow(prompt, fileBtn)
+        self._addRow(prompt, prompt.fileLbl, fileBtn)
+        self._addRow(prompt, shareLbl, prompt.shareChk)
         self._addRow(prompt, explanationLbl)
+
 
         return prompt
 
     def _extractPromptInfo(self, prompt):
-        newParameters = {"filename": str(prompt.fileLbl.text())}
+        newParameters = {"filename": str(prompt.fileLbl.text()),
+                         "shareScope": prompt.shareChk.isChecked()}
 
         self.parameters.update(newParameters)
 
@@ -1895,7 +1932,7 @@ class RunFunctionCommand(CommandGUI):
             if key in self.parameters["arguments"]:
                 prompt.argumentEdits[key].setText(self.parameters["arguments"][key])
 
-        self._addRecordingHint(prompt, len(objectList))
+        self._addFunctionHint(prompt, len(objectList))
         return prompt
 
     def _extractPromptInfo(self, prompt):
@@ -1929,6 +1966,10 @@ class RunFunctionCommand(CommandGUI):
             self.title = self.parameters["objectID"]
 
 
+
+
+
+
 def clearLayout(layout):
     if layout is not None:
         while layout.count():
@@ -1937,6 +1978,8 @@ def clearLayout(layout):
                 child.widget().deleteLater()
             elif child.layout() is not None:
                 clearLayout(child.layout())
+
+
 # All commands that do "Tests"
 testTypes = [TestVariableCommand, TestObjectSeenCommand, TestObjectLocationCommand]
 

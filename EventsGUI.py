@@ -136,7 +136,7 @@ class EventPromptWindow(QtWidgets.QDialog):
         self.stepBtn      = self.getNewButton(           'Step',         StepEvent.icon)
         self.tipBtn       = self.getNewButton(     'Tip Sensor',          TipEvent.icon)
         self.keyboardBtn  = self.getNewButton(       'Keyboard',     KeypressEvent.icon)
-        self.motionBtn    = self.getNewButton(         'Motion',       MotionEvent.icon)
+        self.motionBtn    = self.getNewButton('Motion Detected',       MotionEvent.icon)
         self.seenBtn      = self.getNewButton(     'Recognized', RecognizeObjectEvent.icon)
         self.notSeenBtn   = self.getNewButton( 'Not Recognized', Paths.event_not_recognize)
 
@@ -193,8 +193,8 @@ class EventPromptWindow(QtWidgets.QDialog):
         newMotionBtn = lambda params: self.btnClicked(MotionEvent, params=params)
         motionMnu    = QtWidgets.QMenu()
 
-        motionMnu.addAction("No Movement", lambda: newMotionBtn({"low": "None", "high":  "Low"}))
-        motionMnu.addAction("Any Movement", lambda: newMotionBtn({"low":  "Low", "high":  "Inf"}))
+        motionMnu.addAction("No Motion", lambda: newMotionBtn({"low": "None", "high":  "Low"}))
+        motionMnu.addAction("Any Motion", lambda: newMotionBtn({"low":  "Low", "high":  "Inf"}))
         motionMnu.addSeparator()
         motionMnu.addAction("Above 'High' Speed", lambda: newMotionBtn({"low": "High", "high":  "Inf"}))
         motionMnu.addAction("Less than 'High' Speed", lambda: newMotionBtn({"low": "None", "high": "High"}))
@@ -394,10 +394,10 @@ class MotionEvent(EventGUI):
 
         # Special case naming
         if self.parameters["low"] == "Low" and self.parameters["high"] == "Inf":
-            title = "Any Movement"
+            title = "Any Motion"
 
         if self.parameters["low"] == "None" and self.parameters["high"] == "Low":
-            title = "No Movement"
+            title = "No Motion"
 
 
         self.title = title

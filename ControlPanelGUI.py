@@ -68,13 +68,9 @@ class ControlPanel(QtWidgets.QWidget):
         # For Command Menu
         self.commandMenuWidget = CommandsGUI.CommandMenuWidget(parent=self)
 
-
-        # Set up resources for self.refreshScript()
-        self.color             = QtGui.QColor(150, 255, 150)
-        self.transparent       = QtGui.QColor(QtCore.Qt.transparent)
-        self.setColor          = lambda item, isColored: item.setBackground((self.transparent, self.color)[isColored])
-
-
+        self.highlightColor = QtGui.QColor(150, 255, 150)
+        self.errorColor     = QtGui.QColor(255, 150, 150)
+        self.invisibleColor = QtGui.QColor(QtCore.Qt.transparent)
         self.initUI()
 
     def initUI(self):
@@ -168,27 +164,24 @@ class ControlPanel(QtWidgets.QWidget):
 
 
     def setScriptModeOff(self):
+        """
+        This returns the controlPanel back to normal. It recieves the argument scriptCrashed. If this is True,
+        then it will keep the current command highlighted, but in a RED color. If it is false, it will de-highlight
+        all commands.
+        """
         self.addEventBtn.setEnabled(True)
         self.deleteEventBtn.setEnabled(True)
         self.changeEventBtn.setEnabled(True)
+        self.commandMenuWidget.setEnabled(True)
+
         self.eventList.setLocked(False)
 
         if self.scriptTimer is not None:
             self.scriptTimer.stop()
             self.scriptTimer = None
+            self.highlightCommands(None, None, self.invisibleColor)
 
-            # Decolor every event
-            for eIndex in range(0, self.eventList.count()):
-                eventItem = self.eventList.item(eIndex)
-                self.setColor(eventItem, False)
-                commandList = self.eventList.getEventFromItem(eventItem).commandList
-
-                # Decolor every command
-                for cIndex in range(0, commandList.count()):
-                    commandItem = commandList.item(cIndex)
-                    self.setColor(commandItem, False)
-
-    def setScriptModeOn(self, interpreterStatusFunc, mainWindowEndScriptFunc):
+    def setScriptModeOn(self, interpreter, mainWindowEndScriptFunc):
         """
         When the script is running:
             - Add/Delete/Change event buttons will be disabled
@@ -201,63 +194,54 @@ class ControlPanel(QtWidgets.QWidget):
         self.addEventBtn.setEnabled(False)
         self.deleteEventBtn.setEnabled(False)
         self.changeEventBtn.setEnabled(False)
+        self.commandMenuWidget.setEnabled(False)
         self.eventList.setLocked(True)
 
 
         self.scriptTimer = QtCore.QTimer()
-        self.scriptTimer.timeout.connect(lambda: self.refreshDrawScript(interpreterStatusFunc, mainWindowEndScriptFunc))
+        self.scriptTimer.timeout.connect(lambda: self.refreshDrawScript(interpreter, mainWindowEndScriptFunc))
         self.scriptTimer.start(1000.0 / 50)  # Update at same rate as the script checks events
 
-    def refreshDrawScript(self, getStatusFunc, mainWindowEndScriptFunc):
+    def refreshDrawScript(self, interpreter, mainWindowEndScriptFunc):
         """
         This command runs while the script runs, and highlights which Event and Command is currently running.
         It also checks to see if the script has finished running (since it runs in another thread), and once it's
         seen that its finished running, it calls "mainWindowEndScriptFunc()" which calls the mainWindow to end the
         script.
         """
-        currRunning = getStatusFunc()
+        currRunning = interpreter.getStatus()
 
-        if currRunning is False:
-            mainWindowEndScriptFunc()
+        # If the thread has ended, alert the mainWindow
+        if interpreter.threadRunning() is False:
+            # Return everythign back to normal visually
             self.setScriptModeOff()
+
+            # If the interpreter ended because of a crash, highlight the offending command in red
+            if interpreter.getExitErrors() is not None:
+                self.highlightCommands(currRunning["event"], currRunning["command"], self.errorColor)
+
+            mainWindowEndScriptFunc()
             return
 
+        self.highlightCommands(currRunning["event"], currRunning["command"], self.highlightColor)
 
-        selectedItem = self.eventList.getSelectedEventItem()
+    def highlightCommands(self, eventIndex, commandIndex, color):
+        # Set up resources for self.refreshScript()
+
+        setColor          = lambda item, isColored: item.setBackground((self.invisibleColor, color)[isColored])
 
         # Color any events that were active since last check, and de-color all other events
-        for eventIndex in range(0, self.eventList.count()):
-            eventItem = self.eventList.item(eventIndex)
+        for eIndex in range(0, self.eventList.count()):
+            eventItem = self.eventList.item(eIndex)
 
             # Color transparent if the event is active, decolor if event is not active
-            self.setColor(eventItem, (eventIndex == currRunning["event"]))
-
-
-            # Check if the currently selected event is also one that is being run, and if that event has run any cmmnds
-            if selectedItem is not eventItem:   continue
-
+            setColor(eventItem, (eIndex == eventIndex))
 
 
             commandList = self.eventList.getEventFromItem(eventItem).commandList
-            for commandIndex in range(0, len(commandList)):
-                commandItem = commandList.item(commandIndex)
-
-                if not eventIndex == currRunning["event"]:
-                    self.setColor(commandItem, False)
-                else:
-                    self.setColor(commandItem, (commandIndex == currRunning["command"]))
-
-            #     for commandIndex in range(0, len(commandList)):
-            #         commandItem = commandList.item(commandIndex)
-            #         self.setColor(commandItem, False)
-            # else:
-            #     # Since it has run command, color the commands that have been run
-            #     commandsRun = currRunning[eventIndex]
-            #     for commandIndex in range(0, len(commandList)):
-            #         commandItem = commandList.item(commandIndex)
-            #         self.setColor(commandItem, (commandIndex in commandsRun))
-            #         print(commandsRun)
-
+            for cIndex in range(0, len(commandList)):
+                commandItem = commandList.item(cIndex)
+                setColor(commandItem, (eventIndex == eIndex and commandIndex == cIndex))
 
 
 
@@ -292,7 +276,7 @@ class EventList(QtWidgets.QListWidget):
         # Used to lock the eventList and commandLists from changing anything while script is running
         events = self.getEventsOrdered()
         for event in events:
-            event.commandList.setLocked(not setLock)
+            event.commandList.setLocked(setLock)
 
 
     def getSelectedEvent(self):
@@ -523,7 +507,7 @@ class EventList(QtWidgets.QListWidget):
 
 
 class CommandList(QtWidgets.QListWidget):
-    minimumWidth  = 400
+    minimumWidth  = 300
 
     def __init__(self, environment, parent):
         super(CommandList, self).__init__(parent)
@@ -534,15 +518,9 @@ class CommandList(QtWidgets.QListWidget):
         self.commands = {}  # Dictionary of commands. Ex: {QListItem: MoveXYZCommand, QListItem: PickupCommand}
 
         # Set up the drag/drop parameters (both for dragging within the commandList, and dragging from outside
-        self.setDragDropMode(QtWidgets.QAbstractItemView.DragDrop)
-        self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-        # self.setAcceptDrops(True)
 
-        # self.itemSelectionChanged.connect(self.setFocusedCommand)
 
-        # self.itemDoubleClicked.connect(self.doubleClickEvent)  # For opening the widget's window
-        # self.itemSelectionChanged.connect(self.selectionChangedEvent)
-
+        self.locked = False  # When True, the widget no longer accepts copy/paste commands, or delete commands
         self.setMinimumWidth(self.minimumWidth)
         self.setLocked(False)
 
@@ -560,13 +538,25 @@ class CommandList(QtWidgets.QListWidget):
         self.refreshIndents()  # This will update indents, which can change when you delete a command
 
     def setLocked(self, isLocked):
-        print("Setting locked: ", isLocked)
+        """
+        This will lock the CommandList and disable it from letting the user change any of the contents.
+        The reason this is different than setEnabled is because it still lets the widget look normal,
+        and also allows scrolling, which is important to have while the program is running.
+        """
+
+        self.locked = isLocked
+
         if not isLocked:
             self.itemDoubleClicked.connect(self.doubleClickEvent)  # For opening the widget's window
             self.itemSelectionChanged.connect(self.selectionChangedEvent)
+            self.setDragDropMode(QtWidgets.QAbstractItemView.DragDrop)  # Enable drag-drop
+            self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         else:
+            self.clearSelection()
             self.itemDoubleClicked.disconnect()  # For opening the widget's window
             self.itemSelectionChanged.disconnect()
+            self.setDragDropMode(QtWidgets.QAbstractItemView.NoDragDrop)  # Disable drag-drop
+            self.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
 
         self.setAcceptDrops(not isLocked)
 
@@ -679,6 +669,12 @@ class CommandList(QtWidgets.QListWidget):
 
     # For deleting, copying, and pasting items
     def keyPressEvent(self, event):
+        super(CommandList, self).keyPressEvent(event)  # Let arrow keys move around the list
+
+        # If the script is running, then the widget is locked. Don't allow the user to do anything during this time.
+        if self.locked: return
+
+
         # Delete selected items
         if event.key() == QtCore.Qt.Key_Delete:
             self.deleteSelected()

@@ -324,7 +324,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         # Stop you from moving stuff around while script is running, and activate the visual cmmnd highlighting
-        self.controlPanel.setScriptModeOn(self.interpreter.getStatus, self.endScript)
+        self.controlPanel.setScriptModeOn(self.interpreter, self.endScript)
         self.interpreter.startThread(threaded=True)
 
 
@@ -352,8 +352,6 @@ class MainWindow(QtWidgets.QMainWindow):
             reply = QtWidgets.QMessageBox.question(self, 'Error', errorStr, QtWidgets.QMessageBox.Ok)
             return
 
-        # Return things back to normal
-        self.controlPanel.setScriptModeOff()
 
         # Turn off the gripper, just in case. Do this AFTER interpreter ends, so as to not use Serial twice...
         vision = self.env.getVision()
@@ -385,7 +383,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
             errorStr = "The script ended prematurely because of the following error(s) \n\n" + errorText
             QtWidgets.QMessageBox.question(self, 'Warning', errorStr, QtWidgets.QMessageBox.Ok)
-        print(self.interpreter.getExitErrors())
+
 
 
 

@@ -105,6 +105,7 @@ def init():
     """
     exitScriptFlag = False
 
+
 # Gets the name of the caller of a function in a neatly formatted string
 def caller_name(skip=2, printModule=True, printClass=True, printFunction=True):
     """Get a name of a caller in the format module.class.method
@@ -194,7 +195,7 @@ def printf(*args):
     #         boilerPlate +=  spacesString
     #
     # buildString = boilerPlate + buildString
-    # print(buildString)
+    print(buildString)
 
 
 

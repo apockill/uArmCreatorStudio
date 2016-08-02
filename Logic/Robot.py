@@ -203,54 +203,52 @@ class Robot:
         if coord is not None:
             x, y, z = coord
 
-        self.lock.acquire()
-        posBefore = self.coord[:]  # Make a copy of the pos right now
+        with self.lock:
+            posBefore = self.coord[:]  # Make a copy of the pos right now
 
-        setVal(x, 0, relative)
-        setVal(y, 1, relative)
-        setVal(z, 2, relative)
-
-
-        # Make sure all X, Y, and Z values are within a reachable range (not a permanent solution)
-        if self.coord[0] is not None and self.coord[1] is not None and self.coord[2] is not None:
-            if self.xMin > self.coord[0] or self.coord[0] > self.xMax:
-                printf("X is out of bounds. Requested: ", self.coord[0])
-                self.coord[0] = self.clamp(self.xMin, self.coord[0], self.xMax)
-
-            if self.yMin > self.coord[1] or self.coord[1] > self.yMax:
-                printf("Y is out of bounds. Requested: ", self.coord[1])
-                self.coord[1] = self.clamp(self.yMin, self.coord[1], self.yMax)
-
-            if self.zMin > self.coord[2] or self.coord[2] > self.zMax:
-                printf("Z is out of bounds. Requested: ", self.coord[2])
-                self.coord[2] = self.clamp(self.zMin, self.coord[2], self.zMax)
+            setVal(x, 0, relative)
+            setVal(y, 1, relative)
+            setVal(z, 2, relative)
 
 
-        # If this command has changed the position, then move the robot
-        if not posBefore == self.coord:
+            # Make sure all X, Y, and Z values are within a reachable range (not a permanent solution)
+            if self.coord[0] is not None and self.coord[1] is not None and self.coord[2] is not None:
+                if self.xMin > self.coord[0] or self.coord[0] > self.xMax:
+                    printf("X is out of bounds. Requested: ", self.coord[0])
+                    self.coord[0] = self.clamp(self.xMin, self.coord[0], self.xMax)
 
-            try:
-                self.uArm.setXYZ(self.coord[0], self.coord[1], self.coord[2], self.__speed)
+                if self.yMin > self.coord[1] or self.coord[1] > self.yMax:
+                    printf("Y is out of bounds. Requested: ", self.coord[1])
+                    self.coord[1] = self.clamp(self.yMin, self.coord[1], self.yMax)
 
-
-                # Update the servoAngleStatus by doing inverse kinematics on the current position to get the new angles
-                posAngles = list(self.uArm.getIK(self.coord[0], self.coord[1], self.coord[2]))
-                self.__servoAngleStatus  =  posAngles + [self.__servoAngleStatus[3]]
-
-                # Since moves cause servos to attach, update the servoStatus
-                self.__servoAttachStatus = [True, True, True, True]
-
-            except ValueError:
-                printf("ERROR: Robot out of bounds and the uarm_python library crashed!")
+                if self.zMin > self.coord[2] or self.coord[2] > self.zMax:
+                    printf("Z is out of bounds. Requested: ", self.coord[2])
+                    self.coord[2] = self.clamp(self.zMin, self.coord[2], self.zMax)
 
 
-            # Wait for robot to finish move, but if in exiting mode, just continue
-            if wait:
-                while self.getMoving():
-                    if self.exiting: break
-                    sleep(.1)
+            # If this command has changed the position, then move the robot
+            if not posBefore == self.coord:
 
-        self.lock.release()
+                try:
+                    self.uArm.setXYZ(self.coord[0], self.coord[1], self.coord[2], self.__speed)
+
+
+                    # Update the servoAngleStatus by doing inverse kinematics on the current position to get the new angles
+                    posAngles = list(self.uArm.getIK(self.coord[0], self.coord[1], self.coord[2]))
+                    self.__servoAngleStatus  =  posAngles + [self.__servoAngleStatus[3]]
+
+                    # Since moves cause servos to attach, update the servoStatus
+                    self.__servoAttachStatus = [True, True, True, True]
+
+                except ValueError:
+                    printf("ERROR: Robot out of bounds and the uarm_python library crashed!")
+
+
+                # Wait for robot to finish move, but if in exiting mode, just continue
+                if wait:
+                    while self.getMoving():
+                        if self.exiting: break
+                        sleep(.1)
 
     def setServoAngles(self, servo0=None, servo1=None, servo2=None, servo3=None, relative=False):
         """

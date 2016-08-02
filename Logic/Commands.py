@@ -196,17 +196,17 @@ class DetachCommand(Command):
 
     def run(self):
         printf("Detaching servos ",
+               self.parameters['servo0'],
                self.parameters['servo1'],
                self.parameters['servo2'],
-               self.parameters['servo3'],
-               self.parameters['servo4'])
+               self.parameters['servo3'])
 
 
         printf("Detaching certain servos")
-        if self.parameters['servo1']: self.robot.setActiveServos(servo0=False)
-        if self.parameters['servo2']: self.robot.setActiveServos(servo1=False)
-        if self.parameters['servo3']: self.robot.setActiveServos(servo2=False)
-        if self.parameters['servo4']: self.robot.setActiveServos(servo3=False)
+        if self.parameters['servo0']: self.robot.setActiveServos(servo0=False)
+        if self.parameters['servo1']: self.robot.setActiveServos(servo1=False)
+        if self.parameters['servo2']: self.robot.setActiveServos(servo2=False)
+        if self.parameters['servo3']: self.robot.setActiveServos(servo3=False)
 
         return True
 
@@ -219,17 +219,42 @@ class AttachCommand(Command):
         self.robot = self.getVerifyRobot(env)
 
     def run(self):
-        printf("Attaching servos ", self.parameters['servo1'],
-                                                         self.parameters['servo2'],
-                                                         self.parameters['servo3'],
-                                                         self.parameters['servo4'])
+        printf("Attaching servos ", self.parameters['servo0'],
+                                    self.parameters['servo1'],
+                                    self.parameters['servo2'],
+                                    self.parameters['servo3'])
 
         printf("Attaching certain servos")
-        if self.parameters['servo1']: self.robot.setActiveServos(servo0=True)
-        if self.parameters['servo2']: self.robot.setActiveServos(servo1=True)
-        if self.parameters['servo3']: self.robot.setActiveServos(servo2=True)
-        if self.parameters['servo4']: self.robot.setActiveServos(servo3=True)
+        if self.parameters['servo0']: self.robot.setActiveServos(servo0=True)
+        if self.parameters['servo1']: self.robot.setActiveServos(servo1=True)
+        if self.parameters['servo2']: self.robot.setActiveServos(servo2=True)
+        if self.parameters['servo3']: self.robot.setActiveServos(servo3=True)
 
+        return True
+
+
+class GripCommand(Command):
+
+    def __init__(self, env, interpreter, parameters=None):
+        super(GripCommand, self).__init__(parameters)
+
+        self.robot = self.getVerifyRobot(env)
+
+    def run(self):
+        printf("Setting gripper to True")
+        self.robot.setGripper(True)
+        return True
+
+class DropCommand(Command):
+
+    def __init__(self, env, interpreter, parameters=None):
+        super(DropCommand, self).__init__(parameters)
+
+        self.robot = self.getVerifyRobot(env)
+
+    def run(self):
+        printf("Setting gripper to False")
+        self.robot.setGripper(False)
         return True
 
 
@@ -254,32 +279,6 @@ class WaitCommand(Command):
         else:
             printf("ERROR: Expression ", self.parameters['time'], " failed to evaluate correctly!")
             return False
-
-
-class GripCommand(Command):
-
-    def __init__(self, env, interpreter, parameters=None):
-        super(GripCommand, self).__init__(parameters)
-
-        self.robot = self.getVerifyRobot(env)
-
-    def run(self):
-        printf("Setting gripper to True")
-        self.robot.setGripper(True)
-        return True
-
-
-class DropCommand(Command):
-
-    def __init__(self, env, interpreter, parameters=None):
-        super(DropCommand, self).__init__(parameters)
-
-        self.robot = self.getVerifyRobot(env)
-
-    def run(self):
-        printf("Setting gripper to False")
-        self.robot.setGripper(False)
-        return True
 
 
 class BuzzerCommand(Command):
@@ -661,8 +660,6 @@ class VisionMoveXYZCommand(MoveXYZCommand):
 
 
 
-
-
 #   LOGIC COMMANDS
 class StartBlockCommand(Command):
     """
@@ -777,27 +774,6 @@ class LoopCommand(Command):
         return self.test.run()
 
 
-
-class ScriptCommand(Command):
-
-    def __init__(self, env, interpreter, parameters=None):
-        super(ScriptCommand, self).__init__(parameters)
-
-        # Load any objects, modules, calibrations, etc  that will be used in the run Section here. Use getVerifyXXXX()
-        self.interpreter = interpreter
-        self.env = env
-        if len(self.errors): return
-
-        # Here, start tracking if your command requires it
-        # Add any objects to be tracked
-
-    def run(self):
-        if len(self.errors): return
-        # printf("Running a custom script by user...")
-
-        return self.interpreter.evaluateScript(self.parameters["script"])
-
-
 class EndProgramCommand(Command):
 
     def __init__(self, env, interpreter, parameters=None):
@@ -822,6 +798,29 @@ class EndEventCommand(Command):
         return "ExitEvent"
 
 
+
+
+# FUNCTION COMMANDS
+class ScriptCommand(Command):
+
+    def __init__(self, env, interpreter, parameters=None):
+        super(ScriptCommand, self).__init__(parameters)
+
+        # Load any objects, modules, calibrations, etc  that will be used in the run Section here. Use getVerifyXXXX()
+        self.interpreter = interpreter
+        self.env = env
+        if len(self.errors): return
+
+        # Here, start tracking if your command requires it
+        # Add any objects to be tracked
+
+    def run(self):
+        if len(self.errors): return
+        # printf("Running a custom script by user...")
+
+        return self.interpreter.evaluateScript(self.parameters["script"])
+
+
 class RunTaskCommand(Command):
 
     def __init__(self, env, interpreter, parameters=None):
@@ -837,6 +836,11 @@ class RunTaskCommand(Command):
 
         # Let the interpreter create
         child = self.interpreter.createChildInterpreter(self.script)
+
+        # If the user wants to share the namespace, then replace the childs namespace with the current interpreter's
+        if self.parameters["shareScope"]:
+            child.nameSpace = self.interpreter.nameSpace
+
         child.startThread(threaded=False)
 
 

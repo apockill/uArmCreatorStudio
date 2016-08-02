@@ -172,13 +172,7 @@ class Interpreter:
 
     def getStatus(self):
         # Returns an index of the (event, command) that is currently being run
-
-        if not self.threadRunning():
-            return False
-
-        currRunning = self.currRunning
-
-        return currRunning
+        return self.currRunning.copy()
 
     def getExitErrors(self):
         # If the interpreter exited itself without being told by the program or user, it will have an exitError
@@ -242,6 +236,7 @@ class Interpreter:
         variables = dict([(k, getattr(math, k)) for k in safeList])
         variables['math'] = math
 
+        print("AYY", dict([(name, cls) for name, cls in Commands.__dict__.items() if isinstance(cls, type)]))
 
         robot         = self.env.getRobot()
         vision        = self.env.getVision()
@@ -271,11 +266,17 @@ class Interpreter:
                         "tuple":     tuple,           "robot":           robot,   "resources":   resources,
                        "vision":    vision,        "settings":        settings,     "vStream":     vStream,
                         "sleep":  newSleep,  "scriptStopping":       isExiting, "classmethod": classmethod,
-                       "object":    object, "__build_class__": __build_class__,    "__name__":  "__main__"}
+                       "object":    object, "__build_class__": __build_class__,    "__name__":  "__main__",
+                           "env": self.env,     "interpreter": self}
+
+        commands = dict([(name, cls) for name, cls in Commands.__dict__.items() if isinstance(cls, type)])
+        events   = dict([(name, cls) for name, cls in   Events.__dict__.items() if isinstance(cls, type)])
 
         namespace = {}
-        namespace.update(builtins)
+        namespace.update(commands)
+        namespace.update(events)
         namespace.update(variables)
+        namespace.update(builtins)
         namespace.update({"__author__": "Alexander Thiel"})
 
         self.nameSpace = namespace
@@ -334,8 +335,6 @@ class Interpreter:
 
         if len(errors):
             printf("ERROR: Tried to run a task that did not meet the requirements. Errors:\n", errors)
-            # if self.parentSetExiting is not None:
-            #     self.parentSetExiting(True)
             Global.exitScriptFlag = True
             self.setExiting(True)
 
@@ -365,15 +364,18 @@ class Interpreter:
             self.currRunning = {"event": -1, "command": -1}
 
 
+
             # Check every event, in order of the list
+            exitCommand = False  # If the interpreter reached an "ExitProgram" command
             for index, event in enumerate(self.events):
                 if self.isExiting(): break
                 if not event.isActive(): continue
 
                 # If the event has been activated, run the commandList
                 self.currRunning["event"] = self.events.index(event)
-                self.interpretCommandList(event.commandList)
-
+                exitCommand = self.interpretCommandList(event.commandList)
+                if exitCommand: break
+            if exitCommand: break
 
         self.mainThread = None
         self.events     = []
@@ -382,6 +384,7 @@ class Interpreter:
         """
         This will run through every command in an events commandList, and account for Conditionals and code blocks.
 
+        It returns True if the interpreter reached an "ExitProgram" command
         """
 
         index         = 0  # The current command that is being considered for running
@@ -398,16 +401,28 @@ class Interpreter:
             # Run the command
             command    = commandList[index]
             self.currRunning["command"] = index
-            # print(type(command))
-            evaluation = command.run()
+
+            try:
+                evaluation = command.run()
+
+
+
+            except Exception as e:
+                print(command.__class__.__name__, " ERROR: ", type(e).__name__, ": ", e)
+                global exitErrors
+                exitErrors = {type(e).__name__: [str(e)]}
+                self.setExiting(True)
+                # raise(e)
+
 
             if self.isExiting(): break  # This speeds up ending recursed Interpreters
 
 
             # If the command returned an "Exit event" command, then exit the event evaluation
             if evaluation == "ExitProgram":
-                self.setExiting(True)
-                break
+                return True
+                # self.setExiting(True)
+                # break
 
             # If the command returned an "Exit Program" command, exit the program
             if evaluation == "ExitEvent":
@@ -432,6 +447,8 @@ class Interpreter:
                     index = lastIndex
 
             index += 1
+
+        return False
 
     def __getNextIndex(self, index, commandList):
         """

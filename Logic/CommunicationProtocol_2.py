@@ -325,7 +325,7 @@ class Device:
         response = self.__send(cmnd)
 
         # Parse the response
-        parsedArgs = self.__parseArgs(response, "S", ["T", "L", "R"])
+        parsedArgs = self.__parseArgs(response, "", ["T", "L", "R"])
 
         # Create the return
         ret = (parsedArgs["T"], parsedArgs["L"], parsedArgs["R"])
@@ -354,7 +354,7 @@ class Device:
         response = self.__send(cmnd)
 
         # Parse the response
-        parsedArgs = self.__parseArgs(response, "S", ["X", "Y", "Z"])
+        parsedArgs = self.__parseArgs(response, "", ["X", "Y", "Z"])
 
         # Create the return
         ret = (parsedArgs["X"], parsedArgs["Y"], parsedArgs["Z"])
@@ -430,7 +430,7 @@ class Device:
             return ""
 
         # Prepare and send the command to the robot
-        cmndString = bytes("[" + cmnd + "]", encoding='ascii') #  "[" + cmnd + "]"
+        cmndString = bytes("[" + cmnd + "]", encoding='ascii')  #  "[" + cmnd + "]"
 
         try:
             self.serial.write(cmndString)
@@ -545,7 +545,7 @@ if __name__ == "__main__":
     # Connect to the first robot, and make sure it connected correctly
     chosenPort = connecteduArms[0][0]
     print("Attempting to connect to port ", chosenPort)
-    uarm = Device(chosenPort)
+    uarm = Device(chosenPort, True, True)
     if not uarm.connected():
         print("uArm could not connect!")
         exit()
@@ -655,7 +655,8 @@ if __name__ == "__main__":
 
     print("\nTest Forward/Backwrd Kinematics")
     print("Get Forward Kinematics  (90, 70, 35): ", uarm.getFK(90, 70, 35))
+    print("Get Forward Kinematics  (1000, 1000, 1000): ", uarm.getFK(1000, 1000, 1000))
     print("Get Inverse Kinematics (0, 150, 150): ", uarm.getIK(0, 150, 150))
-
+    print("Get Inverse Kinematics (1000, 1000, 1000): ", uarm.getIK(1000, 1000, 1000))
 
     print("Testing Over")
