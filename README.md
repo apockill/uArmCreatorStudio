@@ -79,11 +79,11 @@ The project is seperated by "Logic" and "GUI" elements. This was to force myself
 * GUI Overview
  * MainGUI.py
 	  * Handles the main window, settings page, and is the center for all things GUI
- * ControlPanel.py
+ * ControlPanelGUI.py
 	 * This contains the EventList, CommandList, and the ControlPanel widgets, which are essential. EventList is the list that holds the events, to the left of the CommandList.   Each "Event" item holds its own individual CommandList reference. The ControlPanel handles which CommandList is currently in view.
  * CommandsGUI.py
 	 * Stores all of the windows for the commands, and the click-and-drag aspect of things. If you want to add a new command, you go here first.
- * Events.py
+ * EventsGUI.py
 	 * Stores all of the Events that can be placed in the program. If you want to add a new event, you go here first.
  * CalibrationsGUI.py
 	 * This holds the window and logic for calibrations that the user can do with the robot. If you want to run without a GUI, just use the GUI for calibration which get automatically saved in Resources/Settings.txt, then run your script using the saved calibration.
@@ -105,6 +105,9 @@ Contact me at Alex.D.Thiel@Gmail.com
 
 ## Contributing
 **王诗阳 Shiyang Wang** - *Icon Design*
+
+**Tyler Compton** - *Provided valuable advice for certain language design questions*
+
 
 ## License
 
