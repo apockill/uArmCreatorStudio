@@ -82,7 +82,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # If any file is specified in "lastOpenedFile" then load it.
         if self.env.getSetting("lastOpenedFile") is not None:
             self.loadTask(filename=self.env.getSetting("lastOpenedFile"))
-
+        else:
+            self.newTask()
 
         # After initUI: Restore the window geometry to the state it was when the user last closed the window
         if self.env.getSetting("windowGeometry") is not None:
@@ -470,6 +471,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.controlPanel.loadData([])
         self.fileName = None
         self.loadData = deepcopy(self.controlPanel.getSaveData())
+        self.setWindowTitle(self.programTitle)
 
     def saveTask(self, promptSaveLocation):
         printf("Saving project")

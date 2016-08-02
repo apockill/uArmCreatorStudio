@@ -963,9 +963,9 @@ class CWPage5(QtWidgets.QWizardPage):
         # print("failcoutn: ", recFailCount)
         text  = "Calibration Progress: \n"
         if currentPoint > len(testCoords) * .25:
-            if recFailCount / currentPoint > .7:  # If over 70% of tests failed so far
+            if recFailCount / currentPoint > .85:  # If over 85% of tests failed so far
                 text += "    Progress Report: The robot marker has failed to be recognized " + \
-                        str(recFailCount) + " times!\n"
+                        str(recFailCount) + " times\n"
             else:
                 text += "    Progress Report: The calibration is going well.\n"
 

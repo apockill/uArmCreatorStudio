@@ -29,7 +29,7 @@ import json  # For copying/pasting commands
 import EventsGUI   as EventsGUI
 import CommandsGUI as CommandsGUI
 from PyQt5         import QtCore, QtWidgets, QtGui
-from Logic.Global  import printf
+from Logic.Global  import printf, getModuleClasses
 __author__ = "Alexander Thiel"
 
 
@@ -494,10 +494,12 @@ class EventList(QtWidgets.QListWidget):
         self.events = {}
         self.clear()  # clear eventList
 
+        eventClasses = getModuleClasses(EventsGUI)
+
         # Fill event list with new data
         for eventSave in data:
             # Convert the string 'EventClass' to an actual class, load its command save, and add the event
-            self.addEvent(getattr(EventsGUI, eventSave['type']),
+            self.addEvent(eventClasses[eventSave['type']],
                           commandListSave =  eventSave['commandList'],
                           parameters      =  eventSave['parameters'])
 
@@ -728,8 +730,10 @@ class CommandList(QtWidgets.QListWidget):
             else:
                 pasteIndex = self.count()
 
+            commandClasses = getModuleClasses(CommandsGUI)
+
             for commandSave in reversed(commandData):
-                self.addCommand(getattr(CommandsGUI, commandSave['type']),
+                self.addCommand(commandClasses[commandSave['type']],
                                 parameters=commandSave['parameters'],
                                 index=pasteIndex )
 
@@ -765,16 +769,12 @@ class CommandList(QtWidgets.QListWidget):
             if dropIndex == -1: dropIndex = self.count()  # If dropped at a index past the end of list, drop at end
 
             # Add the new dragged in widget to the index that was just found
-            cType = getattr(CommandsGUI, event.mimeData().text())
+            commandClasses = getModuleClasses(CommandsGUI)
+            cType = commandClasses[event.mimeData().text()]
             self.addCommand(cType, index=dropIndex)
 
             # For easy usability, when you drop a Test command, a StartBlock and EndBlock will drop right after it.
             if type(cType) in CommandsGUI.testTypes or cType == CommandsGUI.LoopCommand:
-               #  CommandsGUI.TestVariableCommand        or \
-               # cType is CommandsGUI.ElseCommand                or \
-               # cType is CommandsGUI.TestObjectSeenCommand      or \
-               # cType is CommandsGUI.TestObjectLocationCommand:
-
                 self.addCommand(CommandsGUI.StartBlockCommand, index=dropIndex + 1)
                 self.addCommand(CommandsGUI.EndBlockCommand, index=dropIndex + 2)
 
@@ -822,9 +822,11 @@ class CommandList(QtWidgets.QListWidget):
     def loadData(self, data):
         self.commands = {}
         self.clear()
+        commandClasses = getModuleClasses(CommandsGUI)
 
         # Fill the list with new data
         for commandSave in data:
             # Convert from string to an actual event obj
-            self.addCommand(getattr(CommandsGUI, commandSave['type']), parameters=commandSave['parameters'])
+            self.addCommand(commandClasses[commandSave['type']], parameters=commandSave['parameters'])
+
         self.refreshIndents()

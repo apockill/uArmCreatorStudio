@@ -123,7 +123,7 @@ class VideoStream:
     def startThread(self):
         if self.mainThread is None:
             self.running = True
-            self.mainThread = Thread(target=self.__videoThread)
+            self.mainThread = Thread(target=self.__videoThread)  # Cannot be Daemon thread
             self.mainThread.start()
         else:
             printf("ERROR: Tried to create mainThread, but mainThread already existed.")
@@ -131,14 +131,7 @@ class VideoStream:
     def endThread(self):
         self.running = False
 
-        if self.mainThread is not None:
-            printf("Ending main thread")
-            self.mainThread.join(500)
-            self.mainThread = None
 
-        if self.cap is not None:
-            printf("Thread ended. Now gracefully closing Cap")
-            self.cap.release()
 
     def __videoThread(self):
         """"
@@ -213,13 +206,15 @@ class VideoStream:
             else:
                 self.filterFrame = self.frame
 
-        printf("VideoStream Thread has ended")
+        if self.cap is not None:
+            self.cap.release()
+        self.mainThread = None
+
 
     # noinspection PyArgumentList
     def __setNewCamera(self, cameraID):
         # Set or change the current camera to a new one
         printf("Setting camera to cameraID ", cameraID)
-
 
         # Gracefully close the current capture if it exists
         if self.cap is not None: self.cap.release()

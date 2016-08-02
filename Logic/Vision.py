@@ -769,7 +769,7 @@ class CascadeTracker(Tracker):
                     self.targets.append(target)
 
                 else:
-                    printf("ERROR: Tried to add a target that was already there!")
+                    printf("Tried to add a target that was already there!")
 
     def track(self, frame):
         gray  = cv2.cvtColor(frame.copy(), cv2.COLOR_BGR2GRAY)

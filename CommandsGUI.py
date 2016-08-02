@@ -1069,7 +1069,7 @@ class BuzzerCommand(CommandGUI):
 
 
 #   Robot + Vision COmmands
-class GUI(CommandGUI):
+class MoveRelativeToObjectCommand(CommandGUI):
     title     = "Move Relative To Object"
     tooltip   = "This tool uses computer vision to recognize an object of your choice, and position the robot directly"\
                "\nrelative to this objects XYZ location. If XYZ = 0,0,0, the robot will move directly onto the object."\

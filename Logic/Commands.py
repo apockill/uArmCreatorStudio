@@ -30,7 +30,7 @@ import numpy as np
 import sys
 from Logic.Events      import InitEvent
 from Logic             import RobotVision as rv
-from Logic.Global      import printf, wait
+from Logic.Global      import printf, wait, getModuleClasses
 from Logic.LogicObject import LogicObject
 __author__ = "Alexander Thiel"
 
@@ -761,8 +761,8 @@ class LoopCommand(Command):
 
         Commands = sys.modules[__name__]
 
-
-        testType = getattr(Commands, self.parameters["testType"])
+        commandClasses = getModuleClasses(Commands)
+        testType = commandClasses[self.parameters["testType"]]
         testParams = self.parameters["testParameters"]
 
         self.test = testType(env, interpreter, parameters=testParams)

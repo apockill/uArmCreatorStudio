@@ -28,7 +28,7 @@ License:
 
 import os
 from Logic        import Paths, Resources
-from Logic.Global import printf, ensurePathExists
+from Logic.Global import printf, ensurePathExists, getModuleClasses
 
 __author__ = "Alexander Thiel"
 
@@ -252,6 +252,7 @@ class ObjectManager:
 
         foldersAndItems = os.listdir(self.__directory)
 
+        resourceClasses = getModuleClasses(Resources)
 
 
         for folder in foldersAndItems:
@@ -273,12 +274,13 @@ class ObjectManager:
 
 
             # Check that that type of resource exists
-            if not hasattr(Resources, newType):
+
+            if newType not in resourceClasses:
                 printf("ERROR: Tried to create a resource that is not in Resources.py!")
                 continue
 
             # Get the type, then instantiate it
-            newType = getattr(Resources, newType)
+            newType = resourceClasses[newType]
             newObj = newType(name, path)
 
 

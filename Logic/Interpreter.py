@@ -27,9 +27,8 @@ License:
 """
 import math
 from Logic        import Global
-from copy         import deepcopy
 from threading    import Thread
-from Logic.Global import printf, FpsTimer, wait
+from Logic.Global import printf, FpsTimer, wait, getModuleClasses
 from Logic        import Events, Commands
 __author__ = "Alexander Thiel"
 
@@ -52,6 +51,9 @@ global exitErrors
 exitErrors = None
 
 
+commandClasses = Global.getModuleClasses(Commands)
+eventClasses   = Global.getModuleClasses(Events)
+
 class Interpreter:
     """
     This is where the script is actually run. The most convenient method is to create a script with the GUI,
@@ -59,7 +61,7 @@ class Interpreter:
     to begin the script.
     """
 
-    def __init__(self, environment):
+    def __init__(self, environment, nameSpace=None):
         """
         Since interpreters can be run within themselves, the parentExitFunc and parentSetExitingFunc are exactly
         what they sound like.
@@ -87,8 +89,9 @@ class Interpreter:
         self.currRunning   = {"event": -1, "command": -1}  # A dictionary of what event and command is currently running
 
         # Namespace is all  the builtins and variables that the user creates during a session in the interpreter
-        self.nameSpace     = None
-        self.cleanNamespace()
+        self.nameSpace     = nameSpace
+        if self.nameSpace is None:
+            self.cleanNamespace()
 
 
     def initializeScript(self, script):
@@ -105,14 +108,13 @@ class Interpreter:
         :param      script: a loaded script from a .task file
         :return:    any errors that commands returned during instantiation
         """
-        script = deepcopy(script)
 
         errors = {}  # Keep track of missing components for commands that are initialized
 
         # Create each event
         for _, eventSave in enumerate(script):
             # Get the "Logic" code for this event, stored in Events.py
-            eventType = getattr(Events, eventSave['type'])
+            eventType = eventClasses[eventSave['type']]
             event     = eventType(self.env, self, parameters=eventSave['parameters'])
             self.addEvent(event)
 
@@ -125,7 +127,7 @@ class Interpreter:
             # Create the commandList for this event
             for _, commandSave in enumerate(eventSave['commandList']):
                 # Get the "Logic" code for this command, stored in Commands.py
-                commandType = getattr(Commands, commandSave['type'])
+                commandType = commandClasses[commandSave['type']]
                 command     = commandType(self.env, self, parameters=commandSave['parameters'])
                 event.addCommand(command)
 
@@ -150,10 +152,11 @@ class Interpreter:
 
         if self.mainThread is None:
             self.currRunning = {"event": -1, "command": -1}
-            global exitErrors
-            exitErrors = None
+
 
             if threaded:
+                global exitErrors
+                exitErrors = None
                 self.mainThread  = Thread(target=self.__programThread)
                 self.mainThread.setDaemon(True)
                 self.mainThread.start()
@@ -229,14 +232,14 @@ class Interpreter:
         """
 
         # Reset self.__variables with the default values/functions #
-        safeList = ['acos', 'asin', 'atan', 'atan2', 'ceil', 'cos', 'cosh', 'degrees',
-                    'e', 'exp', 'fabs', 'floor', 'fmod', 'frexp', 'hypot', 'ldexp', 'log', 'log10',
-                    'modf', 'pi', 'pow', 'radians', 'sin', 'sinh', 'sqrt', 'tan', 'tanh']
+        safeList = ['acos', 'asin', 'atan',   'atan2', 'ceil',   'cos',  'cosh', 'degrees', 'log10',
+                       'e',  'exp', 'fabs',   'floor', 'fmod', 'frexp', 'hypot',   'ldexp',   'log',
+                    'modf',   'pi',  'pow', 'radians',  'sin',  'sinh',  'sqrt',     'tan',  'tanh']
+
 
         variables = dict([(k, getattr(math, k)) for k in safeList])
         variables['math'] = math
 
-        print("AYY", dict([(name, cls) for name, cls in Commands.__dict__.items() if isinstance(cls, type)]))
 
         robot         = self.env.getRobot()
         vision        = self.env.getVision()
@@ -245,6 +248,7 @@ class Interpreter:
         vStream       = self.env.getVStream()
         newSleep      = lambda time: wait(time, self.isExiting)
         isExiting     = self.isExiting
+
 
         # Add Python builtins, and also the extra ones (above)
         builtins = {      "abs":       abs,            "dict":            dict,  "__import__":  __import__,
@@ -269,12 +273,11 @@ class Interpreter:
                        "object":    object, "__build_class__": __build_class__,    "__name__":  "__main__",
                            "env": self.env,     "interpreter": self}
 
-        commands = dict([(name, cls) for name, cls in Commands.__dict__.items() if isinstance(cls, type)])
-        events   = dict([(name, cls) for name, cls in   Events.__dict__.items() if isinstance(cls, type)])
+
 
         namespace = {}
-        namespace.update(commands)
-        namespace.update(events)
+        namespace.update(commandClasses)
+        namespace.update(eventClasses)
         namespace.update(variables)
         namespace.update(builtins)
         namespace.update({"__author__": "Alexander Thiel"})
@@ -322,7 +325,7 @@ class Interpreter:
 
         return True
 
-    def createChildInterpreter(self, script):
+    def createChildInterpreter(self, script, nameSpace=None):
         """
             This function is special, in the sense that it creates another interpreter that runs inside of this one,
             with a specified filename or script, and starts it immediately.
@@ -330,12 +333,12 @@ class Interpreter:
         # if self.env.isInterpreterExiting: return
 
 
-        child = Interpreter(self.env)
+        child = Interpreter(self.env, nameSpace=nameSpace)
         errors = child.initializeScript(script)
 
         if len(errors):
             printf("ERROR: Tried to run a task that did not meet the requirements. Errors:\n", errors)
-            Global.exitScriptFlag = True
+
             self.setExiting(True)
 
             # Set the crashErrors so that the GUI can later show a message to the user explaining why the program ended
@@ -379,6 +382,7 @@ class Interpreter:
 
         self.mainThread = None
         self.events     = []
+        printf("Interpreter Thread Ending")
 
     def interpretCommandList(self, commandList):
         """
@@ -388,9 +392,6 @@ class Interpreter:
         """
 
         index         = 0  # The current command that is being considered for running
-
-        # Keep track of what commands are run in this event
-
 
 
         # Check each command, run the ones that should be run
@@ -404,11 +405,8 @@ class Interpreter:
 
             try:
                 evaluation = command.run()
-
-
-
             except Exception as e:
-                print(command.__class__.__name__, " ERROR: ", type(e).__name__, ": ", e)
+                printf(" ERROR: ", command.__class__.__name__, type(e).__name__, ": ", e)
                 global exitErrors
                 exitErrors = {type(e).__name__: [str(e)]}
                 self.setExiting(True)
@@ -474,17 +472,15 @@ class Interpreter:
 
         return index
 
-
     def __getLastIndex(self, index, commandList):
         """
         Find the last index that has the same indentation level as the current index
         """
-
+        print("Starting search")
 
         skipToIndent = 0
         nextIndent   = 0
-        for i in range(index,  0, -1):
-
+        for i in range(index,  -1, -1):
             if type(commandList[i]) is Commands.EndBlockCommand:   nextIndent += 1
 
             if nextIndent == skipToIndent:
@@ -492,9 +488,7 @@ class Interpreter:
                 break
 
             # If there are no commands
-            if i == 0:
-                index = i
-                break
+            if i == 0: break
 
             if type(commandList[i]) is Commands.StartBlockCommand: nextIndent -= 1
 

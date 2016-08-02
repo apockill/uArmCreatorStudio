@@ -32,7 +32,6 @@ from time import time, sleep
 from threading import RLock
 __author__ = "Alexander Thiel"
 
-
 """
 Global is a set of functions that are used in many places around the project and are very general use.
 
@@ -40,6 +39,7 @@ It also holds the actual global variable "keysPressed", and "printRedirectFunc".
 """
 
 
+# Special 'sleep' commands that can exit immediately if 'exitFunc()' returns false
 def wait(waitTime, exitFunc):
     """
     This is a convenience function for waiting a certain amount of time. The idea is that the exitFunc will
@@ -56,7 +56,6 @@ def wait(waitTime, exitFunc):
     #     sleep(.1)
     #
     # sleep(waitTime - (time() - start))
-
 
 def waitUntilTime(timeMS, exitFunc):
     """
@@ -78,8 +77,67 @@ def waitUntilTime(timeMS, exitFunc):
     if now < timeMS:
         sleep(timeMS - now)
 
+class FpsTimer:
+    """
+    This module helps keep scripts at a certain FPS. The Interpreter script uses this, as does the VideoThread.
+    This will effectively decide whether or not to wait, and how much to wait, and time how long a script is taking
+    inside of a loop.
 
-# Initiate Global Variables (called from
+    Usage example:
+
+            fpsTimer = FpsTimer(fps=24)
+
+            while True:
+                fpsTimer.wait()
+                if not fpsTimer.ready(): continue
+
+                ### Script goes here ###
+    """
+
+    def __init__(self, fps):
+
+        self.fps       = fps
+        self.stepDelay = (1.0 / float(fps))
+        self.lastTime  = float(1)  # The first time is 1, so the script will always run immediately
+        self.isReady   = False
+        self.mode      = 1
+
+        self.currentFPS = 0
+
+    def wait(self):
+        elapsedTime = time() - self.lastTime
+
+
+        # Check if the current FPS is less than the goal. If so, run immediately
+        if not elapsedTime == 0:
+            fps = 1.0 / elapsedTime
+            if fps < self.fps:
+                self.currentFPS = fps
+                self.isReady = True
+                return
+
+        # Since the current FPS is higher than desired, wait the appropriate amount of time
+        waitTime = self.stepDelay - elapsedTime
+        if waitTime > .01:
+            sleep(waitTime)
+            self.currentFPS = 1.0 / (time() - self.lastTime)
+
+        # Calculate FPS again
+        self.isReady = True
+        return
+
+    def ready(self):
+
+        if self.isReady:
+            self.lastTime = time()
+            self.isReady = False
+            return True
+        else:
+            return False
+
+
+
+# Initiate Global Variables
 def init():
     global keysPressed
     global printRedirectFunc
@@ -98,16 +156,10 @@ def init():
     """
     printRedirectFunc  = lambda classString, string: None  # print(classString + " "*(30 - len(classString)) + string)
 
-    """
-        This is a variable that signals to all running interpreters that they should exit the current script immediately
-        It's used when there's been an error. If this is true, no script will run the "End Program" command, they will
-        simply exit as quickly as they can.
-    """
-    exitScriptFlag = False
 
 
-# Gets the name of the caller of a function in a neatly formatted string
-def caller_name(skip=2, printModule=True, printClass=True, printFunction=True):
+# Functions for my special print function
+def getCallerFunction(skip=2, printModule=True, printClass=True, printFunction=True):
     """Get a name of a caller in the format module.class.method
 
        `skip` specifies how many levels of stack to skip while getting caller
@@ -146,9 +198,6 @@ def caller_name(skip=2, printModule=True, printClass=True, printFunction=True):
 
     return ".".join(name)
 
-
-
-spaceFunc = lambda n: ''.join(' ' for _ in range(n))  # For printf
 def printf(*args):
     """
     This function appends the Class and Function name to every function that runs in the program. This is immeasurably
@@ -176,13 +225,15 @@ def printf(*args):
     # Strip whitespace from beginning of string
     buildString = buildString.lstrip()
 
-
-    # Format the space between the boilerplate and content
-    boilerPlate = caller_name(printModule=printModule, printClass=printClass, printFunction=printFunction)
-
-
+    print(buildString)
     global printRedirectFunc
-    printRedirectFunc(boilerPlate, buildString)
+    printRedirectFunc("Command", buildString)
+    return
+    # Format the space between the boilerplate and content
+    boilerPlate = getCallerFunction(printModule=printModule, printClass=printClass, printFunction=printFunction)
+
+
+
 
     # print(buildString)
     # Filter out any serial communication since it clutters up the console
@@ -199,66 +250,6 @@ def printf(*args):
 
 
 
-
-
-class FpsTimer:
-    """
-    This module helps keep scripts at a certain FPS. The Interpreter script uses this, as does the VideoThread.
-    This will effectively decide whether or not to wait, and how much to wait, and time how long a script is taking
-    inside of a loop.
-
-    Usage example:
-
-            fpsTimer = FpsTimer(fps=24)
-
-            while True:
-                fpsTimer.wait()
-                if not fpsTimer.ready(): continue
-
-                ### Script goes here ###
-    """
-
-    def __init__(self, fps):
-
-        self.fps       = fps
-        self.stepDelay = (1.0 / float(fps))
-        self.lastTime  = float(time())
-        self.isReady   = False
-        self.mode      = 1
-
-        self.currentFPS = 0
-
-    def wait(self):
-        elapsedTime = time() - self.lastTime
-
-
-        # Check if the current FPS is less than the goal. If so, run immediately
-        if not elapsedTime == 0:
-            fps = 1.0 / elapsedTime
-            if fps < self.fps:
-                self.currentFPS = fps
-                self.isReady = True
-                return
-
-        # Since the current FPS is higher than desired, wait the appropriate amount of time
-        waitTime = self.stepDelay - elapsedTime
-        if waitTime > .01:
-            sleep(waitTime)
-            self.currentFPS = 1.0 / (time() - self.lastTime)
-        # Calculate FPS again
-        self.isReady = True
-        return
-
-    def ready(self):
-
-        if self.isReady:
-            self.lastTime = time()
-            self.isReady = False
-            return True
-        else:
-            return False
-
-
 def ensurePathExists(path):
     """
         This is a cross platform, race-condition free way of checking if a directory exists, and if it doesn't,
@@ -271,3 +262,12 @@ def ensurePathExists(path):
         if exception.errno != errno.EEXIST:
             raise
 
+def getModuleClasses(module):
+    """
+    This will get all of the classes defined in a module, with the format
+    {"className": class, "className": class}
+
+    This is used to not do getattr directly on a module, so as to avoid weird vulnerabilities,
+    and allow for quick security patches in the future.
+    """
+    return dict([(name, cls) for name, cls in module.__dict__.items() if isinstance(cls, type)])
