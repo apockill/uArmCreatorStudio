@@ -129,7 +129,7 @@ class Environment:
 
         # If settings change, then save the changes to the config file, and update the self.__settings dictionary
         if (current is None or not current == newSettings) and newSettings is not None:
-            printf("Saving setting: ", category)
+            printf("Environment| Saving setting: ", category)
 
             # Update the self.__settings dictionary
             self.__settings[category] = deepcopy(newSettings)
@@ -138,7 +138,7 @@ class Environment:
             json.dump(self.__settings, open(self.__settingsPath, 'w'),
                       sort_keys=False, indent=3, separators=(',', ': '))
         else:
-            printf("No settings changed: ", category)
+            printf("Environment| No settings changed: ", category)
 
     def __loadSettings(self):
         """
@@ -185,7 +185,7 @@ class Environment:
                           }
 
         # Load the settings config and set them
-        printf("Loading Settings")
+        printf("Environment| Loading Settings")
 
         # Try to load a settings file. If it fails, simply return the default settings
         try:
@@ -215,11 +215,11 @@ class Environment:
             return defaultSettings
 
         except IOError as e:
-            printf("ERROR: No settings file detected. Using default values. Error:", e)
+            printf("Environment| ERROR: No settings file detected. Using default values. Error:", e)
             return defaultSettings
 
         except ValueError as e:
-            printf("ERROR: while loading an existing settings file. Using default values. Error: ", e)
+            printf("Environment| ERROR: while loading an existing settings file. Using default values. Error: ", e)
             return defaultSettings
 
 

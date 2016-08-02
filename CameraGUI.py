@@ -93,7 +93,6 @@ class CameraWidget(QtWidgets.QWidget):
 
     def pause(self):
         if not self.paused:
-            printf("Stopping Timer!")
             self.timer.stop()
 
         self.paused = True
@@ -181,7 +180,7 @@ class CameraSelector(CameraWidget):
             self.selectedImage = self.vStream.getFrame()
 
             if self.selectedImage is None:
-                printf("ERROR: getCVFrame() returned None Frame! ")
+                printf("GUI| ERROR: getCVFrame() returned None Frame! ")
                 return
 
             # Set the rectangles position and unhide the rectangle

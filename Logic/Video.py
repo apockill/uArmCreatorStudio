@@ -96,7 +96,7 @@ class VideoStream:
             self.startThread()
             self.setCamera = cameraID
         else:
-            printf("Tried to set camera while camera was already being set! Currently setting to ", self.setCamera)
+            printf("Video| Tried to set camera while camera was already being set! Currently setting: ", self.setCamera)
 
     def setPaused(self, value):
         # Tells the main frunction to grab more frames
@@ -126,7 +126,7 @@ class VideoStream:
             self.mainThread = Thread(target=self.__videoThread)  # Cannot be Daemon thread
             self.mainThread.start()
         else:
-            printf("ERROR: Tried to create mainThread, but mainThread already existed.")
+            printf("Video| ERROR: Tried to create mainThread, but mainThread already existed.")
 
     def endThread(self):
         self.running = False
@@ -143,7 +143,7 @@ class VideoStream:
         self.frameList = []
 
         fpsTimer = FpsTimer(self.fps)
-        printf("Starting videoStream thread.")
+        printf("Video| Starting videoStream thread.")
         while self.running:
             fpsTimer.wait()
             if not fpsTimer.ready():       continue
@@ -156,7 +156,7 @@ class VideoStream:
             ret, newFrame = self.cap.read()
 
             if not ret:  # If a frame was not successfully returned
-                printf("ERROR: while reading frame from Cam. Setting camera again...")
+                printf("Video| ERROR: while reading frame from Cam. Setting camera again...")
                 self.__setNewCamera(self.cameraID)
                 cv2.waitKey(1000)
                 continue
@@ -214,7 +214,7 @@ class VideoStream:
     # noinspection PyArgumentList
     def __setNewCamera(self, cameraID):
         # Set or change the current camera to a new one
-        printf("Setting camera to cameraID ", cameraID)
+        printf("Video| Setting camera to cameraID ", cameraID)
 
         # Gracefully close the current capture if it exists
         if self.cap is not None: self.cap.release()
@@ -226,7 +226,7 @@ class VideoStream:
 
         # Check if the cap was opened correctly
         if not self.cap.isOpened():
-            printf("ERROR: Camera not opened. cam ID: ", cameraID)
+            printf("Video| ERROR: Camera not opened. cam ID: ", cameraID)
             self.cap.release()
             self.dimensions = None
             self.cap        = None
@@ -239,7 +239,7 @@ class VideoStream:
         if ret:
             self.dimensions = [frame.shape[1], frame.shape[0]]
         else:
-            printf("ERROR ERROR: Camera could not read frame. cam ID: ", cameraID)
+            printf("Video| ERROR ERROR: Camera could not read frame. cam ID: ", cameraID)
             self.cap.release()
             self.dimensions = None
             self.cap        = None

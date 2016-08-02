@@ -181,13 +181,13 @@ class CalibrateWindow(QtWidgets.QDialog):
 
         # Check that there is a valid camera connected
         if not vStream.connected():
-            printf("No Camera Connected!")
+            printf("GUI| No Camera Connected!")
             self.cameraError()
             return
 
         # Check that there is a valid robot connected
         if not robot.connected():
-            printf("No uArm connected!")
+            printf("GUI| No uArm connected!")
             self.robotError()
             return
 
@@ -245,7 +245,7 @@ class CalibrateWindow(QtWidgets.QDialog):
 
 
         self.updateLabels()
-        printf("Function complete! New settings: ", noMovement, ", ", highMovement)
+        printf("GUI| Function complete! New settings: ", noMovement, ", ", highMovement)
 
     def calibrateCoordinates(self):
         vStream      = self.env.getVStream()
@@ -516,7 +516,7 @@ class CWPage2(QtWidgets.QWizardPage):
             self.groundCoords = list(map(float, sumCoords / samples))
             self.robot.setPos(z=self.groundCoords[2] + .5)
             self.robot.setActiveServos(servo0=False)
-            printf("New ground coordinates set: ", self.groundCoords)
+            printf("GUI| New ground coordinates set: ", self.groundCoords)
 
 class CWPage3(QtWidgets.QWizardPage):
     def __init__(self, parent):
@@ -866,7 +866,7 @@ class CWPage5(QtWidgets.QWizardPage):
 
 
 
-        printf("Testing ", len(testCoords), " coordinate points")
+        printf("GUI| Testing ", len(testCoords), " coordinate points")
 
 
         # Begin testing every coordinate in the testCoords array, and recording the results into newCalibrations
@@ -993,7 +993,7 @@ class CWPage5(QtWidgets.QWizardPage):
         currentPoint += 1
 
 
-        printf("Testing point ", coord)
+        printf("GUI| Testing point ", coord)
 
         # Move the robot to the coordinate
         robot.setPos(x=coord[0], y=coord[1], z=coord[2])
@@ -1012,7 +1012,7 @@ class CWPage5(QtWidgets.QWizardPage):
 
         # Make sure the object was found in a recent frame
         if marker is None or not frameAge < 2:
-            printf("Marker was not recognized.")
+            printf("GUI| Marker was not recognized.")
             newCalibrations['failPts'].append(coord)
             self.timer = singleShot()
             return
@@ -1099,7 +1099,7 @@ class CWPage5(QtWidgets.QWizardPage):
             return errorSum  / len(testPoints)
 
 
-        printf("Pruning set to size ", newSize, " out of original ", len(ptPairs))
+        printf("GUI| Pruning set to size ", newSize, " out of original ", len(ptPairs))
 
         if len(ptPairs) <= newSize:
             return newCalibration
@@ -1138,13 +1138,13 @@ class CWPage5(QtWidgets.QWizardPage):
 
         error = testPointSetError(bestSet, testPoints)
 
-        printf("Average error: ", avgError, " bestSet ", bestScore, " der. set: ", error)
+        printf("GUI| Average error: ", avgError, " bestSet ", bestScore, " der. set: ", error)
         if error < avgError:
-            printf("Returning derived set")
+            printf("GUI| Returning derived set")
             return error, bestSet
         else:
 
-            printf("Found set is worse than the average. Returning bestSet.")
+            printf("GUI| Found set is worse than the average. Returning bestSet.")
             return bestScore, bestSet
 
 

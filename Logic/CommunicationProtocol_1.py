@@ -172,7 +172,7 @@ class Device:
                                         timeout  = .1)
             self.isConnected = True
         except serial.SerialException as e:
-            printf("Could not connect to robot on port ", port)
+            printf("Communication| Could not connect to robot on port ", port)
             self.serial = None
             self.isConnected = False
         sleep(3)
@@ -187,7 +187,7 @@ class Device:
         try:
             self.serial.write(cmndString)
         except serial.serialutil.SerialException as e:
-            printf("ERROR ", e, "while sending command ", cmnd, ". Disconnecting Serial!")
+            printf("Communication| ERROR ", e, "while sending command ", cmnd, ". Disconnecting Serial!")
             self.isConnected = False
             return ""
 
@@ -199,7 +199,7 @@ class Device:
             try:
                 response += str(self.serial.read(), 'ascii')
             except serial.serialutil.SerialException as e:
-                printf("ERROR ", e, "while sending command ", cmnd, ". Disconnecting Serial!")
+                printf("Communication| ERROR ", e, "while sending command ", cmnd, ". Disconnecting Serial!")
                 self.isConnected = False
                 return ""
 
@@ -208,11 +208,11 @@ class Device:
                 break
 
         if self.printCommands and self.printResponses:
-            printf("[" + cmnd + "]" + " " * (30 - len(cmnd)) + response)
+            printf("Communication| [" + cmnd + "]" + " " * (30 - len(cmnd)) + response)
         elif self.printCommands:
-            printf(cmndString)
+            printf("Communication| ", cmndString)
         elif self.printResponses:
-            printf(response)
+            printf("Communication| ", response)
 
 
         # Save the response to a log variable, in case it's needed for debugging
@@ -220,7 +220,7 @@ class Device:
 
         # Make sure the respone has the valid start and end characters
         if not (response.count('[') == 1 and response.count(']') == 1):
-            printf("ERROR: The message ", response, " did not come with proper formatting!")
+            printf("Communication| ERROR: The message ", response, " did not come with proper formatting!")
 
 
         # Clean up the response
@@ -231,7 +231,7 @@ class Device:
 
         # If the robot returned an error, print that out
         if "error" in response:
-            printf("ERROR: Recieved error from robot: ", response)
+            printf("Communication| ERROR: Recieved error from robot: ", response)
 
 
         return response
@@ -242,11 +242,11 @@ class Device:
 
         # Do error checking, in case communication didn't work
         if message is False:
-            printf("Since an error occured in communication, returning 0's for all arguments!")
+            printf("Communication| Since an error occured in communication, returning 0's for all arguments!")
             return responseDict
 
         if command not in message:
-            printf("ERROR: The message did not come with the appropriate command: ", command)
+            printf("Communication| ERROR: The message did not come with the appropriate command: ", command)
             return responseDict
 
 

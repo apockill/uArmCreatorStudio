@@ -544,6 +544,16 @@ class Console(QtWidgets.QWidget):
             if self.settings["other"]:
                 return "Other"
 
+            # Output
+            # Environment
+            # ObjectManager
+            # ERROR
+            # Resources
+            # Robot
+            # GUI
+            # Interpreter
+            # RobotVision
+            # Video
             return ""
 
     def __openSettings(self):

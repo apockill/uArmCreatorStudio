@@ -382,10 +382,10 @@ class CommandGUI:
 
             # Update self.description for the widget to be dressed with after, by CommandList
             self._updateDescription()
-            printf("New parameters: ", self.parameters)
+            printf("GUI| New Command Parameters: ", self.parameters)
 
         else:
-            printf("User Canceled.")
+            printf("GUI| User Canceled Prompt")
 
 
 

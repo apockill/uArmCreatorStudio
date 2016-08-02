@@ -141,7 +141,7 @@ class Interpreter:
         for error in errors:
             errors[error] = list(set(errors[error]))
 
-        printf(len(errors), " errors occured while initializing the script.")
+        printf("Interpreter| ", len(errors), " errors occured while initializing the script.")
         return errors
 
 
@@ -163,7 +163,7 @@ class Interpreter:
             else:
                 self.__programThread()
         else:
-            printf("ERROR: Tried to run programThread, but there was already one running!")
+            printf("Interpreter| ERROR: Tried to run programThread, but there was already one running!")
 
     def addEvent(self, event):
         self.events.append(event)
@@ -240,7 +240,7 @@ class Interpreter:
         variables = dict([(k, getattr(math, k)) for k in safeList])
         variables['math'] = math
 
-
+        customPrint   = lambda message: printf("Output| ", message)
         robot         = self.env.getRobot()
         vision        = self.env.getVision()
         settings      = self.env.getSettings()
@@ -266,7 +266,7 @@ class Interpreter:
                       "complex":   complex,             "max":             max,       "round":       round,
                       "delattr":   delattr,            "hash":            hash,         "set":         set,
                           "min":       min,             "oct":             oct,         "sum":         sum,
-                          "pow":       pow,           "super":           super,       "print":      printf,
+                          "pow":       pow,           "super":           super,       "print": customPrint,
                         "tuple":     tuple,           "robot":           robot,   "resources":   resources,
                        "vision":    vision,        "settings":        settings,     "vStream":     vStream,
                         "sleep":  newSleep,  "scriptStopping":       isExiting, "classmethod": classmethod,
@@ -295,7 +295,7 @@ class Interpreter:
         try:
             answer = eval(expression, self.nameSpace)
         except Exception as e:
-            printf("EVAL ERROR: ", type(e).__name__, " ", e)
+            printf("Interpreter| EVAL ERROR: ", type(e).__name__, " ", e)
 
 
         if answer is None:
@@ -320,7 +320,7 @@ class Interpreter:
             # if self.__variables["scriptReturn"] is not None:
             #     print("Returned ", self.__variables["scriptReturn"])
         except Exception as e:
-            printf("EXEC ERROR: ", type(e).__name__, ": ", e)
+            printf("Interpreter| EXEC ERROR: ", type(e).__name__, ": ", e)
             return False
 
         return True
@@ -337,7 +337,7 @@ class Interpreter:
         errors = child.initializeScript(script)
 
         if len(errors):
-            printf("ERROR: Tried to run a task that did not meet the requirements. Errors:\n", errors)
+            printf("Interpreter| ERROR: Tried to run a task that did not meet the requirements. Errors:\n", errors)
 
             self.setExiting(True)
 
@@ -351,7 +351,7 @@ class Interpreter:
 
     # The following functions are for interpreter to use within itself.
     def __programThread(self):
-        printf("\n\n\n ##### STARTING PROGRAM #####\n")
+        printf("Interpreter| ##### STARTING PROGRAM #####\n")
 
 
         fpsTimer = FpsTimer(fps=30)
@@ -382,7 +382,7 @@ class Interpreter:
 
         self.mainThread = None
         self.events     = []
-        printf("Interpreter Thread Ending")
+        printf("Interpreter| Interpreter Thread Ending")
 
     def interpretCommandList(self, commandList):
         """
@@ -406,7 +406,7 @@ class Interpreter:
             try:
                 evaluation = command.run()
             except Exception as e:
-                printf(" ERROR: ", command.__class__.__name__, type(e).__name__, ": ", e)
+                printf("Interpreter| ERROR: ", command.__class__.__name__, type(e).__name__, ": ", e)
                 global exitErrors
                 exitErrors = {type(e).__name__: [str(e)]}
                 self.setExiting(True)

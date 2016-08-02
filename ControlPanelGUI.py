@@ -147,7 +147,7 @@ class ControlPanel(QtWidgets.QWidget):
         self.commandMenuWidget.setDisabled(selectedEvent is None)
         self.commandGBox.setTitle("Command List")
         if selectedEvent is None:
-            printf("No event selected. Hiding buttons...")
+            printf("GUI| No event selected. Hiding buttons.")
             return
 
 
@@ -289,7 +289,7 @@ class EventList(QtWidgets.QListWidget):
         selectedItem = self.getSelectedEventItem()
 
         if selectedItem is None:
-            printf("ERROR: 0 events selected")
+            printf("GUI| ERROR: 0 events selected")
             return None
 
         return self.getEventFromItem(selectedItem)
@@ -301,11 +301,11 @@ class EventList(QtWidgets.QListWidget):
 
         selectedItems = self.selectedItems()
         if len(selectedItems) == 0 or len(selectedItems) > 1:
-            printf("ERROR: ", len(selectedItems), " events selected")
+            printf("GUI| ERROR: ", len(selectedItems), " events selected")
             return None
 
         if selectedItems is None:
-            printf("BIG ERROR: selectedEvent was none!")
+            printf("GUI| BIG ERROR: selectedEvent was none!")
             raise Exception
 
         selectedItem = selectedItems[0]
@@ -319,7 +319,7 @@ class EventList(QtWidgets.QListWidget):
         if eventPrompt.accepted:
             self.addEvent(eventPrompt.chosenEvent, parameters=eventPrompt.chosenParameters)
         else:
-            printf("User rejected the prompt.")
+            printf("GUI| User rejected the prompt.")
 
 
     def addEvent(self, eventType, parameters=None, commandListSave=None):
@@ -335,7 +335,7 @@ class EventList(QtWidgets.QListWidget):
         if not isLoading:
             for _, item in self.events.items():
                 if isinstance(item, eventType) and (item.parameters == parameters or parameters is None):
-                    printf("Event already exists, disregarding user input.")
+                    printf("GUI| Event already exists, disregarding user input.")
                     return None
 
 
@@ -397,7 +397,7 @@ class EventList(QtWidgets.QListWidget):
 
 
     def deleteSelectedEvent(self):
-        printf("Removing selected event")
+        printf("GUI| Removing selected event")
 
         # Get the current item it's corresponding event
         selectedItem = self.getSelectedEventItem()
@@ -414,7 +414,7 @@ class EventList(QtWidgets.QListWidget):
                                                    QtWidgets.QMessageBox.No)
 
             if reply == QtWidgets.QMessageBox.No:
-                printf("User rejected deleting the event")
+                printf("GUI| User rejected deleting the event")
                 return
 
         # Delete the event item and it's corresponding event
@@ -423,7 +423,7 @@ class EventList(QtWidgets.QListWidget):
 
     def replaceEvent(self):
         # Replace one event with another, while keeping the same commandList
-        printf("Changing selected event")
+        printf("GUI| Changing selected event")
 
         # Get the current item it's corresponding event
         eventItem = self.getSelectedEventItem()
@@ -438,7 +438,7 @@ class EventList(QtWidgets.QListWidget):
         objManager  = self.env.getObjectManager()
         eventPrompt = EventsGUI.EventPromptWindow(objManager, parent=self)
         if not eventPrompt.accepted:
-            printf("User rejected the prompt.")
+            printf("GUI| User rejected the prompt.")
             return
         eventType   = eventPrompt.chosenEvent
         params      = eventPrompt.chosenParameters
@@ -447,7 +447,7 @@ class EventList(QtWidgets.QListWidget):
         # Make sure the chosen event does not already exist
         for e in self.events.values():
             if isinstance(e, eventType) and (e.parameters == params or params is None):
-                printf("Event already exists, disregarding user input.")
+                printf("GUI| Event already exists, disregarding user input.")
                 return
 
 
@@ -798,7 +798,7 @@ class CommandList(QtWidgets.QListWidget):
 
     def doubleClickEvent(self, clickedItem):
         # Open the command window for the command that was just double clicked
-        printf("Opening double clicked command")
+        printf("GUI| Opening double clicked command")
 
         command = self.getCommand(clickedItem)
         command.openWindow()

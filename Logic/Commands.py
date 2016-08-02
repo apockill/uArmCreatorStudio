@@ -58,7 +58,7 @@ class NameCommand(Command):
         # Add any objects to be tracked
 
     def run(self):
-        printf("A quick description, usually using parameters, of the command that is running")
+        printf("Command| A quick description, usually using parameters, of the command that is running")
         return True
 """
 
@@ -97,12 +97,12 @@ class MoveXYZCommand(Command):
 
 
 
-        printf("Moving robot to ", newX, " ", newY, " ", newZ, " ")
+        printf("Commands| Moving robot to ", newX, " ", newY, " ", newZ, " ")
         if successX and successY and successZ:
             self.robot.setPos(x=newX, y=newY, z=newZ, relative=self.parameters['relative'])
             return True
         else:
-            printf("ERROR in evaluating either X Y or Z: ", successX, successY, successZ)
+            printf("Commands| ERROR in evaluating either X Y or Z: ", successX, successY, successZ)
             return False
 
 
@@ -122,11 +122,11 @@ class MoveWristCommand(Command):
         if success:
             # If relative, get the current wrist angle then add that to newAngle
 
-            printf("Moving robot wrist to ", newAngle)
+            printf("Commands| Moving robot wrist to ", newAngle)
             self.robot.setServoAngles(servo3=newAngle, relative=self.parameters['relative'])
             return True
         else:
-            printf("ERROR in parsing new wrist angle. Expression: ", self.parameters['angle'])
+            printf("Commands| ERROR in parsing new wrist angle. Expression: ", self.parameters['angle'])
             return False
 
 
@@ -148,13 +148,13 @@ class MotionRecordingCommand(Command):
     def run(self):
         if len(self.errors): return
 
-        printf("Playing motionPath ", self.parameters["objectID"])
+        printf("Commands| Playing motionPath ", self.parameters["objectID"])
 
         # Evaluate the "Speed" variable
         newSpeed, success = self.interpreter.evaluateExpression(self.parameters['speed'])
 
         if not success or newSpeed <= 0:
-            printf("ERROR: In evaluating 'speed' parameter for motionpath")
+            printf("Commands| ERROR: In evaluating 'speed' parameter for motionpath")
             return False
 
 
@@ -175,15 +175,15 @@ class SpeedCommand(Command):
     def run(self):
         speed, success = self.interpreter.evaluateExpression(self.parameters['speed'])
 
-        printf("Setting robot speed to ", speed, "cm/s")
+        printf("Commands| Setting robot speed to ", speed, "cm/s")
 
         # Split the wait into incriments of 0.1 seconds each, and check if the thread has been stopped at each incriment
         if success:
-            printf("Setting speed to ", speed)
+            printf("Commands| Setting speed to ", speed)
             self.robot.setSpeed(speed)
             return True
         else:
-            printf("ERROR: Expression ", self.parameters['speed'], " failed to evaluate correctly!")
+            printf("Commands| ERROR: Expression ", self.parameters['speed'], " failed to evaluate correctly!")
             return False
 
 
@@ -195,14 +195,14 @@ class DetachCommand(Command):
         self.robot = self.getVerifyRobot(env)
 
     def run(self):
-        printf("Detaching servos ",
+        printf("Commands| Detaching servos ",
                self.parameters['servo0'],
                self.parameters['servo1'],
                self.parameters['servo2'],
                self.parameters['servo3'])
 
 
-        printf("Detaching certain servos")
+        printf("Commands| Detaching certain servos")
         if self.parameters['servo0']: self.robot.setActiveServos(servo0=False)
         if self.parameters['servo1']: self.robot.setActiveServos(servo1=False)
         if self.parameters['servo2']: self.robot.setActiveServos(servo2=False)
@@ -219,12 +219,12 @@ class AttachCommand(Command):
         self.robot = self.getVerifyRobot(env)
 
     def run(self):
-        printf("Attaching servos ", self.parameters['servo0'],
-                                    self.parameters['servo1'],
-                                    self.parameters['servo2'],
-                                    self.parameters['servo3'])
+        printf("Commands| Attaching servos ", self.parameters['servo0'],
+                                              self.parameters['servo1'],
+                                              self.parameters['servo2'],
+                                              self.parameters['servo3'])
 
-        printf("Attaching certain servos")
+        printf("Commands| Attaching certain servos")
         if self.parameters['servo0']: self.robot.setActiveServos(servo0=True)
         if self.parameters['servo1']: self.robot.setActiveServos(servo1=True)
         if self.parameters['servo2']: self.robot.setActiveServos(servo2=True)
@@ -241,7 +241,7 @@ class GripCommand(Command):
         self.robot = self.getVerifyRobot(env)
 
     def run(self):
-        printf("Setting gripper to True")
+        printf("Commands| Setting gripper to True")
         self.robot.setGripper(True)
         return True
 
@@ -253,7 +253,7 @@ class DropCommand(Command):
         self.robot = self.getVerifyRobot(env)
 
     def run(self):
-        printf("Setting gripper to False")
+        printf("Commands| Setting gripper to False")
         self.robot.setGripper(False)
         return True
 
@@ -272,12 +272,12 @@ class WaitCommand(Command):
 
         # Split the wait into incriments of 0.1 seconds each, and check if the thread has been stopped at each incriment
         if success:
-            printf("Waiting for ", waitTime, " seconds")
+            printf("Commands| Waiting for ", waitTime, " seconds")
             wait(waitTime, self.interpreter.isExiting)
 
             return True
         else:
-            printf("ERROR: Expression ", self.parameters['time'], " failed to evaluate correctly!")
+            printf("Commands| ERROR: Expression ", self.parameters['time'], " failed to evaluate correctly!")
             return False
 
 
@@ -298,7 +298,7 @@ class BuzzerCommand(Command):
         # Check if evaluation worked
         if fSuccess and dSuccess:
             # Send buzzer command
-            printf("Playing frequency", self.parameters['frequency'], " for ", self.parameters['time'])
+            printf("Commands| Playing frequency", self.parameters['frequency'], " for ", self.parameters['time'])
             self.robot.setBuzzer(frequency, duration)
 
             # If the user wants to sleep while the buzzer is running, then sleep.
@@ -307,7 +307,7 @@ class BuzzerCommand(Command):
 
             return True
         else:
-            printf("ERROR: ", self.parameters['frequency'],
+            printf("Commands| ERROR: ", self.parameters['frequency'],
                    " or ", self.parameters["time"], "failed to evaluate correctly!")
             return False
 
@@ -354,11 +354,11 @@ class MoveRelativeToObjectCommand(Command):
 
         # If X Y and Z could not be evaluated correctly, quit
         if not successX or not successY or not successZ:
-            printf("ERROR in parsing either X Y or Z: ", successX, successY, successZ)
+            printf("Commands| ERROR in parsing either X Y or Z: ", successX, successY, successZ)
             return False
 
 
-        printf("Moving robot to obj, relative XYZ is:  ", newX, " ", newY, " ", newZ)
+        printf("Commands| Moving robot to obj, relative XYZ is:  ", newX, " ", newY, " ", newZ)
 
 
         # Get a super recent frame of the object
@@ -370,14 +370,14 @@ class MoveRelativeToObjectCommand(Command):
 
 
         # Get the object position
-        printf("Found object. Moving to XY Location now.")
+        printf("Commands| Found object. Moving to XY Location now.")
         pos     = rv.getPositionTransform(trackedObj.center, direction="toRob", ptPairs=self.ptPairs)
         pos[2] += trackedObj.view.height
 
 
 
         # Create a function that will return "None" if new val is None, and otherwise it will sum pos and new val
-        printf(newX is None, newX)
+        printf("Commands| ", newX is None, newX)
         noneSum = lambda objPos, newPos: None if newPos is None else objPos + newPos
 
 
@@ -412,14 +412,14 @@ class MoveWristRelativeToObjectCommand(Command):
         # Before doing any tracking, evaluate the "Relative" number to make sure its valid
         relativeAngle, success = self.interpreter.evaluateExpression(self.parameters["angle"])
         if not success:
-            printf("Could not determine the relative angle for the wrist. Canceling command. ")
+            printf("Commands| Could not determine the relative angle for the wrist. Canceling command. ")
             return False
 
 
         # Find the object using vision
         _, tracked = self.vision.getObjectLatestRecognition(self.trackable)
         if tracked is None:
-            printf("Could not find ", self.trackable.name, " in order to set wrist relative")
+            printf("Commands| Could not find ", self.trackable.name, " in order to set wrist relative")
             return False
 
 
@@ -514,7 +514,7 @@ class TestObjectSeenCommand(Command):
     def run(self):
         if len(self.errors): return False
 
-        printf("Testing if ", self.parameters["objectID"], " was seen")
+        printf("Commands| Testing if ", self.parameters["objectID"], " was seen")
         tracked = self.vision.searchTrackedHistory(trackable  = self.trackable,
                                                    maxAge= self.maxAge,
                                                    minPoints= self.minPts)
@@ -590,7 +590,7 @@ class TestObjectLocationCommand(Command):
         if self.parameters['not']: ret = not ret
 
         if ret:
-            printf("Tested ", self.parameters["objectID"], " location. ", inCount, " points were in location. ")
+            printf("Commands| Tested ", self.parameters["objectID"], " location. ", inCount, " points were in location. ")
         # If 'not', flip the return value
         return ret
 
@@ -632,7 +632,7 @@ class VisionMoveXYZCommand(MoveXYZCommand):
 
         # If the robot couldn't be seen, exit
         if currentCamCoord is None:
-            printf("Could not find robot marker after move. Exiting without Vision adjustment.")
+            printf("Commands| Could not find robot marker after move. Exiting without Vision adjustment.")
             return False
 
 
@@ -647,12 +647,12 @@ class VisionMoveXYZCommand(MoveXYZCommand):
 
         # If there's too much error, something bad must have happened. Avoid doing any corrections
         if magnitude > 5:
-            printf("Correction magnitude too high. Canceling move. Offset: ", offset, "Magnitude: ", magnitude)
+            printf("Commands| Correction magnitude too high. Canceling move. Offset: ", offset, "Magnitude: ", magnitude)
             return False
 
 
         # Move the offset amount
-        printf("Correcting move. Offset: ", offset, " Magnitude: ", magnitude)
+        printf("Commands| Correcting move. Offset: ", offset, " Magnitude: ", magnitude)
         self.robot.setPos(coord=offset, relative=True)
 
         return True
@@ -713,7 +713,7 @@ class SetVariableCommand(Command):
         script = self.parameters["variable"] + " = " + self.parameters["expression"]
         self.interpreter.evaluateScript(script)
 
-        printf("Setting ", self.parameters["variable"], " to ", self.parameters["expression"])
+        printf("Commands| Setting ", self.parameters["variable"], " to ", self.parameters["expression"])
 
         return True
 
@@ -748,7 +748,7 @@ class TestVariableCommand(Command):
 
         if not success: return False
 
-        printf("Testing: ", scriptString)
+        printf("Commands| Testing: ", scriptString)
 
         # If the expression was evaluated correctly, then return the testResult. Otherwise, return False
         return testResult
@@ -780,7 +780,7 @@ class EndProgramCommand(Command):
         super(EndProgramCommand, self).__init__(parameters)
 
     def run(self):
-        printf("Attempting to shut down program now...")
+        printf("Commands| Attempting to shut down program now...")
         return "ExitProgram"
 
 
@@ -794,7 +794,7 @@ class EndEventCommand(Command):
 
 
     def run(self):
-        printf("Exiting current event")
+        printf("Commands| Exiting current event")
         return "ExitEvent"
 
 
@@ -863,7 +863,7 @@ class RunFunctionCommand(Command):
 
     def run(self):
         if len(self.errors): return
-        printf("Running function: ", self.funcObject.name)
+        printf("Commands| Running function: ", self.funcObject.name)
 
         # Evaluate every expression in self.parameters["arguments"] and create a dict of {"name": value, ...}
         evaluatedArgs = {}

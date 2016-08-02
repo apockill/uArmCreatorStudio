@@ -889,7 +889,7 @@ class MotionRecordWindow(QtWidgets.QDialog):
         for i in range(len(self.motionPath)):
             self.motionPath[i][TIME] -= startTime
             if self.motionPath[i][TIME] < 0:
-                printf("ERROR: Time is negative in motionPath!")
+                printf("GUI| ERROR: Time is negative in motionPath!")
 
         startPoint[TIME] = 0
         endPoint[TIME]   = self.motionPath[-1][TIME] + .1
@@ -1243,7 +1243,7 @@ class ObjectWizard(QtWidgets.QWizard):
             name        = self.objToModifyName
             trackObject = self.objManager.getObject(name)
             if trackObject is None:
-                printf("ERROR: Could not find object to add sample to!")
+                printf("GUI| ERROR: Could not find object to add sample to!")
                 return
         else:
             name = self.page1.nameEdit.text()

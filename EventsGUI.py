@@ -236,7 +236,7 @@ class EventPromptWindow(QtWidgets.QDialog):
 
 
     def btnClicked(self, eventType, **kwargs):
-        printf("Event Type ", eventType, "selected")
+        printf("GUI| Event Type ", eventType, "selected")
         self.chosenEvent      = eventType
         self.chosenParameters = kwargs.get("params", None)
         self.accepted = True

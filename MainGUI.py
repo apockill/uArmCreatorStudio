@@ -233,7 +233,7 @@ class MainWindow(QtWidgets.QMainWindow):
         :return:
         """
 
-        printf("Setting video to state: ", state)
+        printf("GUI| Setting video to state: ", state)
 
         # Don't change anything if no camera ID has been added yet
         cameraID = self.env.getSetting("cameraID")
@@ -276,9 +276,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def startScript(self):
         if self.interpreter.threadRunning():
-                printf("ERROR: Tried to start interpreter while it was already running.")
+                printf("GUI| ERROR: Tried to start interpreter while it was already running.")
                 return
-        printf("Interpreter is ready. Loading script and starting program")
+        printf("GUI| Interpreter is ready. Loading script and starting program")
 
 
         # Load the script with the latest changes in the controlPanel, and get any relevant errors
@@ -312,7 +312,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
             if reply == QtWidgets.QMessageBox.Cancel:
-                printf("Script run canceled by user before starting.")
+                printf("GUI| Script run canceled by user before starting.")
                 vision = self.env.getVision()
                 vision.endAllTrackers()  # Clear any tracking that was started during interpreter initialization
                 return
@@ -390,7 +390,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def openDevices(self):
         # This handles the opening and closing of the Settings window.
-        printf("Opening Devices Window")
+        printf("GUI| Opening Devices Window")
 
         self.endScript()
         self.setVideo("pause")  # If you don't pause video, scanning for cameras may crash the program
@@ -400,10 +400,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.setVideo("play")
         if not accepted:
-            printf("Cancel clicked, no settings applied.")
+            printf("GUI| Cancel clicked, no settings applied.")
             return
 
-        printf("Apply clicked, applying settings...")
+        printf("GUI| Apply clicked, applying settings...")
         self.env.updateSettings("robotID", deviceWindow.getRobotSetting())
         self.env.updateSettings("cameraID", deviceWindow.getCameraSetting())
 
@@ -422,7 +422,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def openCalibrations(self):
         # This handles the opening and closing of the Calibrations window
-        printf("Opening Calibrations Window")
+        printf("GUI| Opening Calibrations Window")
 
         self.endScript()
         self.setVideo("pause")
@@ -434,20 +434,20 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if accepted:
             # Update all the settings
-            printf("Apply clicked, applying calibrations...")
+            printf("GUI| Apply clicked, applying calibrations...")
 
             # Update the settings
             self.env.updateSettings("coordCalibrations", calibrationsWindow.getCoordSettings())
             self.env.updateSettings("motionCalibrations", calibrationsWindow.getMotionSettings())
 
         else:
-            printf("Cancel clicked, no calibrations applied.")
+            printf("GUI| Cancel clicked, no calibrations applied.")
 
         self.setVideo("play")
 
     def openObjectManager(self):
         # This handles the opening and closing of the ObjectManager window
-        printf("Opening ObjectManager Window")
+        printf("GUI| Opening ObjectManager Window")
 
         self.endScript()
 
@@ -474,7 +474,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowTitle(self.programTitle)
 
     def saveTask(self, promptSaveLocation):
-        printf("Saving project")
+        printf("GUI| Saving project")
 
         # If there is no filename, ask for one
         if promptSaveLocation or self.fileName is None:
@@ -499,7 +499,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         self.setWindowTitle(self.programTitle + '       ' + self.fileName)
-        printf("Project Saved Successfully")
+        printf("GUI| Project Saved Successfully")
         return True
 
     def loadTask(self,  **kwargs):
@@ -507,7 +507,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.promptSave()  # Make sure the user isn't losing progress
         self.endScript()   # Make sure a script isn't running while you try to load something
 
-        printf("Loading project")
+        printf("GUI| Loading project")
 
         filename = kwargs.get("filename", None)
 
@@ -523,7 +523,7 @@ class MainWindow(QtWidgets.QMainWindow):
         try:
             self.loadData = json.load( open(filename))
         except IOError:
-            printf("ERROR: Task file ", filename, "not found!")
+            printf("GUI| ERROR: Task file ", filename, "not found!")
             self.fileName = None
             self.env.updateSettings("lastOpenedFile", None)
             return
@@ -537,12 +537,13 @@ class MainWindow(QtWidgets.QMainWindow):
             self.fileName = filename
             self.env.updateSettings("lastOpenedFile", filename)
             self.setWindowTitle(self.programTitle + '      ' + self.fileName)
-            printf("Project loaded successfully")
+            printf("GUI| Project loaded successfully")
         except Exception as e:
-            printf("ERROR: Could not load task: ", e)
+            printf("GUI| ERROR: Could not load task: ", e)
             self.newTask(promptSave=False)
             QtWidgets.QMessageBox.question(self, 'Warning', "The program was unable to load the following script:\n" +
-                                    filename + "\n\n The following error occured: " + str(e), QtWidgets.QMessageBox.Ok)
+                                    filename + "\n\n The following error occured: " + type(e).__name__ + ": " + str(e),
+                                           QtWidgets.QMessageBox.Ok)
 
 
 
@@ -552,22 +553,22 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         if not self.loadData == self.controlPanel.getSaveData():
-            printf("Prompting user to save changes")
+            printf("GUI| Prompting user to save changes")
             reply = QtWidgets.QMessageBox.question(self, 'Warning',
                                     "You have unsaved changes. Would you like to save before continuing?",
                                     QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No | QtWidgets.QMessageBox.Cancel,
                                     QtWidgets.QMessageBox.Yes)
 
             if reply == QtWidgets.QMessageBox.Yes:
-                printf("Saving changes")
+                printf("GUI| Saving changes")
                 success = self.saveTask(False)
                 return not success
 
             if reply == QtWidgets.QMessageBox.No:
-                printf("Not saving changes")
+                printf("GUI| Not saving changes")
 
             if reply == QtWidgets.QMessageBox.Cancel:
-                printf("User canceled- aborting close!")
+                printf("GUI| User canceled- aborting close!")
                 return True
 
     def closeEvent(self, event):
@@ -610,7 +611,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Close threads
         self.env.close()
 
-        printf("Done closing all objects and threads.")
+        printf("GUI| Done closing all objects and threads.")
 
 
 
@@ -711,7 +712,7 @@ class DeviceWindow(QtWidgets.QDialog):
 
     def scanForRobotsClicked(self):
         connectedDevices = getConnectedRobots()  # From Robot.py
-        printf("Connected Devices: ", connectedDevices)
+        printf("GUI| Connected Devices: ", connectedDevices)
         self.robotButtonGroup = QtWidgets.QButtonGroup()
 
         # Update the list of found devices

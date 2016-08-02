@@ -110,7 +110,7 @@ class Robot:
         """
 
         if not self.connected() or self.exiting:
-            printf("Robot not avaliable, returning False")
+            printf("Robot| Robot not avaliable, returning False")
             return False
 
         with self.lock:
@@ -123,7 +123,7 @@ class Robot:
         """
 
         if not self.connected() or self.exiting:
-            printf("Robot not avaliable, returning False for Tip Sensor")
+            printf("Robot| Robot not avaliable, returning False for Tip Sensor")
             return False
 
         with self.lock:
@@ -136,7 +136,7 @@ class Robot:
         """
 
         if not self.connected() or self.exiting:
-            printf("Robot not avaliable, return 0 for all coordinates")
+            printf("Robot| Robot not avaliable, return 0 for all coordinates")
             return [0.0, 0.0, 0.0]
 
         with self.lock:
@@ -149,7 +149,7 @@ class Robot:
         """
 
         if not self.connected() or self.exiting:
-            printf("Robot not avaliable, returning 0 for angle")
+            printf("Robot| Robot not avaliable, returning 0 for angle")
             return [0.0, 0.0, 0.0, 0.0]
 
         with self.lock:
@@ -161,7 +161,7 @@ class Robot:
         :return: [X, Y, Z] list
         """
         if not self.connected() or self.exiting:
-            printf("Robot not avaliable, returning 0 for FK")
+            printf("Robot| Robot not avaliable, returning 0 for FK")
             return [0.0, 0.0, 0.0]
 
         with self.lock:
@@ -186,7 +186,7 @@ class Robot:
         """
 
         if not self.connected() or self.exiting:
-            printf("Robot not avaliable, canceling position change")
+            printf("Robot| Robot not avaliable, canceling position change")
             return
 
         def setVal(value, axis, relative):
@@ -214,15 +214,15 @@ class Robot:
             # Make sure all X, Y, and Z values are within a reachable range (not a permanent solution)
             if self.coord[0] is not None and self.coord[1] is not None and self.coord[2] is not None:
                 if self.xMin > self.coord[0] or self.coord[0] > self.xMax:
-                    printf("X is out of bounds. Requested: ", self.coord[0])
+                    printf("Robot| X is out of bounds. Requested: ", self.coord[0])
                     self.coord[0] = self.clamp(self.xMin, self.coord[0], self.xMax)
 
                 if self.yMin > self.coord[1] or self.coord[1] > self.yMax:
-                    printf("Y is out of bounds. Requested: ", self.coord[1])
+                    printf("Robot| Y is out of bounds. Requested: ", self.coord[1])
                     self.coord[1] = self.clamp(self.yMin, self.coord[1], self.yMax)
 
                 if self.zMin > self.coord[2] or self.coord[2] > self.zMax:
-                    printf("Z is out of bounds. Requested: ", self.coord[2])
+                    printf("Robot| Z is out of bounds. Requested: ", self.coord[2])
                     self.coord[2] = self.clamp(self.zMin, self.coord[2], self.zMax)
 
 
@@ -241,7 +241,7 @@ class Robot:
                     self.__servoAttachStatus = [True, True, True, True]
 
                 except ValueError:
-                    printf("ERROR: Robot out of bounds and the uarm_python library crashed!")
+                    printf("Robot| ERROR: Robot out of bounds and the uarm_python library crashed!")
 
 
                 # Wait for robot to finish move, but if in exiting mode, just continue
@@ -261,7 +261,7 @@ class Robot:
         """
 
         if not self.connected() or self.exiting:
-            printf("Robot not avaliable, canceling wrist change")
+            printf("Robot| Robot not avaliable, canceling wrist change")
             return
 
         def setServoAngle(servoNum, angle, rel):
@@ -276,7 +276,7 @@ class Robot:
                 if newAngle > 180: newAngle = 180
                 if newAngle <   0: newAngle = 0
                 if not newAngle == beforeClamp:
-                    printf("Tried to set angle to a value less than 0 or greater than 180!")
+                    printf("Robot| Tried to set angle to a value less than 0 or greater than 180!")
 
 
                 # Set the value and save it in the cache
@@ -302,7 +302,7 @@ class Robot:
         """
 
         if not self.connected() or self.exiting:
-            printf("Robot not avaliable, canceling servo change")
+            printf("Robot| Robot not avaliable, canceling servo change")
             return
 
         # If a positional servo is attached, get the robots current position and update the self.pos cache
@@ -345,7 +345,7 @@ class Robot:
         """
 
         if not self.connected() or self.exiting:
-            printf("Robot not avaliable, canceling gripper change")
+            printf("Robot| Robot not avaliable, canceling gripper change")
             return
 
         if not self.__gripperStatus == status:
@@ -361,7 +361,7 @@ class Robot:
         """
 
         if not self.connected() or self.exiting:
-            printf("Robot not avaliable, canceling buzzer change")
+            printf("Robot| Robot not avaliable, canceling buzzer change")
             return
         with self.lock:
             self.uArm.setBuzzer(frequency, duration)
@@ -396,25 +396,25 @@ class Robot:
         :param com: COM port that the robot is connected to
         """
 
-        printf("Thread Created")
+        printf("Robot| Thread Created")
 
         try:
             self.uArm = Device(com)
 
             # Check if the uArm was able to connect successfully
             if self.uArm.connected():
-                printf("uArm successfully connected")
+                printf("Robot| SUCCESS: uArm successfully connected")
                 self.uArm.setXYZ(self.home['x'], self.home['y'], self.home['z'], self.__speed)
                 self.__threadRunning = False
                 self.setPos(**self.home)
                 self.setActiveServos(all=False)
                 return
             else:
-                printf("uArm was unable to connect!")
+                printf("Robot| FAILURE: uArm was unable to connect!")
                 self.uArm = None
 
         except serial.SerialException:
-            printf("ERROR: SerialException while setting uArm to ", com)
+            printf("Robot| ERROR: SerialException while setting uArm to ", com)
 
         self.__threadRunning = False
 
@@ -426,12 +426,12 @@ class Robot:
 
         if com is not None and not self.__threadRunning:
             self.__threadRunning = True
-            printf("Setting uArm to ", com)
+            printf("Robot| Setting uArm to ", com)
             setup = Thread(target=lambda: self.__setupThread(com))
             setup.start()
 
         else:
-            printf("ERROR: Tried setting uArm when it was already set!")
+            printf("Robot| ERROR: Tried setting uArm when it was already set!")
 
     def setExiting(self, exiting):
         """
@@ -442,7 +442,7 @@ class Robot:
         :param exiting: True-> communication with robot is cut off. False -> Everything works normally
         """
         if exiting:
-            printf("Setting robot to Exiting mode. All commands should be ignored")
+            printf("Robot| Setting robot to Exiting mode. All commands should be ignored")
         self.exiting = exiting
 
 

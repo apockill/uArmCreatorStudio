@@ -74,7 +74,7 @@ class Vision:
             lastFrame = self.vStream.frameCount
             while self.vStream.frameCount == lastFrame:
                 if self.exiting:
-                    printf("Exiting early!")
+                    printf("Vision| Exiting early!")
                     break
 
                 sleep(.05)
@@ -88,7 +88,7 @@ class Vision:
         """
 
         if trackable is None:
-            printf("ERROR: Tried to add nonexistent trackable to the tracker!")
+            printf("Vision| ERROR: Tried to add nonexistent trackable to the tracker!")
             return
 
         views = trackable.getViews()
@@ -154,7 +154,7 @@ class Vision:
         # Get a super recent frame of the object
         for i in range(0, maxAttempts):
             if self.exiting:
-                printf("Exiting early!")
+                printf("Vision| Exiting early!")
                 break
 
             # If the frame is too old or marker doesn't exist or doesn't have enough points, exit the function
@@ -225,7 +225,7 @@ class Vision:
 
         maxFrame = maxAge + 1
         if maxFrame is None or maxFrame >= self.historyLen:
-            printf("ERROR: Tried to look further in the history than was possible!")
+            printf("Vision| ERROR: Tried to look further in the history than was possible!")
             maxFrame = self.historyLen
 
         # Safely pull the relevant trackedHistory from the tracker object
@@ -262,7 +262,7 @@ class Vision:
         # GET TWO CONSECUTIVE FRAMES
         frameList = self.vStream.getFrameList()
         if len(frameList) < 10:  # Make sure there are enough frames to do the motion comparison
-            printf("Not enough frames in self.vid.previousFrames")
+            printf("Vision| Not enough frames in self.vid.previousFrames")
             return 0  # IF PROGRAM IS RUN BEFORE THE PROGRAM HAS EVEN 10 FRAMES
 
         frame0 = frameList[0]
@@ -503,7 +503,7 @@ class PlaneTracker(Tracker):
 
         for target in self.targets:
             if view == target.view:
-                printf("Rejected: Attempted to add two targets of the same name: ", view.name)
+                printf("Vision| Rejected: Attempted to add two targets of the same name: ", view.name)
                 return
 
         planarTarget = self.createTarget(view)
@@ -769,7 +769,7 @@ class CascadeTracker(Tracker):
                     self.targets.append(target)
 
                 else:
-                    printf("Tried to add a target that was already there!")
+                    printf("Vision| Tried to add a target that was already there!")
 
     def track(self, frame):
         gray  = cv2.cvtColor(frame.copy(), cv2.COLOR_BGR2GRAY)

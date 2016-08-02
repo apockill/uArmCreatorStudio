@@ -69,7 +69,7 @@ class ObjectManager:
         # If not new, replace self
         wasNew = self.__addObject(newObject)
         if not wasNew:
-            printf("Tried to add object that already existed, ", newObject.name)
+            printf("ObjectManager| Tried to add object that already existed, ", newObject.name)
 
         newObject.save(self.__getDirectory(newObject))
 
@@ -176,7 +176,7 @@ class ObjectManager:
         return forbidden
 
     def deleteObject(self, objectID):
-        printf("Deleting ", objectID, " permanently")
+        printf("ObjectManager| Deleting ", objectID, " permanently")
 
         for obj in self.__objects:
             if not objectID == obj.name: continue
@@ -214,7 +214,7 @@ class ObjectManager:
             # Delete the object from the objects array
 
 
-        printf("Could not find object ", objectID, " in order to delete it!")
+        printf("ObjectManager| Could not find object ", objectID, " in order to delete it!")
         return False
 
 
@@ -225,7 +225,7 @@ class ObjectManager:
         # Checks if the object already exists. If it does, then replace the existing object with the new one.
         for obj in self.__objects:
             if newObject.name == obj.name:
-                printf("ERROR: Tried adding an object that already existed: ", obj.name)
+                printf("ObjectManager| ERROR: Tried adding an object that already existed: ", obj.name)
                 return False
 
 
@@ -260,14 +260,14 @@ class ObjectManager:
 
 
             if not os.path.isdir(path):
-                printf("ERROR: Could not find directory ", path)
+                printf("ObjectManager| ERROR: Could not find directory ", path)
                 continue
 
 
             # Get the type and name of the object by breaking up the filename into words
             words = folder.split(' ', 1)
             if len(words) < 2:
-                printf("ERROR: File ", folder, " did not have the correct format!")
+                printf("ObjectManager| ERROR: File ", folder, " did not have the correct format!")
                 continue   # If there isn't a 'TYPE NAME' format
             newType = str(words[0])
             name    = words[1]
@@ -276,7 +276,7 @@ class ObjectManager:
             # Check that that type of resource exists
 
             if newType not in resourceClasses:
-                printf("ERROR: Tried to create a resource that is not in Resources.py!")
+                printf("ObjectManager| ERROR: Tried to create a resource that is not in Resources.py!")
                 continue
 
             # Get the type, then instantiate it

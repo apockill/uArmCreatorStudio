@@ -66,7 +66,7 @@ class Resource:
         """
         # Check if the directory exists (just in case)
         if not os.path.isdir(directory):
-            printf("ERROR: Could not find directory", directory)
+            printf("Resources| ERROR: Could not find directory", directory)
             return False
 
 
@@ -76,10 +76,10 @@ class Resource:
             loadedData = json.load( open(dataFile))
             self.dataJson = loadedData
         except IOError:
-            printf("ERROR: Data file ", dataFile, " was not found!")
+            printf("Resources| ERROR: Data file ", dataFile, " was not found!")
             return False
         except ValueError:
-            printf("ERROR: Object in ", directory, " is corrupted!")
+            printf("Resources| ERROR: Object in ", directory, " is corrupted!")
             return False
         return True
 
@@ -220,7 +220,7 @@ class TrackableObject(Trackable):
 
         # Check if the directory exists (just in case)
         if not os.path.isdir(directory):
-            printf("ERROR: Could not find directory", directory)
+            printf("Resources| ERROR: Could not find directory", directory)
             return False
 
 
@@ -230,10 +230,10 @@ class TrackableObject(Trackable):
             loadedData = json.load( open(dataFile))
 
         except IOError:
-            printf("ERROR: Data file ", dataFile, " was not found!")
+            printf("Resources| ERROR: Data file ", dataFile, " was not found!")
             return False
         except ValueError:
-            printf("ERROR: Object in ", directory, " is corrupted!")
+            printf("Resources| ERROR: Object in ", directory, " is corrupted!")
             return False
 
         # For each view, load the image associated with it, and build the appropriate view
@@ -243,7 +243,7 @@ class TrackableObject(Trackable):
             image     = cv2.imread(imageFile)
 
             if image is None:
-                printf("ERROR: Image File ", imageFile, " was unable to be loaded!")
+                printf("Resources| ERROR: Image File ", imageFile, " was unable to be loaded!")
                 return False
 
             self.addNewView(image      = image,
