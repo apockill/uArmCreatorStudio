@@ -26,18 +26,19 @@ License:
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
 import re
-import numpy             as np
+import Paths
 import Logic.RobotVision as rv
+import numpy             as np
 from time                import time
 from PyQt5               import QtCore, QtWidgets, QtGui
-from CommonGUI           import centerScreen
 from CameraGUI           import CameraWidget, CameraSelector, cvToPixFrame
-from ControlPanelGUI     import CommandList
 from CommandsGUI         import CommandMenuWidget
-from Logic               import Paths
+from CommonGUI           import centerScreen
+from ControlPanelGUI     import CommandList
 from Logic.Global        import printf
 from Logic.Resources     import TrackableObject, MotionPath, Function
 from Logic.RobotVision   import MIN_POINTS_TO_LEARN_OBJECT
+
 __author__ = "Alexander Thiel"
 
 
@@ -576,9 +577,9 @@ class EditGroupWindow(QtWidgets.QDialog):
 
         # Add the appropriate tags to every object
         for objID in selectedObjs:
-            groupObj = self.objManager.getObject(objID)
-            groupObj.addTag(name)
-            self.objManager.saveObject(groupObj)
+            trackableInGroup = self.objManager.getObject(objID)
+            trackableInGroup.addTag(name)
+            self.objManager.saveObject(trackableInGroup)
 
         self.objManager.refreshGroups()
         self.newObject = self.objManager.getObject(name)
@@ -947,7 +948,7 @@ class MotionRecordWindow(QtWidgets.QDialog):
             name = self.nameEdit.text()
             motionObj = MotionPath(name)
 
-        motionObj.setMotionPath(self.motionPath)
+        motionObj.setup(motionPath = self.motionPath)
 
         self.objManager.saveObject(motionObj)
         self.newObject = motionObj
@@ -1174,10 +1175,11 @@ class MakeFunctionWindow(QtWidgets.QDialog):
         else:
             name = self.nameEdit.text()
             functionObj = Function(name)
-        functionObj.setArguments(self.argList.getArguments())
-        functionObj.setCommandList(self.commandList.getSaveData())
-        functionObj.setDescription(str(self.descEdit.text()))
+        functionObj.setup(commandList  = self.commandList.getSaveData(),
+                          argumentList = self.argList.getArguments(),
+                          description  = self.descEdit.text())
         self.objManager.saveObject(functionObj)
+
         self.newObject = functionObj
 
     def isComplete(self):

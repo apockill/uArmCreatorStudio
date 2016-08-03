@@ -52,6 +52,56 @@ MAX_FRAME_FAIL             = 15   # Maximum times a function will get a new fram
 
 # General Use Functions (May or may not use vision or robot)
 
+class Transform:
+    """
+    This class handles all coordinate transformations for Camera->Robot grid or Robot->Camera grid
+
+        You give it "ptPairs",
+        an array of the following format:
+
+        [   [(cameraXYZ), (robotXYZ)],
+            [(cameraXYZ), (robotXYZ)],
+            [(cameraXYZ), (robotXYZ)]
+            ...
+        ]
+    """
+
+    def __init__(self, ptPairs):
+
+        ptPairs = np.asarray(ptPairs)
+        self.__toRobot = self.__generateTransform(ptPairs[:, 0], ptPairs[:, 1])
+        self.__toCamera = self.__generateTransform(ptPairs[:, 1], ptPairs[:, 0])
+
+    def robotToCamera(self, robotCoord):
+        """
+        Where "coordinate" is a tuple of form (x, y, z) from the robots coordinate grid.
+        """
+        return self.__toCamera(robotCoord)
+
+    def cameraToRobot(self, cameraCoord):
+        """
+        Where "coordinate" is a tuple of form (x, y, z) from the robots coordinate grid.
+        """
+        return self.__toRobot(cameraCoord)
+
+    def __generateTransform(self, fromPts, toPts):
+        """
+        This will generate a function that will work like this function(x1, y1, z1) and returns (x2, y2, z2), where
+        x1, y1, z1 are form the "fromPts" coordinate grid, and the x2, y2, z2 are from the "toPts" coordinate grid.
+
+        It does this by using openCV's estimateAffine3D
+        """
+
+        # Generate the transformation matrix
+        ret, M, mask = cv2.estimateAffine3D(np.float32(fromPts),
+                                            np.float32(toPts),
+                                            confidence = .9999999)
+
+        if not ret: printf("RobotVision| ERROR: Transform failed!")
+
+        transformFunc = lambda x: np.array((M * np.vstack((np.matrix(x).reshape(3, 1), 1)))[0:3, :].reshape(1, 3))[0]
+        return transformFunc
+
 
 
 def playMotionPath(motionPath, robot, exitFunc, speedMultiplier=1, reverse=False):
@@ -189,7 +239,7 @@ def playMotionPath(motionPath, robot, exitFunc, speedMultiplier=1, reverse=False
                 lastVal[servo] = modified
 
 
-# Transform math``
+# Transform math
 def createTransformFunc(ptPairs, direction):
     """
     Returns a function that takes a point (x,y,z) of a camera coordinate, and returns the robot (x,y,z) for that point
@@ -246,10 +296,6 @@ def createTransformFunc(ptPairs, direction):
     """
 
     return transformFunc
-
-def getPositionTransform(posToTransform, direction, ptPairs):
-    transform = createTransformFunc(ptPairs, direction)
-    return transform(posToTransform)
 
 
 
@@ -382,7 +428,7 @@ def smoothListGaussian(list1, degree):
 
 
 # Long form functions with lots of steps
-def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision):
+def pickupObject(trackable, rbMarker, robot, vision, transform):
     """
     This will pick up an object, or detect that it failed and turn off the gripper
 
@@ -446,15 +492,12 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision):
     """
     # center = trackedObj.center
     center    = trackedObj.center
-    posRob    = getPositionTransform((center[0], center[1], center[2]), direction="toRob", ptPairs=ptPairs)
-    posCam    = getPositionTransform(posRob, direction="toCam", ptPairs=ptPairs)
+    posRob    = transform.cameraToRobot((center[0], center[1], center[2]))
+    posCam    = transform.robotToCamera(posRob)
     staticErr = center - posCam
-    posRob    = getPositionTransform((center[0], center[1], center[2]), direction="toRob", ptPairs=ptPairs)
+    posRob    = transform.cameraToRobot((center[0], center[1], center[2]))
     posRob[2] += trackedObj.view.height + 5
-    if posRob[2] < groundHeight + 1:
-        printf("RobotVision| Predicted position was below groundheight. Moving to groundheight instead.")
-        posRob[2] = groundHeight + 1
-    posCam    = getPositionTransform(posRob, direction="toCam", ptPairs=ptPairs)
+    posCam    = transform.robotToCamera(posRob)
     posCam   += staticErr
     objCamZ   = posCam[2]
 
@@ -477,7 +520,7 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision):
     print("Final center: ", targetCamPos)
 
     # Move to the objects position
-    pos = getPositionTransform(targetCamPos, direction="toRob", ptPairs=ptPairs)
+    pos = transform.cameraToRobot(targetCamPos)
 
 
     robot.setPos(z=pos[2])
@@ -562,7 +605,7 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision):
             jumpSize = 1.0
 
         # Get the relative move, multiply
-        relMove   = getRelativeMoveTowards(lastCoord, targetCamPos, ptPairs)
+        relMove   = getRelativeMoveTowards(lastCoord, targetCamPos, transform)
         unitVec   = unitVector(relMove)
         finalMove = unitVec * jumpSize
         print("Final move: ", finalMove)
@@ -595,7 +638,7 @@ def pickupObject(trackable, rbMarker, ptPairs, groundHeight, robot, vision):
         robot.setPos(z=8, relative=True)
         return False
 
-def getRelativeMoveTowards(robotCamCoord, destCamCoord, ptPairs):
+def getRelativeMoveTowards(robotCamCoord, destCamCoord, transform):
     """
     :param robotCoord: Cameras coordinate for the robot
     :param destCoord:  Cameras coordinate for the destination
@@ -604,9 +647,8 @@ def getRelativeMoveTowards(robotCamCoord, destCamCoord, ptPairs):
     """
 
     print("Robot cam coord: ", robotCamCoord, "Destination cam coord: ", destCamCoord)
-    camToRobTrans = createTransformFunc(ptPairs, direction="toRob")
-    robotRobCoord = camToRobTrans(robotCamCoord)
-    destRobCoord  = camToRobTrans(destCamCoord)
+    robotRobCoord = transform.cameraToRobot(robotCamCoord)
+    destRobCoord  = transform.cameraToRobot(destCamCoord)
 
     print("Current robot position: ", robotRobCoord, "Destination robot position: ", destRobCoord)
     offset = np.asarray(destRobCoord) - np.asarray(robotRobCoord)
@@ -660,6 +702,7 @@ def getRelativeMoveTowards(robotCamCoord, destCamCoord, ptPairs):
 
 
 # NOT USED
+'''
 def getPositionCorrection(destPos, actualPos):
     # Returns the destination position offset by the difference between actualPos and destPos
     offset = np.asarray(destPos) - np.asarray(actualPos)
@@ -689,5 +732,4 @@ def getRelativePosition(camPos, robRelative, ptPairs):
 
     return posCam
 
-
-
+'''

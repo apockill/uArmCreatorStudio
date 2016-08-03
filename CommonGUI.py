@@ -26,10 +26,11 @@ License:
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
 import ast  # To check if a statement is python parsible, for evals
-from PyQt5        import QtGui, QtCore, QtWidgets
+import Paths
 from threading    import RLock
-from Logic.Global import printf
-from Logic        import Paths
+from PyQt5        import QtGui, QtCore, QtWidgets
+
+
 __author__ = "Alexander Thiel"
 
 
@@ -483,7 +484,7 @@ class Console(QtWidgets.QWidget):
             self.write("Input", command)
             ret, success = self.execFunction(command)
             if ret is not None:
-                self.write("", ret)
+                self.write("Output", ret)
 
 
             self.inputEdt.setText("")
@@ -498,63 +499,52 @@ class Console(QtWidgets.QWidget):
         Choose whether or not this string comes from a class that should be printed or not. This is set in the settings.
         """
         with self.printLock:
-            if len(moduleString) == 0:
+
+            if "Output" in moduleString:
                 return "Output"
 
-            if moduleString in "Input":
+            if "Input" in moduleString:
                 return "Input"
 
             # Print anything from a GUI module
-            if "GUI" in moduleString or "__main__" in moduleString:
-                if self.settings["gui"]:
-                    return "GUI"
-                return ""
+            if "GUI" in moduleString:
+                if self.settings["gui"]: return "GUI"
+                return None
 
             # Print anything from the Robot module
             if "Robot" in moduleString:
-                if self.settings["robot"]:
-                    return "Robot"
-                return ""
+                if self.settings["robot"]: return "Robot"
+                return None
 
             # Print anything from the Vision module
-            if "Vision" in moduleString:
-                if self.settings["vision"]:
-                    return "Vision"
-                return ""
+            if "Vision" in moduleString or "Video" in moduleString:
+                if self.settings["vision"]: return "Vision"
+                return None
 
             # Print anything from the communication module
-            if "CommunicationProtocol" in moduleString:
-                if self.settings["serial"]:
-                    return "Communication"
-                return ""
+            if "Communication" in moduleString:
+                if self.settings["serial"]: return "Communication"
+                return None
 
             # Print anything from the Interpreter module
-            if "Interpreter" in moduleString:
-                if self.settings["interpreter"]:
-                    return "Interpreter"
-                return ""
+            if "Environment"   in moduleString or \
+               "ObjectManager" in moduleString or \
+               "Resources"     in moduleString or \
+               "Interpreter"   in moduleString:
+
+                if self.settings["interpreter"]: return "Interpreter"
+                return None
 
             # Print anything from Commands
-            if "Commands" in moduleString or "Events" in moduleString:
-                if self.settings["script"]:
-                    return "Script"
-                return ""
+            if "Commands" in moduleString or "Events" in moduleString or "RobotVision" in moduleString:
+                if self.settings["script"]: return "Script"
+                return None
 
             # If the user wants everything to be printed, just in case, then send "Other" as the category
             if self.settings["other"]:
                 return "Other"
 
-            # Output
-            # Environment
-            # ObjectManager
-            # ERROR
-            # Resources
-            # Robot
-            # GUI
-            # Interpreter
-            # RobotVision
-            # Video
-            return ""
+            return None
 
     def __openSettings(self):
         window = QtWidgets.QDialog()
@@ -680,7 +670,11 @@ class Console(QtWidgets.QWidget):
 
                 # Check the origin of the print. If its not supported in the settings, exit
                 category = self.__allowString(classStr)
-                if len(category) == 0: continue
+
+                # Check if the user has this category turned on in settings. If there's an error, print anyways.
+                if category is None and "ERROR" not in printStr: continue
+
+                if category is None: category = classStr
 
 
                 # Prepare the text to add to console

@@ -70,6 +70,7 @@ iconsList = ["cancel.png",
              "record_start.png",
              "record_end.png",
              "command_see_loc.png",
+             "command_test_angle.png",
              "command_run_task.png",
              "command_run_func.png"]
 

@@ -126,7 +126,7 @@ class VideoStream:
             self.mainThread = Thread(target=self.__videoThread)  # Cannot be Daemon thread
             self.mainThread.start()
         else:
-            printf("Video| ERROR: Tried to create mainThread, but mainThread already existed.")
+            printf("Video| Tried to create mainThread, but mainThread already existed.")
 
     def endThread(self):
         self.running = False

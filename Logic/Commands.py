@@ -28,7 +28,6 @@ License:
 import math
 import numpy as np
 import sys
-from Logic.Events      import InitEvent
 from Logic             import RobotVision as rv
 from Logic.Global      import printf, wait, getModuleClasses
 from Logic.LogicObject import LogicObject
@@ -328,12 +327,10 @@ class MoveRelativeToObjectCommand(Command):
         self.robot      = self.getVerifyRobot(env)
         self.vision     = self.getVerifyVision(env)
         self.trackable  = self.getVerifyObject(env, self.parameters["objectID"])
-        coordCalib      = self.getVerifyCoordCalibrations(env)
+        self.transform  = self.getVerifyTransform(env)
 
 
         if len(self.errors): return
-        self.ptPairs = coordCalib["ptPairs"]
-
         # Turn on tracking for the relevant object
         self.vision.addTarget(self.trackable)
 
@@ -371,7 +368,7 @@ class MoveRelativeToObjectCommand(Command):
 
         # Get the object position
         printf("Commands| Found object. Moving to XY Location now.")
-        pos     = rv.getPositionTransform(trackedObj.center, direction="toRob", ptPairs=self.ptPairs)
+        pos = self.transform.cameraToRobot(trackedObj.center)
         pos[2] += trackedObj.view.height
 
 
@@ -394,7 +391,7 @@ class MoveWristRelativeToObjectCommand(Command):
     def __init__(self, env, interpreter, parameters=None):
         super(MoveWristRelativeToObjectCommand, self).__init__(parameters)
         self.interpreter = interpreter
-        coordCalib       = self.getVerifyCoordCalibrations(env)
+        self.transform   = self.getVerifyTransform(env)
         self.robot       = self.getVerifyRobot(env)
         self.vision      = self.getVerifyVision(env)
         self.trackable   = self.getVerifyObject(env, self.parameters["objectID"])
@@ -402,8 +399,6 @@ class MoveWristRelativeToObjectCommand(Command):
 
         if len(self.errors): return
         # Turn on tracking for the relevant object
-
-        self.ptPairs = coordCalib["ptPairs"]
         self.vision.addTarget(self.trackable)
 
     def run(self):
@@ -432,18 +427,14 @@ class MoveWristRelativeToObjectCommand(Command):
         cntr = tracked.center
         if self.relToBase:
             # If the angle is relative to the base angle, do the math here and add it to target angle.
-
             TOCC = cntr   # Tracked Object Camera Coordinates
-            ROCC = rv.getPositionTransform((0, 0, 0), "toCam", self.ptPairs)  # Robot Origin Camera Coordinates
+            ROCC = self.transform.robotToCamera((0, 0, 0))   # Robot Origin Camera Coordinates
             baseAngle = 90 - math.degrees(math.atan( (ROCC[1] - TOCC[1]) / (ROCC[0] - TOCC[0])))
             targetAngle += baseAngle - 90
         else:
             # If the angle is relative to x Axis, do different math and add it to target angle
-            a = rv.getPositionTransform((0, 0, 0), "toCam", self.ptPairs)
-            b = rv.getPositionTransform((10, 0, 0), "toCam", self.ptPairs)
-
-            # TORC    = rv.getPositionTransform(cntr, "toRob", self.ptPairs)  # Tracked Object Robot Coordinates
-            # RXCC    = rv.getPositionTransform((0, cntr[1], cntr[2]), "toCam", self.ptPairs)  # Robot XAxis Camera Coordinates
+            a = self.transform.robotToCamera((0, 0, 0))
+            b = self.transform.robotToCamera((10, 0, 0))
             xOffset =  math.degrees(math.atan( (a[1] - b[1]) / (a[0] - b[0])))
             targetAngle += 90 - xOffset
 
@@ -468,7 +459,7 @@ class PickupObjectCommand(Command):
     def __init__(self, env, interpreter, parameters=None):
         super(PickupObjectCommand, self).__init__(parameters)
 
-        coordCalib      = self.getVerifyCoordCalibrations(env)
+        self.transform  = self.getVerifyTransform(env)
         self.robot      = self.getVerifyRobot(env)
         self.vision     = self.getVerifyVision(env)
         self.trackable  = self.getVerifyObject(env, self.parameters["objectID"])
@@ -476,10 +467,6 @@ class PickupObjectCommand(Command):
         self.exitFunc   = interpreter.isExiting
 
         if len(self.errors): return
-
-        self.ptPairs    = coordCalib["ptPairs"]
-        self.grndHeight = coordCalib["groundPos"][2]
-
         # Turn on tracking for the relevant object
         self.vision.addTarget(self.trackable)
         self.vision.addTarget(self.rbMarker)
@@ -487,8 +474,7 @@ class PickupObjectCommand(Command):
     def run(self):
         if len(self.errors) > 0: return False
 
-        ret = rv.pickupObject(self.trackable, self.rbMarker, self.ptPairs, self.grndHeight,
-                              self.robot, self.vision)
+        ret = rv.pickupObject(self.trackable, self.rbMarker, self.robot, self.vision, self.transform)
 
         return ret
 
@@ -595,21 +581,37 @@ class TestObjectLocationCommand(Command):
         return ret
 
 
+class TestObjectAngle(Command):
+
+    def __init__(self, env, interpreter, parameters=None):
+        super(TestObjectAngle, self).__init__(parameters)
+
+        # Load any objects, modules, calibrations, etc  that will be used in the run Section here. Use getVerifyXXXX()
+        self.robot   = self.getVerifyRobot(env)
+        self.vision  = self.getVerifyVision(env)
+        print("Setting up testangle", parameters)
+        if len(self.errors): return
+
+        # Here, start tracking if your command requires it
+        # Add any objects to be tracked
+
+    def run(self):
+        printf("Command| A quick description, usually using parameters, of the command that is running")
+        return True
+
+
 class VisionMoveXYZCommand(MoveXYZCommand):
 
     def __init__(self, env, interpreter, parameters=None):
         super(VisionMoveXYZCommand, self).__init__(env, interpreter, parameters)
 
         self.interpreter = interpreter
-
-        coordCalib       = self.getVerifyCoordCalibrations(env)
+        self.transform   = self.getVerifyTransform(env)
         self.vision      = self.getVerifyVision(env)
         self.rbMarker    = self.getVerifyObject(env, "Robot Marker")
 
 
         if len(self.errors): return
-        self.ptPairs    = coordCalib["ptPairs"]
-
         # Turn on tracking for the relevant object
         self.vision.addTarget(self.rbMarker)
 
@@ -637,7 +639,7 @@ class VisionMoveXYZCommand(MoveXYZCommand):
 
 
         # Get the robots "True" position from the cameras point of view
-        currentRobPos = rv.getPositionTransform(currentCamCoord, "toRob", self.ptPairs)
+        currentRobPos = self.transform.cameraToRobot(currentCamCoord)
 
 
         # Find the move offset (aka, the error and how to correct it)

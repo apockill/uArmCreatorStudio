@@ -81,16 +81,6 @@ class LogicObject:
             self.errors.append("Motion Detection Calibration has never been run")
         return calib
 
-    def getVerifyCoordCalibrations(self, env):
-        calib  = env.getSetting("coordCalibrations")
-
-        # DO ERROR CHECKING
-        # If the appropriate motionCalibrations do not exist, add it to the "compile" errors, and set self.calib to None
-        if calib["ptPairs"] is None or calib["failPts"] is None:
-            self.errors.append("Camera/Robot Position Calibration has never been run")
-
-        return calib
-
     def getVerifyObject(self, env, objectID):
         objectManager = env.getObjectManager()
         requestedObj  = objectManager.getObject(objectID)
@@ -102,7 +92,12 @@ class LogicObject:
 
         return requestedObj
 
+    def getVerifyTransform(self, env):
+        transform = env.getTransform()
+        if transform is None:
+            self.errors.append("Camera/Robot Position Calibration has never been run")
 
+        return transform
 
 
 

@@ -88,9 +88,6 @@ class Resource:
     def getAttribute(self, attribute):
         return self.dataJson[attribute]
 
-    def setAttribute(self, attribute):
-        self.dataJson[attribute] = attribute
-
 
 class MotionPath(Resource):
     """
@@ -104,11 +101,11 @@ class MotionPath(Resource):
     def __init__(self, name, loadFromDirectory=None):
         super(MotionPath, self).__init__(name, loadFromDirectory)
 
+    def setup(self, motionPath):
+        self.dataJson["motionPath"] = motionPath
+
     def getMotionPath(self):
         return self.dataJson["motionPath"]
-
-    def setMotionPath(self, newPath):
-        self.dataJson["motionPath"] = newPath
 
 
 class Function(Resource):
@@ -116,25 +113,21 @@ class Function(Resource):
         # Unpacked motionPath data looks like this [time, gripper, anglea, angleb, anglec, angled]
         super(Function, self).__init__(name, loadFromDirectory)
 
+    def setup(self, commandList, argumentList, description):
+        self.dataJson["commandList"] = commandList
+        self.dataJson["description"] = description
+        self.dataJson["arguments"]   = argumentList
+
     def getCommandList(self):
         return self.dataJson["commandList"]
-
-    def setCommandList(self, commandList):
-        self.dataJson["commandList"] = commandList
-
 
     def getDescription(self):
         return self.dataJson["description"]
 
-    def setDescription(self, description):
-        self.dataJson["description"] = description
-
-
     def getArguments(self):
         return self.dataJson["arguments"]
 
-    def setArguments(self, argumentList):
-        self.dataJson["arguments"] = argumentList
+
 
 
 class Trackable(Resource):

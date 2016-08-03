@@ -25,15 +25,16 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
-import numpy             as np
 import CommandsGUI
 import EventsGUI
+import Paths
+import numpy             as np
 from time                import sleep  # Used only for waiting for robot in CoordCalibrations
 from PyQt5               import QtCore, QtWidgets, QtGui
 from CameraGUI           import CameraSelector
-from Logic               import Paths
 from Logic.Global        import printf
 from Logic.Resources     import TrackableObject
+
 __author__ = "Alexander Thiel"
 
 
@@ -821,16 +822,16 @@ class CWPage5(QtWidgets.QWizardPage):
 
         # Test the z on 3 xy points
         zTest = int(round(zLower, 0))  # Since range requires an integer, round zLower just for this case
-        for x in range(  -20, 20, 4): testCoords += [[x,  15,    15]]  # Center of XYZ grid
-        for y in range(    8, 24, 4): testCoords += [[ 0,  y,    15]]
+        for x in range(  -20, 20, 4): testCoords += [[x,  15,    11]]  # Center of XYZ grid
+        for y in range(    8, 24, 4): testCoords += [[ 0,  y,    11]]
         for z in range(zTest, 24, 1): testCoords += [[ 0, 15,     z]]
 
         # for x in range(  -20, 20, 1): testCoords += [[x,  15, zTest]]  # Center of XY, Bottom z
         # for y in range(    8, 25, 1): testCoords += [[ 0,  y, zTest]]
         # for z in range(zTest, 25): testCoords += [[ 0, 15,     z]]
 
-        for x in range(  -20, 20, 4): testCoords += [[x,  15,    25]]  # Center of XY, top z
-        for y in range(   12, 24, 4): testCoords += [[ 0,  y,    25]]
+        for x in range(  -20, 20, 4): testCoords += [[x,  15,    17]]  # Center of XY, top z
+        for y in range(   12, 24, 4): testCoords += [[ 0,  y,    17]]
 
 
 

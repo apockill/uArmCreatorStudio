@@ -29,18 +29,20 @@ import json            # For saving and loading settings and tasks
 import sys             # For GUI, and overloading the default error handling
 import webbrowser      # For opening the uFactory forums under the "file" menu
 import ControlPanelGUI
-from CommonGUI         import Console                   # This is the "Console" widget on the mainWindow
+import Paths
 from copy              import deepcopy                  # For copying saves and comparing later
 from PyQt5             import QtCore, QtWidgets, QtGui  # All GUI things
 from CalibrationsGUI   import CalibrateWindow           # For opening Calibrate window
 from CameraGUI         import CameraWidget              # General GUI purposes
-from Logic             import Global, Paths             # For keeping track of keypresses
+from CommonGUI         import Console                   # This is the "Console" widget on the mainWindow
+from Logic             import Global  # For keeping track of keypresses
 from Logic.Environment import Environment               # Contains important variables
-from Logic.Interpreter import Interpreter               # For actually starting/stopping the script
 from Logic.Global      import printf                    # For my personal printing format
+from Logic.Interpreter import Interpreter               # For actually starting/stopping the script
 from Logic.Robot       import getConnectedRobots        # For deviceWindow
 from Logic.Video       import getConnectedCameras       # For deviceWindow
 from ObjectManagerGUI  import ObjectManagerWindow       # For opening ObjectManager window
+
 __author__ = "Alexander Thiel"
 
 
@@ -54,7 +56,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Init self and objects.
         self.fileName    = None
         self.loadData    = []  #Set when file is loaded. Used to check if the user has changed anything and prompt
-        self.env         = Environment()  # This loads settings, connects to robot, connects to camera, all at once
+        self.env         = Environment(Paths.settings_txt, Paths.objects_dir, Paths.cascade_dir)
         self.interpreter = Interpreter(self.env)
 
 
@@ -79,12 +81,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setVideo("play")
 
 
-        # If any file is specified in "lastOpenedFile" then load it.
-        if self.env.getSetting("lastOpenedFile") is not None:
-            self.loadTask(filename=self.env.getSetting("lastOpenedFile"))
-        else:
-            self.newTask()
-
         # After initUI: Restore the window geometry to the state it was when the user last closed the window
         if self.env.getSetting("windowGeometry") is not None:
             state = self.env.getSetting("windowGeometry")
@@ -100,8 +96,11 @@ class MainWindow(QtWidgets.QMainWindow):
             bArr = QtCore.QByteArray.fromHex(state)
             self.restoreState(bArr)
 
-
-
+        # If any file is specified in "lastOpenedFile" then load it.
+        if self.env.getSetting("lastOpenedFile") is not None:
+            self.loadTask(filename=self.env.getSetting("lastOpenedFile"))
+        else:
+            self.newTask(False)
 
     def initUI(self):
         # Create "File" Menu
@@ -113,10 +112,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Create File Menu and actions
         fileMenu      = menuBar.addMenu('File')
-        newAction     = QtWidgets.QAction( QtGui.QIcon(Paths.file_new),     "New Task", self)
-        saveAction    = QtWidgets.QAction(QtGui.QIcon(Paths.file_save),    "Save Task", self)
+        newAction     = QtWidgets.QAction(QtGui.QIcon(Paths.file_new), "New Task", self)
+        saveAction    = QtWidgets.QAction(QtGui.QIcon(Paths.file_save), "Save Task", self)
         saveAsAction  = QtWidgets.QAction(QtGui.QIcon(Paths.file_save), "Save Task As", self)
-        loadAction    = QtWidgets.QAction(QtGui.QIcon(Paths.file_load),    "Load Task", self)
+        loadAction    = QtWidgets.QAction(QtGui.QIcon(Paths.file_load), "Load Task", self)
 
         saveAction.setShortcut("Ctrl+S")
 

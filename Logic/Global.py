@@ -27,9 +27,8 @@ License:
 """
 import os
 import errno
-import inspect
 from time import time, sleep
-from threading import RLock
+
 __author__ = "Alexander Thiel"
 
 """
@@ -159,14 +158,14 @@ def init():
 
 
 # Functions for my special print function
-def getCallerFunction(skip=2, printModule=True, printClass=True, printFunction=True):
-    """Get a name of a caller in the format module.class.method
+"""def getCallerFunction(skip=2, printModule=True, printClass=True, printFunction=True):
+    '''Get a name of a caller in the format module.class.method
 
        `skip` specifies how many levels of stack to skip while getting caller
        name. skip=1 means "who calls me", skip=2 "who calls my caller" etc.
 
        An empty string is returned if skipped levels exceed stack height
-    """
+    '''
     stack = inspect.stack()
     start = 0 + skip
     if len(stack) < start + 1:
@@ -197,6 +196,7 @@ def getCallerFunction(skip=2, printModule=True, printClass=True, printFunction=T
     del parentframe
 
     return ".".join(name)
+"""
 
 def printf(*args):
     """
@@ -204,49 +204,40 @@ def printf(*args):
     helpful for debugging.
     """
 
-
-    # Create settings for the boilerplate information
-    printModule   = True
-    printFunction = False    # If false, no boilerplate will be printed
-    printClass    = False
-
-    indentLength  = 40      # Length of indent between boilerplate and content
-
-
     # Start building the printString
     buildString = ""
 
 
     # Concatenate arguments, same as normal print statements
-    for i in args:
-        buildString += str(i)
+    for i in args: buildString += str(i)
 
 
     # Strip whitespace from beginning of string
     buildString = buildString.lstrip()
 
-    print(buildString)
+
+    # Split the string into a "header" and "content"
+    splitIndex  = buildString.index("| ")
+    header      = buildString[:splitIndex]
+    content     = buildString[splitIndex + 2:]
+
+
+    # Send the string to the printRedirectFunction for the ConsoleWidget to recieve
     global printRedirectFunc
-    printRedirectFunc("Command", buildString)
-    return
-    # Format the space between the boilerplate and content
-    boilerPlate = getCallerFunction(printModule=printModule, printClass=printClass, printFunction=printFunction)
+    printRedirectFunc(header, content)
+
+
+    # # Format the space between the boilerplate and content
+    # boilerPlate = getCallerFunction(printModule=printModule, printClass=printClass, printFunction=printFunction)
 
 
 
-
-    # print(buildString)
     # Filter out any serial communication since it clutters up the console
-    # if "Device" in boilerPlate: return
-    #
-    # if len(boilerPlate) > 0:
-    #     spaces = int((indentLength - len(boilerPlate)))       #How many spaces ahead the content column should be
-    #     if spaces > 0:
-    #         spacesString = spaceFunc(spaces)
-    #         boilerPlate +=  spacesString
-    #
-    # buildString = boilerPlate + buildString
-    print(buildString)
+    if "Communication" in header: return
+
+
+    print(header + " " * (15 - len(header)) + content)
+
 
 
 

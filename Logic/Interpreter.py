@@ -92,6 +92,8 @@ class Interpreter:
         self.nameSpace     = nameSpace
         if self.nameSpace is None:
             self.cleanNamespace()
+        else:
+            self.nameSpace["interpreter"] = self  # Make sure if the nameSpace was passed, the "interpreter" val works
 
 
     def initializeScript(self, script):
@@ -240,7 +242,7 @@ class Interpreter:
         variables = dict([(k, getattr(math, k)) for k in safeList])
         variables['math'] = math
 
-        customPrint   = lambda message: printf("Output| ", message)
+        customPrint   = lambda *args: printf("Output| ", *args)
         robot         = self.env.getRobot()
         vision        = self.env.getVision()
         settings      = self.env.getSettings()
@@ -408,7 +410,7 @@ class Interpreter:
             except Exception as e:
                 printf("Interpreter| ERROR: ", command.__class__.__name__, type(e).__name__, ": ", e)
                 global exitErrors
-                exitErrors = {type(e).__name__: [str(e)]}
+                exitErrors = {type(e).__name__ + " in " + command.__class__.__name__ + " " : [str(e)]}
                 self.setExiting(True)
                 # raise(e)
 

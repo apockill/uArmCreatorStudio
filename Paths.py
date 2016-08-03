@@ -34,7 +34,8 @@ __author__ = "Alexander Thiel"
 ################        PATHS FOR ALL       ################
 resourcesLoc = "Resources\\"
 settings_txt = resourcesLoc + "Settings.txt"
-objects_dir  = resourcesLoc + "Objects\\"         # Used by ObjectManager
+objects_dir  = resourcesLoc + "Objects\\"
+cascade_dir  = resourcesLoc
 saves_dir    = resourcesLoc + "Saves\\"
 
 
@@ -121,6 +122,7 @@ command_exit_event  = imageLoc + "command_exit_event.png"
 command_end_script  = imageLoc + "command_end_script.png"
 command_see_obj     = imageLoc + "command_see_obj.png"
 command_see_loc     = imageLoc + "command_see_loc.png"
+command_test_angle  = imageLoc + "command_test_angle.png"
 command_run_task    = imageLoc + "command_run_task.png"
 command_run_func    = imageLoc + "command_run_func.png"
 

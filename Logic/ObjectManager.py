@@ -27,7 +27,7 @@ License:
 """
 
 import os
-from Logic        import Paths, Resources
+from Logic        import Resources
 from Logic.Global import printf, ensurePathExists, getModuleClasses
 
 __author__ = "Alexander Thiel"
@@ -45,8 +45,7 @@ class ObjectManager:
     All loading, adding replacing, and saving of objects should be done through this class
     """
 
-    def __init__(self):
-        directory = Paths.objects_dir
+    def __init__(self, directory):
         ensurePathExists(directory)
 
         self.__directory = directory

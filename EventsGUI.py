@@ -25,9 +25,10 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
+import Paths
 from PyQt5        import QtGui, QtCore, QtWidgets
-from Logic        import Paths
 from Logic.Global import printf
+
 __author__ = "Alexander Thiel"
 
 

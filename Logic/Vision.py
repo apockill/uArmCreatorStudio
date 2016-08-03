@@ -25,12 +25,12 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
-from time import sleep
 import cv2
 import numpy as np
-from collections  import namedtuple
 from Logic.Global import printf
-from Logic        import Paths
+from collections  import namedtuple
+from time         import sleep
+
 __author__ = "Alexander Thiel"
 
 
@@ -51,7 +51,12 @@ class Vision:
         getObjectSpeedDirectionAvg(trackable, maxAge,
     """
 
-    def __init__(self, vStream):
+    def __init__(self, vStream, cascadePath):
+        """
+        :param vStream: A VideoStream object from Video.py
+        :param cascadePath: The path to the directory that holds the cascade.xml files
+        :return:
+        """
 
         # How long the "tracker history" array is (how many frames of tracked data are kept)
         self.historyLen = 60
@@ -59,7 +64,7 @@ class Vision:
         self.vStream        = vStream
         self.exiting        = False
         self.planeTracker   = PlaneTracker(25.0, self.historyLen)
-        self.cascadeTracker = CascadeTracker(self.historyLen)
+        self.cascadeTracker = CascadeTracker(self.historyLen, cascadePath)
 
 
         # Use these on any work functions that are intended for threading
@@ -744,24 +749,24 @@ class CascadeTracker(Tracker):
     CascadeTarget  = namedtuple('CascadeTarget', 'name, classifier, minPts, minSize')
     CascadeTracked = namedtuple('CascadeTracked', 'target, quad, center')
 
-    def __init__(self, historyLength):
+    def __init__(self, historyLength, cascadePath):
         super(CascadeTracker, self).__init__(historyLength)
 
         self.cascades = [self.CascadeTarget(name       = "Face",
-                                            classifier = cv2.CascadeClassifier(Paths.face_cascade),
+                                            classifier = cv2.CascadeClassifier(cascadePath + "face_cascade.xml"),
                                             minPts     = 20,
                                             minSize    = (30, 30)),
 
                          self.CascadeTarget(name       = "Smile",
-                                            classifier = cv2.CascadeClassifier(Paths.smile_cascade),
+                                            classifier = cv2.CascadeClassifier(cascadePath + "smile_cascade.xml"),
                                             minPts     = 325,
                                             minSize    = (80, 50)),
 
                          self.CascadeTarget(name       = "Eye",
-                                            classifier = cv2.CascadeClassifier(Paths.eye_cascade),
+                                            classifier = cv2.CascadeClassifier(cascadePath + "eye_cascade.xml"),
                                             minPts     = 30,
                                             minSize    = (40, 40))]
-
+        print(self.cascades)
     def addTarget(self, targetName):
         for target in self.cascades:
             if targetName == target.name:

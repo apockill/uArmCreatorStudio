@@ -27,12 +27,13 @@ License:
 """
 import ast  # To check if a statement is python parsible, for evals
 import re   # For variable santization
+import Paths
 from os.path      import basename
-from CameraGUI    import CameraSelector
 from PyQt5        import QtGui, QtCore, QtWidgets
-from Logic        import Paths
-from Logic.Global import printf, ensurePathExists
+from CameraGUI    import CameraSelector
 from CommonGUI    import ScriptWidget
+from Logic.Global import printf, ensurePathExists
+
 __author__ = "Alexander Thiel"
 
 
@@ -168,6 +169,7 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         add(PickupObjectCommand)
         add(TestObjectSeenCommand)
         add(TestObjectLocationCommand)
+        add(TestObjectAngle)
         add(VisionMoveXYZCommand)
 
         return tabWidget
@@ -1070,7 +1072,7 @@ class BuzzerCommand(CommandGUI):
 
 #   Robot + Vision COmmands
 class MoveRelativeToObjectCommand(CommandGUI):
-    title     = "Move Relative To Object"
+    title     = "Move Relative To An Object"
     tooltip   = "This tool uses computer vision to recognize an object of your choice, and position the robot directly"\
                "\nrelative to this objects XYZ location. If XYZ = 0,0,0, the robot will move directly onto the object."\
                "\n\nIf you don't want to set one of the robots axis, simply leave it empty. For example, put y and z\n"\
@@ -1147,6 +1149,9 @@ class MoveRelativeToObjectCommand(CommandGUI):
         return self.parameters
 
     def _updateDescription(self):
+        objName = (self.parameters["objectID"], "An Object")[len(self.parameters["objectID"]) == 0]
+        self.title = "Move Relative To " + objName
+
         self.description = 'XYZ( ' + str(self.parameters['x']) + \
                            ', ' + str(self.parameters['y'])    + \
                            ', ' + str(self.parameters['z'])    + \
@@ -1154,7 +1159,7 @@ class MoveRelativeToObjectCommand(CommandGUI):
 
 
 class MoveWristRelativeToObjectCommand(CommandGUI):
-    title     = "Set Wrist Relative To Object"
+    title     = "Set Wrist Relative To An Object"
     tooltip   = "This tool will look at the orientation of an object in the cameras view, and align the wrist with \n"\
                 "the rotation of the object. The rotation of the object is determined by the orientation that it was\n"\
                 "in when the object was memorized. It's recommended to experiment around a bit with this function to\n"\
@@ -1220,7 +1225,9 @@ class MoveWristRelativeToObjectCommand(CommandGUI):
         return self.parameters
 
     def _updateDescription(self):
-        self.title = "Set Wrist Relative To " + self.parameters["objectID"]
+        objName = (self.parameters["objectID"], "An Object")[len(self.parameters["objectID"]) == 0]
+        self.title = "Set Wrist Relative To " + objName
+
         self.description = "Set the wrist " + self.parameters["angle"] + \
                            " degrees relative to " + self.parameters["objectID"]
 
@@ -1269,6 +1276,8 @@ class PickupObjectCommand(CommandGUI):
         return self.parameters
 
     def _updateDescription(self):
+        objName = (self.parameters["objectID"], "An Object")[len(self.parameters["objectID"]) == 0]
+        self.title = "Pick Up " + objName
         self.description = "Find " + self.parameters["objectID"] + " and pick it up"
 
 
@@ -1371,7 +1380,7 @@ class TestObjectSeenCommand(CommandGUI):
 
 
 class TestObjectLocationCommand(CommandGUI):
-    title     = "Test Location Of Object"
+    title     = "Test If Object Inside Region"
     tooltip   = "This command will allow code in blocked brackets below it to run IF the specified object has been" \
                 "recognized and the objects location in a particular location."
     icon      = Paths.command_see_loc
@@ -1469,6 +1478,79 @@ class TestObjectLocationCommand(CommandGUI):
         self.description = "If " + self.parameters["part"] + " of " + objName + " is"
         if self.parameters["not"]: self.description += " NOT"
         self.description += " seen within a region"
+
+
+class TestObjectAngle(CommandGUI):
+    title     = "Test Angle Of An Object"
+    tooltip   = "This tool does X Y and Z"
+    icon      = Paths.command_test_angle
+
+    def __init__(self, env, parameters=None):
+        super(TestObjectAngle, self).__init__(parameters)
+
+        objManager         = env.getObjectManager()
+        self.getObjectList = lambda: objManager.getObjectNameList(typeFilter=objManager.TRACKABLE)
+
+        # If parameters do not exist, then set up the default parameters
+        if self.parameters is None:
+            # Anything done with env should be done here. Try not to save env as a class variable whenever possible
+            self.parameters = {"objectID":    "",
+                                  "lower":   "0",
+                                  "upper": "360",
+                                    "not": False}
+
+    def dressWindow(self, prompt):
+        # Create a Combobox with the appropriate items
+        choiceLbl = QtWidgets.QLabel("Choose an object ")
+        prompt.objChoices = QtWidgets.QComboBox()
+        prompt.objChoices.addItem(self.parameters["objectID"])  # Add an empty item at the top
+        objectList = self.getObjectList()
+        for objectID in objectList: prompt.objChoices.addItem(objectID)
+        self._addRow(prompt, choiceLbl, prompt.objChoices)
+
+
+        prompt.valLEdit = QtWidgets.QLineEdit()
+        prompt.valUEdit = QtWidgets.QLineEdit()
+
+
+        # "Lower" Textbox
+        valLLbl = QtWidgets.QLabel('Lower Angle ')
+        prompt.valLEdit.setText(str(self.parameters['lower']))
+        self._addRow(prompt, valLLbl, prompt.valLEdit)
+
+        # "Upper" Textbox
+        valULbl = QtWidgets.QLabel('Upper Angle ')
+        prompt.valUEdit.setText(str(self.parameters['upper']))
+        self._addRow(prompt, valULbl, prompt.valUEdit)
+
+        # "Not" Checkbox
+        notLbl = QtWidgets.QLabel("NOT")
+        prompt.notCheck    = QtWidgets.QCheckBox()  # "Not" CheckBox
+        prompt.notCheck.setChecked(self.parameters["not"])
+        self._addRow(prompt, notLbl, prompt.notCheck)
+
+        return prompt
+
+    def _extractPromptInfo(self, prompt):
+
+        newParameters = {"objectID": prompt.objChoices.currentText(),
+                         "lower": self._sanitizeEval(prompt.valLEdit, self.parameters["lower"]),
+                         "upper": self._sanitizeEval(prompt.valUEdit, self.parameters["upper"]),
+                         "not": prompt.notCheck.isChecked()}
+
+        self.parameters.update(newParameters)
+
+        return self.parameters
+
+    def _updateDescription(self):
+        objName = (self.parameters["objectID"], "Object")[len(self.parameters["objectID"]) == 0]
+        self.title = "Test the Rotation of " + objName
+
+
+        self.description = "If angle is"
+
+        if self.parameters["not"]: self.description += " NOT"
+        self.description += " between (" + self.parameters["lower"] + ", " + self.parameters["upper"] + ") degrees from the X Axis"
 
 
 class VisionMoveXYZCommand(MoveXYZCommand):
@@ -1981,7 +2063,7 @@ def clearLayout(layout):
 
 
 # All commands that do "Tests"
-testTypes = [TestVariableCommand, TestObjectSeenCommand, TestObjectLocationCommand]
+testTypes = [TestVariableCommand, TestObjectSeenCommand, TestObjectLocationCommand, TestObjectAngle]
 
 
 
