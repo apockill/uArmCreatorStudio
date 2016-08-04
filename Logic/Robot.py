@@ -273,10 +273,11 @@ class Robot:
 
                 # Clamp the value
                 beforeClamp = newAngle
+
                 if newAngle > 180: newAngle = 180
                 if newAngle <   0: newAngle = 0
                 if not newAngle == beforeClamp:
-                    printf("Robot| Tried to set angle to a value less than 0 or greater than 180!")
+                    printf("Robot| ERROR: Tried to set angle to a value less than 0 or greater than 180!")
 
 
                 # Set the value and save it in the cache

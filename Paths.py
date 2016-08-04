@@ -35,7 +35,6 @@ __author__ = "Alexander Thiel"
 resourcesLoc = "Resources\\"
 settings_txt = resourcesLoc + "Settings.txt"
 objects_dir  = resourcesLoc + "Objects\\"
-cascade_dir  = resourcesLoc
 saves_dir    = resourcesLoc + "Saves\\"
 
 
@@ -50,9 +49,8 @@ def resourcePath(relative_path):
 exeResourcesPath = resourcePath(resourcesLoc)
 
 # Used by Vision
-face_cascade     = exeResourcesPath + "face_cascade.xml"
-smile_cascade    = exeResourcesPath + "smile_cascade.xml"
-eye_cascade      = exeResourcesPath  + "eye_cascade.xml"
+cascade_dir  = exeResourcesPath
+
 
 
 ################        GUI PATHS         ################

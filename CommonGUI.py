@@ -174,7 +174,7 @@ Builtin Variables:
         a communication protocol.
 
         For source code on the Robot class, go to:
-        https://github.com/apockill/RobotGUIProgramming/blob/master/Logic/Robot.py
+        https://github.com/apockill/uArmCreatorStudio/blob/master/Logic/Robot.py
 
 
     vision
@@ -184,16 +184,14 @@ Builtin Variables:
         vision functions that have been built into this software already.
 
         For source code on the Vision class, go to:
-        https://github.com/apockill/RobotGUIProgramming/blob/master/Logic/Vision.py
-
+        https://github.com/apockill/uArmCreatorStudio/blob/master/Logic/Vision.py
 
     resources
         You can pull any "objects" that you have built using the Resource Manager. This means, for example,
         that you could request a Motion Recording and replay it, or request a Vision object and track it.
 
         For source code on the Object Manager class, go to:
-        https://github.com/apockill/RobotGUIProgramming/blob/master/Logic/ObjectManager.py
-
+        https://github.com/apockill/uArmCreatorStudio/blob/master/Logic/ObjectManager.py
 
     settings
         This is a python dictionary of the GUI settings. This includes things like calibrations for various things.
@@ -205,7 +203,7 @@ Builtin Variables:
         this to check if your script should end, if you're doing long loops.
 
         For source code on the Interpreter environment that runs your script, go to:
-        https://github.com/apockill/RobotGUIProgramming/blob/master/Logic/Interpreter.py
+        https://github.com/apockill/uArmCreatorStudio/blob/master/Logic/Interpreter.py
 
     sleep
         The usual python sleep variable has been replaced by one that will automatically stop sleeping when the user
@@ -271,7 +269,7 @@ Example scripts using 'vision'
 Any variable created in the scope of the script command can be used in any other script command, or block command
     def someFunctionName(someArgument):
         # Any python function here
-        print("This function can work in any script command in the program!")
+        print("This function can work in any script command in the task!")
         print(someArgument)
 
     someVariableName = "This string can be used in any Script command in the program"
@@ -280,18 +278,18 @@ Any variable created in the scope of the script command can be used in any other
 
 You might notice that scripts with big loops or 'while True' statements will take a long time to end when the "stop"
 button is pressed on the GUI. Sometimes, they might freeze the program. The reason for this is because your code
-is running inside of a seperate thread/process, and when you end the program the thread has to end as well.
+is running inside of a seperate thread/process, and when you end the task the thread has to end as well.
 
 Any drag-and-drop command will end quickly, because they have been designed to do so. However, you will have to do this
-yourself if you have a long lasting task that you want to be able to quit at any time. In order to do so, you can use
+yourself if you have a long lasting script that you want to be able to quit at any time. In order to do so, you can use
 the function "scriptStopping()"
 
-scriptStopping() returns True if the user has attempted to end the program, and False if the program has not been ended
+scriptStopping() returns True if the user has attempted to end the task, and False if the task has not been ended
 
     The typical use case is:
 
-    while True:
-        if scriptStopping(): break  # Break out of the loop if the program has ended
+    while [Some Condition]:
+        if scriptStopping(): break  # Break out of the loop if the program has ended. Place this wherever needed
         # ... code ...
         # ... code ...
         # ... code ...

@@ -88,6 +88,7 @@ class Environment:
         # If the settings have any information, try to instantiate objects. Otherwise, GUI will do this as user requests
         cameraID = self.__settings['cameraID']
         if cameraID is not None:
+            print("setting up the camera")
             self.__vStream.setNewCamera(cameraID)
 
 
@@ -151,7 +152,6 @@ class Environment:
             if category == "coordCalibrations":
                 ptPairs = self.__settings["coordCalibrations"]["ptPairs"]
                 self.__transform = Transform(ptPairs)
-
         else:
             printf("Environment| No settings changed: ", category)
 

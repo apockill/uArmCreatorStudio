@@ -311,22 +311,14 @@ class NameEvent(EventGUI):
 #   SIMPLE, NO-PARAMETER EVENTS
 class InitEvent(EventGUI):
     title     = 'Initialization'
-    tooltip   = 'Activates once each time the program is run'
+    tooltip   = 'Activates once each time the task is run'
     icon      = Paths.event_creation
     priority  = 0
 
     def __init__(self, parameters):
         super(InitEvent, self).__init__(parameters)
 
-#
-# class DestroyEvent(EventGUI):
-#     title     = 'End of Program'
-#     tooltip   = 'Activates once, when the program is ended'
-#     icon      = Paths.event_destroy
-#     priority  = 10000
-#
-#     def __init__(self, parameters):
-#         super(DestroyEvent, self).__init__(parameters)
+
 
 
 class StepEvent(EventGUI):

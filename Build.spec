@@ -1,8 +1,8 @@
 # -*- mode: python -*-
 
 # Set up some convenience variables to shorten up the path names
-res   = "Resources\\"           # Resources directory
-icons = res + "Icons\\"     # Icons directory in resources
+resource_dir = "Resources\\"           # Resources directory
+icons_dir    = resource_dir + "Icons\\"     # Icons directory in resources
 
 resList   = ["face_cascade.xml",
              "smile_cascade.xml",
@@ -79,11 +79,11 @@ d = []
 
 # Add the icons from the icons directory
 for icon in iconsList:
-    d.append((icons + icon, icons + icon, 'DATA'))
+    d.append((icons_dir + icon, icons_dir + icon, 'DATA'))
 
 # Add the cascades from the resources directory
 for resource in resList:
-    d.append((res + resource, res + resource, 'DATA'))
+    d.append((resource_dir + resource, resource_dir + resource, 'DATA'))
 
 
 "smile_cascade.xml"
@@ -118,6 +118,6 @@ exe = EXE(pyz,
           debug=False,
           strip=False,
           upx=True,
-          console=False,
-          icon=icons + "exe_icon.ico")
+          console=True,
+          icon=icons_dir + "exe_icon.ico")
 

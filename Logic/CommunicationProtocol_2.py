@@ -37,7 +37,7 @@ class Device:
 
 
     # Set commands
-    def setXYZ(self, x, y, z, speed):  # DONE
+    def setXYZ(self, x, y, z, speed):
         """
         Set the robots current move.
         :param x: millimeters
@@ -58,7 +58,7 @@ class Device:
         # Send the command and receive a response
         self.__send(cmnd)
 
-    def setPolar(self, stretch, rotation, height, speed):  # DONE
+    def setPolar(self, stretch, rotation, height, speed):
         """
         Set the polar coordinates of the robot
         :param stretch: Stretch distance of end effector from base of robot, in millimeters
@@ -80,7 +80,7 @@ class Device:
         # Send the command and receive a response
         self.__send(cmnd)
 
-    def setServo(self, servo, angle):  # DONE
+    def setServo(self, servo, angle):
         """
         Set a servo to a particular angle
         :param servo: A servo ID, a number 0, 1, 2, or 3
@@ -98,7 +98,7 @@ class Device:
         # Send the command and receive a response
         self.__send(cmnd)
 
-    def setPump(self, onOff):  # DONE
+    def setPump(self, onOff):
         """
         Set the pumps value.
         :param onOff: True means turn the gripper on. False means off.
@@ -113,7 +113,7 @@ class Device:
         # Send the command and receive a response
         self.__send(cmnd)
 
-    def setServoAttach(self, servo):  # DONE
+    def setServoAttach(self, servo):
         """
         Attach a certain servo.
         :param servo: The servo's number
@@ -143,7 +143,7 @@ class Device:
         # Send the command and receive a response
         self.__send(cmnd)
 
-    def setBuzzer(self, frequency, duration):  # Done
+    def setBuzzer(self, frequency, duration):
         """
         Turn on the robots buzzer
         :param frequency: The frequency, in Hz
@@ -162,7 +162,7 @@ class Device:
 
 
     # Get commands
-    def getMoving(self):  # Done
+    def getMoving(self):
         """
         This function will return True if the robot is currently moving, and False if there is no ongoing movement.
         This is used to see when the computer should send another move command. The typical structure is to
@@ -181,7 +181,7 @@ class Device:
 
         return ret
 
-    def getXYZCoords(self):  # Done
+    def getXYZCoords(self):
         """
         Get the robots XYZ coordinates
 
@@ -200,7 +200,7 @@ class Device:
 
         return ret
 
-    def getPolarCoords(self):  # Done
+    def getPolarCoords(self):
         """
         Get the robots polar coordinates
 
@@ -386,7 +386,7 @@ class Device:
         # This method will be implimented with the next version of the uArm
         pass
 
-    def setGripper(self, onOff):  # DONE
+    def setGripper(self, onOff):
         """
         Set the pumps value.
         :param onOff: True means turn the gripper on. False means off.
@@ -514,9 +514,6 @@ class Device:
 
         return responseDict
 
-    def __strAndRound(self, num, roundTo):
-        # Parses a number so it takes the fewest amount of bits (Trailing zero's are removed
-        num = float(round(num, roundTo))
 
     # def __uploadCode(self):
     #     self.serial.setDTR(0)

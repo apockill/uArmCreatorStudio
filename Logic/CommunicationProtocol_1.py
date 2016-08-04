@@ -265,14 +265,5 @@ class Device:
 
         return responseDict
 
-    def __strAndRound(self, num, roundTo):
-        # Parses a number so it takes the fewest amount of bits (Trailing zero's are removed
-        num = float(round(num, roundTo))
-
-    # def __uploadCode(self):
-    #     self.serial.setDTR(0)
-    #     sleep(0.1)
-    #     self.serial.setDTR(1)
-
 
 

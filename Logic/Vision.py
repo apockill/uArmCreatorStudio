@@ -612,7 +612,6 @@ class PlaneTracker(Tracker):
 
 
         for tracked in drawObjects:
-
             quad = np.int32(tracked.quad)
 
             # If this object is definitely higher than the other, erase everything beneath it to give the "3D" effect
@@ -629,15 +628,14 @@ class PlaneTracker(Tracker):
             cv2.polylines(tMask, [quad], True, (255, 255, 255), 2)
 
 
-            # Figure out how much the text should be scaled (depends on the different in curr side len, and orig len)
-            rect          = tracked.view.rect
-            origLength    = rect[2] - rect[0] + rect[3] - rect[1]
-            currLength    = np.linalg.norm(quad[1] - quad[0]) + np.linalg.norm(quad[2] - quad[1])  # avg side len
-            scaleFactor   = currLength / origLength
+
+
+
 
 
 
             # Draw coordinate grids on each object with a red, green, and blue arrow
+            rect          = tracked.view.rect
             x0, y0, x1, y1 = rect
             width  = (x1 - x0) / 2
             height = (y1 - y0) / 2
@@ -678,12 +676,25 @@ class PlaneTracker(Tracker):
                 cv2.fillConvexPoly(mask, np.int32([verts[row + 1], verts[row + 2], verts[row + 3]]), ar_edges[i][2])
 
 
+
+
+
+        # Draw the text seperately, so it's always on top of everything
+        for tracked in drawObjects:
+            quad = np.int32(tracked.quad)
+            rect = tracked.view.rect
+            
             # Create the text that will be drawn
             nameText  = tracked.view.name
 
             coordText =  "X " + str(int(tracked.center[0])) + \
                          " Y " + str(int(tracked.center[1])) + \
                          " Z " + str(int(tracked.center[2]))
+
+            # Figure out how much the text should be scaled (depends on the different in curr side len, and orig len)
+            origLength    = rect[2] - rect[0] + rect[3] - rect[1]
+            currLength    = np.linalg.norm(quad[1] - quad[0]) + np.linalg.norm(quad[2] - quad[1])  # avg side len
+            scaleFactor   = currLength / origLength + .35
 
 
             # Find a location on screen to draw the name of the object
@@ -766,7 +777,8 @@ class CascadeTracker(Tracker):
                                             classifier = cv2.CascadeClassifier(cascadePath + "eye_cascade.xml"),
                                             minPts     = 30,
                                             minSize    = (40, 40))]
-        print(self.cascades)
+
+
     def addTarget(self, targetName):
         for target in self.cascades:
             if targetName == target.name:

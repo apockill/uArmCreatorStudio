@@ -172,8 +172,8 @@ class CalibrateWindow(QtWidgets.QDialog):
 
     def calibrateMotion(self):
         # Shake the robot left and right while getting frames to get a threshold for "high" movement between frames
-        showStep = lambda step, message: QtWidgets.QMessageBox.question(self, 'Step ' + step,
-                                                                        'Step ' + step + "\n\n" + message,
+        showStep = lambda step, message: QtWidgets.QMessageBox.question(self, 'Step ' + str(step),
+                                                                        'Step ' + str(step) + "\n\n" + message,
                                                                         QtWidgets.QMessageBox.Ok)
 
         vStream = self.env.getVStream()
@@ -755,7 +755,7 @@ class CWPage5(QtWidgets.QWizardPage):
         self.testLbl.hide()
 
         prompt = "When you press the Start Calibration button, the robot will go through a set of predefined moves\n"\
-                 "and record the information that it needs. The program will freeze for a minute. " \
+                 "and record the information that it needs." \
                  "Before beginning:\n\n\n" \
                  "1) Make sure that the robot's head is more or less centered under the cameras view, and the\n" \
                  "    Robot Marker is being tracked.\n" \

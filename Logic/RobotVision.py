@@ -102,7 +102,39 @@ class Transform:
         transformFunc = lambda x: np.array((M * np.vstack((np.matrix(x).reshape(3, 1), 1)))[0:3, :].reshape(1, 3))[0]
         return transformFunc
 
+    def getCameraToRobotRotationOffset(self):
+        """
+        Returns the offset of the Camera's grid to the robots grid, in degrees, of the X, Y, and Z axis.
 
+        A use case would be this: You have an angle that is measured from the camera's X axis, and want to know the
+        angle but from the robots x axis. You would call this function, then add the camera angle to the
+        rotation offset
+
+        :return: (x degrees, y degrees, z degrees)
+        """
+                # If the angle is relative to x Axis, do different math and add it to target angle
+        a = self.robotToCamera((0, 0, 0))
+        b = self.robotToCamera((10, 0, 0))
+        xOffset =  math.degrees(math.atan( (a[1] - b[1]) / (a[0] - b[0])))
+
+        a = self.robotToCamera((0,  0, 0))
+        b = self.robotToCamera((0, 10, 0))
+        yOffset =  math.degrees(math.atan( (a[1] - b[1]) / (a[0] - b[0])))
+
+        a = self.robotToCamera((0, 0, 0))
+        b = self.robotToCamera((0, 0, 10))
+        zOffset =  math.degrees(math.atan( (a[1] - b[1]) / (a[0] - b[0])))
+
+        return xOffset, yOffset, zOffset
+
+    def getRobotToCameraRotationOffset(self):
+        """
+        This is the same as getCameraToRobotRotationOffset, but the offset is negative
+        :return:
+        """
+
+        xOffset, yOffset, zOffset = self.getCameraToRobotRotationOffset()
+        return -xOffset, -yOffset, -zOffset
 
 def playMotionPath(motionPath, robot, exitFunc, speedMultiplier=1, reverse=False):
     """

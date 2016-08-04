@@ -184,7 +184,7 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         add(StartBlockCommand)
         add(EndBlockCommand)
         add(EndEventCommand)
-        add(EndProgramCommand)
+        add(EndTaskCommand)
 
 
         return tabWidget
@@ -308,7 +308,7 @@ class CommandGUI:
     icon = ''
     title = ''
 
-    defaultTextBoxWidth = 130
+    defaultTextBoxWidth = 150
 
     def __init__(self, parameters):
         self.description = ""
@@ -1514,12 +1514,12 @@ class TestObjectAngle(CommandGUI):
 
 
         # "Lower" Textbox
-        valLLbl = QtWidgets.QLabel('Lower Angle ')
+        valLLbl = QtWidgets.QLabel('Start Angle ')
         prompt.valLEdit.setText(str(self.parameters['lower']))
         self._addRow(prompt, valLLbl, prompt.valLEdit)
 
         # "Upper" Textbox
-        valULbl = QtWidgets.QLabel('Upper Angle ')
+        valULbl = QtWidgets.QLabel('End Angle ')
         prompt.valUEdit.setText(str(self.parameters['upper']))
         self._addRow(prompt, valULbl, prompt.valUEdit)
 
@@ -1544,7 +1544,7 @@ class TestObjectAngle(CommandGUI):
 
     def _updateDescription(self):
         objName = (self.parameters["objectID"], "Object")[len(self.parameters["objectID"]) == 0]
-        self.title = "Test the Rotation of " + objName
+        self.title = "Test Angle of " + objName
 
 
         self.description = "If angle is"
@@ -1775,7 +1775,7 @@ class LoopCommand(CommandGUI):
 
         prompt.testChoices.currentIndexChanged.connect(updateTestParameters)
         self._addRow(prompt, choiceLbl, prompt.testChoices, resizeBox=False)
-
+        self._addSpacer(prompt)
         prompt.fakePrompt = QtWidgets.QWidget()
         prompt.fakePrompt.content = QtWidgets.QVBoxLayout()
         prompt.fakePrompt.setLayout(prompt.fakePrompt.content)
@@ -1805,13 +1805,13 @@ class LoopCommand(CommandGUI):
         self.description = self.parameters["description"]  # Some string that uses your parameters to describe the object.
 
 
-class EndProgramCommand(CommandGUI):
-    title     = "End Program"
+class EndTaskCommand(CommandGUI):
+    title     = "End Task"
     tooltip   = "When the code reaches this point, the program will end."
     icon      = Paths.command_end_script
 
     def __init__(self, env, parameters=None):
-        super(EndProgramCommand, self).__init__(parameters)
+        super(EndTaskCommand, self).__init__(parameters)
 
 
 class EndEventCommand(CommandGUI):
@@ -1868,7 +1868,7 @@ class ScriptCommand(CommandGUI):
 
 class RunTaskCommand(CommandGUI):
     title     = "Run Task"
-    tooltip   = "This tool will run  another task file and run it inside of this task, until the 'End Program'\n" \
+    tooltip   = "This tool will run  another task file and run it inside of this task, until the 'End Task'\n" \
                 "command is called within the task, then it will return to the currently running task.\n" \
                 "All tasks are preloaded when script is launched, so if a child class runs a parent class, an error\n" \
                 "will be returned."
@@ -1895,7 +1895,7 @@ class RunTaskCommand(CommandGUI):
 
         ensurePathExists(Paths.saves_dir)
 
-        explanationLbl = QtWidgets.QLabel("\n\nMake sure the task you run has an 'End Program'\n"
+        explanationLbl = QtWidgets.QLabel("\n\nMake sure the task you run has an 'End Task'\n"
                                           "command in it, to return to this task when its finished")
         explanationLbl.setWordWrap(True)
 

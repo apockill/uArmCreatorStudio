@@ -72,7 +72,6 @@ class VideoStream:
         self.cameraID    = None
         self.fps         = fps
         self.cap         = None  # An OpenCV capture object
-        self.dimensions  = None  # Will be [x dimension, y dimension]
 
 
         self.frame       = None
@@ -96,7 +95,7 @@ class VideoStream:
             self.startThread()
             self.setCamera = cameraID
         else:
-            printf("Video| Tried to set camera while camera was already being set! Currently setting: ", self.setCamera)
+            printf("Video| ERROR: Tried to set camera while camera was already being set! cameraID ", self.setCamera)
 
     def setPaused(self, value):
         # Tells the main frunction to grab more frames
@@ -228,20 +227,16 @@ class VideoStream:
         if not self.cap.isOpened():
             printf("Video| ERROR: Camera not opened. cam ID: ", cameraID)
             self.cap.release()
-            self.dimensions = None
             self.cap        = None
             self.setCamera  = None
             return False
 
 
-        # Try getting a frame and setting self.dimensions. If it does not work, return false
+        # Try getting a frame
         ret, frame = self.cap.read()
-        if ret:
-            self.dimensions = [frame.shape[1], frame.shape[0]]
-        else:
-            printf("Video| ERROR ERROR: Camera could not read frame. cam ID: ", cameraID)
+        if not ret:
+            printf("Video| ERROR: Camera could not read frame. cam ID: ", cameraID)
             self.cap.release()
-            self.dimensions = None
             self.cap        = None
             self.setCamera  = None
             return False
@@ -252,6 +247,8 @@ class VideoStream:
         # Since everything worked, save the new cameraID
         self.setCamera = None
         self.cameraID  = cameraID
+
+        printf("Video| SUCCESS: Camera is connected to camera ", self.cameraID)
         return True
 
 

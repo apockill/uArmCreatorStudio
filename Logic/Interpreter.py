@@ -440,7 +440,7 @@ class Interpreter:
 
 
             # Every time you hit an "End Block", check if it's a loop, and if so, go back to that area
-            if index - 1 >  0 and type(command) is Commands.EndBlockCommand:  # TODO: Test start cases and end cases
+            if index - 1 >  0 and type(command) is Commands.EndBlockCommand:
                 lastIndex = self.__getLastIndex(index, commandList)
 
                 if lastIndex + 1 < len(commandList) and type(commandList[lastIndex + 1]) is Commands.LoopCommand:  # type(commandList[lastIndex]) is Commands.LoopCommand:

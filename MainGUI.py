@@ -60,20 +60,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.interpreter = Interpreter(self.env)
 
 
-        # Set Global UI Variables
+        # Set the ConsoleWidget parameters immediately, so even early prints are captured
+        self.consoleWidget       = Console(self.env.getSetting('consoleSettings'), parent=self)
+        Global.printRedirectFunc = self.consoleWidget.write
+        self.consoleWidget.setExecFunction(self.interpreter.evaluateExpression)
+
+
+        # Create other GUI elements
         self.programTitle    = 'uArm Creator Studio'
         self.scriptToggleBtn = QtWidgets.QAction(QtGui.QIcon(Paths.run_script), 'Run', self)
         self.videoToggleBtn  = QtWidgets.QAction(QtGui.QIcon(Paths.play_video), 'Video', self)
         self.centralWidget   = QtWidgets.QStackedWidget()
         self.controlPanel    = ControlPanelGUI.ControlPanel(self.env, parent=self)
         self.cameraWidget    = CameraWidget(self.env.getVStream().getFilteredWithID, parent=self)
-        self.consoleWidget   = Console(self.env.getSetting('consoleSettings'), parent=self)
-
-
-        # Connect the consoleWidget with the global print function, so the consoleWidget prints everything
-        Global.printRedirectFunc = self.consoleWidget.write
-        self.consoleWidget.setExecFunction(self.interpreter.evaluateExpression)
-
 
 
         # Create Menu items, and set the Dashboard as the main widget
@@ -252,8 +251,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if state == "play":
             # Make sure the videoStream object has a camera, or if the cameras changed, change it
-            if not vStream.connected() or not vStream.cameraID == cameraID:
-                vStream.setNewCamera(cameraID)
+            # if not vStream.connected() or not vStream.cameraID == cameraID:
+            #     vStream.setNewCamera(cameraID)
 
             self.cameraWidget.play()
             vStream.setPaused(False)
@@ -277,7 +276,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.interpreter.threadRunning():
                 printf("GUI| ERROR: Tried to start interpreter while it was already running.")
                 return
-        printf("GUI| Interpreter is ready. Loading script and starting program")
+        printf("GUI| Interpreter is ready. Loading script and starting task")
 
 
         # Load the script with the latest changes in the controlPanel, and get any relevant errors

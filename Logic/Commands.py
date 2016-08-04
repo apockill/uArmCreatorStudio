@@ -244,6 +244,7 @@ class GripCommand(Command):
         self.robot.setGripper(True)
         return True
 
+
 class DropCommand(Command):
 
     def __init__(self, env, interpreter, parameters=None):
@@ -433,9 +434,7 @@ class MoveWristRelativeToObjectCommand(Command):
             targetAngle += baseAngle - 90
         else:
             # If the angle is relative to x Axis, do different math and add it to target angle
-            a = self.transform.robotToCamera((0, 0, 0))
-            b = self.transform.robotToCamera((10, 0, 0))
-            xOffset =  math.degrees(math.atan( (a[1] - b[1]) / (a[0] - b[0])))
+            xOffset, _, _ = self.transform.getCameraToRobotRotationOffset()
             targetAngle += 90 - xOffset
 
         # Add the "Relative" angle to the wrist
@@ -587,18 +586,60 @@ class TestObjectAngle(Command):
         super(TestObjectAngle, self).__init__(parameters)
 
         # Load any objects, modules, calibrations, etc  that will be used in the run Section here. Use getVerifyXXXX()
-        self.robot   = self.getVerifyRobot(env)
-        self.vision  = self.getVerifyVision(env)
-        print("Setting up testangle", parameters)
+        self.trackable   = self.getVerifyObject(env, self.parameters["objectID"])
+        self.vision      = self.getVerifyVision(env)
+        self.transform   = self.getVerifyTransform(env)
+        self.interpreter = interpreter
+
         if len(self.errors): return
 
-        # Here, start tracking if your command requires it
-        # Add any objects to be tracked
+        self.vision.addTarget(self.trackable)
 
     def run(self):
-        printf("Command| A quick description, usually using parameters, of the command that is running")
-        return True
+        if len(self.errors): return
 
+        printf("Command| A quick description, usually using parameters, of the command that is running")
+
+        # Find the object using vision
+        _, tracked = self.vision.getObjectLatestRecognition(self.trackable)
+        if tracked is None:
+            printf("Commands| Could not find ", self.trackable.name, " in order to test the wrist angle")
+            return False
+
+
+        # This is the rotation of the object in degrees, derived from the camera
+        currAngle = math.degrees(tracked.rotation[2])
+
+
+        # Do the math to figure out the angle of the object relative to the robots axis
+        xOffset, _, _ = self.transform.getCameraToRobotRotationOffset()
+        currAngle += 90 - xOffset
+
+
+        # Before doing any tracking, evaluate the "Relative" number to make sure its valid
+        lowerAngle, successL = self.interpreter.evaluateExpression(self.parameters["lower"])
+        upperAngle, successU = self.interpreter.evaluateExpression(self.parameters["upper"])
+
+
+        # If the evaluation failed, cancel the command
+        if not (successL and successU):
+            printf("Commands| Could not evaluate the lowerAngle or the upperAngle. Canceling command. ")
+            return False
+
+
+        # if lowerAngle - upperAngle > :
+
+
+
+        testExpression = self.parameters["lower"] + " <= " + str(currAngle) + " <= " + self.parameters["upper"]
+        testResult, success = self.interpreter.evaluateExpression(testExpression)
+
+        if not success: return False
+
+        printf("Commands| Testing: ", testExpression)
+
+        # If the expression was evaluated correctly, then return the testResult. Otherwise, return False
+        return testResult
 
 class VisionMoveXYZCommand(MoveXYZCommand):
 
@@ -776,10 +817,10 @@ class LoopCommand(Command):
         return self.test.run()
 
 
-class EndProgramCommand(Command):
+class EndTaskCommand(Command):
 
     def __init__(self, env, interpreter, parameters=None):
-        super(EndProgramCommand, self).__init__(parameters)
+        super(EndTaskCommand, self).__init__(parameters)
 
     def run(self):
         printf("Commands| Attempting to shut down program now...")
@@ -857,7 +898,7 @@ class RunFunctionCommand(Command):
 
         if len(self.errors): return
 
-        # Create the "script" object by putting it inside an "Init" event, and putting an "end program" command after it
+
         commandList = self.funcObject.getCommandList()
 
         self.script = [{"type": "InitEvent", "parameters": {}, "commandList": commandList}]
