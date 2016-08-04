@@ -110,9 +110,13 @@ class CalibrateWindow(QtWidgets.QDialog):
         row1.addWidget( self.coordLbl)
 
         row2.addStretch(1)
-        row2.addLayout(createIconLayout(CommandsGUI.PickupObjectCommand))
         row2.addLayout(createIconLayout(CommandsGUI.MoveRelativeToObjectCommand))
+        row2.addLayout(createIconLayout(CommandsGUI.MoveWristRelativeToObjectCommand))
+        row2.addLayout(createIconLayout(CommandsGUI.PickupObjectCommand))
+        row2.addLayout(createIconLayout(CommandsGUI.TestObjectAngleCommand))
         row2.addLayout(createIconLayout(CommandsGUI.VisionMoveXYZCommand))
+
+
 
         row3.addWidget(     motionBtn)
         row3.addStretch(1)

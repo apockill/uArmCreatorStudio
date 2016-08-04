@@ -169,7 +169,7 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         add(PickupObjectCommand)
         add(TestObjectSeenCommand)
         add(TestObjectLocationCommand)
-        add(TestObjectAngle)
+        add(TestObjectAngleCommand)
         add(VisionMoveXYZCommand)
 
         return tabWidget
@@ -1480,13 +1480,13 @@ class TestObjectLocationCommand(CommandGUI):
         self.description += " seen within a region"
 
 
-class TestObjectAngle(CommandGUI):
+class TestObjectAngleCommand(CommandGUI):
     title     = "Test Angle Of An Object"
     tooltip   = "This tool does X Y and Z"
     icon      = Paths.command_test_angle
 
     def __init__(self, env, parameters=None):
-        super(TestObjectAngle, self).__init__(parameters)
+        super(TestObjectAngleCommand, self).__init__(parameters)
 
         objManager         = env.getObjectManager()
         self.getObjectList = lambda: objManager.getObjectNameList(typeFilter=objManager.TRACKABLE)
@@ -1495,8 +1495,8 @@ class TestObjectAngle(CommandGUI):
         if self.parameters is None:
             # Anything done with env should be done here. Try not to save env as a class variable whenever possible
             self.parameters = {"objectID":    "",
-                                  "lower":   "0",
-                                  "upper": "360",
+                                  "start":   "0",
+                                  "end": "360",
                                     "not": False}
 
     def dressWindow(self, prompt):
@@ -1515,12 +1515,12 @@ class TestObjectAngle(CommandGUI):
 
         # "Lower" Textbox
         valLLbl = QtWidgets.QLabel('Start Angle ')
-        prompt.valLEdit.setText(str(self.parameters['lower']))
+        prompt.valLEdit.setText(str(self.parameters['start']))
         self._addRow(prompt, valLLbl, prompt.valLEdit)
 
         # "Upper" Textbox
         valULbl = QtWidgets.QLabel('End Angle ')
-        prompt.valUEdit.setText(str(self.parameters['upper']))
+        prompt.valUEdit.setText(str(self.parameters['end']))
         self._addRow(prompt, valULbl, prompt.valUEdit)
 
         # "Not" Checkbox
@@ -1534,9 +1534,9 @@ class TestObjectAngle(CommandGUI):
     def _extractPromptInfo(self, prompt):
 
         newParameters = {"objectID": prompt.objChoices.currentText(),
-                         "lower": self._sanitizeEval(prompt.valLEdit, self.parameters["lower"]),
-                         "upper": self._sanitizeEval(prompt.valUEdit, self.parameters["upper"]),
-                         "not": prompt.notCheck.isChecked()}
+                         "start":    self._sanitizeEval(prompt.valLEdit, self.parameters["start"]),
+                         "end":      self._sanitizeEval(prompt.valUEdit, self.parameters["end"]),
+                         "not":      prompt.notCheck.isChecked()}
 
         self.parameters.update(newParameters)
 
@@ -1550,7 +1550,7 @@ class TestObjectAngle(CommandGUI):
         self.description = "If angle is"
 
         if self.parameters["not"]: self.description += " NOT"
-        self.description += " between (" + self.parameters["lower"] + ", " + self.parameters["upper"] + ") degrees from the X Axis"
+        self.description += " between (" + self.parameters["start"] + ", " + self.parameters["end"] + ") degrees from the X Axis"
 
 
 class VisionMoveXYZCommand(MoveXYZCommand):
@@ -2063,7 +2063,7 @@ def clearLayout(layout):
 
 
 # All commands that do "Tests"
-testTypes = [TestVariableCommand, TestObjectSeenCommand, TestObjectLocationCommand, TestObjectAngle]
+testTypes = [TestVariableCommand, TestObjectSeenCommand, TestObjectLocationCommand, TestObjectAngleCommand]
 
 
 

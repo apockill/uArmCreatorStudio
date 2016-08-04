@@ -43,7 +43,8 @@ class Device:
         :param x: millimeters
         :param y: millimeters
         :param z: millimeters
-        :param speed: a float between 0 and 1, where 0 is slow and 1 is fast
+        :param speed: centimeters per second, how fast the robot should move towards its end point
+                      If you have tuning, then just calculate the average speed.
         """
 
         # Prepare the values

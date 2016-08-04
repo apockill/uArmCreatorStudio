@@ -114,7 +114,7 @@ class Robot:
             return False
 
         with self.lock:
-            return self.uArm.getIsMoving()
+            return self.uArm.getMoving()
 
     def getTipSensor(self):
         """
@@ -140,7 +140,7 @@ class Robot:
             return [0.0, 0.0, 0.0]
 
         with self.lock:
-            return self.uArm.getCurrentCoords()
+            return self.uArm.getXYZCoords()
 
     def getAngles(self):
         """
@@ -315,9 +315,9 @@ class Robot:
 
             with self.lock:
                 if status:
-                    self.uArm.servoAttach(servoNum)
+                    self.uArm.setServoAttach(servoNum)
                 else:
-                    self.uArm.servoDetach(servoNum)
+                    self.uArm.setServoDetach(servoNum)
                 self.__servoAttachStatus[servoNum] = status
 
 
@@ -352,7 +352,7 @@ class Robot:
         if not self.__gripperStatus == status:
             with self.lock:
                 self.__gripperStatus  = status
-                self.uArm.setGripper(self.__gripperStatus)
+                self.uArm.setPump(self.__gripperStatus)
 
     def setBuzzer(self, frequency, duration):
         """

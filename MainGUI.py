@@ -95,6 +95,7 @@ class MainWindow(QtWidgets.QMainWindow):
             bArr = QtCore.QByteArray.fromHex(state)
             self.restoreState(bArr)
 
+
         # If any file is specified in "lastOpenedFile" then load it.
         if self.env.getSetting("lastOpenedFile") is not None:
             self.loadTask(filename=self.env.getSetting("lastOpenedFile"))
@@ -359,7 +360,7 @@ class MainWindow(QtWidgets.QMainWindow):
         robot.setExiting(False)
         vision.setExiting(False)
 
-        robot.setGripper(False)
+        robot.setPump(False)
         robot.setActiveServos(all=False)
 
 
@@ -368,7 +369,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         self.scriptToggleBtn.setIcon(QtGui.QIcon(Paths.run_script))
-        self.scriptToggleBtn.setText("Run")
+        self.scriptToggleBtn.setText("Start")
 
         # If the Interpreter ended because it encountered a problem, then print out the exit error
         exitErrors = self.interpreter.getExitErrors()

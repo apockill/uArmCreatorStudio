@@ -241,7 +241,7 @@ class GripCommand(Command):
 
     def run(self):
         printf("Commands| Setting gripper to True")
-        self.robot.setGripper(True)
+        self.robot.setPump(True)
         return True
 
 
@@ -254,7 +254,7 @@ class DropCommand(Command):
 
     def run(self):
         printf("Commands| Setting gripper to False")
-        self.robot.setGripper(False)
+        self.robot.setPump(False)
         return True
 
 
@@ -580,10 +580,10 @@ class TestObjectLocationCommand(Command):
         return ret
 
 
-class TestObjectAngle(Command):
+class TestObjectAngleCommand(Command):
 
     def __init__(self, env, interpreter, parameters=None):
-        super(TestObjectAngle, self).__init__(parameters)
+        super(TestObjectAngleCommand, self).__init__(parameters)
 
         # Load any objects, modules, calibrations, etc  that will be used in the run Section here. Use getVerifyXXXX()
         self.trackable   = self.getVerifyObject(env, self.parameters["objectID"])
@@ -594,6 +594,7 @@ class TestObjectAngle(Command):
         if len(self.errors): return
 
         self.vision.addTarget(self.trackable)
+
 
     def run(self):
         if len(self.errors): return
@@ -617,8 +618,8 @@ class TestObjectAngle(Command):
 
 
         # Before doing any tracking, evaluate the "Relative" number to make sure its valid
-        lowerAngle, successL = self.interpreter.evaluateExpression(self.parameters["lower"])
-        upperAngle, successU = self.interpreter.evaluateExpression(self.parameters["upper"])
+        lowerAngle, successL = self.interpreter.evaluateExpression(self.parameters["start"])
+        upperAngle, successU = self.interpreter.evaluateExpression(self.parameters["end"])
 
 
         # If the evaluation failed, cancel the command
@@ -631,7 +632,7 @@ class TestObjectAngle(Command):
 
 
 
-        testExpression = self.parameters["lower"] + " <= " + str(currAngle) + " <= " + self.parameters["upper"]
+        testExpression = self.parameters["start"] + " <= " + str(currAngle) + " <= " + self.parameters["end"]
         testResult, success = self.interpreter.evaluateExpression(testExpression)
 
         if not success: return False
@@ -640,6 +641,18 @@ class TestObjectAngle(Command):
 
         # If the expression was evaluated correctly, then return the testResult. Otherwise, return False
         return testResult
+
+    def addToAngle(self, original, addAngle):
+        """
+        Quick convenienceFunction to add two angles and take care of the edge case of 360 degrees when summed
+        """
+
+        original += addAngle
+        if original == 360:
+            original = 0
+
+        return original
+
 
 class VisionMoveXYZCommand(MoveXYZCommand):
 

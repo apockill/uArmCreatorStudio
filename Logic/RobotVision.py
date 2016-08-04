@@ -242,7 +242,7 @@ def playMotionPath(motionPath, robot, exitFunc, speedMultiplier=1, reverse=False
         # Update the gripper
         if not gripper == action[GRIPPER]:
             gripper = action[GRIPPER]
-            robot.setGripper(gripper)
+            robot.setPump(gripper)
 
 
         # Update each servo, in order of most needy to least needy
@@ -581,7 +581,7 @@ def pickupObject(trackable, rbMarker, robot, vision, transform):
     smallStepCount = 0  # If more than 1 z moves result in little movement, quit the function
     lastCoord      = None
     failTrackCount = 0
-    robot.setGripper(True)
+    robot.setPump(True)
     for i in range(0, 15):
         print("DownMove ", i)
 
@@ -612,7 +612,7 @@ def pickupObject(trackable, rbMarker, robot, vision, transform):
         # Get the robots marker through the camera by taking the average position of 5 recognitions
         if failTrackCount >= 3:
             printf("RobotVision| Could not find robot for too many down-steps. Exiting pickup")
-            robot.setGripper(False)
+            robot.setPump(False)
             return False
 
 
@@ -666,7 +666,7 @@ def pickupObject(trackable, rbMarker, robot, vision, transform):
         return True
     else:
         printf("RobotVision| RobotVision| PICKUP WAS NOT SUCCESSFUL!")
-        robot.setGripper(False)
+        robot.setPump(False)
         robot.setPos(z=8, relative=True)
         return False
 

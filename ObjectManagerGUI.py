@@ -191,7 +191,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
                 if name == selectedItem:
                     self.objTree.setCurrentItem(newItem)
 
-
+        self.refreshSelected()
         self.objTree.expandAll()
 
     def refreshSelected(self):
@@ -398,13 +398,14 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         oWizard  = ObjectWizard(trackableObj, self.env, self)
         finished = oWizard.exec_()
+        oWizard.close()
+        oWizard.deleteLater()
 
         if finished:
             oWizard.createNewObject()
             self.refreshTreeWidget(selectedItem=oWizard.newObject.name)
 
-        oWizard.close()
-        oWizard.deleteLater()
+
 
 
 
@@ -414,13 +415,14 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         groupMenu = EditGroupWindow(groupObj, self.objManager, parent=self)
         finished  = groupMenu.exec_()
+        groupMenu.close()
+        groupMenu.deleteLater()
 
         if finished:
             groupMenu.createNewObject()
             self.refreshTreeWidget(selectedItem=groupMenu.newObject.name)
 
-        groupMenu.close()
-        groupMenu.deleteLater()
+
 
 
     def openRecordingMenu(self, pathObj=None):
@@ -434,24 +436,27 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         recMenu        = MotionRecordWindow(pathObj, robot, self.objManager, self)
         finished       = recMenu.exec_()
+        recMenu.close()
+        recMenu.deleteLater()
 
         if finished:
             recMenu.createNewObject()
             self.refreshTreeWidget(selectedItem=recMenu.newObject.name)
 
-        recMenu.close()
-        recMenu.deleteLater()
+
 
     def openFunctionMenu(self, funcObj=None):
         funcMenu = MakeFunctionWindow(funcObj, self.env, self)
         finished = funcMenu.exec_()
 
+        funcMenu.close()
+        funcMenu.deleteLater()
+
         if finished:
             funcMenu.createNewObject()
             self.refreshTreeWidget(selectedItem=funcMenu.newObject.name)
 
-        funcMenu.close()
-        funcMenu.deleteLater()
+
 
 
     def closeEvent(self, event):
@@ -777,7 +782,7 @@ class MotionRecordWindow(QtWidgets.QDialog):
     def toggleRecording(self):
         self.lastTime = time()
         if self.recording:
-            self.robot.setGripper(False)
+            self.robot.setPump(False)
             self.recordBtn.setText("Record")
             if len(self.motionPath):
                 self.recordBtn.setText("Continue Recording")
@@ -821,7 +826,7 @@ class MotionRecordWindow(QtWidgets.QDialog):
             # If the robots tip is pressed, toggle the pump
             if self.robot.getTipSensor():
                 gripperStatus = int(not self.motionPath[-1][GRIPPER])
-                self.robot.setGripper(gripperStatus)
+                self.robot.setPump(gripperStatus)
             else:
                 gripperStatus = self.motionPath[-1][GRIPPER]
         else:
@@ -969,7 +974,7 @@ class MotionRecordWindow(QtWidgets.QDialog):
         self.applyBtn.setEnabled(setEnabled)
 
     def close(self):
-        self.robot.setGripper(False)
+        self.robot.setPump(False)
         self.timer.stop()
 
 

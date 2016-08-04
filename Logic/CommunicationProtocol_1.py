@@ -42,6 +42,11 @@ def getConnectedRobots():
 class Device:
 
     def __init__(self, port, printCommands=True, printResponses=True):
+        """
+        :param port: The COM port that the robot is plugged in to.
+        :param printCommands: If true, then print any strings that are sent to the robot
+        :param printResponses: If true, then print the responses from the robot.
+        """
         self.printCommands  = printCommands
         self.printResponses = printResponses
         self.isConnected    = False
@@ -53,6 +58,8 @@ class Device:
         # [(sent, recieved), (sent, recieved), (sent, recieved)]
         self.communicationLog = []
 
+
+    ######      The following functions are used outside of this library. Make sure they are implimented!     #####
     def connected(self):
         # if self.serial is None:     return False
         if self.isConnected is False: return False
@@ -62,6 +69,15 @@ class Device:
 
     # Action commands
     def setXYZ(self, x, y, z, speed):
+        """
+        Set the robots current move.
+        :param x: centimeters
+        :param y: centimeters
+        :param z: centimeters
+        :param speed: centimeters per second, how fast the robot should move towards its end point
+                      If you have tuning, then just calculate the average speed.
+        """
+
         # Flip the Y axis to keep the coordinates somewhat sane
         x = str(round(   -x, 2))
         y = str(round(   -y, 2))
@@ -71,35 +87,141 @@ class Device:
         # return
         return self.__send(cmnd)
 
-    def setGripper(self, onOff):
-        # Set the gripper to a value 1 or 0, where 1 means "gripping" and 0 mean "off"
-        cmnd = "pumpV" + str(int(onOff))
-        return self.__send(cmnd)
-
     def setServo(self, servo, angle):
+        """
+        Set a servo to a particular angle
+        :param servo: A servo ID, a number 0, 1, 2, or 3
+        :param angle: An angle in degrees between 0 and 180
+        :return:
+        """
+
         # Set a servo to an angle #
         angle = str(float(round(angle, 3)))
         cmnd = "ssS" + str(int(servo)) + "V" + angle
         return self.__send(cmnd)
 
-    def servoAttach(self, servo_number):
+
+    def setPump(self, onOff):
+        """
+        Set the pumps value.
+        :param onOff: True means turn the gripper on. False means off.
+        """
+
+        # Set the gripper to a value 1 or 0, where 1 means "gripping" and 0 mean "off"
+        cmnd = "pumpV" + str(int(onOff))
+        return self.__send(cmnd)
+
+
+    def setServoAttach(self, servo_number):
+        """
+        Attach a certain servo.
+        :param servo: The servo's number
+
+        0 should be the base servo. Anything else might vary depending on the arm.
+        """
 
         servo_number = str(int(servo_number))
         cmnd = "attachS" + servo_number
         return self.__send(cmnd)
 
-    def servoDetach(self, servo_number):
+    def setServoDetach(self, servo_number):
+        """
+        Detach a certain servo.
+        :param servo: The servo's number
+        """
+
         servo_number = str(int(servo_number))
         cmnd = "detachS" + servo_number
         return self.__send(cmnd)
 
     def setBuzzer(self, frequency, duration):
+        """
+        Turn on the robots buzzer
+        :param frequency: The frequency, in Hz
+        :param duration: The duration of the buzz, in seconds
+        """
+
         cmnd = "buzzF" + str(frequency) + "T" + str(duration)
         return self.__send(cmnd)
 
 
     # Get commands
+    def getMoving(self):
+        """
+        This function will return True if the robot is currently moving, and False if there is no ongoing movement.
+        This is used to see when the computer should send another move command. The typical structure is to
+        tell the robot to move somewhere, then
+
+        while getMoving(): pass
+
+        then send another move command.
+        """
+
+        # Find out if the robot is currently moving
+        response  = self.__send("gmov")
+        parsedArgs = self.__parseArgs(response, "mov", ["M"])
+
+
+        # Return True if moving, False if not moving
+        return (False, True)[int(parsedArgs['M'])]
+
+    def getXYZCoords(self):
+        """
+        Get the robots XYZ coordinates
+
+        Returns (x, y, z)
+        where x, y, and z are in millimeters
+        """
+
+        # Returns an array of the format [x, y, z] of the robots current location
+        response  = self.__send("gcrd")
+        parsedArgs = self.__parseArgs(response, "crd", ["X", "Y", "Z"])
+
+        # Return (currX, currY, currZ)
+        return -parsedArgs["X"], -parsedArgs["Y"], parsedArgs["Z"]
+
+    def getServoAngles(self):
+        """
+        Get the robots current servo angles
+
+        Returns (Base servo, left servo, right servo)
+
+        where stretch and height are in millimeters, and rotation is in degrees
+        """
+
+        # Get the angles of each servo
+
+        cmnd = "gang"
+        response = self.__send(cmnd)
+        parsedArgs = self.__parseArgs(response, "ang", ["A", "B", "C", "D"])
+
+        # Return angles of each servo in order
+        return parsedArgs["A"], parsedArgs["B"], parsedArgs["C"], parsedArgs["D"]
+
+    def getTipSensor(self):
+        """
+        Get state of the robots tip sensor, on the end effector. R
+
+        Returns True if it is pressed, False if it is not pressed
+        """
+
+        # Find out if the robot is currently moving
+        response  = self.__send("gtip")
+        parsedArgs = self.__parseArgs(response, "tip", ["V"])
+
+        # Returns 0 or 1, whether or not the tip sensor is currently activated
+        return (True, False)[int(parsedArgs['V'])]  # Return True or False
+
     def getIK(self, x, y, z):
+        """
+        Get inverse kinematics calculations for any XYZ point
+
+        Returns a tuple of angles, in the format: (baseServo, leftServo, rightServo)
+        :param x: millimeters
+        :param y: millimeters
+        :param z: millimeters
+        """
+
         # Gets the servo1, servo2, and servo3 calculated positions for the XYZ position
 
         x = str(round(   -x, 2))
@@ -113,6 +235,15 @@ class Device:
         return parsedArgs["A"], parsedArgs["B"], parsedArgs["C"]
 
     def getFK(self, servo0, servo1, servo2):
+        """
+        Get forward kinematics calculations for any three servo angles
+
+        Returns an XYZ point, in the format: (x, y, z)
+        :param servo0: degrees
+        :param servo2: degrees
+        :param servo3: degrees
+        """
+
         # Gets the X, Y, and Z calculated positions for the servo angles servo0, servo1, servo2
 
         servo0 = str(round(servo0, 2))
@@ -125,43 +256,8 @@ class Device:
         # Return (X, Y, Z)
         return -parsedArgs["X"], -parsedArgs["Y"], parsedArgs["Z"]
 
-    def getCurrentCoords(self):
-        # Returns an array of the format [x, y, z] of the robots current location
-        response  = self.__send("gcrd")
-        parsedArgs = self.__parseArgs(response, "crd", ["X", "Y", "Z"])
 
-        # Return (currX, currY, currZ)
-        return -parsedArgs["X"], -parsedArgs["Y"], parsedArgs["Z"]
-
-    def getIsMoving(self):
-        # Find out if the robot is currently moving
-        response  = self.__send("gmov")
-        parsedArgs = self.__parseArgs(response, "mov", ["M"])
-
-
-        # Return True if moving, False if not moving
-        return (False, True)[int(parsedArgs['M'])]
-
-    def getServoAngles(self):
-        # Get the angles of each servo
-
-        cmnd = "gang"
-        response = self.__send(cmnd)
-        parsedArgs = self.__parseArgs(response, "ang", ["A", "B", "C", "D"])
-
-        # Return angles of each servo in order
-        return parsedArgs["A"], parsedArgs["B"], parsedArgs["C"], parsedArgs["D"]
-
-    def getTipSensor(self):
-        # Find out if the robot is currently moving
-        response  = self.__send("gtip")
-        parsedArgs = self.__parseArgs(response, "tip", ["V"])
-
-        # Returns 0 or 1, whether or not the tip sensor is currently activated
-        return (True, False)[int(parsedArgs['V'])]  # Return True or False
-
-
-    # Not to be used outside of library
+    # Functions that are only used inside of this library
     def __connectToRobot(self, port):
         try:
             self.serial = serial.Serial(port     = port,
@@ -207,6 +303,8 @@ class Device:
                 response = response[:-1]
                 break
 
+
+        # If the setting is enabled, print commands and responses (in the same line, if both are enabled)
         if self.printCommands and self.printResponses:
             printf("Communication| [" + cmnd + "]" + " " * (30 - len(cmnd)) + response)
         elif self.printCommands:
@@ -237,6 +335,14 @@ class Device:
         return response
 
     def __parseArgs(self, message, command, arguments):
+        """
+        This is a utility function for the uArm com protocol that parses arguments.
+
+        :param message: The full string that was returned by the robot
+        :param command: The first part of the string, that needs to be stripped and is not relevent
+        :param arguments: A list of ["X", "Y", "Z"] or whatever arguments are in the string returned back that are
+        followed by a number.
+        """
         responseDict = {n: 0 for n in arguments}  #Fill the dictionary with zero's
 
 

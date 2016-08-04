@@ -4,9 +4,10 @@
 resource_dir = "Resources\\"           # Resources directory
 icons_dir    = resource_dir + "Icons\\"     # Icons directory in resources
 
-resList   = ["face_cascade.xml",
-             "smile_cascade.xml",
-             "eye_cascade.xml"]
+
+resourceList   = ["face_cascade.xml",
+                  "smile_cascade.xml",
+                  "eye_cascade.xml"]
 
 iconsList = ["cancel.png",
              "button_delete.png",
@@ -82,7 +83,7 @@ for icon in iconsList:
     d.append((icons_dir + icon, icons_dir + icon, 'DATA'))
 
 # Add the cascades from the resources directory
-for resource in resList:
+for resource in resourceList:
     d.append((resource_dir + resource, resource_dir + resource, 'DATA'))
 
 
