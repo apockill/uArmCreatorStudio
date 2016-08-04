@@ -217,9 +217,15 @@ def printf(*args):
 
 
     # Split the string into a "header" and "content"
-    splitIndex  = buildString.index("| ")
-    header      = buildString[:splitIndex]
-    content     = buildString[splitIndex + 2:]
+    if "|" in buildString:
+        splitIndex  = buildString.index("| ")
+        header      = buildString[:splitIndex]
+        content     = buildString[splitIndex + 2:]
+    else:
+        header = ""
+        content = buildString
+
+
 
 
     # Send the string to the printRedirectFunction for the ConsoleWidget to recieve

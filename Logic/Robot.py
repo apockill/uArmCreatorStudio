@@ -339,7 +339,7 @@ class Robot:
             self.coord =  list(curr)
             self.__servoAngleStatus = list(self.uArm.getServoAngles())
 
-    def setGripper(self, status):
+    def setPump(self, status):
         """
         Turn the gripper on or off
         :param status: True or False

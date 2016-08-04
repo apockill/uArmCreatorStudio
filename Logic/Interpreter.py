@@ -478,7 +478,6 @@ class Interpreter:
         """
         Find the last index that has the same indentation level as the current index
         """
-        print("Starting search")
 
         skipToIndent = 0
         nextIndent   = 0

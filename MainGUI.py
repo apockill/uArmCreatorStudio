@@ -102,6 +102,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.newTask(False)
 
+
     def initUI(self):
         # Create "File" Menu
         menuBar       = self.menuBar()

@@ -599,8 +599,6 @@ class TestObjectAngleCommand(Command):
     def run(self):
         if len(self.errors): return
 
-        printf("Command| A quick description, usually using parameters, of the command that is running")
-
         # Find the object using vision
         _, tracked = self.vision.getObjectLatestRecognition(self.trackable)
         if tracked is None:
@@ -609,17 +607,19 @@ class TestObjectAngleCommand(Command):
 
 
         # This is the rotation of the object in degrees, derived from the camera
-        currAngle = math.degrees(tracked.rotation[2])
+        printf("Commands| tracked.rotation[2]")
+        printf("Ayy lmao")
+        testAngle = math.degrees(tracked.rotation[2])
 
 
         # Do the math to figure out the angle of the object relative to the robots axis
         xOffset, _, _ = self.transform.getCameraToRobotRotationOffset()
-        currAngle += 90 - xOffset
+        testAngle    += 90 - xOffset
 
 
         # Before doing any tracking, evaluate the "Relative" number to make sure its valid
-        lowerAngle, successL = self.interpreter.evaluateExpression(self.parameters["start"])
-        upperAngle, successU = self.interpreter.evaluateExpression(self.parameters["end"])
+        startAngle, successL = self.interpreter.evaluateExpression(self.parameters["start"])
+        endAngle,   successU = self.interpreter.evaluateExpression(self.parameters["end"])
 
 
         # If the evaluation failed, cancel the command
@@ -628,19 +628,13 @@ class TestObjectAngleCommand(Command):
             return False
 
 
-        # if lowerAngle - upperAngle > :
 
+        end = endAngle  - startAngle + 360.0 if (endAngle  - startAngle) < 0.0 else endAngle  - startAngle
+        mid = testAngle - startAngle + 360.0 if (testAngle - startAngle) < 0.0 else testAngle - startAngle
 
+        isBetween = mid < end
 
-        testExpression = self.parameters["start"] + " <= " + str(currAngle) + " <= " + self.parameters["end"]
-        testResult, success = self.interpreter.evaluateExpression(testExpression)
-
-        if not success: return False
-
-        printf("Commands| Testing: ", testExpression)
-
-        # If the expression was evaluated correctly, then return the testResult. Otherwise, return False
-        return testResult
+        return isBetween
 
     def addToAngle(self, original, addAngle):
         """

@@ -319,8 +319,6 @@ class InitEvent(EventGUI):
         super(InitEvent, self).__init__(parameters)
 
 
-
-
 class StepEvent(EventGUI):
     title     = 'Step'
     tooltip   = 'Activates every time the events are refreshed'
