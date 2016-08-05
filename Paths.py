@@ -134,6 +134,8 @@ help_cam_overview   = imageLoc + "help_cam_overview.png"
 help_make_sticker   = imageLoc + "help_make_sticker.png"
 help_marker_on_head = imageLoc + "help_sticker_on_head.png"
 help_star           = imageLoc + "help_star.png"
+help_drag_command   = imageLoc + "help_drag_command.gif"
+help_add_event      = imageLoc + "help_add_event.gif"
 
 
 

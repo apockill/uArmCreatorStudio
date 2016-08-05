@@ -1377,9 +1377,6 @@ class OWPage2(QtWidgets.QWizardPage):
 
         # Create a tutorial gif that will be next to the video
         movieLbl   = QtWidgets.QLabel("")
-
-
-        # Set the animated gif on the movieLbl
         movie = QtGui.QMovie(Paths.help_sel_obj)
         movieLbl.setMovie(movie)
         movie.start()

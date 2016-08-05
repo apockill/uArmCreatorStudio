@@ -5,11 +5,17 @@ resource_dir = "Resources\\"           # Resources directory
 icons_dir    = resource_dir + "Icons\\"     # Icons directory in resources
 
 
+
+# Files that need to be bundled that are in resource_dir
 resourceList   = ["face_cascade.xml",
                   "smile_cascade.xml",
                   "eye_cascade.xml"]
 
+
+# Files that need to be bundled that are in icons_dir
 iconsList = ["cancel.png",
+             "record_start.png",
+             "record_end.png",
              "button_delete.png",
              "button_create.png",
              "file_new.png",
@@ -59,6 +65,10 @@ iconsList = ["cancel.png",
              "command_script.png",
              "command_exit_event.png",
              "command_end_script.png",
+             "command_see_loc.png",
+             "command_test_angle.png",
+             "command_run_task.png",
+             "command_run_func.png",
              "help_lower_head.gif",
              "help_sel_marker.gif",
              "help_sel_obj.gif",
@@ -67,13 +77,9 @@ iconsList = ["cancel.png",
              "help_cam_overview.png",
              "help_make_sticker.png",
              "help_marker_on_head.png",
-             "help_star.png",
-             "record_start.png",
-             "record_end.png",
-             "command_see_loc.png",
-             "command_test_angle.png",
-             "command_run_task.png",
-             "command_run_func.png"]
+             "help_drag_command.gif",
+             "help_add_event.gif",
+             "help_star.png"]
 
 # Create a list of all the necessary resources in the format that pyInstaller wants it in
 d = []
@@ -119,6 +125,5 @@ exe = EXE(pyz,
           debug=False,
           strip=False,
           upx=True,
-          console=True,
           icon=icons_dir + "exe_icon.ico")
 

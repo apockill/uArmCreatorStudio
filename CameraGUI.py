@@ -64,22 +64,35 @@ class CameraWidget(QtWidgets.QWidget):
         self.fps              = fps   # The maximum FPS the widget will update at
         self.paused           = True  # Keeps track of the video's state
         self.timer            = QtCore.QTimer()
+        self.lastFrameID      = None
 
         self.timer.timeout.connect(self.nextFrameSlot)
 
 
         # Initialize UI Variables
         self.frameLbl    = QtWidgets.QLabel()
+        self.hintLbl     = QtWidgets.QLabel("Connect A Camera")
         self.mainVLayout = QtWidgets.QVBoxLayout(self)  # Global because subclasses need it
+        self.mainHLayout = QtWidgets.QHBoxLayout()
 
+        self.mainHLayout.addWidget(self.frameLbl)
+        self.mainHLayout.addWidget(self.hintLbl)
+        self.mainHLayout.addStretch(1)
+        self.mainVLayout.addLayout(self.mainHLayout)
+        self.mainVLayout.addStretch(1)
+
+        self.setLayout(self.mainVLayout)
         # Reference to the last object frame. Used to make sure that a frame is new, before repainting
-        self.lastFrameID = None
+
 
 
         # Initialize the UI (Don't make a function, that'll overwrite subclass UI create functions)
         self.frameLbl.setPixmap(QtGui.QPixmap(Paths.video_not_connected))
-        self.mainVLayout.addWidget(self.frameLbl)
-        self.setLayout(self.mainVLayout)
+
+
+
+
+
 
 
 
@@ -107,6 +120,7 @@ class CameraWidget(QtWidgets.QWidget):
         """
         if frame is None: return None
         self.frameLbl.setPixmap(cvToPixFrame(frame))
+        self.hintLbl.hide()
 
     def nextFrameSlot(self):
         frameID, frame = self.getFrameFunction()
@@ -155,8 +169,9 @@ class CameraSelector(CameraWidget):
 
 
         # Make sure that the QRect is aligned with the picture by adding a stretch and setting the contents margins!
-        self.mainVLayout.addStretch(1)
+
         self.layout().setContentsMargins(0, 0, 0, 0)
+
 
     # Selection related events
     def mousePressEvent(self, event):

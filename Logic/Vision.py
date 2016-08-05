@@ -760,7 +760,7 @@ class PlaneTracker(Tracker):
 
 
         ret, rotation, center = cv2.solvePnP(quad3d, quad, self.K, self.distCoeffs)
-
+        # print(rotation)
         # Convert every element to floats and return int in List form
         return tuple(map(float, center)), tuple(map(float, rotation))
 

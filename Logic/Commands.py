@@ -420,7 +420,7 @@ class MoveWristRelativeToObjectCommand(Command):
 
 
         # This is the rotation of the object in degrees, derived from the camera
-        targetAngle = math.degrees(tracked.rotation[2]) + 180
+
 
 
 
@@ -428,14 +428,20 @@ class MoveWristRelativeToObjectCommand(Command):
         cntr = tracked.center
         if self.relToBase:
             # If the angle is relative to the base angle, do the math here and add it to target angle.
+            targetAngle = math.degrees(tracked.rotation[2])
+
             TOCC = cntr   # Tracked Object Camera Coordinates
             ROCC = self.transform.robotToCamera((0, 0, 0))   # Robot Origin Camera Coordinates
             baseAngle = math.degrees(math.atan( (ROCC[1] - TOCC[1]) / (ROCC[0] - TOCC[0]))) + 90
             targetAngle -= baseAngle
         else:
             # If the angle is relative to x Axis, do different math and add it to target angle
-            xOffset, _, _ = self.transform.getCameraToRobotRotationOffset()
-            targetAngle -= xOffset
+            targetAngle = self.transform.cameraToRobotRotation(tracked.rotation[2])
+
+            # TODO: Come up with a system for adjusting the direction of a wrist with robots of higher axis
+            directionOfWrist = -1
+            targetAngle *= directionOfWrist
+
 
         # Add the "Relative" angle to the wrist
         targetAngle += relativeAngle
@@ -607,20 +613,9 @@ class TestObjectAngleCommand(Command):
             return False
 
 
-        # This is the rotation of the object in degrees, derived from the camera
+        camAngle  = tracked.rotation[2]
+        robAngle  = self.transform.cameraToRobotRotation(camAngle)  # Angle from the robots X axis
 
-
-        testAngle = math.degrees(tracked.rotation[2]) + 180
-
-
-        # Do the math to figure out the angle of the object relative to the robots axis
-        xOffset, _, _ = self.transform.getCameraToRobotRotationOffset()
-        print("X offset: ", xOffset)
-        testAngle    -= xOffset
-
-        # Normalize the new value
-        testAngle = rv.normalizeAngle(testAngle)
-        printf("Commands| ", testAngle)
 
         # Before doing any tracking, evaluate the "Relative" number to make sure its valid
         startAngle, successL = self.interpreter.evaluateExpression(self.parameters["start"])
@@ -634,11 +629,10 @@ class TestObjectAngleCommand(Command):
 
 
 
-        end = endAngle  - startAngle + 360.0 if (endAngle  - startAngle) < 0.0 else endAngle  - startAngle
-        mid = testAngle - startAngle + 360.0 if (testAngle - startAngle) < 0.0 else testAngle - startAngle
+        end = endAngle - startAngle + 360.0 if (endAngle - startAngle) < 0.0 else endAngle - startAngle
+        mid = robAngle - startAngle + 360.0 if (robAngle - startAngle) < 0.0 else robAngle - startAngle
 
         isBetween = mid < end
-
         return isBetween
 
 

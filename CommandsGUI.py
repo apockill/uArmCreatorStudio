@@ -125,8 +125,6 @@ class CommandWidget(QtWidgets.QWidget):
 class CommandMenuWidget(QtWidgets.QTabWidget):
     def __init__(self, parent):
         super(CommandMenuWidget, self).__init__(parent)
-
-        # addCmndFunc is a function passed from ControlPanel to be able to hook buttons to that function
         self.initUI()
 
     def initUI(self):
@@ -138,7 +136,6 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         self.addTab(self.generateFunctionsTab(), "Functions")
 
         self.setTabPosition(QtWidgets.QTabWidget.East)
-
         self.setFixedWidth(85)
 
 
@@ -227,7 +224,7 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         :return:
         """
         tabWidget = QtWidgets.QWidget()
-        vBox = QtWidgets.QVBoxLayout()
+        vBox      = QtWidgets.QVBoxLayout()
         vBox.setAlignment(QtCore.Qt.AlignTop)
         tabWidget.setLayout(vBox)
 
@@ -522,7 +519,7 @@ class CommandGUI:
         """
 
         if numResources == 0:
-            hintText = "You have not created any Motion Recordings yet. " + \
+            hintText = "You have not created any Movement Recordings yet. " + \
                        "Try creating new recordings in the Resource Manager!"
             self._addHint(prompt, hintText)
 
@@ -732,9 +729,9 @@ class MoveWristCommand(CommandGUI):
 
 
 class MotionRecordingCommand(CommandGUI):
-    title     = "Play Motion Recording"
-    tooltip   = "This will play back a 'motion recording' at a playback speed of your choosing. To create robot\n" + \
-                "motion recordings, simply click on 'Resources' on the toolbar and add a new recording."
+    title     = "Play Movement Recording"
+    tooltip   = "This will play back a 'Movement recording' at a playback speed of your choosing. To create robot\n" + \
+                "movement recordings, simply click on 'Resources' on the toolbar and add a new recording."
     icon      = Paths.command_play_path
 
     def __init__(self, env, parameters=None):
@@ -786,7 +783,7 @@ class MotionRecordingCommand(CommandGUI):
         return self.parameters
 
     def _updateDescription(self):
-        self.description = "Play motion recording " + self.parameters["objectID"] \
+        self.description = "Play movement recording " + self.parameters["objectID"] \
                            + " Speed x" + str(self.parameters["speed"])
         if self.parameters["reversed"]: self.description += " reversed"
 

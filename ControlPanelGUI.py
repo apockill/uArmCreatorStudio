@@ -25,11 +25,14 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
+import Paths
 import json  # For copying/pasting commands
 import EventsGUI   as EventsGUI
 import CommandsGUI as CommandsGUI
 from PyQt5         import QtCore, QtWidgets, QtGui
 from Logic.Global  import printf, getModuleClasses
+from CommonGUI     import Overlay, OverlayCenter
+
 __author__ = "Alexander Thiel"
 
 
@@ -59,7 +62,7 @@ class ControlPanel(QtWidgets.QWidget):
         self.addEventBtn       = QtWidgets.QPushButton()
         self.deleteEventBtn    = QtWidgets.QPushButton()
         self.changeEventBtn    = QtWidgets.QPushButton()
-        self.eventList         = EventList(environment, self.refresh, parent=self)
+        self.eventList         = EventList(environment, parent=self)
 
         # For Command List
         self.commandGBox       = QtWidgets.QGroupBox("Command List")
@@ -74,6 +77,8 @@ class ControlPanel(QtWidgets.QWidget):
         self.initUI()
 
     def initUI(self):
+        self.eventList.itemSelectionChanged.connect(self.refresh)
+
         # Set Up Buttons and their text
         self.addEventBtn.setText('Add Event')
         self.deleteEventBtn.setText('Delete')
@@ -108,8 +113,9 @@ class ControlPanel(QtWidgets.QWidget):
 
 
         # Add the addCommand button and a placeholder commandLIst
-        addCmndVLayout = QtWidgets.QVBoxLayout()
-        addCmndVLayout.addWidget(self.commandMenuWidget)
+        menuLbl = QtWidgets.QLabel("Commands")
+        menuVLayout = QtWidgets.QVBoxLayout()
+        menuVLayout.addWidget(self.commandMenuWidget)
 
         # self.commandListStack.addWidget(CommandList(self.__shared, parent=self))
 
@@ -117,7 +123,7 @@ class ControlPanel(QtWidgets.QWidget):
         mainHLayout = QtWidgets.QHBoxLayout()
         mainHLayout.addLayout(eventVLayout)
         mainHLayout.addWidget(self.commandGBox)
-        mainHLayout.addLayout(addCmndVLayout)
+        mainHLayout.addLayout(menuVLayout)
 
         # self.setMinimumWidth(500)
         self.setLayout(mainHLayout)
@@ -253,24 +259,32 @@ class ControlPanel(QtWidgets.QWidget):
 
 
 class EventList(QtWidgets.QListWidget):
-    def __init__(self, environment, refreshControlPanel, parent):
+    def __init__(self, environment, parent):
 
         super(EventList, self).__init__(parent)
 
         # GLOBALS
-        self.refreshControlPanel = refreshControlPanel
         self.env                 = environment  # Used in self.addCommand only
         self.events = {}  # A hash map of the current events in the list. The listWidget leads to the event object
 
         self.getEventFromItem = lambda listWidgetItem: self.events[self.itemWidget(listWidgetItem)]
         self.getEventsOrdered = lambda: [self.getEventFromItem(self.item(index)) for index in range(self.count())]
 
-        # IMPORTANT This makes sure the ControlPanel refreshes whenever you click on an item in the list,
-        # in order to display the correct commandList for the event that was clicked on.
-        self.itemSelectionChanged.connect(self.refreshControlPanel)
+        # UI Globals
+        self.hintLbl = QtWidgets.QLabel()  # Shows animated text
+        self.initUI()
+
+    def initUI(self):
+        movie     = QtGui.QMovie(Paths.help_add_event)
+        self.hintLbl.setMovie(movie)
+        movie.start()
+
+        overlayLayout = Overlay("center")
+        overlayLayout.addWidget(self.hintLbl)
+        center = OverlayCenter(self)
+        center.addLayout(overlayLayout)
 
         self.setFixedWidth(200)
-
 
     def setLocked(self, setLock):
         # Used to lock the eventList and commandLists from changing anything while script is running
@@ -383,7 +397,8 @@ class EventList(QtWidgets.QListWidget):
 
         if not isLoading:
             self.setCurrentRow(placeIndex)  # Select the newly added event
-            self.refreshControlPanel()      # Call for a refresh of the ControlPanel so it shows the commandList
+
+        if self.count() > 0: self.hintLbl.hide()
         return placeIndex                   # Returns where the object was placed
 
 
@@ -394,6 +409,7 @@ class EventList(QtWidgets.QListWidget):
         self.itemWidget(listWidgetItem).deleteLater()
         self.takeItem(self.row(listWidgetItem))
 
+        if self.count() == 0: self.hintLbl.show()
 
 
     def deleteSelectedEvent(self):
@@ -462,7 +478,7 @@ class EventList(QtWidgets.QListWidget):
         index = self.addEvent(eventType, parameters=params, commandListSave=commandSave)
         if index is not None:
             self.setCurrentRow(index)  # Select the newly added event
-            self.refreshControlPanel()      # Call for a refresh of the ControlPanel so it shows the commandList
+
         return
 
 
@@ -505,7 +521,6 @@ class EventList(QtWidgets.QListWidget):
 
         # Select the first event for viewing
         if self.count() > 0: self.setCurrentRow(0)
-        self.refreshControlPanel()
 
 
 class CommandList(QtWidgets.QListWidget):
@@ -514,17 +529,33 @@ class CommandList(QtWidgets.QListWidget):
     def __init__(self, environment, parent):
         super(CommandList, self).__init__(parent)
 
+
+
         self.env = environment  # Should just be used in addCommand
 
         # GLOBALS
         self.commands = {}  # Dictionary of commands. Ex: {QListItem: MoveXYZCommand, QListItem: PickupCommand}
-
-        # Set up the drag/drop parameters (both for dragging within the commandList, and dragging from outside
-
-
         self.locked = False  # When True, the widget no longer accepts copy/paste commands, or delete commands
+
+        # UI Globals:
+        self.hintLbl  = QtWidgets.QLabel()  # Tells users to drag commands in when the list is empty
+
+        self.initUI()
+
+    def initUI(self):
+        # Set up the hintLbl overlay
+        movie     = QtGui.QMovie(Paths.help_drag_command)
+        self.hintLbl.setMovie(movie)
+        movie.start()
+
+        overlayLayout = Overlay("center")
+        overlayLayout.addWidget(self.hintLbl)
+        center = OverlayCenter(self)
+        center.addLayout(overlayLayout)
+
+        # Other UI stuff
+        self.setLocked(False)  # Initializes the drag/drop functionality and more
         self.setMinimumWidth(self.minimumWidth)
-        self.setLocked(False)
 
     def deleteItem(self, listWidgetItem):
         del self.commands[self.itemWidget(listWidgetItem)]
@@ -538,6 +569,8 @@ class CommandList(QtWidgets.QListWidget):
             self.deleteItem(item)
 
         self.refreshIndents()  # This will update indents, which can change when you delete a command
+
+        if self.count() == 0: self.hintLbl.show()
 
     def setLocked(self, isLocked):
         """
@@ -653,10 +686,12 @@ class CommandList(QtWidgets.QListWidget):
             newCommand.parameters = parameters
         else:
             # If this is being added by the user, then prompt the user by opening the command window.
+            self.hintLbl.hide()
             accepted = newCommand.openWindow()  # Get information from user
             if accepted:
                 # Re-make the widget that goes on the command, so it has the new information given by the user
                 newCommand.dressWidget(newWidget)     # Dress up the widget
+
             else:
                 # If the user canceled, then delete the command
                 self.deleteItem(listWidgetItem)
@@ -666,6 +701,8 @@ class CommandList(QtWidgets.QListWidget):
         if not isLoading:
             # self.setCurrentRow(index - 1)
             self.refreshIndents()
+
+        if self.count() == 0: self.hintLbl.show()
 
 
 

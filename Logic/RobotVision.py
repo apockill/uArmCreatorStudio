@@ -64,6 +64,11 @@ class Transform:
             [(cameraXYZ), (robotXYZ)]
             ...
         ]
+
+
+    Some information:
+        Camera: Always uses radians, and goes from -pi to pi
+        Robot: Always uses degrees, goes from 0 to 360
     """
 
     def __init__(self, ptPairs):
@@ -100,41 +105,42 @@ class Transform:
         if not ret: printf("RobotVision| ERROR: Transform failed!")
 
         transformFunc = lambda x: np.array((M * np.vstack((np.matrix(x).reshape(3, 1), 1)))[0:3, :].reshape(1, 3))[0]
+
         return transformFunc
 
-    def getCameraToRobotRotationOffset(self):
+
+
+    def cameraToRobotRotation(self, rotation):
         """
-        Returns the offset of the Camera's grid to the robots grid, in degrees, of the X, Y, and Z axis.
+        Currently can only return the current rotation from the X axis of the robot
 
-        A use case would be this: You have an angle that is measured from the camera's X axis, and want to know the
-        angle but from the robots x axis. You would call this function, then add the camera angle to the
-        rotation offset
-
-        :return: (x degrees, y degrees, z degrees)
-        """
-                # If the angle is relative to x Axis, do different math and add it to target angle
-        a = self.robotToCamera(( 0, 0, 0))
-        b = self.robotToCamera((10, 0, 0))
-        xOffset =  math.degrees(math.atan( (a[1] - b[1]) / (a[0] - b[0])))
-
-        a = self.robotToCamera((0,  0, 0))
-        b = self.robotToCamera((0, 10, 0))
-        yOffset =  math.degrees(math.atan( (a[1] - b[1]) / (a[0] - b[0])))
-
-        a = self.robotToCamera((0, 0, 0))
-        b = self.robotToCamera((0, 0, 10))
-        zOffset =  math.degrees(math.atan( (a[1] - b[1]) / (a[0] - b[0])))
-
-        return xOffset, yOffset, zOffset
-
-    def getRobotToCameraRotationOffset(self):
-        """
-        This is the same as getCameraToRobotRotationOffset, but the offset is negative
-        :return:
+        :param rotation: Rotation of object off of the camera's x axis (aka, tracked.rotation[2])
+        :return:Rotation of object off of the robots x axis
         """
 
-        xOffset, yOffset, zOffset = self.getCameraToRobotRotationOffset()
-        return -xOffset, -yOffset, -zOffset
+        zRot = rotation
+        camToRobTranslation = self.cameraToRobot((0, 0, 0))
+
+        # THIS DOES NOT WORK. FOR SOME REASON SOLVEPNP FLIPS AXIS, NO IDEA WHY!
+        # camVectorX   = np.asarray([0, math.sin(xRot), math.cos(xRot)])
+        # robVector    = self.cameraToRobot(camVectorX)
+        # robUnitVec   = robVector - camToRobTranslation
+        # xAngle       = normalizeAngle(math.degrees(math.atan2(robUnitVec[2], robUnitVec[1])))
+        #
+        #
+        # camVectorY   = np.asarray([math.cos(yRot), 0, math.sin(yRot)])
+        # robVector    = self.cameraToRobot(camVectorY)
+        # robUnitVec   = robVector - camToRobTranslation
+        # yAngle       = normalizeAngle(math.degrees(math.atan2(robUnitVec[2], robUnitVec[0])))
+        #
+
+        camVectorZ   = np.asarray([math.cos(zRot), math.sin(zRot), 0])
+        robVector    = self.cameraToRobot(camVectorZ)
+        robUnitVec   = robVector - camToRobTranslation
+        zAngle       = math.degrees(math.atan2(robUnitVec[1], robUnitVec[0]))
+        zAngle       = normalizeAngle(zAngle)
+
+        return zAngle
 
 
 def playMotionPath(motionPath, robot, exitFunc, speedMultiplier=1, reverse=False):
@@ -467,9 +473,33 @@ def normalizeAngle(angle):
     :return:
     """
     while angle >= 360: angle -= 360
-    while    angle < 0: angle += 360
+    while angle <    0: angle += 360
 
     return angle
+
+def dotproduct(v1, v2):
+    """
+    :param v1: n-dimensional vector, like [x, y, z]
+    :param v2: n-dimensional vector, like [x, y, z]
+    :return: the dot product of two n-dimensional vectors
+    """
+    return sum((a*b) for a, b in zip(v1, v2))
+
+def length(v):
+    """
+    :param v: n-dimensional vector, like [x, y, z]
+    :return: The length of an n-dimensional vector
+    """
+    return math.sqrt(dotproduct(v, v))
+
+def angle(v1, v2):
+    """
+    :param v1: n-dimensional vector, like [x, y, z]
+    :param v2: n-dimensional vector, like [x, y, z]
+    :return: The angle between two n-dimensional vectors [xA, yA, zA]
+    """
+    return math.acos(dotproduct(v1, v2) / (length(v1) * length(v2)))
+
 
 
 # Long form functions with lots of steps

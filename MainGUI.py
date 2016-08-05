@@ -120,13 +120,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
         saveAction.setShortcut("Ctrl+S")
 
-        # Connect file menu actions
         newAction.triggered.connect(    lambda: self.newTask(promptSave=True))
         saveAction.triggered.connect(   self.saveTask)
         saveAsAction.triggered.connect( lambda: self.saveTask(True))
         loadAction.triggered.connect(   self.loadTask)
 
-        # Add file menu actions
+
         fileMenu.addAction(newAction)
         fileMenu.addAction(saveAction)
         fileMenu.addAction(saveAsAction)
@@ -139,20 +138,37 @@ class MainWindow(QtWidgets.QMainWindow):
         forumAction   = QtWidgets.QAction(QtGui.QIcon(Paths.taskbar), "Visit the forum!", self)
         redditAction  = QtWidgets.QAction(QtGui.QIcon(Paths.reddit_link), "Visit our subreddit!", self)
 
-        # Connect community menu actions
         forumAction.triggered.connect(  lambda: webbrowser.open("https://forum.ufactory.cc/", new=0, autoraise=True))
         redditAction.triggered.connect(lambda: webbrowser.open("https://www.reddit.com/r/uArm/", new=0, autoraise=True))
 
-        # Add community menu actions
         communityMenu.addAction(forumAction)
         communityMenu.addAction(redditAction)
+
+
+        # Create Resources Menu
+        resourceMenu = menuBar.addMenu('New Resource')
+        visAction  = QtWidgets.QAction(QtGui.QIcon(Paths.event_recognize), "Vision Object", self)
+        grpAction  = QtWidgets.QAction(QtGui.QIcon(Paths.event_recognize), "Vision Group", self)
+        recAction  = QtWidgets.QAction(QtGui.QIcon(Paths.record_start), "Movement Recording", self)
+        fncAction  = QtWidgets.QAction(QtGui.QIcon(Paths.command_run_func), "Function", self)
+
+
+        visAction.triggered.connect(  lambda: ObjectManagerWindow(self.env, parent=self).openObjectWizard())
+        grpAction.triggered.connect(  lambda: ObjectManagerWindow(self.env, parent=self).openGroupMenu())
+        recAction.triggered.connect(  lambda: ObjectManagerWindow(self.env, parent=self).openRecordingMenu())
+        fncAction.triggered.connect(  lambda: ObjectManagerWindow(self.env, parent=self).openFunctionMenu())
+
+        resourceMenu.addAction(visAction)
+        resourceMenu.addAction(grpAction)
+        resourceMenu.addAction(recAction)
+        resourceMenu.addAction(fncAction)
 
 
 
         # Add menus to menuBar
         menuBar.addMenu(fileMenu)
         menuBar.addMenu(communityMenu)
-
+        menuBar.addMenu(resourceMenu)
 
 
         # Create Toolbar
@@ -445,7 +461,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.setVideo("play")
 
-    def openObjectManager(self):
+    def openObjectManager(self, openResourceWindow=None):
         # This handles the opening and closing of the ObjectManager window
         printf("GUI| Opening ObjectManager Window")
 
@@ -453,11 +469,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Make sure video thread is active and playing, but that the actual cameraWidget
         self.setVideo("play")
+
         self.cameraWidget.pause()
         objMngrWindow = ObjectManagerWindow(self.env, self)
         accepted      = objMngrWindow.exec_()
         objMngrWindow.close()
         objMngrWindow.deleteLater()
+
         self.setVideo("play")
 
 
@@ -544,6 +562,7 @@ class MainWindow(QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.question(self, 'Warning', "The program was unable to load the following script:\n" +
                                     filename + "\n\n The following error occured: " + type(e).__name__ + ": " + str(e),
                                            QtWidgets.QMessageBox.Ok)
+            raise e  # TODO: Remove this line when finished
 
 
 

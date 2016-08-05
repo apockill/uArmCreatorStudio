@@ -35,6 +35,7 @@ __author__ = "Alexander Thiel"
 
 
 
+
 class LineTextWidget(QtWidgets.QFrame):
     """
     This puts line numbers on a QTextEdit widget
@@ -188,7 +189,7 @@ Builtin Variables:
 
     resources
         You can pull any "objects" that you have built using the Resource Manager. This means, for example,
-        that you could request a Motion Recording and replay it, or request a Vision object and track it.
+        that you could request a Movement Recording and replay it, or request a Vision object and track it.
 
         For source code on the Object Manager class, go to:
         https://github.com/apockill/uArmCreatorStudio/blob/master/Logic/ObjectManager.py
@@ -706,4 +707,92 @@ def centerScreen(self):
 
 
 
+# For overlaying things on top of a wdiget
+class OverlayCenter(QtWidgets.QLayout):
+    """Layout for managing overlays."""
 
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        # Properties
+        self.setContentsMargins(0, 0, 0, 0)
+
+        self.items = []
+    # end Constructor
+
+    def addLayout(self, layout):
+        """Add a new layout to overlay on top of the other layouts and widgets."""
+        self.addChildLayout(layout)
+        self.addItem(layout)
+    # end addLayout
+
+    def __del__(self):
+        """Destructor for garbage collection."""
+        item = self.takeAt(0)
+        while item:
+            item = self.takeAt(0)
+    # end Destructor
+
+    def addItem(self, item):
+        """Add an item (widget/layout) to the list."""
+        self.items.append(item)
+    # end addItem
+
+    def count(self):
+        """Return the number of items."""
+        return len(self.items)
+    # end Count
+
+    def itemAt(self, index):
+        """Return the item at the given index."""
+        if index >= 0 and index < len(self.items):
+            return self.items[index]
+
+        return None
+    # end itemAt
+
+    def takeAt(self, index):
+        """Remove and return the item at the given index."""
+        if index >= 0 and index < len(self.items):
+            return self.items.pop(index)
+
+        return None
+    # end takeAt
+
+    def setGeometry(self, rect):
+        """Set the main geometry and the item geometry."""
+        super().setGeometry(rect)
+
+        for item in self.items:
+            item.setGeometry(rect)
+    # end setGeometry
+
+class Overlay(QtWidgets.QBoxLayout):
+    """Overlay widgets on a parent widget."""
+
+    def __init__(self, location="left", parent=None):
+        super().__init__(QtWidgets.QBoxLayout.TopToBottom, parent)
+
+        if location == "left":
+            self.setDirection(QtWidgets.QBoxLayout.TopToBottom)
+            self.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        elif location == "right":
+            self.setDirection(QtWidgets.QBoxLayout.TopToBottom)
+            self.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        elif location == "top":
+            self.setDirection(QtWidgets.QBoxLayout.LeftToRight)
+            self.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
+        elif location == "bottom":
+            self.setDirection(QtWidgets.QBoxLayout.LeftToRight)
+            self.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
+        elif location == "center":
+            self.setDirection(QtWidgets.QBoxLayout.LeftToRight)
+            self.setAlignment(QtCore.Qt.AlignCenter)
+
+        # self.css = "QWidget {background-color: black; color: black}"
+
+
+    def addWidget(self, widget):
+        super().addWidget(widget)
+
+        # widget.setStyleSheet(self.css)
