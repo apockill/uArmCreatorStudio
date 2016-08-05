@@ -27,6 +27,7 @@ License:
 """
 import cv2
 import numpy as np
+import math
 from Logic.Global import printf
 from collections  import namedtuple
 from time         import sleep
@@ -687,9 +688,10 @@ class PlaneTracker(Tracker):
             # Create the text that will be drawn
             nameText  = tracked.view.name
 
-            coordText =  "X " + str(int(tracked.center[0])) + \
-                         " Y " + str(int(tracked.center[1])) + \
-                         " Z " + str(int(tracked.center[2]))
+            coordText =  "("  + str(int(tracked.center[0])) + \
+                         "," + str(int(tracked.center[1])) + \
+                         "," + str(int(tracked.center[2])) + \
+                         ") " + str(int(math.degrees(tracked.rotation[2]) + 180))
 
             # Figure out how much the text should be scaled (depends on the different in curr side len, and orig len)
             origLength    = rect[2] - rect[0] + rect[3] - rect[1]
@@ -704,16 +706,24 @@ class PlaneTracker(Tracker):
             validCorners = [c for c in quad if 0 < c[1] < h]
             validCorners = [c for c in validCorners if (0 < c[0] and c[0] + txtW < w)]
 
+            dist = 10 * scaleFactor
 
             # If a corner was found, draw the name on that corner
             if len(validCorners):
                 chosenCorner = tuple(validCorners[0])
 
-                # Draw the name of the object, and coordinates
+                # Draw the name of the object
                 mask  = drawOutlineText(mask, nameText, chosenCorner,
                             self.fFnt, scaleFactor, color=self.fColor, thickness=self.fThickness)
                 tMask = drawOutlineText(tMask, nameText, chosenCorner,
                             self.fFnt, scaleFactor, color=self.fColor, thickness=self.fThickness)
+
+                # Draw the coordinates of the object
+                chosenCorner = chosenCorner[0], int(chosenCorner[1] + dist)
+                mask  = drawOutlineText(mask, coordText, chosenCorner,
+                            self.fFnt, scaleFactor - .6, color=self.fColor, thickness=1)
+                tMask = drawOutlineText(tMask, coordText, chosenCorner,
+                            self.fFnt, scaleFactor - .6, color=self.fColor, thickness=1)
 
 
 
@@ -853,8 +863,8 @@ def drawOutlineText(frame, text, point, font, scale, color, thickness):
     """
         This function draws text twice, with a color on front and a color on the back
     """
-    frame = cv2.putText(frame, text, point, font, scale, color=(1, 1, 1), thickness=thickness + 1)
-    frame = cv2.putText(frame, text, point, font, scale, color=color, thickness=thickness)
+    frame = cv2.putText(frame, text, tuple(point), font, scale, color=(1, 1, 1), thickness=thickness + 1)
+    frame = cv2.putText(frame, text, tuple(point), font, scale, color=color, thickness=thickness)
 
     return frame
 

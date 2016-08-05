@@ -540,7 +540,7 @@ class Console(QtWidgets.QWidget):
 
             # If the user wants everything to be printed, just in case, then send "Other" as the category
             if self.settings["other"]:
-                return "Other"
+                return moduleString
 
             return None
 

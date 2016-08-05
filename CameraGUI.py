@@ -46,7 +46,7 @@ def cvToPixFrame(image):
 
 class CameraWidget(QtWidgets.QWidget):
     """
-    Creates a widget that will update 24 times per second, by calling for a new frame from the vStream object.
+    Creates a widget that will update at a certain fps, by calling for a new frame from the vStream object.
 
     :param getFrameFunction: A function that when called will return a frame
             that can be put in a QLabel. In this case the frame will come from
@@ -105,7 +105,7 @@ class CameraWidget(QtWidgets.QWidget):
             When paused, you might want to have a custom frame showing. This is also useful for CameraSelector
             The nextFrameSlot also uses it to set frames.
         """
-
+        if frame is None: return None
         self.frameLbl.setPixmap(cvToPixFrame(frame))
 
     def nextFrameSlot(self):
@@ -114,7 +114,7 @@ class CameraWidget(QtWidgets.QWidget):
         # If the frame is different than the one currently on the screen
         if frameID == self.lastFrameID: return None
         self.lastFrameID = frameID
-        if frame is None:               return None
+
 
         self.setFrame(frame)
 

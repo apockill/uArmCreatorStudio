@@ -72,10 +72,8 @@ The project is seperated by "Logic" and "GUI" elements. This was to force myself
 	* ObjectManager.py and Resources.py
 		* ObjectManager is what handles the saving and loading of things like Motion recordings, Vision objects, Functions, or whatever else might be added in the future.
 		* Resources.py is where the Trackable, MotionPath, Function objects are defined. All new resources should be defined in Resources.py, because that's where ObjectManager searches when instantiating objects. It parses the filename, the first word is the "type", then checks Resources.py to see if that type exists, and if it does, it creates that object and gives it the directory to load it's information from.
-		* Paths.py
-			* What you would expect- holds paths for icons, and logic objects as well.
-		* Global.py
-			* Holds a custom print function, which can redirect prints to the GUI's console when the GUI is being used.
+	* Global.py
+		* Holds a custom print function, which can redirect prints to the GUI's console when the GUI is being used.
 * GUI Overview
  * MainGUI.py
 	  * Handles the main window, settings page, and is the center for all things GUI
@@ -89,8 +87,10 @@ The project is seperated by "Logic" and "GUI" elements. This was to force myself
 	 * This holds the window and logic for calibrations that the user can do with the robot. If you want to run without a GUI, just use the GUI for calibration which get automatically saved in Resources/Settings.txt, then run your script using the saved calibration.
  * ObjectManagerGUI.py
 	 * This handles the "Resources" menu on the toolbar, and works with ObjectManager.py to save new objects.
- *    CommonGUI and CameraGUI:
+ * CommonGUI and CameraGUI:
 	 * These are convenient widgets I use throughout the project.
+ * Paths.py
+	 * What you would expect- holds paths for icons and other GUI elements.
 
 ## Authors
 **Alex Thiel**
@@ -106,7 +106,7 @@ Contact me at Alex.D.Thiel@Gmail.com
 ## Contributing
 **王诗阳 Shiyang Wang** - *Icon Design*
 
-**Tyler Compton** - *Provided valuable advice for certain language design questions*
+**[Tyler Compton](https://github.com/velovix)** - *Provided valuable advice for certain language design questions*
 
 
 ## License

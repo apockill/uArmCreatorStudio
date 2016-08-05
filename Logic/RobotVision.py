@@ -113,7 +113,7 @@ class Transform:
         :return: (x degrees, y degrees, z degrees)
         """
                 # If the angle is relative to x Axis, do different math and add it to target angle
-        a = self.robotToCamera((0, 0, 0))
+        a = self.robotToCamera(( 0, 0, 0))
         b = self.robotToCamera((10, 0, 0))
         xOffset =  math.degrees(math.atan( (a[1] - b[1]) / (a[0] - b[0])))
 
@@ -135,6 +135,7 @@ class Transform:
 
         xOffset, yOffset, zOffset = self.getCameraToRobotRotationOffset()
         return -xOffset, -yOffset, -zOffset
+
 
 def playMotionPath(motionPath, robot, exitFunc, speedMultiplier=1, reverse=False):
     """
@@ -457,6 +458,18 @@ def smoothListGaussian(list1, degree):
         smoothed[i] = smoothing / sum(weight)
 
     return smoothed
+
+
+# Angle math
+def normalizeAngle(angle):
+    """
+    Get an angle between 0 and 360 degrees
+    :return:
+    """
+    while angle >= 360: angle -= 360
+    while    angle < 0: angle += 360
+
+    return angle
 
 
 # Long form functions with lots of steps
