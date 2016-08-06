@@ -31,8 +31,8 @@ import serial.tools.list_ports
 from threading    import Thread, RLock
 from time         import sleep  #Only use in refresh() command while querying robot if it's done moving
 from Logic.Global import printf
-
 from Logic.CommunicationProtocol_1 import Device
+
 __author__ = "Alexander Thiel"
 
 
@@ -306,6 +306,7 @@ class Robot:
             printf("Robot| Robot not avaliable, canceling servo change")
             return
 
+
         # If a positional servo is attached, get the robots current position and update the self.pos cache
         oldServoStatus = self.__servoAttachStatus[:]
 
@@ -375,6 +376,15 @@ class Robot:
         # Changes a class wide variable that affects the move commands in self.refresh()
         self.__speed = speed
 
+    def stopMoving(self):
+        """
+        Stop the robot's ongoing movement
+        """
+        if not self.connected() or self.exiting:
+            printf("Robot| Robot not avaliable, canceling position change")
+            return
+
+        self.uArm.setStop()
 
 
     def connected(self):

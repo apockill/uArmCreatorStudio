@@ -376,10 +376,11 @@ class MainWindow(QtWidgets.QMainWindow):
         robot  = self.env.getRobot()
         robot.setExiting(False)
         vision.setExiting(False)
-
         robot.setPump(False)
-        robot.setActiveServos(all=False)
 
+        # Since the robot might still be moving (and this activates servos continuously) wait for it to finish
+        robot.stopMoving()
+        robot.setActiveServos(all=False)
 
         # Make sure vision filters are stopped
         vision.endAllTrackers()
@@ -400,6 +401,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
             errorStr = "The script ended prematurely because of the following error(s) \n\n" + errorText
             QtWidgets.QMessageBox.question(self, 'Warning', errorStr, QtWidgets.QMessageBox.Ok)
+
 
 
 
@@ -800,11 +802,12 @@ class Application(QtWidgets.QApplication):
         super(Application, self).__init__(args)
 
     def notify(self, receiver, event):
+        if event.type() == QtCore.QEvent.Timer: print("ayy")
         # Add any keys that are pressed to keysPressed
         if event.type() == QtCore.QEvent.KeyPress:
             # Todo: remove these two lines when development is finished
             if event.key() == QtCore.Qt.Key_Q and len(mainWindowReference):
-                print("CHILDREN: ", len(mainWindowReference[0].findChildren(QtCore.QObject)))
+                print("CHILDREN: ", len(mainWindowReference[0].findChildren(QtCore.QBasicTimer)))
 
             if event.key() not in Global.keysPressed:
                 Global.keysPressed.append(event.key())

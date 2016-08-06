@@ -75,11 +75,13 @@ class CameraWidget(QtWidgets.QWidget):
         self.mainVLayout = QtWidgets.QVBoxLayout(self)  # Global because subclasses need it
         self.mainHLayout = QtWidgets.QHBoxLayout()
 
+        self.mainHLayout.setContentsMargins(0, 0, 0, 0)
+        self.mainVLayout.setContentsMargins(0, 0, 0, 0)
+
         self.mainHLayout.addWidget(self.frameLbl)
         self.mainHLayout.addWidget(self.hintLbl)
         self.mainHLayout.addStretch(1)
         self.mainVLayout.addLayout(self.mainHLayout)
-        self.mainVLayout.addStretch(1)
 
         self.setLayout(self.mainVLayout)
         # Reference to the last object frame. Used to make sure that a frame is new, before repainting
@@ -170,7 +172,7 @@ class CameraSelector(CameraWidget):
 
         # Make sure that the QRect is aligned with the picture by adding a stretch and setting the contents margins!
 
-        self.layout().setContentsMargins(0, 0, 0, 0)
+        self.layout().addStretch(1)  # Push the layout to the top, so the mouse commands align correctly
 
 
     # Selection related events

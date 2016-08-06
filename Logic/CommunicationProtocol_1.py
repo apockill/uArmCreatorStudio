@@ -144,6 +144,13 @@ class Device:
         cmnd = "buzzF" + str(frequency) + "T" + str(duration)
         return self.__send(cmnd)
 
+    def setStop(self):
+        """
+        Stop any ongoing move
+        """
+        cmnd = "sStp"
+        return self.__send(cmnd)
+
 
     # Get commands
     def getMoving(self):

@@ -124,6 +124,7 @@ exe = EXE(pyz,
           name='uArmCreatorStudio',
           debug=False,
           strip=False,
+          console=False,
           upx=True,
           icon=icons_dir + "exe_icon.ico")
 

@@ -401,42 +401,6 @@ class EventList(QtWidgets.QListWidget):
         if self.count() > 0: self.hintLbl.hide()
         return placeIndex                   # Returns where the object was placed
 
-
-    def deleteEvent(self, listWidgetItem):
-        event = self.events[self.itemWidget(listWidgetItem)]
-        event.commandList.deleteLater()
-        del self.events[self.itemWidget(listWidgetItem)]
-        self.itemWidget(listWidgetItem).deleteLater()
-        self.takeItem(self.row(listWidgetItem))
-
-        if self.count() == 0: self.hintLbl.show()
-
-
-    def deleteSelectedEvent(self):
-        printf("GUI| Removing selected event")
-
-        # Get the current item it's corresponding event
-        selectedItem = self.getSelectedEventItem()
-        if selectedItem is None:
-            QtWidgets.QMessageBox.question(self, 'Error', 'You need to select an event to delete',
-                                           QtWidgets.QMessageBox.Ok)
-            return
-
-        # If there are commands inside the event, ask the user if they are sure they want to delete it
-        if len(self.getSelectedEvent().commandList.commands) > 0:
-            reply = QtWidgets.QMessageBox.question(self, 'Message',
-                                                   'Are you sure you want to delete this event and all its commands?',
-                                                   QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
-                                                   QtWidgets.QMessageBox.No)
-
-            if reply == QtWidgets.QMessageBox.No:
-                printf("GUI| User rejected deleting the event")
-                return
-
-        # Delete the event item and it's corresponding event
-        self.deleteEvent(selectedItem)
-
-
     def replaceEvent(self):
         # Replace one event with another, while keeping the same commandList
         printf("GUI| Changing selected event")
@@ -481,6 +445,40 @@ class EventList(QtWidgets.QListWidget):
 
         return
 
+    def deleteEvent(self, listWidgetItem):
+        event = self.events[self.itemWidget(listWidgetItem)]
+        event.commandList.deleteLater()
+        del self.events[self.itemWidget(listWidgetItem)]
+        self.itemWidget(listWidgetItem).deleteLater()
+        self.takeItem(self.row(listWidgetItem))
+
+        if self.count() == 0: self.hintLbl.show()
+
+
+    def deleteSelectedEvent(self):
+        printf("GUI| Removing selected event")
+
+        # Get the current item it's corresponding event
+        selectedItem = self.getSelectedEventItem()
+        if selectedItem is None:
+            QtWidgets.QMessageBox.question(self, 'Error', 'You need to select an event to delete',
+                                           QtWidgets.QMessageBox.Ok)
+            return
+
+        # If there are commands inside the event, ask the user if they are sure they want to delete it
+        if len(self.getSelectedEvent().commandList.commands) > 0:
+            reply = QtWidgets.QMessageBox.question(self, 'Message',
+                                                   'Are you sure you want to delete this event and all its commands?',
+                                                   QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+                                                   QtWidgets.QMessageBox.No)
+
+            if reply == QtWidgets.QMessageBox.No:
+                printf("GUI| User rejected deleting the event")
+                return
+
+        # Delete the event item and it's corresponding event
+        self.deleteEvent(selectedItem)
+
 
     def getSaveData(self):
         """
@@ -504,11 +502,9 @@ class EventList(QtWidgets.QListWidget):
 
     def loadData(self, data):
         # Perform cleanup
-        for key in self.events:
-            self.events[key].commandList.deleteLater()
-
         self.events = {}
         self.clear()  # clear eventList
+        self.hintLbl.show()
 
         eventClasses = getModuleClasses(EventsGUI)
 
@@ -678,7 +674,7 @@ class CommandList(QtWidgets.QListWidget):
         # Add the new command to the list of commands, linking it with its corresponding listWidgetItem
         self.setItemWidget(listWidgetItem, newWidget)
         self.commands[newWidget] = newCommand
-
+        self.hintLbl.hide()
 
 
         # Fill command with information either by opening window or loading it in. Do this after adding everything.
@@ -686,7 +682,7 @@ class CommandList(QtWidgets.QListWidget):
             newCommand.parameters = parameters
         else:
             # If this is being added by the user, then prompt the user by opening the command window.
-            self.hintLbl.hide()
+
             accepted = newCommand.openWindow()  # Get information from user
             if accepted:
                 # Re-make the widget that goes on the command, so it has the new information given by the user
@@ -859,6 +855,7 @@ class CommandList(QtWidgets.QListWidget):
     def loadData(self, data):
         self.commands = {}
         self.clear()
+        self.hintLbl.show()
         commandClasses = getModuleClasses(CommandsGUI)
 
         # Fill the list with new data

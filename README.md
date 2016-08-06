@@ -40,13 +40,13 @@ If you have a uArm:
 Make sure you have the right communication protocol uploaded onto your uArm's Arduino board, or else this won't work at all. This GUI uses a custom communication protocol (although that might change soon- uFactory is adopting my com protocol). To make sure, go to Latest Builds/Upload This To Your uArm and import the approprate libraries from the Libraries To Import folder, and then upload the .ino file in the CommunicationProtocol folder to your uArm.
 
 ### Project Structure
-The project is seperated by "Logic" and "GUI" elements. This was to force myself to write completely GUI indepenedent logic code, thus you can do anything you can do in the GUI by scripting directly with Logic code. It's a pain, but it's possible!
+The project is seperated by "Logic" and "GUI" elements. This was to force myself to write completely GUI independent logic code, thus you can do anything you can do in the GUI by scripting directly with Logic code. It's a pain, but it's possible!
 
 * Logic Overview
 	* Commands.py and Events.py
 		* This is where all of the logic for each command and event is defined. If you make a custom Command, you must have a CommandsGUI.py implimentation and a Commands.py implimentation, with the same name- that's how the Interpreter instantiates the object from a string. Vice versa for creating custom Events
 	* Environment.py
-		* This is a singleton type of variable that holds the Robot, VideoStream, Settings, and ObjectManager classes.
+		* This is a singleton object that holds the Robot, VideoStream, Settings, and ObjectManager classes.
 		* This was done since commands and events need various things during instantiation, and environment is a great way to pass them around. Furthermore, it simplified the seperation of Logic and GUI tremendously.
 	* Interpreter.py
 		* This is, well, the interpreter of the project. When you press "play" on the gui, all of the code gets saved as a JSON, the exact same as the save format the project uses, then passed to the Interpreter, which then instantiates all of the events from Events.py and commands from Commands.py.
@@ -111,7 +111,7 @@ Contact me at Alex.D.Thiel@Gmail.com
 
 ## License
 
-This file is part of uArmCreatorStudio. uArmCreatorStudio is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. uArmCreatorStudio is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with uArmCreatorStudio. If not, see <http://www.gnu.org/licenses/>.
+This project is called uArmCreatorStudio. uArmCreatorStudio is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. uArmCreatorStudio is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with uArmCreatorStudio. If not, see <http://www.gnu.org/licenses/>.
 
 ## Acknowledgments
 
