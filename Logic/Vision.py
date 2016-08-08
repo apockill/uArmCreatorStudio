@@ -843,20 +843,6 @@ class CascadeTracker(Tracker):
 
         return frame
 
-# def getMotionDirection(self):
-    #     frameList = self.vStream.getFrameList()
-    #
-    #     frame0 = cv2.cvtColor(frameList[-1].copy(), cv2.COLOR_BGR2GRAY)
-    #     frame1 = cv2.cvtColor(frameList[-2].copy(), cv2.COLOR_BGR2GRAY)
-    #
-    #     flow = cv2.calcOpticalFlowFarneback(frame1, frame0, 0.5,   1,  5,              1,             5,  5, 2)
-    #
-    #     avg = cv2.mean(flow)
-    #     copyframe = frameList[-1].copy()
-    #     cv2.line(copyframe, (320, 240), (int(avg[0] * 100 + 320), int(avg[1] * 100 + 240)), (0, 0, 255), 5)
-    #     cv2.imshow("window", copyframe)
-    #     cv2.waitKey(1)
-    #     return avg
 
 
 def drawOutlineText(frame, text, point, font, scale, color, thickness):

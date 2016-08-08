@@ -30,14 +30,14 @@ import sys             # For GUI, and overloading the default error handling
 import webbrowser      # For opening the uFactory forums under the "file" menu
 import ControlPanelGUI
 import Paths
+from CommonGUI         import Console, Overlay, OverlayCenter
 from copy              import deepcopy                  # For copying saves and comparing later
 from PyQt5             import QtCore, QtWidgets, QtGui  # All GUI things
 from CalibrationsGUI   import CalibrateWindow           # For opening Calibrate window
 from CameraGUI         import CameraWidget              # General GUI purposes
-from CommonGUI         import Console                   # This is the "Console" widget on the mainWindow
-from Logic             import Global  # For keeping track of keypresses
+from Logic             import Global                    # For keeping track of keypresses
 from Logic.Environment import Environment               # Contains important variables
-from Logic.Global      import printf                    # For my personal printing format
+from Logic.Global      import printf                    # For my custom printing function
 from Logic.Interpreter import Interpreter               # For actually starting/stopping the script
 from Logic.Robot       import getConnectedRobots        # For deviceWindow
 from Logic.Video       import getConnectedCameras       # For deviceWindow
@@ -73,6 +73,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.centralWidget   = QtWidgets.QStackedWidget()
         self.controlPanel    = ControlPanelGUI.ControlPanel(self.env, parent=self)
         self.cameraWidget    = CameraWidget(self.env.getVStream().getFilteredWithID, parent=self)
+        self.floatingHint    = QtWidgets.QLabel()  # Used to display floating banners to inform the user of something
 
 
         # Create Menu items, and set the Dashboard as the main widget
@@ -101,6 +102,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.loadTask(filename=self.env.getSetting("lastOpenedFile"))
         else:
             self.newTask(False)
+
+        # self.showAlert(Paths.help_rob_connect)
 
 
     def initUI(self):
@@ -232,6 +235,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tabifyDockWidget(consoleDock, cameraDock)
 
 
+
         # Create the main layout
         self.setCentralWidget(self.controlPanel)
 
@@ -241,6 +245,20 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowIcon(QtGui.QIcon(Paths.taskbar))
         self.show()
 
+    def showAlert(self, pathToIcon):
+        """
+            Show a floating image that disappears after a bit, to alert the user of something.
+            Currently this is used to show a gif of the Paths.robot_disconnected, to show that connection to the
+            robot failed.
+        """
+
+        robot = self.env.getRobot()
+        if not robot.connected():
+            print("Robot did not connect!!!")
+        print("PATH: ", pathToIcon)
+        movie     = QtGui.QMovie(pathToIcon)
+        self.floatingHint.setMovie(movie)
+        movie.start()
 
     def setVideo(self, state):
         """
@@ -388,21 +406,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.scriptToggleBtn.setIcon(QtGui.QIcon(Paths.run_script))
         self.scriptToggleBtn.setText("Start")
-
-        # If the Interpreter ended because it encountered a problem, then print out the exit error
-        exitErrors = self.interpreter.getExitErrors()
-        if exitErrors is not None:
-            errorText = ""
-            for error, errorObjects in exitErrors.items():
-                errorText += "" + str(error) + "\n"
-                for errObject in errorObjects:
-                    errorText += "     " + str(errObject) + "\n"
-                errorText += '\n'
-
-            errorStr = "The script ended prematurely because of the following error(s) \n\n" + errorText
-            QtWidgets.QMessageBox.question(self, 'Warning', errorStr, QtWidgets.QMessageBox.Ok)
-
-
 
 
 
@@ -802,7 +805,6 @@ class Application(QtWidgets.QApplication):
         super(Application, self).__init__(args)
 
     def notify(self, receiver, event):
-        if event.type() == QtCore.QEvent.Timer: print("ayy")
         # Add any keys that are pressed to keysPressed
         if event.type() == QtCore.QEvent.KeyPress:
             # Todo: remove these two lines when development is finished

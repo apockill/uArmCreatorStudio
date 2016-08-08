@@ -84,16 +84,27 @@ class MoveXYZCommand(Command):
         self.robot       = self.getVerifyRobot(env)
 
     def run(self):
-        newX, successX = self.interpreter.evaluateExpression(self.parameters['x'])
-        newY, successY = self.interpreter.evaluateExpression(self.parameters['y'])
-        newZ, successZ = self.interpreter.evaluateExpression(self.parameters['z'])
+
+
+
 
 
         # Special case: If the parameter is "" set the new val to None and success to True
-        if self.parameters['x'] == "": newX, successX = None, True
-        if self.parameters['y'] == "": newY, successY = None, True
-        if self.parameters['z'] == "": newZ, successZ = None, True
+        if self.parameters['x'] == "":
+            newX, successX = None, True
+        else:
+            newX, successX = self.interpreter.evaluateExpression(self.parameters['x'])
 
+        if self.parameters['y'] == "":
+            newY, successY = None, True
+        else:
+            newY, successY = self.interpreter.evaluateExpression(self.parameters['y'])
+
+
+        if self.parameters['z'] == "":
+            newZ, successZ = None, True
+        else:
+            newZ, successZ = self.interpreter.evaluateExpression(self.parameters['z'])
 
 
         printf("Commands| Moving robot to ", newX, " ", newY, " ", newZ, " ")
@@ -174,8 +185,6 @@ class SpeedCommand(Command):
     def run(self):
         speed, success = self.interpreter.evaluateExpression(self.parameters['speed'])
 
-        printf("Commands| Setting robot speed to ", speed, "cm/s")
-
         # Split the wait into incriments of 0.1 seconds each, and check if the thread has been stopped at each incriment
         if success:
             printf("Commands| Setting speed to ", speed)
@@ -223,7 +232,6 @@ class AttachCommand(Command):
                                               self.parameters['servo2'],
                                               self.parameters['servo3'])
 
-        printf("Commands| Attaching certain servos")
         if self.parameters['servo0']: self.robot.setActiveServos(servo0=True)
         if self.parameters['servo1']: self.robot.setActiveServos(servo1=True)
         if self.parameters['servo2']: self.robot.setActiveServos(servo2=True)
@@ -338,15 +346,22 @@ class MoveRelativeToObjectCommand(Command):
     def run(self):
         if len(self.errors) > 0: return False
 
-        newX, successX = self.interpreter.evaluateExpression(self.parameters['x'])
-        newY, successY = self.interpreter.evaluateExpression(self.parameters['y'])
-        newZ, successZ = self.interpreter.evaluateExpression(self.parameters['z'])
-
-
         # Special case: If the parameter is "" set the new val to None and success to True
-        if self.parameters['x'] == "": newX, successX = None, True
-        if self.parameters['y'] == "": newY, successY = None, True
-        if self.parameters['z'] == "": newZ, successZ = None, True
+        if self.parameters['x'] == "":
+            newX, successX = None, True
+        else:
+            newX, successX = self.interpreter.evaluateExpression(self.parameters['x'])
+
+        if self.parameters['y'] == "":
+            newY, successY = None, True
+        else:
+            newY, successY = self.interpreter.evaluateExpression(self.parameters['y'])
+
+
+        if self.parameters['z'] == "":
+            newZ, successZ = None, True
+        else:
+            newZ, successZ = self.interpreter.evaluateExpression(self.parameters['z'])
 
 
 
@@ -832,7 +847,6 @@ class EndEventCommand(Command):
 
 
     def run(self):
-        printf("Commands| Exiting current event")
         return "ExitEvent"
 
 
@@ -854,8 +868,6 @@ class ScriptCommand(Command):
 
     def run(self):
         if len(self.errors): return
-        # printf("Running a custom script by user...")
-
         return self.interpreter.evaluateScript(self.parameters["script"])
 
 

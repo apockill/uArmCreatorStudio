@@ -77,6 +77,9 @@ class ControlPanel(QtWidgets.QWidget):
         self.initUI()
 
     def initUI(self):
+
+
+
         self.eventList.itemSelectionChanged.connect(self.refresh)
 
         # Set Up Buttons and their text
@@ -113,7 +116,6 @@ class ControlPanel(QtWidgets.QWidget):
 
 
         # Add the addCommand button and a placeholder commandLIst
-        menuLbl = QtWidgets.QLabel("Commands")
         menuVLayout = QtWidgets.QVBoxLayout()
         menuVLayout.addWidget(self.commandMenuWidget)
 
@@ -127,7 +129,12 @@ class ControlPanel(QtWidgets.QWidget):
 
         # self.setMinimumWidth(500)
         self.setLayout(mainHLayout)
-        self.show()
+
+
+        overlayLayout = Overlay("center")
+        overlayLayout.addWidget(QtWidgets.QLabel("AYYYYYYY LMAO"))
+        center = OverlayCenter(self)
+        center.addLayout(overlayLayout)
 
     def refresh(self):
         """
@@ -218,13 +225,26 @@ class ControlPanel(QtWidgets.QWidget):
         currRunning = interpreter.getStatus()
 
         # If the thread has ended, alert the mainWindow
-        if interpreter.threadRunning() is False:
+        if not interpreter.threadRunning():
             # Return everythign back to normal visually
             self.setScriptModeOff()
 
             # If the interpreter ended because of a crash, highlight the offending command in red
             if interpreter.getExitErrors() is not None:
                 self.highlightCommands(currRunning["event"], currRunning["command"], self.errorColor)
+
+                # If the Interpreter ended because it encountered a problem, then print out the exit error
+                exitErrors = interpreter.getExitErrors()
+                if exitErrors is not None:
+                    errorText = ""
+                    for error, errorObjects in exitErrors.items():
+                        errorText += "" + str(error) + "\n"
+                        for errObject in errorObjects:
+                            errorText += "     " + str(errObject) + "\n"
+                        errorText += '\n'
+
+                    errorStr = "The script ended prematurely because of the following error(s) \n\n" + errorText
+                    QtWidgets.QMessageBox.question(self, 'Warning', errorStr, QtWidgets.QMessageBox.Ok)
 
             mainWindowEndScriptFunc()
             return
@@ -256,6 +276,7 @@ class ControlPanel(QtWidgets.QWidget):
 
     def loadData(self, data):
         self.eventList.loadData(data)
+        self.refresh()
 
 
 class EventList(QtWidgets.QListWidget):
@@ -702,6 +723,7 @@ class CommandList(QtWidgets.QListWidget):
 
 
 
+
     # For deleting, copying, and pasting items
     def keyPressEvent(self, event):
         super(CommandList, self).keyPressEvent(event)  # Let arrow keys move around the list
@@ -807,7 +829,7 @@ class CommandList(QtWidgets.QListWidget):
             self.addCommand(cType, index=dropIndex)
 
             # For easy usability, when you drop a Test command, a StartBlock and EndBlock will drop right after it.
-            if cType in CommandsGUI.testTypes or cType == CommandsGUI.LoopCommand:
+            if cType in CommandsGUI.testTypes or cType == CommandsGUI.LoopCommand or cType == CommandsGUI.ElseCommand:
                 self.addCommand(CommandsGUI.StartBlockCommand, index=dropIndex + 1)
                 self.addCommand(CommandsGUI.EndBlockCommand, index=dropIndex + 2)
 

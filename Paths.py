@@ -136,7 +136,7 @@ help_marker_on_head = imageLoc + "help_sticker_on_head.png"
 help_star           = imageLoc + "help_star.png"
 help_drag_command   = imageLoc + "help_drag_command.gif"
 help_add_event      = imageLoc + "help_add_event.gif"
-
-
+help_connect_camera = imageLoc + "help_connect_camera.gif"
+help_rob_connect    = imageLoc + "help_rob_connect.gif"
 
 

@@ -79,6 +79,8 @@ iconsList = ["cancel.png",
              "help_marker_on_head.png",
              "help_drag_command.gif",
              "help_add_event.gif",
+             "help_connect_camera.gif",
+             "help_rob_connect.gif",
              "help_star.png"]
 
 # Create a list of all the necessary resources in the format that pyInstaller wants it in

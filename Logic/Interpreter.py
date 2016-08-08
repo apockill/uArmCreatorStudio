@@ -26,11 +26,13 @@ License:
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
 import math
+from time import sleep
 from Logic        import Global
 from threading    import Thread
 from Logic.Global import printf, FpsTimer, wait, getModuleClasses
 from Logic        import Events, Commands
 __author__ = "Alexander Thiel"
+
 
 """
 This is a global call for only the interpreter to pay attention to, and when it is True, the Interpreter and any command
@@ -298,7 +300,9 @@ class Interpreter:
             answer = eval(expression, self.nameSpace)
         except Exception as e:
             printf("Interpreter| EVAL ERROR: ", type(e).__name__, " ", e)
-
+            global exitErrors
+            exitErrors = {type(e).__name__ + " in Expression " + str(expression): [str(e)]}
+            self.setExiting(True)
 
         if answer is None:
             return None, False
@@ -307,22 +311,15 @@ class Interpreter:
 
     def evaluateScript(self, script):
 
-        # # Build the script inside of a function, so users can "return" out of it
-        # script = '\n\t' + script.replace('\n', '\n\t')
-        # script        = "def script():\n" + \
-        #                     script + "\n" + \
-        #                 "scriptReturn = script()"
-
-        #  self.__variables["scriptReturn"] = None
 
         try:
-            # self.execBuiltins["globals"] = self.__variables
             exec(script, self.nameSpace)
-
-            # if self.__variables["scriptReturn"] is not None:
-            #     print("Returned ", self.__variables["scriptReturn"])
         except Exception as e:
             printf("Interpreter| EXEC ERROR: ", type(e).__name__, ": ", e)
+
+            global exitErrors
+            exitErrors = {type(e).__name__ + " While Evaluating Script": [str(e)]}
+            self.setExiting(True)
             return False
 
         return True
@@ -412,7 +409,7 @@ class Interpreter:
                 global exitErrors
                 exitErrors = {type(e).__name__ + " in " + command.__class__.__name__ + " " : [str(e)]}
                 self.setExiting(True)
-                # raise(e)
+
 
 
             if self.isExiting(): break  # This speeds up ending recursed Interpreters

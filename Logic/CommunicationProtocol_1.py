@@ -111,7 +111,6 @@ class Device:
         cmnd = "pumpV" + str(int(onOff))
         return self.__send(cmnd)
 
-
     def setServoAttach(self, servo_number):
         """
         Attach a certain servo.

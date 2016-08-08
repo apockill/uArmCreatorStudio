@@ -304,16 +304,12 @@ scriptStopping() returns True if the user has attempted to end the task, and Fal
         # ... code ...
 
 """
-    minWidth  = 550
-    minHeight = 600
 
 
     def __init__(self, previousCode, parent):
         super(ScriptWidget, self).__init__(parent)
         self.prompt = parent
         self.prompt.content.setContentsMargins(5, 5, 5, 5)
-        self.prompt.setMinimumWidth(self.minWidth)
-        self.prompt.setMinimumHeight(self.minHeight)
 
         # QtWidgets.QTextEdit().toP
         self.docText   = QtWidgets.QTextEdit()
@@ -324,14 +320,13 @@ scriptStopping() returns True if the user has attempted to end the task, and Fal
         self.hintLbl           = QtWidgets.QLabel("")  # Will give you warnings and whatnot
         self.initUI()
 
+
     def initUI(self):
         self.docText.setReadOnly(True)
         self.docText.setAcceptRichText(True)
         self.docText.setText(self.documentation)
         self.docText.setFixedWidth(900)
-        self.docText.setFixedHeight(self.minHeight)
-        # self.docText.set
-        # self.docText.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
+        self.docText.setFixedHeight(600)
         self.docBtn.setFixedWidth(150)
         self.docText.setHidden(True)
 
@@ -347,7 +342,8 @@ scriptStopping() returns True if the user has attempted to end the task, and Fal
         monospace = QtGui.QFont("Monospace")
         monospace.setStyleHint(QtGui.QFont.TypeWriter)
         self.textEdit.setFont(monospace)
-        self.textEdit.setMinimumHeight(self.minHeight)
+        self.textEdit.setMinimumHeight(550)
+        self.textEdit.setMinimumWidth(500)
         self.textEdit.getTextEdit().textChanged.connect(self.verifyCode)
         self.docText.setFont(monospace)
 
@@ -370,9 +366,9 @@ scriptStopping() returns True if the user has attempted to end the task, and Fal
         # mainVLayout.addStretch()
         mainVLayout.addLayout(row3)
 
-        self.prompt.setMinimumWidth(600)
-        self.prompt.setMinimumHeight(700)
+
         self.setLayout(mainVLayout)
+
 
     def showDocumentation(self):
         hiding = not self.docText.isHidden()
@@ -381,13 +377,11 @@ scriptStopping() returns True if the user has attempted to end the task, and Fal
             self.docBtn.setText("Show Documentation")
             self.docText.hide()
             self.textEdit.show()
-            # self.prompt.setMinimumWidth(self.minWidth)
             self.prompt.resize(self.prompt.sizeHint())
         else:
             self.docBtn.setText("Show Code")
             self.textEdit.hide()
             self.docText.show()
-
 
             self.prompt.resize(self.prompt.sizeHint())
 
@@ -481,7 +475,9 @@ class Console(QtWidgets.QWidget):
             command =  self.inputEdt.text()
 
             self.write("Input", command)
+
             ret, success = self.execFunction(command)
+
             if ret is not None:
                 self.write("Output", ret)
 

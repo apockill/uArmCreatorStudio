@@ -71,15 +71,21 @@ class CameraWidget(QtWidgets.QWidget):
 
         # Initialize UI Variables
         self.frameLbl    = QtWidgets.QLabel()
-        self.hintLbl     = QtWidgets.QLabel("Connect A Camera")
+        self.hintLbl     = QtWidgets.QLabel()
         self.mainVLayout = QtWidgets.QVBoxLayout(self)  # Global because subclasses need it
         self.mainHLayout = QtWidgets.QHBoxLayout()
+
+
+        # Initialize UI
+        movie = QtGui.QMovie(Paths.help_connect_camera)
+        self.frameLbl.setMovie(movie)
+        movie.start()
+
 
         self.mainHLayout.setContentsMargins(0, 0, 0, 0)
         self.mainVLayout.setContentsMargins(0, 0, 0, 0)
 
         self.mainHLayout.addWidget(self.frameLbl)
-        self.mainHLayout.addWidget(self.hintLbl)
         self.mainHLayout.addStretch(1)
         self.mainVLayout.addLayout(self.mainHLayout)
 
@@ -89,7 +95,7 @@ class CameraWidget(QtWidgets.QWidget):
 
 
         # Initialize the UI (Don't make a function, that'll overwrite subclass UI create functions)
-        self.frameLbl.setPixmap(QtGui.QPixmap(Paths.video_not_connected))
+        # self.frameLbl.setPixmap(QtGui.QPixmap(Paths.video_not_connected))
 
 
 
@@ -122,7 +128,6 @@ class CameraWidget(QtWidgets.QWidget):
         """
         if frame is None: return None
         self.frameLbl.setPixmap(cvToPixFrame(frame))
-        self.hintLbl.hide()
 
     def nextFrameSlot(self):
         frameID, frame = self.getFrameFunction()
