@@ -114,7 +114,6 @@ class CalibrateWindow(QtWidgets.QDialog):
         row2.addLayout(createIconLayout(CommandsGUI.MoveWristRelativeToObjectCommand))
         row2.addLayout(createIconLayout(CommandsGUI.PickupObjectCommand))
         row2.addLayout(createIconLayout(CommandsGUI.TestObjectAngleCommand))
-        row2.addLayout(createIconLayout(CommandsGUI.VisionMoveXYZCommand))
 
 
 

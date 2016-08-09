@@ -83,7 +83,7 @@ class Vision:
                     printf("Vision| Exiting early!")
                     break
 
-                sleep(.05)
+                sleep(.01)
 
 
 
@@ -308,49 +308,49 @@ class Vision:
         else:
             return int(low), int(high)
 
-    def findObjectColor(self, hue, tolerance, lowSat, highSat, lowVal, highVal):
-        low, high = self.getRange(hue, tolerance)
-
-        hue = int(hue)
-        tolerance = int(tolerance)
-        lowSat = int(lowSat * 255)
-        highSat = int(highSat * 255)
-        lowVal = int(lowVal * 255)
-        highVal = int(highVal * 255)
-
-        frame = self.vStream.getFrame()
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
-        if hue - tolerance < 0 or hue + tolerance > 180:
-            # If the color crosses 0, you have to do two thresholds
-            lowThresh = cv2.inRange(hsv, np.array((0, lowSat, lowVal)), np.array((low, highSat, highVal)))
-            upperThresh = cv2.inRange(hsv, np.array((high, lowSat, lowVal)), np.array((180, highSat, highVal)))
-            finalThresh = upperThresh + lowThresh
-        else:
-            finalThresh = cv2.inRange(hsv, np.array((low, lowSat, lowVal)), np.array((high, highSat, highVal)))
-
-        cv2.imshow(str(lowSat), finalThresh.copy())
-        cv2.waitKey(1)
-
-        contours, hierarchy = cv2.findContours(finalThresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-
-        cv2.imshow("frame", finalThresh)
-        cv2.waitKey(1)
-        # Find the contour with maximum area and store it as best_cnt
-        max_area = 0
-        best_cnt = None
-        for cnt in contours:
-            area = cv2.contourArea(cnt)
-            if area > max_area:
-                max_area = area
-                best_cnt = cnt
-
-        if best_cnt is not None:
-            M = cv2.moments(best_cnt)
-            cx, cy = int(M['m10'] / M['m00']), int(M['m01'] / M['m00'])
-            # cv2.circle(frame, (cx, cy), 5, 255, -1)
-            return [cx, cy]
-        return None
+    # def findObjectColor(self, hue, tolerance, lowSat, highSat, lowVal, highVal):
+    #     low, high = self.getRange(hue, tolerance)
+    #
+    #     hue = int(hue)
+    #     tolerance = int(tolerance)
+    #     lowSat = int(lowSat * 255)
+    #     highSat = int(highSat * 255)
+    #     lowVal = int(lowVal * 255)
+    #     highVal = int(highVal * 255)
+    #
+    #     frame = self.vStream.getFrame()
+    #     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    #
+    #     if hue - tolerance < 0 or hue + tolerance > 180:
+    #         # If the color crosses 0, you have to do two thresholds
+    #         lowThresh = cv2.inRange(hsv, np.array((0, lowSat, lowVal)), np.array((low, highSat, highVal)))
+    #         upperThresh = cv2.inRange(hsv, np.array((high, lowSat, lowVal)), np.array((180, highSat, highVal)))
+    #         finalThresh = upperThresh + lowThresh
+    #     else:
+    #         finalThresh = cv2.inRange(hsv, np.array((low, lowSat, lowVal)), np.array((high, highSat, highVal)))
+    #
+    #     cv2.imshow(str(lowSat), finalThresh.copy())
+    #     cv2.waitKey(1)
+    #
+    #     contours, hierarchy = cv2.findContours(finalThresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+    #
+    #     cv2.imshow("frame", finalThresh)
+    #     cv2.waitKey(1)
+    #     # Find the contour with maximum area and store it as best_cnt
+    #     max_area = 0
+    #     best_cnt = None
+    #     for cnt in contours:
+    #         area = cv2.contourArea(cnt)
+    #         if area > max_area:
+    #             max_area = area
+    #             best_cnt = cnt
+    #
+    #     if best_cnt is not None:
+    #         M = cv2.moments(best_cnt)
+    #         cx, cy = int(M['m10'] / M['m00']), int(M['m01'] / M['m00'])
+    #         # cv2.circle(frame, (cx, cy), 5, 255, -1)
+    #         return [cx, cy]
+    #     return None
 
     def bgr2hsv(self, colorBGR):
         """
@@ -468,7 +468,7 @@ class PlaneTracker(Tracker):
     def __init__(self, focalLength, historyLength):
         super(PlaneTracker, self).__init__(historyLength)
         self.focalLength  = focalLength
-        self.detector     = cv2.ORB_create(nfeatures = 10000)
+        self.detector     = cv2.ORB_create(nfeatures = 9000)
 
         # For ORB
         self.matcher      = cv2.FlannBasedMatcher(self.flanParams, {})  # bug : need to pass empty dict (#1329)
@@ -508,9 +508,7 @@ class PlaneTracker(Tracker):
         # This function checks if a view is currently being tracked, and if not it generates a target and adds it
 
         for target in self.targets:
-            if view == target.view:
-                printf("Vision| Rejected: Attempted to add two targets of the same name: ", view.name)
-                return
+            if view == target.view: return
 
         planarTarget = self.createTarget(view)
 
@@ -627,12 +625,6 @@ class PlaneTracker(Tracker):
             # Draw the rectangle around the object- in both the normal mask and the transparent one
             cv2.polylines( mask, [quad], True, (255, 255, 255), 3)
             cv2.polylines(tMask, [quad], True, (255, 255, 255), 2)
-
-
-
-
-
-
 
 
             # Draw coordinate grids on each object with a red, green, and blue arrow
@@ -792,11 +784,12 @@ class CascadeTracker(Tracker):
     def addTarget(self, targetName):
         for target in self.cascades:
             if targetName == target.name:
+
+                # Make sure the target is not already being tracked
                 if target not in self.targets:
                     self.targets.append(target)
 
-                else:
-                    printf("Vision| Tried to add a target that was already there!")
+
 
     def track(self, frame):
         gray  = cv2.cvtColor(frame.copy(), cv2.COLOR_BGR2GRAY)

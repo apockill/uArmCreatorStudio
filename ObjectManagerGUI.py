@@ -51,7 +51,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         self.env                = environment
         self.vision             = environment.getVision()
         self.objManager         = environment.getObjectManager()
-        self.cameraWidget       = CameraWidget(self.env.getVStream().getFilteredWithID, parent=self)
+        self.cameraWidget       = CameraWidget(self.env.getVStream(), parent=self)
 
         # Global UI Variables
         self.selLayout          = QtWidgets.QVBoxLayout()
@@ -628,6 +628,7 @@ class MotionRecordWindow(QtWidgets.QDialog):
         self.lastTime         = None    # Used to keep track of time between recorded points
         self.motionPath       = []      # Format:  [(time, gripperStatus, angleA, angleB, angleC, angleD), (...)]
 
+
         # Initialize UI variables
         self.timer       = QtCore.QTimer()
         self.nameEdit    = QtWidgets.QLineEdit()
@@ -635,6 +636,7 @@ class MotionRecordWindow(QtWidgets.QDialog):
         self.recordBtn   = QtWidgets.QPushButton("Record")
         self.applyBtn    = QtWidgets.QPushButton("Apply", self)
         self.hintLbl     = QtWidgets.QLabel("")
+
 
         # If this is in 'editing' mode, restore the last state
         if self.newObject is not None:

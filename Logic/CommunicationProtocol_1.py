@@ -277,6 +277,7 @@ class Device:
             printf("Communication| Could not connect to robot on port ", port)
             self.serial = None
             self.isConnected = False
+
         sleep(3)
 
     def __send(self, cmnd):

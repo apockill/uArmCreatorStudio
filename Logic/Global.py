@@ -209,11 +209,8 @@ def printf(*args):
 
 
     # Concatenate arguments, same as normal print statements
-    for i in args: buildString += str(i)
+    for i in args: buildString += str(i) + " "
 
-
-    # Strip whitespace from beginning of string
-    buildString = buildString.lstrip()
 
 
     # Split the string into a "header" and "content"
@@ -240,9 +237,7 @@ def printf(*args):
 
     # Filter out any serial communication since it clutters up the console
     if "Communication" in header: return
-
-
-    print(header + " " * (15 - len(header)) + content)
+    # print(header + " " * (15 - len(header)) + content)
 
 
 

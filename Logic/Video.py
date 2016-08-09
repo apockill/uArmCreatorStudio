@@ -111,7 +111,6 @@ class VideoStream:
     def connected(self):
         # Returns True or False if there is a camera successfully connected
         if self.cap is None:        return False
-        if not self.cap.isOpened(): return False
         return True
 
     def setFPS(self, fps):
@@ -139,10 +138,12 @@ class VideoStream:
             Thread is ended only at endThread
         """
 
+
         self.frameList = []
 
         fpsTimer = FpsTimer(self.fps)
         printf("Video| Starting videoStream thread.")
+
         while self.running:
             fpsTimer.wait()
             if not fpsTimer.ready():       continue
@@ -191,7 +192,7 @@ class VideoStream:
             if len(self.filterList) > 0:
                 # print("Filters: ", self.filterList)
                 with self.filterLock:
-                    filterFrame = self.getFrame()
+                    filterFrame = self.frame.copy()
                     for filterFunc in self.filterList:
                         filterFrame = filterFunc(filterFrame)
 
@@ -200,14 +201,15 @@ class VideoStream:
                     cv2.putText(filterFrame, fps, (10, 20),  cv2.FONT_HERSHEY_PLAIN, 1.25, (255, 255, 255), 2)
 
                     self.filterFrame = filterFrame
-
-
             else:
                 self.filterFrame = self.frame
 
         if self.cap is not None:
             self.cap.release()
         self.mainThread = None
+
+
+
 
 
     # noinspection PyArgumentList
@@ -255,19 +257,18 @@ class VideoStream:
     # Get Frames and information
     def getFrame(self):
         # Returns the latest frame grabbed from the camera
-        # with self.frameLock:
         if self.frame is not None:
+            #
             return self.frame.copy()
         else:
             return None
 
-    def getFilteredWithID(self):
-        # with self.frameLock:
+    def getFilteredFrame(self):
         if self.filterFrame is not None:
-            # Frames are copied because they are generally modified.
-            return self.frameCount, self.filterFrame.copy()
+            # Filtered frames are not copied, since they are usually not modified after
+            return self.filterFrame
         else:
-            return None, None
+            return None
 
     def getFrameList(self):
         """

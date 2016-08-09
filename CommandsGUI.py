@@ -167,7 +167,6 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         add(TestObjectSeenCommand)
         add(TestObjectLocationCommand)
         add(TestObjectAngleCommand)
-        add(VisionMoveXYZCommand)
 
         return tabWidget
 
@@ -1069,7 +1068,7 @@ class BuzzerCommand(CommandGUI):
 
 #   Robot + Vision COmmands
 class MoveRelativeToObjectCommand(CommandGUI):
-    title     = "Move Relative To An Object"
+    title     = "Move Relative To Object"
     tooltip   = "This tool uses computer vision to recognize an object of your choice, and position the robot directly"\
                "\nrelative to this objects XYZ location. If XYZ = 0,0,0, the robot will move directly onto the object."\
                "\n\nIf you don't want to set one of the robots axis, simply leave it empty. For example, put y and z\n"\
@@ -1146,7 +1145,7 @@ class MoveRelativeToObjectCommand(CommandGUI):
         return self.parameters
 
     def _updateDescription(self):
-        objName = (self.parameters["objectID"], "An Object")[len(self.parameters["objectID"]) == 0]
+        objName = (self.parameters["objectID"], "Object")[len(self.parameters["objectID"]) == 0]
         self.title = "Move Relative To " + objName
 
         self.description = 'XYZ( ' + str(self.parameters['x']) + \
@@ -1156,7 +1155,7 @@ class MoveRelativeToObjectCommand(CommandGUI):
 
 
 class MoveWristRelativeToObjectCommand(CommandGUI):
-    title     = "Set Wrist Relative To An Object"
+    title     = "Set Wrist Relative To Object"
     tooltip   = "This tool will look at the orientation of an object in the cameras view, and align the wrist with \n"\
                 "the rotation of the object. The rotation of the object is determined by the orientation that it was\n"\
                 "in when the object was memorized. It's recommended to experiment around a bit with this function to\n"\
@@ -1222,7 +1221,7 @@ class MoveWristRelativeToObjectCommand(CommandGUI):
         return self.parameters
 
     def _updateDescription(self):
-        objName = (self.parameters["objectID"], "An Object")[len(self.parameters["objectID"]) == 0]
+        objName = (self.parameters["objectID"], "Object")[len(self.parameters["objectID"]) == 0]
         self.title = "Set Wrist Relative To " + objName
 
         self.description = "Set the wrist " + self.parameters["angle"] + \
@@ -1230,7 +1229,7 @@ class MoveWristRelativeToObjectCommand(CommandGUI):
 
 
 class PickupObjectCommand(CommandGUI):
-    title     = "Pick Up An Object"
+    title     = "Pick Up Object"
     tooltip   = "This tool uses computer vision to recognize an object of your choice, and attempt to pick up the " \
                 "\nobject. If the object cannot be found or picked up, then False will be returned"
     icon      = Paths.command_pickup
@@ -1273,7 +1272,7 @@ class PickupObjectCommand(CommandGUI):
         return self.parameters
 
     def _updateDescription(self):
-        objName = (self.parameters["objectID"], "An Object")[len(self.parameters["objectID"]) == 0]
+        objName = (self.parameters["objectID"], "Object")[len(self.parameters["objectID"]) == 0]
         self.title = "Pick Up " + objName
         self.description = "Find " + self.parameters["objectID"] + " and pick it up"
 
@@ -1282,7 +1281,7 @@ class TestObjectSeenCommand(CommandGUI):
     title     = "Test If Object Seen"
     tooltip   = "This command will allow code in blocked brackets below it to run IF the specified object has been " \
                 "recognized."
-    icon      = Paths.command_see_obj
+    icon      = Paths.command_test_see
 
     def __init__(self, env, parameters=None):
         super(TestObjectSeenCommand, self).__init__(parameters)
@@ -1299,7 +1298,7 @@ class TestObjectSeenCommand(CommandGUI):
             # Anything done with env should be done here. Try not to save env as a class variable whenever possible
             self.parameters = {"objectID":    "",
                                     "age":     0,
-                                "ptCount":     0,  # A number from 0 to 3, which incriments by MIN_MATCH_COUNT points
+                             "confidence":     0,  # A number from 0 to 3, which incriments by MIN_MATCH_COUNT points
                                     "not": False}
 
     def dressWindow(self, prompt):
@@ -1324,7 +1323,7 @@ class TestObjectSeenCommand(CommandGUI):
         # Populate the accuracayChoices with a list of different possible accuracies
 
         for choice in self.accChoices: prompt.accChoices.addItem(choice)
-        prompt.accChoices.setCurrentIndex(self.parameters["ptCount"])
+        prompt.accChoices.setCurrentIndex(self.parameters["confidence"])
 
 
         # Set up the Age slider
@@ -1358,7 +1357,7 @@ class TestObjectSeenCommand(CommandGUI):
         acc = self.accChoices.index(prompt.accChoices.currentText())
         newParameters = {"objectID": str(prompt.objChoices.currentText()),
                               "age": age,
-                              "ptCount": acc,
+                       "confidence": acc,
                               "not": prompt.notCheck.isChecked()}
 
         self.parameters.update(newParameters)
@@ -1373,14 +1372,14 @@ class TestObjectSeenCommand(CommandGUI):
 
         self.description = "If"
         if self.parameters["not"]: self.description += " NOT"
-        self.description += " " + confidenceText[self.parameters["ptCount"]] + " confident object was seen"
+        self.description += " " + confidenceText[self.parameters["confidence"]] + " confident object was seen"
 
 
 class TestObjectLocationCommand(CommandGUI):
     title     = "Test If Object Inside Region"
     tooltip   = "This command will allow code in blocked brackets below it to run IF the specified object has been" \
                 "recognized and the objects location in a particular location."
-    icon      = Paths.command_see_loc
+    icon      = Paths.command_test_region
 
     def __init__(self, env, parameters=None):
         super(TestObjectLocationCommand, self).__init__(parameters)
@@ -1469,7 +1468,7 @@ class TestObjectLocationCommand(CommandGUI):
 
     def _updateDescription(self):
         objName = (self.parameters["objectID"], "Object")[len(self.parameters["objectID"]) == 0]
-        self.title = "Test the Location of " + objName
+        self.title = "Test If " + objName + " Inside Region"
 
 
         self.description = "If " + self.parameters["part"] + " of " + objName + " is"
@@ -1478,8 +1477,11 @@ class TestObjectLocationCommand(CommandGUI):
 
 
 class TestObjectAngleCommand(CommandGUI):
-    title     = "Test Angle Of An Object"
-    tooltip   = "This tool does X Y and Z"
+    title     = "Test Angle Of Object"
+    tooltip   = "This command will allow code in blocked brackets below it to run IF the object's rotation is\n"\
+                "between two angles. The angles are measured from the robots positive X axis, counter clockwise. The\n"\
+                "positive X axis is 0 degrees, the positive Y axis is 90 degrees, the negative X axis is 180degrees,\n"\
+                "and so on."
     icon      = Paths.command_test_angle
 
     def __init__(self, env, parameters=None):
@@ -1550,24 +1552,6 @@ class TestObjectAngleCommand(CommandGUI):
         self.description += " between (" + self.parameters["start"] + ", " + self.parameters["end"] + ") degrees from the X Axis"
 
 
-class VisionMoveXYZCommand(MoveXYZCommand):
-    title     = "Vision Assisted Move XYZ"
-    tooltip   = "This works like the normal Move XYZ command, but uses vision to verify the robots position and\n"\
-                "perform a 'correction' move after an initial move. \n" \
-                "This command requires Camera/Robot Calibrations to be done."
-    icon      = Paths.command_xyz_vision
-
-    def __init__(self, env, parameters=None):
-        super(VisionMoveXYZCommand, self).__init__(env, parameters)
-
-    def dressWindow(self, prompt):
-        super(VisionMoveXYZCommand, self).dressWindow(prompt)
-        warningLbl = QtWidgets.QLabel("This function is experimental. It may not yield more accurate results.")
-        warningLbl.setWordWrap(True)
-
-        self._addRow(prompt, warningLbl)
-
-        return prompt
 
 
 
@@ -1659,7 +1643,7 @@ class SetVariableCommand(CommandGUI):
 
 class TestVariableCommand(CommandGUI):
     title     = "Test Value"
-    tooltip   = "This will allow/disallow code to run that is in blocked brackets below it."
+    tooltip   = "This will allow/disallow code to run that is in blocked brackets below it IF the test is true."
     icon      = Paths.command_test_var
 
     def __init__(self, env, parameters=None):
@@ -1933,7 +1917,8 @@ class RunTaskCommand(CommandGUI):
 
 class RunFunctionCommand(CommandGUI):
     title     = "Run Function"
-    tooltip   = "This tool does X Y and Z"
+    tooltip   = "This will run a custom function that the user defines in the Resources menu. If the function has \n" \
+                "arguments, the user will be prompted to fill out the arguments"
     icon      = Paths.command_run_func
 
     def __init__(self, env, parameters=None):
@@ -2045,6 +2030,26 @@ class RunFunctionCommand(CommandGUI):
             self.title = self.parameters["objectID"]
 
 
+
+#   EXPERIMENTAL COMMANDS
+class VisionMoveXYZCommand(MoveXYZCommand):
+    title     = "Vision Assisted Move XYZ"
+    tooltip   = "This works like the normal Move XYZ command, but uses vision to verify the robots position and\n"\
+                "perform a 'correction' move after an initial move. \n" \
+                "This command requires Camera/Robot Calibrations to be done."
+    icon      = Paths.command_xyz_vision
+
+    def __init__(self, env, parameters=None):
+        super(VisionMoveXYZCommand, self).__init__(env, parameters)
+
+    def dressWindow(self, prompt):
+        super(VisionMoveXYZCommand, self).dressWindow(prompt)
+        warningLbl = QtWidgets.QLabel("This function is experimental. It may not yield more accurate results.")
+        warningLbl.setWordWrap(True)
+
+        self._addRow(prompt, warningLbl)
+
+        return prompt
 
 
 

@@ -352,7 +352,6 @@ class Interpreter:
     def __programThread(self):
         printf("Interpreter| ##### STARTING PROGRAM #####\n")
 
-
         fpsTimer = FpsTimer(fps=30)
 
         # Main program loop - where events are checked and run
@@ -455,7 +454,9 @@ class Interpreter:
         skipToIndent = 0
         nextIndent   = 0
         for i in range(index + 1, len(commandList)):
-            if type(commandList[i]) is Commands.StartBlockCommand: nextIndent += 1
+            commandType = type(commandList[i])
+
+            if commandType is Commands.StartBlockCommand: nextIndent += 1
 
             if nextIndent == skipToIndent:
                 index = i - 1
@@ -467,7 +468,7 @@ class Interpreter:
                 break
 
 
-            if type(commandList[i]) is Commands.EndBlockCommand:   nextIndent -= 1
+            if commandType is Commands.EndBlockCommand:   nextIndent -= 1
 
         return index
 
@@ -479,7 +480,9 @@ class Interpreter:
         skipToIndent = 0
         nextIndent   = 0
         for i in range(index,  -1, -1):
-            if type(commandList[i]) is Commands.EndBlockCommand:   nextIndent += 1
+            commandType = type(commandList[i])
+
+            if commandType is Commands.EndBlockCommand:   nextIndent += 1
 
             if nextIndent == skipToIndent:
                 index = i - 1
@@ -488,7 +491,7 @@ class Interpreter:
             # If there are no commands
             if i == 0: break
 
-            if type(commandList[i]) is Commands.StartBlockCommand: nextIndent -= 1
+            if commandType is Commands.StartBlockCommand: nextIndent -= 1
 
         # if index - 1 >= 0:
         #     index -= 1

@@ -127,14 +127,11 @@ class ControlPanel(QtWidgets.QWidget):
         mainHLayout.addWidget(self.commandGBox)
         mainHLayout.addLayout(menuVLayout)
 
+
+
         # self.setMinimumWidth(500)
         self.setLayout(mainHLayout)
 
-
-        overlayLayout = Overlay("center")
-        overlayLayout.addWidget(QtWidgets.QLabel("AYYYYYYY LMAO"))
-        center = OverlayCenter(self)
-        center.addLayout(overlayLayout)
 
     def refresh(self):
         """
@@ -621,14 +618,15 @@ class CommandList(QtWidgets.QListWidget):
         for index in range(self.count()):
             command = self.getCommand(self.item(index))
             commandWidget = self.itemWidget(self.item(index))
+            commandType = type(command)
 
-            if type(command) is CommandsGUI.StartBlockCommand:
+            if commandType is CommandsGUI.StartBlockCommand:
                 indent += 1
 
             commandWidget.setIndent(zeroAndAbove(indent))
             command.indent = zeroAndAbove(indent)
 
-            if type(command) is CommandsGUI.EndBlockCommand:
+            if commandType is CommandsGUI.EndBlockCommand:
                 indent -= 1
 
 
@@ -798,6 +796,14 @@ class CommandList(QtWidgets.QListWidget):
         # Select All
         if event == QtGui.QKeySequence.SelectAll:
             self.selectAll()
+
+    def onContext(self):
+        copyAction = QtWidgets.QAction("Ayyy", self)
+        menu = QtGui.QMenu("Menu", self)
+        menu.addAction(copyAction)
+
+        # Show the context menu.
+        menu.exec_(self.view.mapToGlobal(point))
 
 
 

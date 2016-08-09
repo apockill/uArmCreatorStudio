@@ -36,11 +36,14 @@ __author__ = "Alexander Thiel"
 
 def cvToPixFrame(image):
     # Convert a cv2 frame to a Qt PixFrame
+
     pixFrame               = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     height, width, channel = pixFrame.shape
     bytesPerLine           = 3 * width
     img                    = QtGui.QImage(pixFrame, width, height, bytesPerLine, QtGui.QImage.Format_RGB888)
     pix                    = QtGui.QPixmap.fromImage(img)
+
+
     return pix
 
 
@@ -55,12 +58,12 @@ class CameraWidget(QtWidgets.QWidget):
     """
 
 
-    def __init__(self, getFrameFunction, parent, fps=24):
-
+    def __init__(self, vStream, parent, fps=24.0):
         super(CameraWidget, self).__init__(parent)
 
+
         # Set up globals
-        self.getFrameFunction = getFrameFunction  # This function is given as a parameters, and returns a frame
+        self.vStream          = vStream
         self.fps              = fps   # The maximum FPS the widget will update at
         self.paused           = True  # Keeps track of the video's state
         self.timer            = QtCore.QTimer()
@@ -90,17 +93,19 @@ class CameraWidget(QtWidgets.QWidget):
         self.mainVLayout.addLayout(self.mainHLayout)
 
         self.setLayout(self.mainVLayout)
+
+        from CommonGUI import Overlay, OverlayCenter
+        overlayLayout = Overlay("center")
+        overlayLayout.addWidget(QtWidgets.QLabel("AYYYYrrrrrrrrrrrrrrrrrrrrrrrrrrrrrfrrrrAYYYYrrrrrrrrrrrrrrrrrrrrrrrrrrrrrfrrrrAYYYYrrrrrrrrrrrrrrrrrrrrrrrrrrrrrfrrrrAYYYYrrrrrrrrrrrrrrrrrrrrrrrrrrrrrfrrrrAYYYYrrrrrrrrrrrrrrrrrrrrrrrrrrrrrfrrrrrrrrrrrrrrrrrrrrrrrrYYY LMAO"))
+        center = OverlayCenter(self)
+        center.addLayout(overlayLayout)
+        self.mainVLayout.addLayout(center)
         # Reference to the last object frame. Used to make sure that a frame is new, before repainting
 
 
 
         # Initialize the UI (Don't make a function, that'll overwrite subclass UI create functions)
         # self.frameLbl.setPixmap(QtGui.QPixmap(Paths.video_not_connected))
-
-
-
-
-
 
 
 
@@ -130,15 +135,15 @@ class CameraWidget(QtWidgets.QWidget):
         self.frameLbl.setPixmap(cvToPixFrame(frame))
 
     def nextFrameSlot(self):
-        frameID, frame = self.getFrameFunction()
+        if self.vStream.frameCount == self.lastFrameID: return
 
-        # If the frame is different than the one currently on the screen
-        if frameID == self.lastFrameID: return None
-        self.lastFrameID = frameID
+        frame   = self.vStream.getFilteredFrame()
 
+        if frame is None: return
 
-        self.setFrame(frame)
-
+        # Convert the frame to a QPixMap and set the frameLbl to that
+        self.lastFrameID = self.vStream.frameCount
+        self.frameLbl.setPixmap(cvToPixFrame(frame))
 
     def closeEvent(self, event):
         self.pause()
@@ -161,7 +166,7 @@ class CameraSelector(CameraWidget):
         :param hideRectangle: If True, then when something is selected, the rubber band won't go away.
         :param parent: The GUI Parent of this widget
         """
-        super(CameraSelector, self).__init__(vStream.getFilteredWithID, parent)
+        super(CameraSelector, self).__init__(vStream, parent)
 
         # Set up the rubberBand specific variables (for rectangle drawing)
         self.rectangle     = QtWidgets.QRubberBand(QtWidgets.QRubberBand.Rectangle, self)

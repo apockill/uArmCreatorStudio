@@ -26,11 +26,11 @@ License:
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
 import json            # For saving and loading settings and tasks
-import sys             # For GUI, and overloading the default error handling
+import sys             # For GUI, and overl`oading the default error handling
 import webbrowser      # For opening the uFactory forums under the "file" menu
 import ControlPanelGUI
 import Paths
-from CommonGUI         import Console, Overlay, OverlayCenter
+from CommonGUI         import Console
 from copy              import deepcopy                  # For copying saves and comparing later
 from PyQt5             import QtCore, QtWidgets, QtGui  # All GUI things
 from CalibrationsGUI   import CalibrateWindow           # For opening Calibrate window
@@ -70,9 +70,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.programTitle    = 'uArm Creator Studio'
         self.scriptToggleBtn = QtWidgets.QAction(QtGui.QIcon(Paths.run_script), 'Run', self)
         self.videoToggleBtn  = QtWidgets.QAction(QtGui.QIcon(Paths.play_video), 'Video', self)
+        self.devicesBtn      = QtWidgets.QAction(QtGui.QIcon(Paths.devices_neither), 'Devices', self)
         self.centralWidget   = QtWidgets.QStackedWidget()
         self.controlPanel    = ControlPanelGUI.ControlPanel(self.env, parent=self)
-        self.cameraWidget    = CameraWidget(self.env.getVStream().getFilteredWithID, parent=self)
+        self.cameraWidget    = CameraWidget(self.env.getVStream(), parent=self)
         self.floatingHint    = QtWidgets.QLabel()  # Used to display floating banners to inform the user of something
 
 
@@ -103,7 +104,11 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.newTask(False)
 
-        # self.showAlert(Paths.help_rob_connect)
+
+        # Create a timer that checks the connected devices and updates the icon to reflect what is connected correctly
+        self.refreshTimer = QtCore.QTimer()
+        self.refreshTimer.timeout.connect(self.refreshDevicesIcon)
+        self.refreshTimer.start(5000)  # Once every five seconds
 
 
     def initUI(self):
@@ -178,13 +183,13 @@ class MainWindow(QtWidgets.QMainWindow):
         toolbar = self.addToolBar("MainToolbar")
         toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
 
-        settingsBtn  = QtWidgets.QAction(QtGui.QIcon(Paths.settings), 'Devices', self)
+        devicesBtn   = QtWidgets.QAction(QtGui.QIcon(Paths.settings), 'Devices', self)
         calibrateBtn = QtWidgets.QAction(QtGui.QIcon(Paths.calibrate), 'Calibrate', self)
         objMngrBtn   = QtWidgets.QAction(QtGui.QIcon(Paths.objectManager), 'Resources', self)
 
         self.scriptToggleBtn.setToolTip('Run/Pause the command script (Ctrl+R)')
         self.videoToggleBtn.setToolTip('Play/Pause the video stream and Vision tracking')
-        settingsBtn.setToolTip('Open Camera and Robot settings',)
+        self.devicesBtn.setToolTip('Open Camera and Robot settings',)
         calibrateBtn.setToolTip('Open Robot and Camera Calibration Center')
         objMngrBtn.setToolTip('Open Resource Manager')
 
@@ -193,13 +198,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.scriptToggleBtn.triggered.connect(self.toggleScript)
         self.videoToggleBtn.triggered.connect(lambda: self.setVideo("toggle"))
-        settingsBtn.triggered.connect(self.openDevices)
+        self.devicesBtn.triggered.connect(self.openDevices)
         calibrateBtn.triggered.connect(self.openCalibrations)
         objMngrBtn.triggered.connect(self.openObjectManager)
 
         toolbar.addAction(self.scriptToggleBtn)
         toolbar.addAction(self.videoToggleBtn)
-        toolbar.addAction(settingsBtn)
+        toolbar.addAction(self.devicesBtn)
         toolbar.addAction(calibrateBtn)
         toolbar.addAction(objMngrBtn)
 
@@ -245,20 +250,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowIcon(QtGui.QIcon(Paths.taskbar))
         self.show()
 
-    def showAlert(self, pathToIcon):
-        """
-            Show a floating image that disappears after a bit, to alert the user of something.
-            Currently this is used to show a gif of the Paths.robot_disconnected, to show that connection to the
-            robot failed.
-        """
-
-        robot = self.env.getRobot()
-        if not robot.connected():
-            print("Robot did not connect!!!")
-        print("PATH: ", pathToIcon)
-        movie     = QtGui.QMovie(pathToIcon)
-        self.floatingHint.setMovie(movie)
-        movie.start()
 
     def setVideo(self, state):
         """
@@ -300,6 +291,7 @@ class MainWindow(QtWidgets.QMainWindow):
             vStream.setPaused(True)
             self.videoToggleBtn.setIcon(QtGui.QIcon(Paths.play_video))
             self.videoToggleBtn.setText("Play")
+
 
     def toggleScript(self):
         # Run/pause the main script
@@ -407,6 +399,32 @@ class MainWindow(QtWidgets.QMainWindow):
         self.scriptToggleBtn.setIcon(QtGui.QIcon(Paths.run_script))
         self.scriptToggleBtn.setText("Start")
 
+
+    def refreshDevicesIcon(self):
+        """
+        This checks the status of the robot and camera, and updates the icon of the Devices toolbar button to reflect
+        the connection status of the robot and camera.
+
+        This should be run 5 seconds after the devices window closes, or 5 seconds after the program starts, to check
+        if the robot thread was able to connect or not.
+        """
+
+
+        camera = self.env.getVStream()
+        robot  = self.env.getRobot()
+
+
+        robCon = robot.connected()
+        camCon = camera.connected()
+
+        icon = ""
+
+        if     robCon and     camCon: icon = Paths.devices_both
+        if     robCon and not camCon: icon = Paths.devices_robot
+        if not robCon and     camCon: icon = Paths.devices_camera
+        if not robCon and not camCon: icon = Paths.devices_neither
+
+        self.devicesBtn.setIcon(QtGui.QIcon(icon))
 
 
     def openDevices(self):
@@ -607,25 +625,28 @@ class MainWindow(QtWidgets.QMainWindow):
             event.ignore()
             return
 
-        # End the script *after* prompting for save, in case the user wrote an endless loop and wants to save b4 leaving
-        # self.endScript()
-
 
         # Save the window geometry as a string representation of a hex number
         saveGeometry = ''.join([str(char) for char in self.saveGeometry().toHex()])
         self.env.updateSettings("windowGeometry", saveGeometry)
+
 
         # Save the dockWidget positions/states as a string representation of a hex number
         saveState    = ''.join([str(char) for char in self.saveState().toHex()])
         self.env.updateSettings("windowState", saveState)
 
 
-
+        # Deactivate the robots servos
         robot = self.env.getRobot()
         robot.setActiveServos(all=False)
 
-        # Close and delete GUI objects, to stop their events from running
+
+        # End the script *after* prompting for save and deactivating servos on the robot. Script thread is a Daemon
         self.interpreter.setExiting(True)
+
+
+        # Close and delete GUI objects, to stop their events from running
+        self.refreshTimer.stop()
         self.cameraWidget.close()
         self.controlPanel.close()
         self.centralWidget.close()
@@ -736,7 +757,7 @@ class DeviceWindow(QtWidgets.QDialog):
 
     def scanForRobotsClicked(self):
         connectedDevices = getConnectedRobots()  # From Robot.py
-        printf("GUI| Connected Devices: ", connectedDevices)
+
         self.robotButtonGroup = QtWidgets.QButtonGroup()
 
         # Update the list of found devices
@@ -865,7 +886,10 @@ if __name__ == '__main__':
     # Actually start the main window
     mainWindow = MainWindow()
     mainWindowReference.append(mainWindow)  #Todo: remove this line when development is finished
-    sys.exit(app.exec_())
+
+    app.exec_()
+
+    # sys.exit(app.exec_())
 
 
 

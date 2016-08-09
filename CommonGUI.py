@@ -412,7 +412,7 @@ class Console(QtWidgets.QWidget):
     # Have clear button, settings (for which classes to display responses from), exec stuff,
     settingsChanged = QtCore.pyqtSignal()
 
-    def __init__(self, consoleSettings, parent):
+    def __init__(self, consoleSettings, parent, fps=4.0):
         super(Console, self).__init__(parent)
         # Since prints might come from different threads, lock before adding stuff to self.text
         self.printLock    = RLock()
@@ -429,7 +429,7 @@ class Console(QtWidgets.QWidget):
         # Set up the refresh timer
         self.refreshTimer = QtCore.QTimer()
         self.refreshTimer.timeout.connect(self.__refreshBuffer)
-        self.refreshTimer.start(1000.0 / 5)  # 1000 / fps
+        self.refreshTimer.start(1000.0 / fps)  # How often the console refreshes
 
         self.initUI()
 
@@ -660,31 +660,43 @@ class Console(QtWidgets.QWidget):
         if len(self.printBuffer) == 0: return
 
         with self.printLock:
-
-            for classStr, printStr in self.printBuffer:
-
-                # Check the origin of the print. If its not supported in the settings, exit
-                category = self.__allowString(classStr)
-
-                # Check if the user has this category turned on in settings. If there's an error, print anyways.
-                if category is None and "ERROR" not in printStr: continue
-
-                if category is None: category = classStr
-
-
-                # Prepare the text to add to console
-                printStr = category + " " * (15 - len(category)) + str(printStr)
-                if len(printStr) == 0: continue
-
-                # Write to the console log
-                self.text.insertPlainText(printStr + "\n")
-
-                # Scroll to the bottom of the console
-                c = self.text.textCursor()
-                c.movePosition(QtGui.QTextCursor.End)
-                self.text.setTextCursor(c)
-
+            tempBuffer = self.printBuffer
             self.printBuffer = []
+
+        # This is the text that will be inserted onto the console window
+        textToInsert = ""
+
+        # Build the textToInsert string by
+        for classStr, printStr in tempBuffer:
+
+            printStr = str(printStr)
+            if len(printStr) == 0: continue
+
+            # Check the origin of the print. If its not supported in the settings, exit
+            category = self.__allowString(classStr)
+
+            # Check if the user has this category turned on in settings. If there's an error, print anyways.
+            if category is None and "ERROR" not in printStr: continue
+
+            if category is None: category = classStr
+
+
+
+            # Prepare the text to add to console
+            printStr = category + " " * (15 - len(category)) + printStr
+
+
+            # Write to the console log
+            textToInsert += printStr + "\n"
+
+
+        # Insert the text and scroll to the bottom of the console
+        if len(textToInsert):
+            self.text.insertPlainText(textToInsert)
+            c = self.text.textCursor()
+            c.movePosition(QtGui.QTextCursor.End)
+            self.text.setTextCursor(c)
+
 
 
 # Center a window on the current screen
@@ -787,8 +799,3 @@ class Overlay(QtWidgets.QBoxLayout):
 
         # self.css = "QWidget {background-color: black; color: black}"
 
-
-    def addWidget(self, widget):
-        super().addWidget(widget)
-
-        # widget.setStyleSheet(self.css)

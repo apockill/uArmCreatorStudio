@@ -109,7 +109,6 @@ class Transform:
         return transformFunc
 
 
-
     def cameraToRobotRotation(self, rotation):
         """
         Currently can only return the current rotation from the X axis of the robot
@@ -138,8 +137,8 @@ class Transform:
         robVector    = self.cameraToRobot(camVectorZ)
         robUnitVec   = robVector - camToRobTranslation
         zAngle       = math.degrees(math.atan2(robUnitVec[1], robUnitVec[0]))
-        zAngle       = normalizeAngle(zAngle)
-
+        zAngle       = normalizeAngle(zAngle - 90)  # TODO: Figure out why the hell I need to offset by 90
+        print("angle", zAngle)
         return zAngle
 
 
@@ -510,7 +509,6 @@ def pickupObject(trackable, rbMarker, robot, vision, transform):
     :param trackable: Any ObjectManager.Trackable object
     :param rbMarker: A trackable object representing some kind of marker that is on top of the robots end effector
     :param ptPairs: The data inside of Environment.__settings["coordCalibrations"]["ptPairs"]
-    :param groundHeight: The data inside of Environment.__settings["coordCalibrations"]["groundPos"]
     :param robot: The Robot.Robot object which controls the robot
     :param vision: The Vision.Vision object which handles computer vision operations
     :return: True or False, True if it successfuly picked up the object, otherwise False
