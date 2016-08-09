@@ -42,6 +42,11 @@ from Logic.Interpreter import Interpreter               # For actually starting/
 from Logic.Robot       import getConnectedRobots        # For deviceWindow
 from Logic.Video       import getConnectedCameras       # For deviceWindow
 from ObjectManagerGUI  import ObjectManagerWindow       # For opening ObjectManager window
+from ObjectManagerGUI  import MakeGroupWindow           # For creating various resources
+from ObjectManagerGUI  import MakeRecordingWindow
+from ObjectManagerGUI  import MakeFunctionWindow
+from ObjectManagerGUI  import MakeObjectWindow
+
 
 __author__ = "Alexander Thiel"
 
@@ -161,10 +166,10 @@ class MainWindow(QtWidgets.QMainWindow):
         fncAction  = QtWidgets.QAction(QtGui.QIcon(Paths.command_run_func), "Function", self)
 
 
-        visAction.triggered.connect(  lambda: ObjectManagerWindow(self.env, parent=self).openObjectWizard())
-        grpAction.triggered.connect(  lambda: ObjectManagerWindow(self.env, parent=self).openGroupMenu())
-        recAction.triggered.connect(  lambda: ObjectManagerWindow(self.env, parent=self).openRecordingMenu())
-        fncAction.triggered.connect(  lambda: ObjectManagerWindow(self.env, parent=self).openFunctionMenu())
+        visAction.triggered.connect(  lambda: MakeObjectWindow(   None, self.env, parent=self))
+        grpAction.triggered.connect(  lambda: MakeGroupWindow(    None, self.env, parent=self))
+        recAction.triggered.connect(  lambda: MakeRecordingWindow(None, self.env, parent=self))
+        fncAction.triggered.connect(  lambda: MakeFunctionWindow( None, self.env, parent=self))
 
         resourceMenu.addAction(visAction)
         resourceMenu.addAction(grpAction)
@@ -183,7 +188,6 @@ class MainWindow(QtWidgets.QMainWindow):
         toolbar = self.addToolBar("MainToolbar")
         toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
 
-        devicesBtn   = QtWidgets.QAction(QtGui.QIcon(Paths.settings), 'Devices', self)
         calibrateBtn = QtWidgets.QAction(QtGui.QIcon(Paths.calibrate), 'Calibrate', self)
         objMngrBtn   = QtWidgets.QAction(QtGui.QIcon(Paths.objectManager), 'Resources', self)
 
@@ -501,6 +505,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.setVideo("play")
 
+    def openResourceWindow(self, resourceWindowType):
+        """
+        This can open a MakeGroupWindow, MakeRecordingWindow, or MakeFunctionWindow, handle its closing and garbage
+        collection, and create the object if the user clicks "finished"
+
+        :param menuType: MenuType is the Type of the menu object, such as EditGroupWindow or MakeFunctionWindow
+        :return:
+        """
 
 
     def newTask(self, promptSave):
@@ -830,7 +842,7 @@ class Application(QtWidgets.QApplication):
         if event.type() == QtCore.QEvent.KeyPress:
             # Todo: remove these two lines when development is finished
             if event.key() == QtCore.Qt.Key_Q and len(mainWindowReference):
-                print("CHILDREN: ", len(mainWindowReference[0].findChildren(QtCore.QBasicTimer)))
+                print("CHILDREN: ", len(mainWindowReference[0].findChildren(QtCore.QObject)))
 
             if event.key() not in Global.keysPressed:
                 Global.keysPressed.append(event.key())

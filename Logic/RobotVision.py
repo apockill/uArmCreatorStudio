@@ -45,7 +45,6 @@ tradeoff to allow anyone to use a pickupObject function, for example.
 # Minimum amount of tracking points to decide to attempt to pick up an object
 MIN_POINTS_TO_LEARN_OBJECT = 150  # Minimum number of points to decide an object is valid for creating
 MAX_FRAME_AGE_MOVE         = 5    # Maximum age of a tracked object to move the robot towards it
-MIN_POINTS_PICKUP_OBJECT   = 50   # Minimum points on an object for the robot to see an object and pick it up
 MIN_POINTS_FOCUS           = 25   # Minimum tracking points to just move the robot over an object
 MAX_FRAME_FAIL             = 15   # Maximum times a function will get a new frame to recognize an object before quitting
 
@@ -515,41 +514,39 @@ def pickupObject(trackable, rbMarker, robot, vision, transform):
     """
     def getRobotAccurate(trackable, vision, maxAttempts=10):
         # A little convenience function that is used several times in the pickup
-        moveThresh  = 15
+        moveThresh  = 8
         lowest      = [None, None]  # [coordinates of object, the speed at which it was going at]
         for s in range(0, maxAttempts):
             vision.waitForNewFrames()
-            # trackRob = vision.getObjectBruteAccurate(rbMarker, minPoints   = MIN_POINTS_PICKUP_MARKER,
-            #                                                    maxFrameAge = 0,
-            #                                                    maxAttempts = MAX_FRAME_FAIL)
+
             avgPos, avgMag, avgDir = vision.getObjectSpeedDirectionAvg(trackable)
 
+            # If the object was nto found at all
             if avgPos is None: continue
 
+            # If it found a recognition that is under the movement threshold (thus its a stable recognition)
             if avgMag < moveThresh:
                 print("Got acceptable value, returning now")
                 return avgPos
 
+            # Save a new 'best' value
             if lowest[1] is None or avgMag < lowest[1]:
                 lowest[0] = avgPos
-                print("Saving lowest")
-        print("Never found acceptable value, returning best of: ", lowest[0])
+
+        # If it never found something under the threshold, return the 'best of' anyways
         return lowest[0]
 
 
     # If the object hasn't been seen recently, then don't even start the pickup procedure
     frameAge, _ = vision.getObjectLatestRecognition(trackable)
-    if frameAge is None or frameAge > 30:
+    if frameAge is None:
         printf("RobotVision| The object is not on screen. Aborting pickup.")
         return False
 
+    vision.waitForNewFrames(10)
 
-    # Get a super recent frame of the object with high point count and accuracy
-    trackedObj = vision.getObjectBruteAccurate(trackable,
-                                               minPoints   = MIN_POINTS_PICKUP_OBJECT,
-                                               maxAge= 0,
-                                               maxAttempts = MAX_FRAME_FAIL)
-
+    # # Get a frame of the object with high point count and accuracy
+    trackedObj = vision.getMostAccurateRecognition(trackable, maxAge=15)
     if trackedObj is None:
         printf("RobotVision| Couldn't get the object accurately!")
         return False
@@ -590,64 +587,24 @@ def pickupObject(trackable, rbMarker, robot, vision, transform):
     # Get the actual position that the robot will be aiming for during the entire function (the center of pickupRect)
     targetCamPos = findCentroid(pickupRect)
     targetCamPos = [targetCamPos[0], targetCamPos[1], objCamZ]
-    print("Final center: ", targetCamPos)
+
 
     # Move to the objects position
     pos = transform.cameraToRobot(targetCamPos)
-
-
     robot.setPos(z=pos[2])
     robot.setPos(x=pos[0], y=pos[1])
 
 
-
-    # # Try to "Jump" towards the object by measuring the desired pos and the offset
-    # lastCoord = getRobotAccurate(rbMarker, vision)
-    # if lastCoord is None:
-    #     printf("Could not find robot before jump! Exiting pickup")
-    #     return False
-    #
-    # camPos  = getPositionCorrection(targetCamPos, lastCoord)
-    # jumpPos = getPositionTransform(camPos, ptPairs, 1)
-    # if jumpPos[2] < groundHeight: jumpPos[2] = groundHeight
-    #
-    # print("Jumping robot: ", jumpPos)
-    # if abs(jumpPos[1] - robot.coord[1]) < 7 and abs(jumpPos[0] - robot.coord[0]) < 7:
-    #     robot.setPos(x=jumpPos[0], y=jumpPos[1])
-
-
-    robot.setPos(y=3, relative=True)
     # Slowly move onto the target moving 1 cm towards it per move
-    lastHeight     = -1
-    smallStepCount = 0  # If more than 1 z moves result in little movement, quit the function
     lastCoord      = None
     failTrackCount = 0
     robot.setPump(True)
     for i in range(0, 15):
-        print("DownMove ", i)
 
         # Check the robots tip to make sure that the robot hasn't hit the object or ground and is pressing down on it
         if robot.getTipSensor():
             printf("RobotVision| The robots tip was hit, it must have touched the object. ")
             break
-        print("smallstepcount: ", smallStepCount)
-
-        # Height Method: Original
-        # Check if the robot has hit the object by seeing if the robots height is less than before, as per the camera
-        robCoord = robot.getCoords()
-        heightDiff = robCoord[2] - lastHeight
-
-        if heightDiff >= -1.1 and i > 4:
-            smallStepCount += 1
-        else:
-            smallStepCount = 0
-
-        # If the robot has moved up, or it has had various small down moves in a row, quit the loop
-        if (heightDiff >= 0 or smallStepCount >= 3) and not lastHeight == -1 and i >= 4:
-            printf("RobotVision| Height has stopped decreasing- assuming robot has hit object. Leaving down-move loop")
-            break
-
-        lastHeight = robCoord[2]
 
 
         # Get the robots marker through the camera by taking the average position of 5 recognitions
@@ -681,16 +638,14 @@ def pickupObject(trackable, rbMarker, robot, vision, transform):
         relMove   = getRelativeMoveTowards(lastCoord, targetCamPos, transform)
         unitVec   = unitVector(relMove)
         finalMove = unitVec * jumpSize
-        print("Final move: ", finalMove)
 
         robot.setPos(x=finalMove[0], y=finalMove[1], relative=True)
-
         robot.setPos(z=-1.25, relative=True)
 
         failTrackCount = 0
 
     # Try to get a new view of the robot to test if the pickup was successfull
-    newCoord = getRobotAccurate(rbMarker, vision, maxAttempts=1)
+    newCoord = getRobotAccurate(rbMarker, vision, maxAttempts=4)
     if newCoord is not None:
         lastCoord = newCoord
 

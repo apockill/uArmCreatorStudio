@@ -495,29 +495,29 @@ class Console(QtWidgets.QWidget):
         """
         with self.printLock:
 
-            if "Output" in moduleString:
+            if "Output" == moduleString:
                 return "Output"
 
-            if "Input" in moduleString:
+            if "Input" == moduleString:
                 return "Input"
 
             # Print anything from a GUI module
-            if "GUI" in moduleString:
+            if "GUI" == moduleString:
                 if self.settings["gui"]: return "GUI"
                 return None
 
             # Print anything from the Robot module
-            if "Robot" in moduleString:
+            if "Robot" == moduleString:
                 if self.settings["robot"]: return "Robot"
                 return None
 
             # Print anything from the Vision module
-            if "Vision" in moduleString or "Video" in moduleString:
+            if "Vision" == moduleString or "Video" == moduleString:
                 if self.settings["vision"]: return "Vision"
                 return None
 
             # Print anything from the communication module
-            if "Communication" in moduleString:
+            if "Communication" == moduleString:
                 if self.settings["serial"]: return "Communication"
                 return None
 
@@ -531,7 +531,7 @@ class Console(QtWidgets.QWidget):
                 return None
 
             # Print anything from Commands
-            if "Commands" in moduleString or "Events" in moduleString or "RobotVision" in moduleString:
+            if "Commands" == moduleString or "Events" == moduleString or "RobotVision" == moduleString:
                 if self.settings["script"]: return "Script"
                 return None
 

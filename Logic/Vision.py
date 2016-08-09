@@ -45,7 +45,7 @@ class Vision:
         vision.addTarget(trackable)    # Start tracking some object
 
         # Some time later in the program, look for the object. There are multiple search functions
-        getObjectBruteAccurate(trackable, minPoints, maxFrameAge, maxAttempts)  # Try to find with multiple attempts
+        getMostAccurateRecognition(trackable)  # Find the object with the highest pt count in the tracked history
 
         searchTrackedHistory(trackable, maxAge, minPtCount
 
@@ -145,37 +145,35 @@ class Vision:
                     return frameID, tracked
         return None, None
 
-    def getObjectBruteAccurate(self, trackable, minPoints=-1, maxAge=0, maxAttempts=1):
+    def getMostAccurateRecognition(self, trackable, maxAge):
         """
-        This will brute-force the object finding process somewhat, and ensure a good recognition, or nothing at all.
+        This will find the best ptCount of any recognitions of trackable
 
         :param trackable: The TrackableObject you intend to find
-        :param minPoints:    Minimum amount of recognition points that must be found in order to track. -1 means ignore
         :param maxAge:  How recent the recognition was, in "frames gotten from camera"
         :param maxAttempts:  How many frames it should wait for before quitting the search.
         :return:
         """
 
+        with self.workLock:
+            trackHistory = self.planeTracker.trackedHistory[:]
 
-        # Get a super recent frame of the object
-        for i in range(0, maxAttempts):
-            if self.exiting:
-                printf("Vision| Exiting early!")
-                break
+        best = None
+        print("Finding")
+        # Check if the object was recognized in the most recent frame. Check most recent frames first.
+        for age, historyFromFrame in enumerate(trackHistory):
+            if maxAge is not None and age > maxAge: return best
 
-            # If the frame is too old or marker doesn't exist or doesn't have enough points, exit the function
-            frameAge, trackedObj = self.getObjectLatestRecognition(trackable)
+            for tracked in historyFromFrame:
+                # If the object meets the criteria
+                if trackable is None: continue
+                if not trackable.equalTo(tracked.view.name): continue
 
-            if trackedObj is None or frameAge > maxAge or trackedObj.ptCount < minPoints:
-                if i == maxAttempts - 1: break
-
-                self.waitForNewFrames()
-                continue
-
-            # If the object was successfully found with the correct attributes, return it
-            return trackedObj
-
-        return None
+                if best is None or tracked.ptCount > best.ptCount:
+                    best = tracked
+                    print("Found better")
+        print("Actually finished")
+        return best
 
     def getObjectSpeedDirectionAvg(self, trackable, samples=3, maxAge=20, isSameObjThresh=50):
                 # TEST CODE FOR VISION
@@ -683,7 +681,7 @@ class PlaneTracker(Tracker):
             coordText =  "("  + str(int(tracked.center[0])) + \
                          "," + str(int(tracked.center[1])) + \
                          "," + str(int(tracked.center[2])) + \
-                         ") " + str(int(math.degrees(tracked.rotation[2]) + 180))
+                         ") R" + str(int(math.degrees(tracked.rotation[2]) + 180))
 
             # Figure out how much the text should be scaled (depends on the different in curr side len, and orig len)
             origLength    = rect[2] - rect[0] + rect[3] - rect[1]
@@ -710,13 +708,15 @@ class PlaneTracker(Tracker):
                 tMask = drawOutlineText(tMask, nameText, chosenCorner,
                             self.fFnt, scaleFactor, color=self.fColor, thickness=self.fThickness)
 
-                # Draw the coordinates of the object
-                chosenCorner = chosenCorner[0], int(chosenCorner[1] + dist)
-                mask  = drawOutlineText(mask, coordText, chosenCorner,
-                            self.fFnt, scaleFactor - .6, color=self.fColor, thickness=1)
-                tMask = drawOutlineText(tMask, coordText, chosenCorner,
-                            self.fFnt, scaleFactor - .6, color=self.fColor, thickness=1)
-
+                try:
+                    # Draw the coordinates of the object
+                    chosenCorner = chosenCorner[0], int(chosenCorner[1] + dist)
+                    mask  = drawOutlineText(mask, coordText, chosenCorner,
+                                self.fFnt, scaleFactor - .6, color=self.fColor, thickness=1)
+                    tMask = drawOutlineText(tMask, coordText, chosenCorner,
+                                self.fFnt, scaleFactor - .6, color=self.fColor, thickness=1)
+                except ValueError as e:
+                    printf("Vision| ERROR: Drawing failed because a None was attempted to be turned into int", e)
 
 
 

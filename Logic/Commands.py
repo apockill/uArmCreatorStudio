@@ -350,9 +350,7 @@ class MoveRelativeToObjectCommand(Command):
 
 
         # Get a super recent frame of the object
-        trackedObj = self.vision.getObjectBruteAccurate(self.trackable,
-                                                        minPoints   = rv.MIN_POINTS_FOCUS,
-                                                        maxAge= rv.MAX_FRAME_AGE_MOVE)
+        _, trackedObj = self.vision.getObjectLatestRecognition(self.trackable)
         if trackedObj is None: return False
 
 
