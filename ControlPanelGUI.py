@@ -331,7 +331,7 @@ class EventList(QtWidgets.QListWidget):
         selectedItem = self.getSelectedEventItem()
 
         if selectedItem is None:
-            printf("GUI| ERROR: 0 events selected")
+            printf("GUI| No events selected")
             return None
 
         return self.getEventFromItem(selectedItem)

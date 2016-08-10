@@ -394,7 +394,9 @@ class Vision:
         # if exiting:
         #     printf("Setting Vision to Exiting mode. All frame commands should exit quickly.")
         #     self.endAllTrackers()
-        printf("Vision| Setting Vision to Exiting mode. ")
+
+        # if exiting:
+        #     printf("Vision| Setting Vision to Exiting mode. ")
         self.exiting = exiting
 
 

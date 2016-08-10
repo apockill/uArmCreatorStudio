@@ -34,77 +34,37 @@ from Logic        import Events, Commands
 __author__ = "Alexander Thiel"
 
 
-"""
-This is a global call for only the interpreter to pay attention to, and when it is True, the Interpreter and any command
-inside of it will try to exit as quickly as possible. This global is so that recursively running Interpreters can
-exit quickly, and there's passing around of an exit variable all the time.
-"""
-global exitingFlag
-exitingFlag = False
-
-
-"""
-This variable is so that if the Interpreter needs to end abruptly, it'll write down the erros,
-and the GUI will later display them to the user in a message.
-
-This variable can be retrieved using Interpreter.getExitErrors()
-"""
-global exitErrors
-exitErrors = None
-
-
-"""
-This is a dictionary of each command Type in Commands.py, and each event Type in Events.py
-This is used so that loading scripts will be faster in Interpreter.initializeScript
-Furthermore, its safer than using getattr("Commands", thecommand) since it doesn't pull any other modules that are
-imported in Commands. This way people can't have save files that run arbitrary code. They can only access
-types that are classes in Commands.py and Events.py
-"""
-commandClasses = Global.getModuleClasses(Commands)
-eventClasses   = Global.getModuleClasses(Events)
-
 
 
 class Interpreter:
     """
     This is where the script is actually run. The most convenient method is to create a script with the GUI,
     then use self.initializeScript(script) to actually get the script into the interpreter, then use startThread()
-    to begin the script.
+    to begin the script. You can also do startThread(threaded=False).
     """
 
     def __init__(self, environment, nameSpace=None):
         """
-        Since interpreters can be run within themselves, the parentExitFunc and parentSetExitingFunc are exactly
-        what they sound like.
-
-        parentExitFunc is the first (original) interpreter's isExiting function.
-        parentSetExitingFunc is first (original) interpreters setExiting function.
-
-        If you don't know what that is, don't worry about it. It's only pertinent in Commands.RunTaskCommand
-
         :param environment: Environment class, from Environment.py
         """
 
-        # This function will tell you if the highest parent interpreter is currently exiting
-        # self.parentIsExiting  = parentExitFunc
+        self.env        = environment
+        self.mainThread = None    # The thread on which the script runs on. Is None while thread is not running.
+        self.__exiting  = False   # When True, the script thread will attempt to close ASAP
+        self.events     = []      # A list of events, and their corresponding commands
 
-        # This function will kill all interpreters running inside of the highest heirarchy of interpreters
-        # self.parentSetExiting = parentSetExitingFunc  # Example: self.parentSetExiting(True) ends all child Interpreters
 
-        self.env           = environment
-        self.mainThread    = None    # The thread on which the script runs on. Is None while thread is not running.
-        self.__exiting     = False   # When True, the script thread will attempt to close ASAP
-        self.events        = []      # A list of events, and their corresponding commands
+        # A dictionary of what event and command is currently running, returned in self.getStatus()
+        self.currRunning = {"event": -1, "command": -1}
 
-        # For self.getStatus()
-        self.currRunning   = {"event": -1, "command": -1}  # A dictionary of what event and command is currently running
 
         # Namespace is all  the builtins and variables that the user creates during a session in the interpreter
-        self.nameSpace     = nameSpace
+        self.nameSpace = nameSpace
         if self.nameSpace is None:
             self.cleanNamespace()
         else:
-            self.nameSpace["interpreter"] = self  # Make sure if the nameSpace was passed, the "interpreter" val works
+            # Make sure if the nameSpace was passed, the "interpreter" val works
+            self.nameSpace["interpreter"] = self
 
 
     def initializeScript(self, script):
@@ -201,10 +161,12 @@ class Interpreter:
 
     def setExiting(self, value):
         printf("Interpreter| Setting Interpreter to Exiting mode.")
+        global exitingFlag
+
         self.env.getRobot().setExiting(value)
         self.env.getVision().setExiting(value)
 
-        global exitingFlag
+
         exitingFlag = value
 
 
@@ -309,7 +271,7 @@ class Interpreter:
             answer = eval(expression, self.nameSpace)
         except Exception as e:
             # Print a traceback of the error to the console
-            printf("Interpreter| Eval ERROR: \n", traceback.format_exc())
+            printTraceback()
 
             # Save an error report so the GUI can show it to the user
             global exitErrors
@@ -331,7 +293,7 @@ class Interpreter:
             exec(script, self.nameSpace)
         except Exception as e:
             # Print a traceback of the error to the console
-            printf("Interpreter| EXEC ERROR: \n", traceback.format_exc())
+            printTraceback()
 
             # Save an error report so the GUI can show it to the user
             global exitErrors
@@ -518,3 +480,39 @@ class Interpreter:
 
         return index
 
+
+
+"""
+This is a global call for only the interpreter to pay attention to, and when it is True, the Interpreter and any command
+inside of it will try to exit as quickly as possible. This global is so that recursively running Interpreters can
+exit quickly, and there's passing around of an exit variable all the time.
+"""
+global exitingFlag
+exitingFlag = False
+
+
+"""
+This variable is so that if the Interpreter needs to end abruptly, it'll write down the erros,
+and the GUI will later display them to the user in a message.
+
+This variable can be retrieved using Interpreter.getExitErrors()
+"""
+global exitErrors
+exitErrors = None
+
+
+"""
+This is a dictionary of each command Type in Commands.py, and each event Type in Events.py
+This is used so that loading scripts will be faster in Interpreter.initializeScript
+Furthermore, its safer than using getattr("Commands", thecommand) since it doesn't pull any other modules that are
+imported in Commands. This way people can't have save files that run arbitrary code. They can only access
+types that are classes in Commands.py and Events.py
+"""
+commandClasses = Global.getModuleClasses(Commands)
+eventClasses   = Global.getModuleClasses(Events)
+
+"""
+This function will print the latest stacktrace error in a format that is friendly to the Console widget
+"""
+printTraceback    = lambda: printf("Interpreter| \n" + "-" * 35 + "ERROR" + "-" * 35 + "\n",
+                                            traceback.format_exc(), "-" * 75 + "\n")

@@ -31,7 +31,7 @@ import serial.tools.list_ports
 from threading    import Thread, RLock
 from time         import sleep  #Only use in refresh() command while querying robot if it's done moving
 from Logic.Global import printf
-from Logic.CommunicationProtocol_2 import Device
+from Logic.CommunicationProtocol_1 import Device
 
 __author__ = "Alexander Thiel"
 
@@ -79,7 +79,7 @@ class Robot:
 
 
         # Cache Variables that keep track of robot state
-        self.__speed             = 10                        # In cm / second (or XYZ [unit] per second)
+        self.speed               = 10                        # In cm / second (or XYZ [unit] per second)
         self.coord               = [None, None, None]        # Keep track of the robots position
         self.__gripperStatus     = False                     # Keep track of the robots gripper status
         self.__servoAttachStatus = [True, True, True, True]  # Keep track of what servos are attached
@@ -230,7 +230,7 @@ class Robot:
             if not posBefore == self.coord:
 
                 try:
-                    self.uArm.setXYZ(self.coord[0], self.coord[1], self.coord[2], self.__speed)
+                    self.uArm.setXYZ(self.coord[0], self.coord[1], self.coord[2], self.speed)
 
 
                     # Update the servoAngleStatus by doing inverse kinematics on the current position to get the new angles
@@ -374,7 +374,7 @@ class Robot:
         :param speed: In cm/s
         """
         # Changes a class wide variable that affects the move commands in self.refresh()
-        self.__speed = speed
+        self.speed = speed
 
     def stopMoving(self):
         """
@@ -415,7 +415,7 @@ class Robot:
             # Check if the uArm was able to connect successfully
             if self.uArm.connected():
                 printf("Robot| SUCCESS: uArm successfully connected")
-                self.uArm.setXYZ(self.home['x'], self.home['y'], self.home['z'], self.__speed)
+                self.uArm.setXYZ(self.home['x'], self.home['y'], self.home['z'], self.speed)
                 self.__threadRunning = False
                 self.setPos(**self.home)
                 self.setActiveServos(all=False)
@@ -452,8 +452,8 @@ class Robot:
 
         :param exiting: True-> communication with robot is cut off. False -> Everything works normally
         """
-        if exiting:
-            printf("Robot| Setting Robot to Exiting mode. All commands should be ignored")
+        # if exiting:
+        #     printf("Robot| Setting Robot to Exiting mode. All commands should be ignored")
         self.exiting = exiting
 
 
