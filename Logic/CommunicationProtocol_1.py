@@ -280,66 +280,7 @@ class Device:
 
         sleep(3)
 
-    def __send(self, cmnd):
-        # This command will send a command and recieve the robots response. There must always be a response!
-        if not self.connected(): return ""
 
-        # Prepare and send the command to the robot
-        cmndString = bytes("[" + cmnd + "]\n", encoding='ascii')
-
-        try:
-            self.serial.write(cmndString)
-        except serial.serialutil.SerialException as e:
-            printf("Communication| ERROR ", e, "while sending command ", cmnd, ". Disconnecting Serial!")
-            self.isConnected = False
-            return ""
-
-
-        # Read the response from the robot (THERE MUST ALWAYS BE A RESPONSE!)
-        response = ""
-        while True:
-
-            try:
-                response += str(self.serial.read(), 'ascii')
-            except serial.serialutil.SerialException as e:
-                printf("Communication| ERROR ", e, "while sending command ", cmnd, ". Disconnecting Serial!")
-                self.isConnected = False
-                return ""
-
-            if "\n" in response:
-                response = response[:-1]
-                break
-
-
-        # If the setting is enabled, print commands and responses (in the same line, if both are enabled)
-        if self.printCommands and self.printResponses:
-            printf("Communication| [" + cmnd + "]" + " " * (30 - len(cmnd)) + response)
-        elif self.printCommands:
-            printf("Communication| ", cmndString)
-        elif self.printResponses:
-            printf("Communication| ", response)
-
-
-        # Save the response to a log variable, in case it's needed for debugging
-        self.communicationLog.append((cmnd, response))
-
-        # Make sure the respone has the valid start and end characters
-        if not (response.count('[') == 1 and response.count(']') == 1):
-            printf("Communication| ERROR: The message ", response, " did not come with proper formatting!")
-
-
-        # Clean up the response
-        response = response.replace("[", "")
-        response = response.replace("]", "")
-
-
-
-        # If the robot returned an error, print that out
-        if "error" in response:
-            printf("Communication| ERROR: Recieved error from robot: ", response)
-
-
-        return response
 
     def __parseArgs(self, message, command, arguments):
         """

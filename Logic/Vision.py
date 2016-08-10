@@ -394,7 +394,7 @@ class Vision:
         # if exiting:
         #     printf("Setting Vision to Exiting mode. All frame commands should exit quickly.")
         #     self.endAllTrackers()
-
+        printf("Vision| Setting Vision to Exiting mode. ")
         self.exiting = exiting
 
 
@@ -634,9 +634,9 @@ class PlaneTracker(Tracker):
 
 
             #                       Line start  Triangle tip  Triangle vert1   Triangle vert2
-            ar_verts = np.float32([[.5,  0, 0], [.5,  1, 0], [.45, .95,   0], [.55, .95,   0],
-                                   [ 0, .5, 0], [ 1, .5, 0], [.95, .45,   0], [.95, .55,   0],
-                                   [.5, .5, 0], [.5, .5, 1], [.45,  .5, .90], [.55,  .5, .90]])
+            ar_verts = np.float32([[.5,  0, 0], [.5,  1, 0], [.45, .95,   0], [.55, .95,   0],      # Y
+                                   [ 0, .5, 0], [ 1, .5, 0], [.95, .45,   0], [.95, .55,   0],      # X
+                                   [.5, .5, 0], [.5, .5, 1], [.45,  .5, .90], [.55,  .5, .90]])     # Z axis
 
             # Color of each arrow
             red      = (   1,   1, 255)

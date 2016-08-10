@@ -209,7 +209,7 @@ def printf(*args):
 
 
     # Concatenate arguments, same as normal print statements
-    for i in args: buildString += str(i) + " "
+    for i in args: buildString += str(i)
 
 
 

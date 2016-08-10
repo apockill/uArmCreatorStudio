@@ -35,7 +35,7 @@ __author__ = "Alexander Thiel"
 resourcesLoc = "Resources\\"
 settings_txt = resourcesLoc + "Settings.txt"
 objects_dir  = resourcesLoc + "Objects\\"
-saves_dir    = resourcesLoc + "Saves\\"
+saves_dir    = resourcesLoc + "Save Files\\"
 
 
 
@@ -50,7 +50,7 @@ exeResourcesPath = resourcePath(resourcesLoc)
 
 # Used by Vision
 cascade_dir  = exeResourcesPath
-
+user_manual  = exeResourcesPath + "User Manual.pdf"
 
 
 ################        GUI PATHS         ################

@@ -9,8 +9,8 @@ icons_dir    = resource_dir + "Icons\\"     # Icons directory in resources
 # Files that need to be bundled that are in resource_dir
 resourceList   = ["face_cascade.xml",
                   "smile_cascade.xml",
-                  "eye_cascade.xml"]
-
+                  "eye_cascade.xml",
+                  "User Manual.pdf"]
 
 # Files that need to be bundled that are in icons_dir
 iconsList = ["cancel.png",
@@ -32,6 +32,10 @@ iconsList = ["cancel.png",
              "window_calibrate.png",
              "window_object_manager.png",
              "window_wizard.png",
+             "window_devices_robot.png",
+             "window_devices_camera.png",
+             "window_devices_both.png",
+             "window_devices_neither.png",
              "event_creation.png",
              "event_destroy.png",
              "event_step.png",
@@ -125,7 +129,7 @@ exe = EXE(pyz,
           name='uArmCreatorStudio',
           debug=False,
           strip=False,
-          # console=False,
+          console=False,
           upx=True,
           icon=icons_dir + "exe_icon.ico")
 

@@ -1,6 +1,7 @@
 import serial
 import serial.tools.list_ports
 from time         import sleep
+from Logic.Global import printf
 __author__ = "Alexander Thiel"
 
 
@@ -15,7 +16,7 @@ class Device:
       This is a library for controlling uArms that have uFactories communication protocol of version 0.9.6
     """
 
-    def __init__(self, port, printCommands=False, printResponses=False):
+    def __init__(self, port, printCommands=True, printResponses=True):
         self.printCommands  = printCommands
         self.printResponses = printResponses
         self.isConnected    = False
@@ -40,46 +41,24 @@ class Device:
     def setXYZ(self, x, y, z, speed):
         """
         Set the robots current move.
-        :param x: millimeters
-        :param y: millimeters
-        :param z: millimeters
+        :param x: centimeters
+        :param y: centimeters
+        :param z: centimeters
         :param speed: centimeters per second, how fast the robot should move towards its end point
                       If you have tuning, then just calculate the average speed.
         """
 
-        # Prepare the values
-        x = str(round(    x, 0))
-        y = str(round(    y, 0))
-        z = str(round(    z, 0))
-        v = str(round(speed, 2))
+        # Prepare the values (convert from cm to milimeters, that's what uArm accepts)
+        x = str(int(round(    x * 10, 0)))
+        y = str(int(round(    y * 10, 0)))
+        z = str(int(round(    z * 10, 0)))
+        v = str(int(round(speed * 10, 0)))
 
         # Create the command
         cmnd = "sMovX" + x + "Y" + y + "Z" + z + "V" + v
 
         # Send the command and receive a response
-        self.__send(cmnd)
-
-    def setPolar(self, stretch, rotation, height, speed):
-        """
-        Set the polar coordinates of the robot
-        :param stretch: Stretch distance of end effector from base of robot, in millimeters
-        :param rotation: Rotation of base servo, in degrees
-        :param height: Height of robot end effector, in millimeters
-        :param speed: A float between 0 and 1, where 0 is slow and 1 is fast
-        :return:
-        """
-
-        # Prepare the values
-        s = str(round( stretch, 0))
-        r = str(round(rotation, 0))
-        h = str(round(  height, 2))
-        v = str(round(   speed, 2))
-
-        # Create the command
-        cmnd = "sPolS" + s + "R" + r + "H" + h + "V" + v
-
-        # Send the command and receive a response
-        self.__send(cmnd)
+        self.__sendAndRecieve(cmnd)
 
     def setServo(self, servo, angle):
         """
@@ -97,7 +76,7 @@ class Device:
         cmnd = "sSerN" + s + "V" + a
 
         # Send the command and receive a response
-        self.__send(cmnd)
+        self.__sendAndRecieve(cmnd)
 
     def setPump(self, onOff):
         """
@@ -112,7 +91,7 @@ class Device:
         cmnd = "sPumV" + v
 
         # Send the command and receive a response
-        self.__send(cmnd)
+        self.__sendAndRecieve(cmnd)
 
     def setServoAttach(self, servo):
         """
@@ -127,7 +106,7 @@ class Device:
         cmnd = "sAttS" + s
 
         # Send the command and receive a response
-        self.__send(cmnd)
+        self.__sendAndRecieve(cmnd)
 
     def setServoDetach(self, servo):  # Done
         """
@@ -142,7 +121,7 @@ class Device:
         cmnd = "sDetS" + s
 
         # Send the command and receive a response
-        self.__send(cmnd)
+        self.__sendAndRecieve(cmnd)
 
     def setBuzzer(self, frequency, duration):
         """
@@ -159,7 +138,18 @@ class Device:
         cmnd = "sBuzF" + f + "T" + d
 
         # Send the command and receive a response
-        self.__send(cmnd)
+        self.__sendAndRecieve(cmnd)
+
+    def setStop(self):
+        """
+        This command should stop any ongoing movement that the robot is doing.
+        """
+
+        # Create the command
+        cmnd = "sStp"
+
+        # Send the command and recieve a response
+        self.__sendAndRecieve(cmnd)
 
 
     # Get commands
@@ -175,7 +165,7 @@ class Device:
         """
 
         # Send the command and receive a response
-        response  = self.__send("gMov")
+        response  = self.__sendAndRecieve("gMov")
 
         # Create the return
         ret = (False, True)["S" in response]
@@ -187,36 +177,17 @@ class Device:
         Get the robots XYZ coordinates
 
         Returns (x, y, z)
-        where x, y, and z are in millimeters
+        where x, y, and z are in centimeters
         """
 
         # Send the command and receive a response
-        response = self.__send("gCrd")
+        response = self.__sendAndRecieve("gCrd")
 
         # Parse the response
         parsedArgs = self.__parseArgs(response, "S", ["X", "Y", "Z"])
 
         # Create the return
-        ret = (parsedArgs["X"], parsedArgs["Y"], parsedArgs["Z"])
-
-        return ret
-
-    def getPolarCoords(self):
-        """
-        Get the robots polar coordinates
-
-        Returns (stretch, rotation, height)
-        where stretch and height are in millimeters, and rotation is in degrees
-        """
-
-        # Send the command and receive a response
-        response = self.__send("gPol")
-
-        # Parse the response
-        parsedArgs = self.__parseArgs(response, "S", ["S", "R", "H"])
-
-        # Create the return
-        ret = (parsedArgs["S"], parsedArgs["R"], parsedArgs["H"])
+        ret = (parsedArgs["X"] / 10.0, parsedArgs["Y"] / 10.0, parsedArgs["Z"] / 10.0)
 
         return ret
 
@@ -224,19 +195,19 @@ class Device:
         """
         Get the robots current servo angles
 
-        Returns (Base servo, left servo, right servo)
+        Returns (Base servo, left servo, right servo, wrist servo)
 
-        where stretch and height are in millimeters, and rotation is in degrees
+        Angles are in degrees
         """
 
         # Send the command and receive a response
-        response = self.__send("gAng")
+        response = self.__sendAndRecieve("gAng")
 
         # Parse the response
-        parsedArgs = self.__parseArgs(response, "S", ["T", "L", "R"])
+        parsedArgs = self.__parseArgs(response, "S", ["T", "L", "R", "F"])
 
         # Create the return
-        ret = (parsedArgs["T"], parsedArgs["L"], parsedArgs["R"])
+        ret = (parsedArgs["T"], parsedArgs["L"], parsedArgs["R"], parsedArgs["F"])
 
         return ret
 
@@ -248,7 +219,7 @@ class Device:
         """
 
         # Send the command and receive a response
-        response = self.__send("gTip")
+        response = self.__sendAndRecieve("gTip")
 
         # Parse the response
         parsedArgs = int(self.__parseArgs(response, "", ["S"])["S"])
@@ -258,72 +229,28 @@ class Device:
 
         return ret
 
-    def getReachableXYZ(self, x, y, z):
-        """
-        Get whether or not the robot can reach a certain point
-        Input an XYZ coordinate, and it will return True or False if it can get to the final location
-        Returns True
-        """
-
-        # Prepare the values
-        x = str(round(    x, 0))
-        y = str(round(    y, 0))
-        z = str(round(    z, 0))
-
-        # Create the command
-        cmnd = "gSimX" + x + "Y" + y + "Z" + z + "V0"
-
-        # Send the command and receive a response
-        response = self.__send(cmnd)
-
-        # Create the return
-        ret = "S" in response
-
-        return response
-
-    def getReachablePolar(self, stretch, rotation, height):
-        """
-        Get whether or not the robot can reach a certain point
-        Input a polar coordinate, and it will return True or False if it can get to the final location
-        Returns True
-        """
-
-        # Prepare the values
-        x = str(round( stretch, 0))
-        y = str(round(rotation, 2))
-        z = str(round(  height, 0))
-
-        # Create the command
-        cmnd = "gSimX" + x + "Y" + y + "Z" + z + "V1"
-
-        # Send the command and receive a response
-        response = self.__send(cmnd)
-
-        # Create the return
-        ret = "S" in response
-
-        return ret
-
     def getIK(self, x, y, z):
         """
         Get inverse kinematics calculations for any XYZ point
 
         Returns a tuple of angles, in the format: (baseServo, leftServo, rightServo)
-        :param x: millimeters
-        :param y: millimeters
-        :param z: millimeters
+        Angles returned are in degrees
+
+        :param x: centimeters
+        :param y: centimeters
+        :param z: centimeters
         """
 
         # Prepare the values
-        x = str(round(    x, 0))
-        y = str(round(    y, 0))
-        z = str(round(    z, 0))
+        x = str(round(x * 10, 0))
+        y = str(round(y * 10, 0))
+        z = str(round(z * 10, 0))
 
         # Create the command
         cmnd = "gIKX" + x + "Y" + y + "Z" + z
 
         # Send the command and receive a response
-        response = self.__send(cmnd)
+        response = self.__sendAndRecieve(cmnd)
 
         # Parse the response
         parsedArgs = self.__parseArgs(response, "", ["T", "L", "R"])
@@ -336,8 +263,9 @@ class Device:
     def getFK(self, servo0, servo1, servo2):
         """
         Get forward kinematics calculations for any three servo angles
+        Angles are in degrees
 
-        Returns an XYZ point, in the format: (x, y, z)
+        Returns an XYZ point, in the format: (x, y, z), where x, y, z are in centimeters
         :param servo0: degrees
         :param servo2: degrees
         :param servo3: degrees
@@ -352,55 +280,18 @@ class Device:
         cmnd = "gFKT" + s1 + "L" + s2 + "R" + s3
 
         # Send the command and receive a response
-        response = self.__send(cmnd)
+        response = self.__sendAndRecieve(cmnd)
 
         # Parse the response
         parsedArgs = self.__parseArgs(response, "", ["X", "Y", "Z"])
 
-        # Create the return
-        ret = (parsedArgs["X"], parsedArgs["Y"], parsedArgs["Z"])
-
-        return ret
-
-    def getVersion(self):
-        """
-        Get the current uArm version
-
-        Returns a string, something like "0.9.6" or another string like that.
-        """
-
-        # Send the command and receive a response
-        response  = self.__send("gVer")
-
-        # Create the return
-        ret = response.replace("S", "")
+        # Create the return (convert from milimeters to centimeters)
+        ret = (parsedArgs["X"] * 10.0, parsedArgs["Y"] * 10.0, parsedArgs["Z"] * 10.0)
 
         return ret
 
 
-    # Not Implimented Yet
-    def getPump(self):
-        # This method will be implimented with the next version of the uArm
-        pass
 
-    def getGripper(self):
-        # This method will be implimented with the next version of the uArm
-        pass
-
-    def setGripper(self, onOff):
-        """
-        Set the pumps value.
-        :param onOff: True means turn the gripper on. False means off.
-        """
-
-        # Prepare the values
-        v = str(int(onOff))
-
-        # Create the command
-        cmnd = "sGriV" + v
-
-        # Send the command and receive a response
-        self.__send(cmnd)
 
 
     # Not to be used outside of library
@@ -414,20 +305,22 @@ class Device:
                                         timeout  = .1)
             self.isConnected = True
         except serial.SerialException as e:
-            print("Could not connect to robot on port ", port)
+            printf("Communication| Could not connect to robot on port ", port)
             self.serial = None
             self.isConnected = False
-        sleep(3)
+        sleep(3.5)
 
-    def __send(self, cmnd):
+    def __sendAndRecieve(self, cmnd):
         """
         This command will send a command and receive the robots response. There must always be a response!
-
+        Responses should be recieved immediately after sending the command, after which the robot will proceed to
+        perform the action.
         :param cmnd: a String command, to send to the robot
         :return: The robots response
         """
+
         if not self.connected():
-            print("Tried to send a command while robot was not connected!")
+            printf("Communication| Tried to send a command while robot was not connected!")
             return ""
 
         # Prepare and send the command to the robot
@@ -436,7 +329,7 @@ class Device:
         try:
             self.serial.write(cmndString)
         except serial.serialutil.SerialException as e:
-            print("ERROR ", e, "while sending command ", cmnd, ". Disconnecting Serial!")
+            printf("Communication| ERROR ", e, "while sending command ", cmnd, ". Disconnecting Serial!")
             self.isConnected = False
             return ""
 
@@ -446,12 +339,11 @@ class Device:
         while True:
 
             try:
-
                 response += str(self.serial.read(), 'ascii')
                 response = response.replace(' ', '')
 
             except serial.serialutil.SerialException as e:
-                print("ERROR ", e, "while sending command ", cmnd, ". Disconnecting Serial!")
+                printf("Communication| ERROR ", e, "while sending command ", cmnd, ". Disconnecting Serial!")
                 self.isConnected = False
                 return ""
 
@@ -462,11 +354,11 @@ class Device:
 
 
         if self.printCommands and self.printResponses:
-            print("[" + cmnd + "]" + " " * (30 - len(cmnd)) + response)
+            printf("Communication| ", "[" + cmnd + "]" + " " * (30 - len(cmnd)) + response)
         elif self.printCommands:
-            print(cmndString)
+            printf("Communication| ", cmndString)
         elif self.printResponses:
-            print(response)
+            printf("Communication| ", response)
 
 
         # Save the response to a log variable, in case it's needed for debugging
@@ -480,23 +372,38 @@ class Device:
 
         # If the robot returned an error, print that out
         if "error" in response:
-            print("ERROR: received error from robot: ", response)
+            printf("Communication| ERROR: received error from robot: ", response)
 
 
 
         return response
 
     def __parseArgs(self, message, command, arguments):
+        """
+        This will parse a response form the robot, one that comes in the format that the uArms communication protocol
+        uses. If you are making a custom protocol, this likely is not relevant to you.
+
+        For example, if you send a getXYZCoords command to the robot [gCrd] the robot might respond
+        with [SX0.0Y100Z200]
+
+        You can then pass this to __parseArgs("[SX0.0Y100Z200]", "S", ["X", "Y", "Z"]) and parseargs will return
+        a dictionary of this format: {"X": 0.0, "Y": 100.0, "Z": 200}
+
+        Essentially, parseArgs will find the arguments that were passed by the robot.
+
+
+        :param message: What the robot responded with. ie, [SX0.0Y100Z200]
+        :param command: The "header" for the command (this gets thrown away). For example, "S"
+        :param arguments: The values to extract, in a list. For example, ["X", "Y", "Z"]
+
+        :return: A dictionary of format {"argument": float value, "argument": float value, "argument": float value}
+        """
         responseDict = {n: 0 for n in arguments}  #Fill the dictionary with zero's
 
 
         # Do error checking, in case communication didn't work
-        if message is False:
-            print("Since an error occured in communication, returning 0's for all arguments!")
-            return responseDict
-
         if command not in message:
-            print("ERROR: The message did not come with the appropriate command: ", command)
+            printf("Communication| ERROR: The message did not come with the appropriate command: ", command)
             return responseDict
 
 
@@ -516,11 +423,136 @@ class Device:
         return responseDict
 
 
-    # def __uploadCode(self):
-    #     self.serial.setDTR(0)
-    #     sleep(0.1)
-    #     self.serial.setDTR(1)
+'''
+###### UNUSED FUNCTIONS (from the new firmware on the uArm #####
+def setPolar(self, stretch, rotation, height, speed):
+    """
+    Set the polar coordinates of the robot
+    :param stretch: Stretch distance of end effector from base of robot, in millimeters
+    :param rotation: Rotation of base servo, in degrees
+    :param height: Height of robot end effector, in millimeters
+    :param speed: A float between 0 and 1, where 0 is slow and 1 is fast
+    :return:
+    """
 
+    # Prepare the values
+    s = str(round( stretch, 0))
+    r = str(round(rotation, 0))
+    h = str(round(  height, 2))
+    v = str(round(   speed, 2))
+
+    # Create the command
+    cmnd = "sPolS" + s + "R" + r + "H" + h + "V" + v
+
+    # Send the command and receive a response
+    self.__sendAndRecieve(cmnd)
+
+def getPolarCoords(self):
+    """
+    Get the robots polar coordinates
+
+    Returns (stretch, rotation, height)
+    where stretch and height are in millimeters, and rotation is in degrees
+    """
+
+    # Send the command and receive a response
+    response = self.__sendAndRecieve("gPol")
+
+    # Parse the response
+    parsedArgs = self.__parseArgs(response, "S", ["S", "R", "H"])
+
+    # Create the return
+    ret = (parsedArgs["S"], parsedArgs["R"], parsedArgs["H"])
+
+    return ret
+
+def getReachableXYZ(self, x, y, z):
+    """
+    Get whether or not the robot can reach a certain point
+    Input an XYZ coordinate, and it will return True or False if it can get to the final location
+    Returns True
+    """
+
+    # Prepare the values
+    x = str(round(    x, 0))
+    y = str(round(    y, 0))
+    z = str(round(    z, 0))
+
+    # Create the command
+    cmnd = "gSimX" + x + "Y" + y + "Z" + z + "V0"
+
+    # Send the command and receive a response
+    response = self.__sendAndRecieve(cmnd)
+
+    # Create the return
+    ret = "S" in response
+
+    return response
+
+def getReachablePolar(self, stretch, rotation, height):
+    """
+    Get whether or not the robot can reach a certain point
+    Input a polar coordinate, and it will return True or False if it can get to the final location
+    Returns True
+    """
+
+    # Prepare the values
+    x = str(round( stretch, 0))
+    y = str(round(rotation, 2))
+    z = str(round(  height, 0))
+
+    # Create the command
+    cmnd = "gSimX" + x + "Y" + y + "Z" + z + "V1"
+
+    # Send the command and receive a response
+    response = self.__sendAndRecieve(cmnd)
+
+    # Create the return
+    ret = "S" in response
+
+    return ret
+
+
+# Not Implimented Yet
+def getPump(self):
+    # This method will be implimented with the next version of the uArm
+    pass
+
+def getGripper(self):
+    # This method will be implimented with the next version of the uArm
+    pass
+
+def setGripper(self, onOff):
+    """
+    Set the pumps value.
+    :param onOff: True means turn the gripper on. False means off.
+    """
+
+    # Prepare the values
+    v = str(int(onOff))
+
+    # Create the command
+    cmnd = "sGriV" + v
+
+    # Send the command and receive a response
+    self.__sendAndRecieve(cmnd)
+
+def getVersion(self):
+    """
+    Get the current uArm version
+
+    Returns a string, something like "0.9.6" or another string like that.
+    """
+
+    # Send the command and receive a response
+    response  = self.__sendAndRecieve("gVer")
+
+    # Create the return
+    ret = response.replace("S", "")
+
+    return ret
+
+'''
 
 
 

@@ -26,7 +26,7 @@ License:
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
 import math
-from time import sleep
+import traceback
 from Logic        import Global
 from threading    import Thread
 from Logic.Global import printf, FpsTimer, wait, getModuleClasses
@@ -53,8 +53,17 @@ global exitErrors
 exitErrors = None
 
 
+"""
+This is a dictionary of each command Type in Commands.py, and each event Type in Events.py
+This is used so that loading scripts will be faster in Interpreter.initializeScript
+Furthermore, its safer than using getattr("Commands", thecommand) since it doesn't pull any other modules that are
+imported in Commands. This way people can't have save files that run arbitrary code. They can only access
+types that are classes in Commands.py and Events.py
+"""
 commandClasses = Global.getModuleClasses(Commands)
 eventClasses   = Global.getModuleClasses(Events)
+
+
 
 class Interpreter:
     """
@@ -191,7 +200,7 @@ class Interpreter:
         return exitingFlag
 
     def setExiting(self, value):
-
+        printf("Interpreter| Setting Interpreter to Exiting mode.")
         self.env.getRobot().setExiting(value)
         self.env.getVision().setExiting(value)
 
@@ -299,10 +308,16 @@ class Interpreter:
         try:
             answer = eval(expression, self.nameSpace)
         except Exception as e:
-            printf("Interpreter| EVAL ERROR: ", type(e).__name__, " ", e)
+            # Print a traceback of the error to the console
+            printf("Interpreter| Eval ERROR: \n", traceback.format_exc())
+
+            # Save an error report so the GUI can show it to the user
             global exitErrors
             exitErrors = {type(e).__name__ + " in Expression " + str(expression): [str(e)]}
+
+            # Stop the interpreter
             self.setExiting(True)
+
 
         if answer is None:
             return None, False
@@ -315,11 +330,16 @@ class Interpreter:
         try:
             exec(script, self.nameSpace)
         except Exception as e:
-            printf("Interpreter| EXEC ERROR: ", type(e).__name__, ": ", e)
+            # Print a traceback of the error to the console
+            printf("Interpreter| EXEC ERROR: \n", traceback.format_exc())
 
+            # Save an error report so the GUI can show it to the user
             global exitErrors
             exitErrors = {type(e).__name__ + " While Evaluating Script": [str(e)]}
+
+            # Stop the interpreter
             self.setExiting(True)
+
             return False
 
         return True
@@ -380,7 +400,7 @@ class Interpreter:
 
         self.mainThread = None
         self.events     = []
-        printf("Interpreter| Interpreter Thread Ending")
+        printf("Interpreter| Interpreter Thread Ended")
 
     def interpretCommandList(self, commandList):
         """

@@ -31,7 +31,7 @@ import serial.tools.list_ports
 from threading    import Thread, RLock
 from time         import sleep  #Only use in refresh() command while querying robot if it's done moving
 from Logic.Global import printf
-from Logic.CommunicationProtocol_1 import Device
+from Logic.CommunicationProtocol_2 import Device
 
 __author__ = "Alexander Thiel"
 
@@ -453,7 +453,7 @@ class Robot:
         :param exiting: True-> communication with robot is cut off. False -> Everything works normally
         """
         if exiting:
-            printf("Robot| Setting robot to Exiting mode. All commands should be ignored")
+            printf("Robot| Setting Robot to Exiting mode. All commands should be ignored")
         self.exiting = exiting
 
 

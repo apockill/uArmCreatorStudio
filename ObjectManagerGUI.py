@@ -1417,11 +1417,11 @@ class OWPage2(QtWidgets.QWizardPage):
     def setStep(self, step):
         if step == 1:
             s = "\n\nStep 2: Select the Object"
-            h = "Please place the object you want to recognize in the center of the cameras view.\n\n"  +\
-                "Make sure the background is consistent and there is nothing on the screen except the object. The" +\
-                "\nwork area should be well lit, but not cause too much glare on the object if it's shiny. The video" +\
-                "\nshould be focused, and the object in the orientation that it will be recognized in. \n\n" +\
-                "When ready, Click the mouse on the corner of the object, drag it tightly over the object, then" + \
+            h = "Please place the object you want to recognize ON THE TABLES SURFACE, in the middle of the screen.\n\n"\
+                "Make sure the background is consistent and there is nothing on the screen except the object. The"\
+                "\nwork area should be well lit, but not cause too much glare on the object if it's shiny. The video"\
+                "\nshould be focused, and the object in the orientation that it will be recognized in. \n\n"\
+                "When ready, Click the mouse on the corner of the object, drag it tightly over the object, then"\
                 "\nrelease the mouse button."
 
 
@@ -1619,8 +1619,8 @@ class OWPage4(QtWidgets.QWizardPage):
     def initUI(self):
         # Create the instructions
         desc = "You're almost done!\n\n" +\
-               "Now that you have selected your object, please drag the mouse over the area of the object that is " +\
-               "\nsmooth, flat, and able to be picked up by the robot's suction cup. \n\n" +\
+               "Now that you have selected your object, please drag the mouse over THE ENTIRE AREA OF THE OBJECT \n" +\
+               "\nthat is smooth, flat, and able to be picked up by the robot's suction cup. \n\n" \
                "\nThis information will be used in any commands that require the robot to pick up the object. If you" +\
                "\ndo not intend to use those functions, then just select an area around the center of the object.\n\n"
 

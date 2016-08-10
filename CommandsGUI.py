@@ -28,6 +28,7 @@ License:
 import ast  # To check if a statement is python parsible, for evals
 import re   # For variable santization
 import Paths
+import webbrowser   # For opening the user manual PDF
 from os.path      import basename
 from PyQt5        import QtGui, QtCore, QtWidgets
 from CameraGUI    import CameraSelector
@@ -324,16 +325,22 @@ class CommandGUI:
         # Create the apply/cancel buttons, connect them, and format them
         prompt.applyBtn = QtWidgets.QPushButton('Apply')
         cancelBtn       = QtWidgets.QPushButton('Cancel')
-        prompt.applyBtn.setMaximumWidth(100)
-        cancelBtn.setMaximumWidth(100)
+        helpBtn         = QtWidgets.QPushButton('User Manual')
+
+        prompt.applyBtn.setMinimumWidth(90)
+        cancelBtn.setMinimumWidth(90)
+        helpBtn.setMinimumWidth(90)
+
         prompt.applyBtn.clicked.connect(prompt.accept)
         cancelBtn.clicked.connect(prompt.reject)
+        helpBtn.clicked.connect(lambda: webbrowser.open_new(Paths.user_manual))
         prompt.applyBtn.setDefault(True)
 
 
         # Create a content box for the command to fill out parameters and GUI elements
         prompt.content    = QtWidgets.QVBoxLayout()
         prompt.content.setContentsMargins(20, 10, 20, 10)
+        prompt.content.setAlignment(QtCore.Qt.AlignTop)
         contentGroupBox = QtWidgets.QGroupBox("Parameters")
         contentGroupBox.setLayout(prompt.content)
 
@@ -341,6 +348,7 @@ class CommandGUI:
         # Now that the window is 'dressed', add "Cancel" and "Apply" buttons
         buttonRow = QtWidgets.QHBoxLayout()
         buttonRow.addWidget(cancelBtn)
+        buttonRow.addWidget(helpBtn)
         buttonRow.addStretch(1)
         buttonRow.addWidget(prompt.applyBtn)
 
@@ -348,7 +356,6 @@ class CommandGUI:
         # Create the main vertical layout, add everything to it
         prompt.mainVLayout = QtWidgets.QVBoxLayout()
         prompt.mainVLayout.addWidget(contentGroupBox)
-        prompt.mainVLayout.addStretch(1)
 
 
         # Set the main layout and general window parameters
@@ -504,7 +511,7 @@ class CommandGUI:
         # If there are no objects, place a nice label to let the user know
         if numResources == 0:
             hintText = "You have not created any trackable objects yet." + \
-                       "\nTry adding new objects in the Resource Manager!"
+                       " Try adding new objects in the Resource Manager!"
             self._addHint(prompt, hintText)
         elif numResources == 1:
             hintText = "It looks like you've only created one object." + \
@@ -618,9 +625,9 @@ class MoveXYZCommand(CommandGUI):
         # Then it's returned, and the Command.openView() function will open the window and perform appropriate actions
         def setCoordinates(xEdt, yEdt, zEdt):
             x, y, z = self.getCoordinates()
-            xEdt.setText(str(x))
-            yEdt.setText(str(y))
-            zEdt.setText(str(z))
+            xEdt.setText(str(round(x, 1)))
+            yEdt.setText(str(round(y, 1)))
+            zEdt.setText(str(round(z, 1)))
 
         # Input: the base window with the cancel and apply buttons, and the layouts set up and connected
         getCurrBtn      = QtWidgets.QPushButton("Get Position")
@@ -687,11 +694,10 @@ class MoveWristCommand(CommandGUI):
             self.parameters = {"angle": str(currentWrist),
                                "relative": False}
 
-
     def dressWindow(self, prompt):
         def setCurrentAngle(edit):
             angle = self.getWristAngle()
-            edit.setText(str(angle))
+            edit.setText(str(round(angle, 1)))
 
         # Create what the user will be interacting with
         prompt.wristEdit = QtWidgets.QLineEdit()
@@ -1495,7 +1501,7 @@ class TestObjectAngleCommand(CommandGUI):
             # Anything done with env should be done here. Try not to save env as a class variable whenever possible
             self.parameters = {"objectID":    "",
                                   "start":   "0",
-                                  "end": "360",
+                                    "end": "360",
                                     "not": False}
 
     def dressWindow(self, prompt):
@@ -1528,6 +1534,7 @@ class TestObjectAngleCommand(CommandGUI):
         prompt.notCheck.setChecked(self.parameters["not"])
         self._addRow(prompt, notLbl, prompt.notCheck)
 
+        self._addObjectHint(prompt, len(self.getObjectList()))
         return prompt
 
     def _extractPromptInfo(self, prompt):
@@ -1876,9 +1883,9 @@ class RunTaskCommand(CommandGUI):
 
         ensurePathExists(Paths.saves_dir)
 
-        explanationLbl = QtWidgets.QLabel("\n\nMake sure the task you run has an 'End Task'\n"
-                                          "command in it, to return to this task when its finished")
-        explanationLbl.setWordWrap(True)
+        explanationLbl = QtWidgets.QLabel("\n\nMake sure the task you run has an\n"
+                                          "'End Task' command in it, to return to\n"
+                                          "this task when its finished")
 
         # Create the filename label
         prompt.fileLbl = QtWidgets.QLabel(self.parameters["filename"])

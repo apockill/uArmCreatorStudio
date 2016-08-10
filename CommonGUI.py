@@ -325,8 +325,8 @@ scriptStopping() returns True if the user has attempted to end the task, and Fal
         self.docText.setReadOnly(True)
         self.docText.setAcceptRichText(True)
         self.docText.setText(self.documentation)
-        self.docText.setFixedWidth(900)
-        self.docText.setFixedHeight(600)
+        self.docText.setMinimumWidth(900)
+        self.docText.setMinimumHeight(600)
         self.docBtn.setFixedWidth(150)
         self.docText.setHidden(True)
 
@@ -685,6 +685,8 @@ class Console(QtWidgets.QWidget):
             # Prepare the text to add to console
             printStr = category + " " * (15 - len(category)) + printStr
 
+            # This will indent any newlines to the level of the print text, so its not mixed with the category text
+            printStr = printStr.replace("\n", "\n" + " " * 15)
 
             # Write to the console log
             textToInsert += printStr + "\n"
@@ -692,6 +694,7 @@ class Console(QtWidgets.QWidget):
 
         # Insert the text and scroll to the bottom of the console
         if len(textToInsert):
+
             self.text.insertPlainText(textToInsert)
             c = self.text.textCursor()
             c.movePosition(QtGui.QTextCursor.End)

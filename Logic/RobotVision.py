@@ -560,6 +560,7 @@ def pickupObject(trackable, rbMarker, robot, vision, transform):
         Convert the changed position of the object back to the camera array
         Save the new Z position of the camera, to be used later
     """
+
     # center = trackedObj.center
     center    = trackedObj.center
     posRob    = transform.cameraToRobot((center[0], center[1], center[2]))
@@ -591,7 +592,7 @@ def pickupObject(trackable, rbMarker, robot, vision, transform):
 
     # Move to the objects position
     pos = transform.cameraToRobot(targetCamPos)
-    robot.setPos(z=pos[2])
+    robot.setPos(z=robot.zMax)
     robot.setPos(x=pos[0], y=pos[1])
 
 
@@ -605,13 +606,6 @@ def pickupObject(trackable, rbMarker, robot, vision, transform):
         if robot.getTipSensor():
             printf("RobotVision| The robots tip was hit, it must have touched the object. ")
             break
-
-
-        # Get the robots marker through the camera by taking the average position of 5 recognitions
-        if failTrackCount >= 3:
-            printf("RobotVision| Could not find robot for too many down-steps. Exiting pickup")
-            robot.setPump(False)
-            return False
 
 
         # Actually find the robot using the camera
@@ -650,20 +644,20 @@ def pickupObject(trackable, rbMarker, robot, vision, transform):
         lastCoord = newCoord
 
 
+    while robot.getTipSensor():
+        robot.setPos(z=1, relative=True)
+    robot.setPos(z=8, relative=True)
+
+    # Determine whether or not the pickup was a success or not
+    if failTrackCount > 3 or lastCoord is None:
+        printf("RobotVision| RobotVision| PICKUP WAS NOT SUCCESSFUL!")
+        return False
 
     if lastCoord is not None and pointInPolygon(lastCoord, pickupRect):
         printf("RobotVision| PICKUP WAS SUCCESSFUL!")
-
-        # Slowly lift the robots head
-        while robot.getTipSensor():
-            robot.setPos(z=1, relative=True)
-
-        robot.setPos(z=8, relative=True)
         return True
     else:
         printf("RobotVision| RobotVision| PICKUP WAS NOT SUCCESSFUL!")
-        robot.setPump(False)
-        robot.setPos(z=8, relative=True)
         return False
 
 def getRelativeMoveTowards(robotCamCoord, destCamCoord, transform):

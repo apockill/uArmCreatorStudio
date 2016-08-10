@@ -240,7 +240,8 @@ class ControlPanel(QtWidgets.QWidget):
                             errorText += "     " + str(errObject) + "\n"
                         errorText += '\n'
 
-                    errorStr = "The script ended prematurely because of the following error(s) \n\n" + errorText
+                    errorStr = "The script ended prematurely because of the following error(s)\n" \
+                               "Check the Console for a traceback.\n\n" + errorText
                     QtWidgets.QMessageBox.question(self, 'Warning', errorStr, QtWidgets.QMessageBox.Ok)
 
             mainWindowEndScriptFunc()
@@ -292,6 +293,9 @@ class EventList(QtWidgets.QListWidget):
         self.hintLbl = QtWidgets.QLabel()  # Shows animated text
         self.initUI()
 
+        # This turns on things like "double click to edit event" and whatnot
+        self.setLocked(False)
+
     def initUI(self):
         movie     = QtGui.QMovie(Paths.help_add_event)
         self.hintLbl.setMovie(movie)
@@ -304,11 +308,17 @@ class EventList(QtWidgets.QListWidget):
 
         self.setFixedWidth(200)
 
-    def setLocked(self, setLock):
+    def setLocked(self, isLocked):
         # Used to lock the eventList and commandLists from changing anything while script is running
         events = self.getEventsOrdered()
         for event in events:
-            event.commandList.setLocked(setLock)
+            event.commandList.setLocked(isLocked)
+
+        if not isLocked:
+            self.itemDoubleClicked.connect(self.replaceEvent)  # For opening the widget's window
+        else:
+            self.itemDoubleClicked.disconnect()
+
 
 
     def getSelectedEvent(self):
@@ -446,6 +456,9 @@ class EventList(QtWidgets.QListWidget):
         for e in self.events.values():
             if isinstance(e, eventType) and (e.parameters == params or params is None):
                 printf("GUI| Event already exists, disregarding user input.")
+
+                QtWidgets.QMessageBox.question(self, 'Error', 'There is already an event of that type.',
+                                           QtWidgets.QMessageBox.Ok)
                 return
 
 
