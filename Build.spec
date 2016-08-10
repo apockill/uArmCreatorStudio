@@ -105,7 +105,7 @@ block_cipher = None
 
 
 a = Analysis(['MainGUI.py'],
-             pathex=['F:\\Google Drive\\Projects\\Git Repositories\\RobotGUIProgramming'],
+             pathex=['F:\\Google Drive\\Projects\\Git Repositories\\uArmCreatorStudio'],
              binaries=None,
              hiddenimports=[],
              hookspath=[],

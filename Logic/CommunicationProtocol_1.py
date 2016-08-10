@@ -85,7 +85,7 @@ class Device:
         t = str(round(speed, 2))
         cmnd = "moveX" + x + "Y" + y + "Z" + z + "S" + t
         # return
-        return self.__send(cmnd)
+        return self.__sendAndRecieve(cmnd)
 
     def setServo(self, servo, angle):
         """
@@ -98,7 +98,7 @@ class Device:
         # Set a servo to an angle #
         angle = str(float(round(angle, 3)))
         cmnd = "ssS" + str(int(servo)) + "V" + angle
-        return self.__send(cmnd)
+        return self.__sendAndRecieve(cmnd)
 
 
     def setPump(self, onOff):
@@ -109,7 +109,7 @@ class Device:
 
         # Set the gripper to a value 1 or 0, where 1 means "gripping" and 0 mean "off"
         cmnd = "pumpV" + str(int(onOff))
-        return self.__send(cmnd)
+        return self.__sendAndRecieve(cmnd)
 
     def setServoAttach(self, servo_number):
         """
@@ -121,7 +121,7 @@ class Device:
 
         servo_number = str(int(servo_number))
         cmnd = "attachS" + servo_number
-        return self.__send(cmnd)
+        return self.__sendAndRecieve(cmnd)
 
     def setServoDetach(self, servo_number):
         """
@@ -131,7 +131,7 @@ class Device:
 
         servo_number = str(int(servo_number))
         cmnd = "detachS" + servo_number
-        return self.__send(cmnd)
+        return self.__sendAndRecieve(cmnd)
 
     def setBuzzer(self, frequency, duration):
         """
@@ -141,14 +141,14 @@ class Device:
         """
 
         cmnd = "buzzF" + str(frequency) + "T" + str(duration)
-        return self.__send(cmnd)
+        return self.__sendAndRecieve(cmnd)
 
     def setStop(self):
         """
         Stop any ongoing move
         """
         cmnd = "sStp"
-        return self.__send(cmnd)
+        return self.__sendAndRecieve(cmnd)
 
 
     # Get commands
@@ -164,7 +164,7 @@ class Device:
         """
 
         # Find out if the robot is currently moving
-        response  = self.__send("gmov")
+        response  = self.__sendAndRecieve("gmov")
         parsedArgs = self.__parseArgs(response, "mov", ["M"])
 
 
@@ -180,7 +180,7 @@ class Device:
         """
 
         # Returns an array of the format [x, y, z] of the robots current location
-        response  = self.__send("gcrd")
+        response  = self.__sendAndRecieve("gcrd")
         parsedArgs = self.__parseArgs(response, "crd", ["X", "Y", "Z"])
 
         # Return (currX, currY, currZ)
@@ -198,7 +198,7 @@ class Device:
         # Get the angles of each servo
 
         cmnd = "gang"
-        response = self.__send(cmnd)
+        response = self.__sendAndRecieve(cmnd)
         parsedArgs = self.__parseArgs(response, "ang", ["A", "B", "C", "D"])
 
         # Return angles of each servo in order
@@ -212,7 +212,7 @@ class Device:
         """
 
         # Find out if the robot is currently moving
-        response  = self.__send("gtip")
+        response  = self.__sendAndRecieve("gtip")
         parsedArgs = self.__parseArgs(response, "tip", ["V"])
 
         # Returns 0 or 1, whether or not the tip sensor is currently activated
@@ -234,7 +234,7 @@ class Device:
         y = str(round(   -y, 2))
         z = str(round(    z, 2))
         cmnd = "gikX" + x + "Y" + y + "Z" + z
-        response = self.__send(cmnd)
+        response = self.__sendAndRecieve(cmnd)
         parsedArgs = self.__parseArgs(response, "ik", ["A", "B", "C"])
 
         # Return (servo1Angle, servo2Angle, servo3Angle)
@@ -256,7 +256,7 @@ class Device:
         servo1 = str(round(servo1, 2))
         servo2 = str(round(servo2, 2))
         cmnd = "gfkA" + servo0 + "B" + servo1 + "C" + servo2
-        response = self.__send(cmnd)
+        response = self.__sendAndRecieve(cmnd)
         parsedArgs = self.__parseArgs(response, "fk", ["X", "Y", "Z"])
 
         # Return (X, Y, Z)
@@ -280,6 +280,73 @@ class Device:
 
         sleep(3)
 
+    def __sendAndRecieve(self, cmnd):
+        """
+        This command will send a command and receive the robots response. There must always be a response!
+        Responses should be recieved immediately after sending the command, after which the robot will proceed to
+        perform the action.
+        :param cmnd: a String command, to send to the robot
+        :return: The robots response
+        """
+
+        if not self.connected():
+            printf("Communication| Tried to send a command while robot was not connected!")
+            return ""
+
+        # Prepare and send the command to the robot
+        cmndString = bytes("[" + cmnd + "]", encoding='ascii')  #  "[" + cmnd + "]"
+
+        try:
+            self.serial.write(cmndString)
+        except serial.serialutil.SerialException as e:
+            printf("Communication| ERROR ", e, "while sending command ", cmnd, ". Disconnecting Serial!")
+            self.isConnected = False
+            return ""
+
+
+        # Read the response from the robot (THERE MUST ALWAYS BE A RESPONSE!)
+        response = ""
+        while True:
+
+            try:
+                response += str(self.serial.read(), 'ascii')
+                response = response.replace(' ', '')
+
+            except serial.serialutil.SerialException as e:
+                printf("Communication| ERROR ", e, "while sending command ", cmnd, ". Disconnecting Serial!")
+                self.isConnected = False
+                return ""
+
+            if "[" in response and "]" in response:
+                response = str(response.replace("\n", ""))
+                response = str(response.replace("\r", ""))
+                break
+
+
+        if self.printCommands and self.printResponses:
+            printf("Communication| ", "[" + cmnd + "]" + " " * (30 - len(cmnd)) + response)
+        elif self.printCommands:
+            printf("Communication| ", cmndString)
+        elif self.printResponses:
+            printf("Communication| ", response)
+
+
+        # Save the response to a log variable, in case it's needed for debugging
+        self.communicationLog.append((cmnd[:], response[:]))
+
+
+        # Clean up the response
+        response = response.replace("[", "")
+        response = response.replace("]", "")
+
+
+        # If the robot returned an error, print that out
+        if "error" in response:
+            printf("Communication| ERROR: received error from robot: ", response)
+
+
+
+        return response
 
 
     def __parseArgs(self, message, command, arguments):
