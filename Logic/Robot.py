@@ -27,6 +27,7 @@ License:
 """
 import serial
 import serial.tools.list_ports
+from time                        import sleep
 from threading                   import Thread, RLock
 from Logic.Global                import printf
 from Logic.CommunicationProtocol import Device
