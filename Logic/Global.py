@@ -28,7 +28,6 @@ License:
 import os
 import errno
 from time import time, sleep
-
 __author__ = "Alexander Thiel"
 
 """
@@ -47,14 +46,6 @@ def wait(waitTime, exitFunc):
     """
     waitUntilTime(time() + waitTime, exitFunc)
 
-
-    # # While sleeping, make sure that the script has not been shut down
-    # start = time()
-    # while time() - start < waitTime - .05:
-    #     if exitFunc(): return
-    #     sleep(.1)
-    #
-    # sleep(waitTime - (time() - start))
 
 def waitUntilTime(timeMS, exitFunc):
     """
@@ -157,8 +148,80 @@ def init():
 
 
 
-# Functions for my special print function
-"""def getCallerFunction(skip=2, printModule=True, printClass=True, printFunction=True):
+
+
+def printf(*args):
+    """
+    This print redirects prints to the GUI console, when the the global printRedirectFunc is set.
+
+    It also allows for categorizing prints.
+
+    The format is:
+
+    printf("CATEGORY| Print stuff here")
+
+    The '|' character is essential, it seperates the category of the print, and the actual print content.
+    """
+
+    # Start building the printString
+    buildString = ""
+
+
+    # Concatenate arguments, same as normal print statements
+    for i in args: buildString += str(i)
+
+
+    # Split the string into a "header" and "content"
+    if "|" in buildString:
+        splitIndex  = buildString.index("| ")
+        header      = buildString[:splitIndex]
+        content     = buildString[splitIndex + 2:]
+    else:
+        # If the printf didn't come with the normal format
+        header = ""
+        content = buildString
+
+
+    # Send the string to the printRedirectFunction for the ConsoleWidget to recieve
+    global printRedirectFunc
+    printRedirectFunc(header, content)
+
+
+    # Filter out any serial communication since it clutters up the console
+    if "Communication" in header: return
+    # print(header + " " * (15 - len(header)) + content)
+
+
+
+
+def ensurePathExists(path):
+    """
+        This is a cross platform, race-condition free way of checking if a directory exists, and if it doesn't,
+        creating that directory. It's used every time an object is loaded and saved
+    """
+    try:
+        directory = os.path.dirname(path)
+        os.makedirs(directory)
+    except OSError as exception:
+        if exception.errno != errno.EEXIST:
+            raise
+
+def getModuleClasses(module):
+    """
+    This will get all of the classes defined in a module, with the format
+    {"className": class, "className": class}
+
+    This is used to avoid doing getattr directly on a module, so as to avoid weird vulnerabilities,
+    and allow for quick security patches in the future.
+    """
+    return dict([(name, cls) for name, cls in module.__dict__.items() if isinstance(cls, type)])
+
+
+
+
+"""  Deprecated function for finding who called the current function (DO NOT USE IN PRODUCTION)
+
+def getCallerFunction(skip=2, printModule=True, printClass=True, printFunction=True):
     '''Get a name of a caller in the format module.class.method
 
        `skip` specifies how many levels of stack to skip while getting caller
@@ -197,69 +260,3 @@ def init():
 
     return ".".join(name)
 """
-
-def printf(*args):
-    """
-    This function appends the Class and Function name to every function that runs in the program. This is immeasurably
-    helpful for debugging.
-    """
-
-    # Start building the printString
-    buildString = ""
-
-
-    # Concatenate arguments, same as normal print statements
-    for i in args: buildString += str(i)
-
-
-
-    # Split the string into a "header" and "content"
-    if "|" in buildString:
-        splitIndex  = buildString.index("| ")
-        header      = buildString[:splitIndex]
-        content     = buildString[splitIndex + 2:]
-    else:
-        header = ""
-        content = buildString
-
-
-
-
-    # Send the string to the printRedirectFunction for the ConsoleWidget to recieve
-    global printRedirectFunc
-    printRedirectFunc(header, content)
-
-
-    # # Format the space between the boilerplate and content
-    # boilerPlate = getCallerFunction(printModule=printModule, printClass=printClass, printFunction=printFunction)
-
-
-
-    # Filter out any serial communication since it clutters up the console
-    if "Communication" in header: return
-    # print(header + " " * (15 - len(header)) + content)
-
-
-
-
-def ensurePathExists(path):
-    """
-        This is a cross platform, race-condition free way of checking if a directory exists, and if it doesn't,
-        creating that directory. It's used every time an object is loaded and saved
-    """
-    try:
-        directory = os.path.dirname(path)
-        os.makedirs(directory)
-    except OSError as exception:
-        if exception.errno != errno.EEXIST:
-            raise
-
-def getModuleClasses(module):
-    """
-    This will get all of the classes defined in a module, with the format
-    {"className": class, "className": class}
-
-    This is used to not do getattr directly on a module, so as to avoid weird vulnerabilities,
-    and allow for quick security patches in the future.
-    """
-    return dict([(name, cls) for name, cls in module.__dict__.items() if isinstance(cls, type)])

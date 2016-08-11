@@ -31,7 +31,6 @@ import math
 from Logic.Global import printf
 from collections  import namedtuple
 from time         import sleep
-
 __author__ = "Alexander Thiel"
 
 
@@ -115,7 +114,6 @@ class Vision:
 
     def endAllTrackers(self):
         # End all trackers and clear targets
-
         with self.workLock:
             self.planeTracker.clear()
             self.cascadeTracker.clear()
@@ -125,16 +123,16 @@ class Vision:
         self.vStream.removeFilter(self.cascadeTracker.drawTracked)
 
         # Shut down and reset any planeTracking
-
-
         self.vStream.removeWork(self.planeTracker.track)
         self.vStream.removeFilter(self.planeTracker.drawTracked)
 
 
     # PlaneTracker Search Functions
     def getObjectLatestRecognition(self, trackable):
-        # Returns the latest successful recognition of the trackable, so the user can pull the position from that
-        # it also returns the age of the frame where the object was found (0 means most recently)
+        """
+            Returns the latest successful recognition of the trackable, so the user can pull the position from that
+            it also returns the age of the frame where the object was found (0 means most recently)
+        """
 
         with self.workLock:
             trackHistory = self.planeTracker.trackedHistory[:]
@@ -159,7 +157,7 @@ class Vision:
             trackHistory = self.planeTracker.trackedHistory[:]
 
         best = None
-        print("Finding")
+
         # Check if the object was recognized in the most recent frame. Check most recent frames first.
         for age, historyFromFrame in enumerate(trackHistory):
             if maxAge is not None and age > maxAge: return best
@@ -171,8 +169,7 @@ class Vision:
 
                 if best is None or tracked.ptCount > best.ptCount:
                     best = tracked
-                    print("Found better")
-        print("Actually finished")
+
         return best
 
     def getObjectSpeedDirectionAvg(self, trackable, samples=3, maxAge=20, isSameObjThresh=50):
@@ -312,14 +309,14 @@ class Vision:
 
     # Vision specific functions
     def setExiting(self, exiting):
-        # Used for closing threads quickly, when this is true any time-taking functions will skip through quickly
-        # and return None or False or whatever their usual failure mode is. ei, waitForFrames() would exit immediately
-        # if exiting:
-        #     printf("Setting Vision to Exiting mode. All frame commands should exit quickly.")
-        #     self.endAllTrackers()
+        """
+            Used for closing threads quickly, when this is true any time-taking functions will skip through quickly
+            and return None or False or whatever their usual failure mode is. ei, waitForFrames() would exit immediately
 
-        # if exiting:
-        #     printf("Vision| Setting Vision to Exiting mode. ")
+        :param exiting: A boolean
+        """
+
+
         self.exiting = exiting
 
 
@@ -452,7 +449,7 @@ class Tracker:
         self.fThickness = 2  # Thickness of lines
 
 
-    def _addTracked(self, trackedArray):
+    def _addToHistory(self, trackedArray):
         # Add an array of detected objects to the self.trackedHistory array, and shorten the trackedHistory array
         # so that it always remains self.historyLength long
         self.trackedHistory.insert(0, trackedArray)
@@ -509,11 +506,6 @@ class PlaneTracker(Tracker):
         self.matcher      = cv2.FlannBasedMatcher(self.flanParams, {})  # bug : need to pass empty dict (#1329)
         self.framePoints  = []
 
-
-        # trackHistory is an array of arrays, that keeps track of tracked objects in each frame, for hstLen # of frames
-        # Format example [[PlanarTarget, PlanarTarget], [PlanarTarget], [PlanarTarget...]...]
-        # Where trackedHistory[0] is the most recent frame, and trackedHistory[-1] is about to be deleted.
-
     def createTarget(self, view):
         """
         There's a specific function for this so that the GUI can pull the objects information and save it as a file
@@ -566,7 +558,7 @@ class PlaneTracker(Tracker):
 
         # If no keypoints were detected, then don't update the self.trackedHistory array
         if len(self.framePoints) < self.MIN_MATCH_COUNT:
-            self._addTracked(tracked)
+            self._addToHistory(tracked)
             return
 
 
@@ -574,7 +566,7 @@ class PlaneTracker(Tracker):
         matches = [m[0] for m in matches if len(m) == 2 and m[0].distance < m[1].distance * 0.75]
 
         if len(matches) < self.MIN_MATCH_COUNT:
-            self._addTracked(tracked)
+            self._addToHistory(tracked)
             return
 
 
@@ -623,7 +615,7 @@ class PlaneTracker(Tracker):
 
         tracked.sort(key = lambda t: len(t.p0), reverse=True)
 
-        self._addTracked(tracked)
+        self._addToHistory(tracked)
 
 
     def __detectFeatures(self, frame):
@@ -856,7 +848,7 @@ class CascadeTracker(Tracker):
                 tracked.append(trackedObj)
 
 
-        self._addTracked(tracked)
+        self._addToHistory(tracked)
 
     def drawTracked(self, frame):
         for tracked in self.trackedHistory[0]:

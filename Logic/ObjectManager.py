@@ -25,11 +25,9 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
-
 import os
 from Logic        import Resources
 from Logic.Global import printf, ensurePathExists, getModuleClasses
-
 __author__ = "Alexander Thiel"
 
 
@@ -128,13 +126,11 @@ class ObjectManager:
         :return: A list of object names, like ["name1", "name2", "name3"] in alphabetical order
         """
 
-
         """
         Notes for Future Me:
             type(obj) == TrackableObject            # Works
             isinstance(trackable, TrackableObject)  # Works
             issubclass(type(trackable), Trackable)  # Works
-
         """
 
         # Returns true if 'obj' is of any type inside of typeList
@@ -164,10 +160,13 @@ class ObjectManager:
         return nameList
 
     def getForbiddenNames(self):
-        # Returns a list of strings that the user cannot use as the name of an object.
-        # This includes names of objects, names of tags, and names of objects like Robot Marker that are reserved
-        # It also includes things like "Trackable" or "TrackableObject" for good measure
-        # It also includes things like "Task" so that the user can't name things in a confusing way
+        """
+            Returns a list of strings that the user cannot use as the name of an object.
+            This includes names of objects, names of tags, and names of objects like Robot Marker that are reserved
+            It also includes things like "Trackable" or "TrackableObject" for good measure
+            It also includes things like "Task" so that the user can't name things in a confusing way
+        """
+
 
         forbidden = self.getObjectNameList()
         forbidden += ["Trackable", "Robot Marker", "TrackableObject", "TrackableGroup", "Face", "Smile", "Eyes",
@@ -175,6 +174,12 @@ class ObjectManager:
         return forbidden
 
     def deleteObject(self, objectID):
+        """
+        Deletes an object- both the file and in the loaded memory.
+
+        :param objectID: Objects string name
+        """
+
         printf("ObjectManager| Deleting ", objectID, " permanently")
 
         for obj in self.__objects:
@@ -219,9 +224,13 @@ class ObjectManager:
 
 
     def __addObject(self, newObject):
-        # The reason this is private is because objects should only be added through self.saveNewObject or loadAllObj's
+        """
+        The reason this is private is because objects should only be added through self.saveNewObject or loadAllObj's
+        Checks if the object already exists. If it does, then replace the existing object with the new one.
 
-        # Checks if the object already exists. If it does, then replace the existing object with the new one.
+        :param newObject: A subclass of Resource
+        """
+
         for obj in self.__objects:
             if newObject.name == obj.name:
                 printf("ObjectManager| ERROR: Tried adding an object that already existed: ", obj.name)
@@ -238,9 +247,10 @@ class ObjectManager:
 
     def __getDirectory(self, obj):
         """
-        Creates the directory name for the object with the propper formatting
+        Gets the propper directory name for the object with the propper formatting
         :param obj: Any object that is a subclass of Resource
         """
+
         directory = self.__directory
         directory += obj.__class__.__name__
         directory += " " + obj.name + "\\"
@@ -282,14 +292,9 @@ class ObjectManager:
             newType = resourceClasses[newType]
             newObj = newType(name, path)
 
-
-            # # Check that loading is complete and add the object if it was created successfully
-            # if newObj is None:
-            #     printf("ERROR: Could not find relevant object for folder: ", folder)
-            #     continue
-
             if newObj.loadSuccess: self.__addObject(newObj)
 
+        # Search through vision objects tags and generate TrackableGroup objects for each of them
         self.refreshGroups()
 
 

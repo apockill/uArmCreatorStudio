@@ -46,8 +46,6 @@ from ObjectManagerGUI  import MakeGroupWindow           # For creating various r
 from ObjectManagerGUI  import MakeRecordingWindow
 from ObjectManagerGUI  import MakeFunctionWindow
 from ObjectManagerGUI  import MakeObjectWindow
-
-
 __author__ = "Alexander Thiel"
 
 
@@ -58,11 +56,10 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__()
 
 
-        # Init self and objects.
-        self.fileName    = None
-        self.loadData    = []  #Set when file is loaded. Used to check if the user has changed anything and prompt
+        # Initialize the environment. Robot, camera, and objects will be loaded into the "logic" side of things
         self.env         = Environment(Paths.settings_txt, Paths.objects_dir, Paths.cascade_dir)
         self.interpreter = Interpreter(self.env)
+
 
 
         # Set the ConsoleWidget parameters immediately, so even early prints are captured
@@ -71,7 +68,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.consoleWidget.setExecFunction(self.interpreter.evaluateExpression)
 
 
-        # Create other GUI elements
+        # Create GUI related class variables
+        self.fileName        = None
+        self.loadData        = []  #Set when file is loaded. Used to check if the user has changed anything when closing
         self.programTitle    = 'uArm Creator Studio'
         self.scriptToggleBtn = QtWidgets.QAction(QtGui.QIcon(Paths.run_script), 'Run', self)
         self.videoToggleBtn  = QtWidgets.QAction(QtGui.QIcon(Paths.play_video), 'Video', self)
@@ -82,7 +81,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.floatingHint    = QtWidgets.QLabel()  # Used to display floating banners to inform the user of something
 
 
-        # Create Menu items, and set the Dashboard as the main widget
+        # Create Menu items and set up the GUI
         self.initUI()
         self.setVideo("play")
 
@@ -355,10 +354,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         # Stop you from moving stuff around while script is running, and activate the visual cmmnd highlighting
-        self.controlPanel.setScriptModeOn(self.interpreter, self.endScript)
         self.interpreter.startThread(threaded=True)
-
-
+        self.controlPanel.setScriptModeOn(self.interpreter, self.endScript)
 
         # Make sure the UI matches the state of the script
         self.scriptToggleBtn.setIcon(QtGui.QIcon(Paths.pause_script))
@@ -435,7 +432,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # This handles the opening and closing of the Settings window.
         printf("GUI| Opening Devices Window")
 
-        self.endScript()
+        if self.interpreter.threadRunning(): self.endScript()
+
         self.setVideo("pause")  # If you don't pause video, scanning for cameras may crash the program
 
         deviceWindow = DeviceWindow(parent=self)
@@ -467,7 +465,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # This handles the opening and closing of the Calibrations window
         printf("GUI| Opening Calibrations Window")
 
-        self.endScript()
+        if self.interpreter.threadRunning(): self.endScript()
         self.setVideo("pause")
 
         coordSettings = self.env.getSetting("coordCalibrations")
@@ -492,7 +490,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # This handles the opening and closing of the ObjectManager window
         printf("GUI| Opening ObjectManager Window")
 
-        self.endScript()
+        if self.interpreter.threadRunning(): self.endScript()
 
         # Make sure video thread is active and playing, but that the actual cameraWidget
         self.setVideo("play")
@@ -558,7 +556,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def loadTask(self,  **kwargs):
         # Load a save file
         self.promptSave()  # Make sure the user isn't losing progress
-        self.endScript()   # Make sure a script isn't running while you try to load something
+
+        # Make sure a script isn't running while you try to load something
+        if self.interpreter.threadRunning(): self.endScript()
 
         printf("GUI| Loading project")
 
@@ -597,7 +597,6 @@ class MainWindow(QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.question(self, 'Warning', "The program was unable to load the following script:\n" +
                                     filename + "\n\n The following error occured: " + type(e).__name__ + ": " + str(e),
                                            QtWidgets.QMessageBox.Ok)
-            raise e  # TODO: Remove this line when finished
 
 
 
@@ -840,10 +839,6 @@ class Application(QtWidgets.QApplication):
     def notify(self, receiver, event):
         # Add any keys that are pressed to keysPressed
         if event.type() == QtCore.QEvent.KeyPress:
-            # Todo: remove these two lines when development is finished
-            if event.key() == QtCore.Qt.Key_Q and len(mainWindowReference):
-                print("CHILDREN: ", len(mainWindowReference[0].findChildren(QtCore.QObject)))
-
             if event.key() not in Global.keysPressed:
                 Global.keysPressed.append(event.key())
 
@@ -859,21 +854,20 @@ class Application(QtWidgets.QApplication):
 
 
 
-mainWindowReference = []  #Todo: remove this line when development is finished
 
 
 if __name__ == '__main__':
-    # Install a global exception hook to catch pyQt errors that fall through (helps with debugging a ton)
-    # TODO: Remove this when development is finished.
-    sys.__excepthook = sys.excepthook
-    sys._excepthook  = sys.excepthook
 
-    def exception_hook(exctype, value, traceback):
-        sys._excepthook(exctype, value, traceback)
-        sys.exit(1)
+    '''Install a global exception hook to catch pyQt errors that fall through (helps with debugging a ton)
+        sys.__excepthook = sys.excepthook
+        sys._excepthook  = sys.excepthook
 
-    sys.excepthook   = exception_hook
+        def exception_hook(exctype, value, traceback):
+            sys._excepthook(exctype, value, traceback)
+            sys.exit(1)
 
+        sys.excepthook   = exception_hook
+    '''
 
     # Initialize global variables
     Global.init()
@@ -895,13 +889,9 @@ if __name__ == '__main__':
     app.setFont(font)
 
 
-    # Actually start the main window
+    # Actually start the program
     mainWindow = MainWindow()
-    mainWindowReference.append(mainWindow)  #Todo: remove this line when development is finished
-
-    app.exec_()
-
-    # sys.exit(app.exec_())
+    sys.exit(app.exec_())
 
 
 

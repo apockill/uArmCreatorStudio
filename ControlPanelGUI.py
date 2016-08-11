@@ -170,6 +170,8 @@ class ControlPanel(QtWidgets.QWidget):
         then it will keep the current command highlighted, but in a RED color. If it is false, it will de-highlight
         all commands.
         """
+        # Don't do anything if there's no script timer currently running
+        if self.scriptTimer is None: return
         self.addEventBtn.setEnabled(True)
         self.deleteEventBtn.setEnabled(True)
         self.changeEventBtn.setEnabled(True)
@@ -177,10 +179,11 @@ class ControlPanel(QtWidgets.QWidget):
 
         self.eventList.setLocked(False)
 
-        if self.scriptTimer is not None:
-            self.scriptTimer.stop()
-            self.scriptTimer = None
-            self.highlightCommands(None, None, self.invisibleColor)
+
+        self.scriptTimer.stop()
+        self.scriptTimer.deleteLater()
+        self.scriptTimer = None
+        self.highlightCommands(None, None, self.invisibleColor)
 
     def setScriptModeOn(self, interpreter, mainWindowEndScriptFunc):
         """
@@ -190,6 +193,8 @@ class ControlPanel(QtWidgets.QWidget):
             - CommandList will not allow deleting of widgets
             - CommandList will not allow rearranging of widgets
         """
+        # Check if the script is already running. If it is, don't do anything- that script will end on its own later
+        if self.scriptTimer is not None: return
 
         # Enable or disable buttons according to whether or not the script is starting or stopping
         self.addEventBtn.setEnabled(False)

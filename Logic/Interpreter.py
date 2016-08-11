@@ -360,9 +360,10 @@ class Interpreter:
                 if exitCommand: break
             if exitCommand: break
 
-        self.mainThread = None
+
         self.events     = []
         printf("Interpreter| Interpreter Thread Ended")
+        self.mainThread = None
 
     def interpretCommandList(self, commandList):
         """

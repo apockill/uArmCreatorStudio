@@ -136,7 +136,7 @@ class Transform:
         robVector    = self.cameraToRobot(camVectorZ)
         robUnitVec   = robVector - camToRobTranslation
         zAngle       = math.degrees(math.atan2(robUnitVec[1], robUnitVec[0]))
-        zAngle       = normalizeAngle(zAngle - 90)  # TODO: Figure out why the hell I need to offset by 90
+        zAngle       = normalizeAngle(zAngle - 90)
         print("angle", zAngle)
         return zAngle
 

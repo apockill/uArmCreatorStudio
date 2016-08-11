@@ -33,6 +33,7 @@ __author__ = "Alexander Thiel"
 """
 Example Event
 
+-----------------------------------------------TEMPLATE-----------------------------------------------------------------
 class NameEvent(Event):
 
     def __init__(self, env, interpreter, parameters):
@@ -47,7 +48,7 @@ class NameEvent(Event):
         # Make sure the event won't crash if there were errors
 
         if len(self.errors): return False  # If it did not compile without errors, don't run
-
+------------------------------------------------------------------------------------------------------------------------
 """
 
 

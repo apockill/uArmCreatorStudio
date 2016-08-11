@@ -36,7 +36,7 @@ __author__ = "Alexander Thiel"
 
 
 """
-This module holds the types of objects that can be created, loaded, and saved through ObjectManager
+This module holds the types of objects that can be created, loaded, and saved through ObjectManager.
 """
 
 class Resource:
@@ -61,8 +61,8 @@ class Resource:
     def _load(self, directory):
         """
         Loading should only be done once, during ObjectManager initialization
-        :param directory:
-        :return:
+        :param directory: The directory to load from
+        :return: Whether or not it loaded successfully
         """
         # Check if the directory exists (just in case)
         if not os.path.isdir(directory):

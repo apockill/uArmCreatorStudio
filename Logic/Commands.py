@@ -36,12 +36,13 @@ __author__ = "Alexander Thiel"
 
 
 """
-Example Class Structure
-EVERY COMMAND MUST RETURN FALSE IF IT FAILS TO RUN
+
+Every command should return "false" if it has a failure mode of some sort
 If it fails to run, return False. The idea is that users will know that any command will return false if it fails,
 and thus have contingencies. Plus its a feature that is useful only if you know about it, and doesn't add complexity
 otherwise!
 
+-------------------------------------------------Command Template-------------------------------------------------------
 class NameCommand(Command):
 
     def __init__(self, env, interpreter, parameters=None):
@@ -57,8 +58,10 @@ class NameCommand(Command):
         # Add any objects to be tracked
 
     def run(self):
-        printf("Command| Only print error messages or when a command can't happen very quickly")
+        if len(self.errors): return
+        printf("Command| Print error messages or when a command can't happen very quickly")
         return True
+------------------------------------------------------------------------------------------------------------------------
 """
 
 
@@ -84,11 +87,6 @@ class MoveXYZCommand(Command):
         self.robot       = self.getVerifyRobot(env)
 
     def run(self):
-
-
-
-
-
         # Special case: If the parameter is "" set the new val to None and success to True
         if self.parameters['x'] == "":
             newX, successX = None, True
@@ -124,8 +122,6 @@ class MoveWristCommand(Command):
         self.robot       = self.getVerifyRobot(env)
 
     def run(self):
-
-
         newAngle, success = self.interpreter.evaluateExpression(self.parameters['angle'])
 
         if success:
@@ -149,12 +145,10 @@ class MotionRecordingCommand(Command):
         self.exitFunc    = interpreter.isExiting
 
         if len(self.errors): return
-
         self.motionPath = self.pathObj.getMotionPath()
 
     def run(self):
         if len(self.errors): return
-
 
         # Evaluate the "Speed" variable
         newSpeed, success = self.interpreter.evaluateExpression(self.parameters['speed'])
@@ -453,6 +447,7 @@ class PickupObjectCommand(Command):
         self.exitFunc   = interpreter.isExiting
 
         if len(self.errors): return
+
         # Turn on tracking for the relevant object
         self.vision.addTarget(self.trackable)
         self.vision.addTarget(self.rbMarker)
@@ -505,7 +500,6 @@ class TestObjectLocationCommand(Command):
         # Load any objects, modules, calibrations, etc  that will be used in the run Section here. Use getVerifyXXXX()
         self.vision    = self.getVerifyVision(env)
         self.trackable = self.getVerifyObject(env, self.parameters["objectID"])
-        vStream   = self.getVerifyVStream(env)
 
 
         if len(self.errors): return
@@ -530,8 +524,6 @@ class TestObjectLocationCommand(Command):
         for coord in tracked.quad:
             if rv.pointInPolygon(coord, self.quad):
                 inCount += 1
-
-
 
 
         # Check if the appropriate part of the object is within the boundaries
@@ -592,7 +584,6 @@ class TestObjectAngleCommand(Command):
         if not (successL and successU):
             printf("Commands| ERROR: Could not evaluate the lowerAngle or the upperAngle. Canceling command. ")
             return False
-
 
 
         end = endAngle - startAngle + 360.0 if (endAngle - startAngle) < 0.0 else endAngle - startAngle
@@ -668,16 +659,6 @@ class TestVariableCommand(Command):
     def run(self):
         interpreter   = self.interpreter
 
-        # Get the variable. If that doesn't work, quit
-        # variableValue, successVar = interpreter.getVariable(self.parameters['variable'])
-        # if not successVar: return False
-
-
-        # Evaluate the expression. If that doesn't work, quit
-        # compareValue, successExp = interpreter.evaluateExpression(self.parameters['expression'])
-        # print("Compare value: ", compareValue)
-        # if not successExp: return False
-
         # Compare the value of the expression using the operator from the parameters
         operations   = ['==', '!=', '>', '<']
         expressionA  = self.parameters['expressionA']
@@ -747,8 +728,6 @@ class ScriptCommand(Command):
         self.env = env
         if len(self.errors): return
 
-        # Here, start tracking if your command requires it
-        # Add any objects to be tracked
 
     def run(self):
         if len(self.errors): return

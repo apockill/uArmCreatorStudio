@@ -32,7 +32,6 @@ from Logic.Global import printf, FpsTimer
 __author__ = "Alexander Thiel"
 
 
-# noinspection PyArgumentList
 def getConnectedCameras():
     tries = 10
     cameraList = []
@@ -86,9 +85,11 @@ class VideoStream:
 
 
     def setNewCamera(self, cameraID):
-        # Activate a trigger in the mainThread to turn on the camera
-        # Connecting to camera is run inside the thread because it's a lengthy process (over 1 second)
-        # This would lock up the GUI
+        """
+            Activate a trigger in the mainThread to turn on the camera
+            Connecting to camera is run inside the thread because it's a lengthy process (over 1 second)
+            This would lock up the GUI
+        """
 
         # Make sure the mainThread is running, so that this trigger will work
         if self.setCamera is None:
@@ -99,10 +100,8 @@ class VideoStream:
 
     def setPaused(self, value):
         # Tells the main frunction to grab more frames
-        if value is False:  # If you want to play video, make sure everything set for that to occur
-            # if not self.connected():
-            #     self.setNewCamera(self.cameraID)
-
+        if value is False:
+            # If you want to play video, make sure the main thread is running
             if self.mainThread is None:
                 self.startThread()
 
@@ -168,7 +167,7 @@ class VideoStream:
 
                 # Add a frame to the frameList that records the 5 latest frames for Vision uses
                 self.frameList.insert(0, self.frame.copy())
-                # print("len", len(self.frameList), "Curr frames: ", [id(frame) for frame in self.frameList])
+
                 while len(self.frameList) > 10:
                     del self.frameList[-1]
 
@@ -243,9 +242,6 @@ class VideoStream:
             self.setCamera  = None
             return False
 
-        #  self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 0)
-
-
         # Since everything worked, save the new cameraID
         self.setCamera = None
         self.cameraID  = cameraID
@@ -297,7 +293,6 @@ class VideoStream:
 
     def removeWork(self, workFunc):
         # Remove a function from the workList
-
         with self.workLock:
             # Make sure the function is actually in the workList
             if workFunc not in self.workList: return

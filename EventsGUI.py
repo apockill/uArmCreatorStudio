@@ -153,12 +153,7 @@ class EventPromptWindow(QtWidgets.QDialog):
 
     def initButtonMenus(self):
         """
-        initBtn         NO menu
-        keyboardBtn     Has menu
-        stepBtn         Has menu
-        intersectBtn    Has menu
-        cancelBtn       NO menu
-        :return:
+        Some events have sub menus to specify specific things about them. This is where those menus are generated.
         """
         # Set up Menus for buttons that have menus:
 

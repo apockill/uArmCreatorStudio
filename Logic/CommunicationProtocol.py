@@ -27,7 +27,7 @@ License:
 """
 import serial
 import serial.tools.list_ports
-from time         import sleep, time  # Used only in connecting to the robot, while waiting for serial to connect.
+from time         import sleep  # Used only in connecting to the robot, while waiting for serial to connect.
 from Logic.Global import printf
 __author__ = "Alexander Thiel"
 
@@ -53,9 +53,11 @@ class Device:
         self.serial         = None
         self.__connectToRobot(port)
 
-        # For debug logs
-        # An array of tuples, of what was sent, what was recieved
-        # [(sent, recieved), (sent, recieved), (sent, recieved)]
+        """
+         For debug logs
+         An array of tuples, of what was sent, what was recieved
+         [(sent, recieved), (sent, recieved), (sent, recieved)]
+        """
         self.communicationLog = []
 
 
@@ -196,7 +198,6 @@ class Device:
         """
 
         # Get the angles of each servo
-
         cmnd = "gang"
         response = self.__sendAndRecieve(cmnd)
         parsedArgs = self.__parseArgs(response, "ang", ["A", "B", "C", "D"])
@@ -229,7 +230,6 @@ class Device:
         """
 
         # Gets the servo1, servo2, and servo3 calculated positions for the XYZ position
-
         x = str(round(   -x, 2))
         y = str(round(   -y, 2))
         z = str(round(    z, 2))
@@ -251,7 +251,6 @@ class Device:
         """
 
         # Gets the X, Y, and Z calculated positions for the servo angles servo0, servo1, servo2
-
         servo0 = str(round(servo0, 2))
         servo1 = str(round(servo1, 2))
         servo2 = str(round(servo2, 2))

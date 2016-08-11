@@ -38,7 +38,6 @@ from ControlPanelGUI     import CommandList
 from Logic.Global        import printf
 from Logic.Resources     import TrackableObject, MotionPath, Function
 from Logic.RobotVision   import MIN_POINTS_TO_LEARN_OBJECT
-
 __author__ = "Alexander Thiel"
 
 
@@ -154,9 +153,14 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
 
     def refreshTreeWidget(self, selectedItem=None):
-        # Clear the objectList, and reload all object names from the environment
-        # If selectedItem is a string name of an object, it will try to select the item in the TreeWidget
-        # Clear the current objectList
+        """
+        Clear the objectList, and reload all object names from the environment
+
+        :param selectedItem:         If selectedItem is a string name of an object, it will try to select the item in the TreeWidget
+        Clear the current objectList
+        """
+
+
         self.objTree.clear()
         self.vision.endAllTrackers()
 
@@ -351,6 +355,10 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
 
     def clearSelectedLayout(self):
+        """
+        Delete/garbage collect every widget in the layout
+        :return:
+        """
         for cnt in reversed(range(self.selLayout.count())):
             # takeAt does both the jobs of itemAt and removeWidget
             # namely it removes an item and returns it
@@ -684,6 +692,7 @@ class MakeRecordingWindow(QtWidgets.QDialog):
         self.hintLbl.setFont(bold)
         self.hintLbl.setWordWrap(True)
 
+        self.nameEdit.textChanged.connect(self.isComplete)
 
         # Create the rows then fill them
         row1 = QtWidgets.QHBoxLayout()
@@ -694,7 +703,8 @@ class MakeRecordingWindow(QtWidgets.QDialog):
         row6 = QtWidgets.QHBoxLayout()
         row7 = QtWidgets.QHBoxLayout()
 
-        self.nameEdit.textChanged.connect(self.isComplete)
+
+
         row1.addWidget(nameLbl)
         row1.addWidget(self.nameEdit)
 
@@ -1499,8 +1509,6 @@ class OWPage2(QtWidgets.QWizardPage):
             self.hintLbl.setText("Tracking " + str(len(self.object.descrs)) + " Points")
 
 
-
-
     def isComplete(self):
         return self.object is not None
 
@@ -1678,7 +1686,6 @@ class OWPage4(QtWidgets.QWizardPage):
         self.pickupRect = None
         self.cameraWidget.takeAnother()
         self.completeChanged.emit()
-
 
 
     def rectSelected(self):

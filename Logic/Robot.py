@@ -25,14 +25,11 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
-import math
 import serial
 import serial.tools.list_ports
-from threading    import Thread, RLock
-from time         import sleep  #Only use in refresh() command while querying robot if it's done moving
-from Logic.Global import printf
+from threading                   import Thread, RLock
+from Logic.Global                import printf
 from Logic.CommunicationProtocol import Device
-
 __author__ = "Alexander Thiel"
 
 
@@ -336,9 +333,10 @@ class Robot:
 
         # If any positional servos have been attached, update the self.pos cache with the robots current position
         if any(attached):
-            curr = self.getCoords()
-            self.coord =  list(curr)
-            self.__servoAngleStatus = list(self.uArm.getServoAngles())
+            with self.lock:
+                curr = self.getCoords()
+                self.coord =  list(curr)
+                self.__servoAngleStatus = list(self.uArm.getServoAngles())
 
     def setPump(self, status):
         """
@@ -384,7 +382,8 @@ class Robot:
             printf("Robot| Robot not avaliable, canceling position change")
             return
 
-        self.uArm.setStop()
+        with self.lock:
+            self.uArm.setStop()
 
 
     def connected(self):

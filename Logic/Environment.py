@@ -31,7 +31,6 @@ from Logic             import Video, ObjectManager, Robot, Global
 from Logic.Global      import printf
 from Logic.RobotVision import Transform
 from Logic.Vision      import Vision
-
 __author__ = "Alexander Thiel"
 
 
