@@ -1,0 +1,80 @@
+#######################################
+# Syntax Coloring Map UF_uArm
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+UF_uArm	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+init		KEYWORD2
+calibration	KEYWORD2
+recordingMode	KEYWORD2
+setPosition	KEYWORD2
+readAngle	KEYWORD2
+setServoSpeed	KEYWORD2
+gripperCatch	KEYWORD2
+gripperRelease	KEYWORD2
+gripperDetach	KEYWORD2
+
+gripperDirectDetach	KEYWORD2
+
+pumpOn		KEYWORD2
+
+pumpOff		KEYWORD2
+
+valveOn		KEYWORD2
+
+valveOff	KEYWORD2
+
+detachServo	KEYWORD2
+sendData	KEYWORD2
+alert		KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+ARM_A                   LITERAL1
+ARM_B                   LITERAL1
+ARM_2AB                 LITERAL1
+ARM_A2                  LITERAL1
+ARM_B2                  LITERAL1
+ARM_A2B2                LITERAL1
+ARM_STRETCH_MIN         LITERAL1
+ARM_STRETCH_MAX         LITERAL1
+ARM_HEIGHT_MIN          LITERAL1
+ARM_HEIGHT_MAX          LITERAL1
+ARM_ROTATION_MIN        LITERAL1
+ARM_ROTATION_MAX        LITERAL1
+HAND_ROTATION_MIN       LITERAL1
+HAND_ROTATION_MAX       LITERAL1
+HAND_ANGLE_OPEN         LITERAL1
+HAND_ANGLE_CLOSE        LITERAL1
+FIXED_OFFSET_L          LITERAL1
+FIXED_OFFSET_R          LITERAL1
+D150A_SERVO_MIN_PUL     LITERAL1
+D150A_SERVO_MAX_PUL     LITERAL1
+D009A_SERVO_MIN_PUL     LITERAL1
+D009A_SERVO_MAX_PUL     LITERAL1
+SAMPLING_DEADZONE       LITERAL1
+INIT_POS_L              LITERAL1
+INIT_POS_R              LITERAL1
+BTN_TIMEOUT_MS          LITERAL1
+CATCH			LITERAL1
+RELEASE			LITERAL1
+BTN_D4                  LITERAL1
+BTN_D7                  LITERAL1
+BUZZER                  LITERAL1
+LIMIT_SW                LITERAL1
+PUMP_EN                 LITERAL1
+VALVE_EN                LITERAL1
+SERVO_HAND              LITERAL1
+SERVO_HAND_ROT          LITERAL1
+SERVO_ROT               LITERAL1
+SERVO_R                 LITERAL1
+SERVO_L                 LITERAL1

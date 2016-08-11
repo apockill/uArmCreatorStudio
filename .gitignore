@@ -17,7 +17,6 @@ $RECYCLE.BIN/
 # Custom
 *.bat
 *.exe
-*.ino
 *.docx
 
 # Windows shortcuts
