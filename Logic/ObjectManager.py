@@ -202,7 +202,7 @@ class ObjectManager:
                 # Make sure everything is deleted in the directory
                 while len(os.listdir(objDirectory)):
                     for item in os.listdir(objDirectory):
-                        os.remove(objDirectory + item)
+                        os.remove(os.path.join(objDirectory, item))
 
                 # Now that the folder is empty, delete it too
                 os.rmdir(objDirectory)
@@ -250,10 +250,10 @@ class ObjectManager:
         Gets the propper directory name for the object with the propper formatting
         :param obj: Any object that is a subclass of Resource
         """
+        filename = obj.__class__.__name__ + " " + obj.name  # Build the filename
+        directory = os.path.join(self.__directory, filename)
 
-        directory = self.__directory
-        directory += obj.__class__.__name__
-        directory += " " + obj.name + "\\"
+
         return directory
 
     def __loadAllObjects(self):
@@ -265,8 +265,7 @@ class ObjectManager:
 
 
         for folder in foldersAndItems:
-            path = self.__directory + "\\" + folder
-
+            path = os.path.join(self.__directory, folder)
 
             if not os.path.isdir(path):
                 printf("ObjectManager| ERROR: Could not find directory ", path)
@@ -290,7 +289,7 @@ class ObjectManager:
 
             # Get the type, then instantiate it
             newType = resourceClasses[newType]
-            newObj = newType(name, path)
+            newObj  = newType(name, path)
 
             if newObj.loadSuccess: self.__addObject(newObj)
 

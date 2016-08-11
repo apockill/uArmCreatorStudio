@@ -56,7 +56,8 @@ class Resource:
         ensurePathExists(directory)
 
         # Long form (human readable:
-        json.dump(self.dataJson, open(directory + "data.txt", 'w'), sort_keys=False, separators=(',', ': '))
+        filename = os.path.join(directory, "data.txt")
+        json.dump(self.dataJson, open(filename, 'w'), sort_keys=False, separators=(',', ': '))
 
     def _load(self, directory):
         """
@@ -71,7 +72,7 @@ class Resource:
 
 
         # Try to load the data.txt json
-        dataFile   = directory + "\data.txt"
+        dataFile   = os.path.join(directory, "data.txt")
         try:
             loadedData = json.load( open(dataFile))
             self.dataJson = loadedData
@@ -199,14 +200,15 @@ class TrackableObject(Trackable):
         # Save images and numpy arrays as seperate folders
         for index, view in enumerate(self.views):
             # Save the image
-            cv2.imwrite(directory + "Orientation_" + str(index) + "_Image.png", view.image)
+            filename = os.path.join(directory, "Orientation_" + str(index) + "_Image.png")
+            cv2.imwrite(filename, view.image)
 
             # Add any view data to the dataJson
             dataJson["Orientations"]["Orientation_" + str(index)] = {"rect":  view.rect,
                                                                      "pickupRect": view.pickupRect,
                                                                      "height":     view.height}
-
-        json.dump(dataJson, open(directory + "data.txt", 'w'), sort_keys=False, indent=3, separators=(',', ': '))
+        filename = os.path.join(directory, "data.txt")
+        json.dump(dataJson, open(filename, 'w'), sort_keys=False, indent=3, separators=(',', ': '))
 
     def _load(self, directory):
         # Should only be called during initialization
@@ -218,7 +220,7 @@ class TrackableObject(Trackable):
 
 
         # Try to load the data.txt json
-        dataFile = directory + "\data.txt"
+        dataFile = os.path.join(directory, "data.txt")
         try:
             loadedData = json.load( open(dataFile))
 
@@ -232,7 +234,7 @@ class TrackableObject(Trackable):
         # For each view, load the image associated with it, and build the appropriate view
         orientationData = loadedData["Orientations"]
         for key in orientationData:
-            imageFile = directory + '\\' + key + "_Image.png"
+            imageFile = os.path.join(directory, key + "_Image.png")
             image     = cv2.imread(imageFile)
 
             if image is None:

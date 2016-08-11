@@ -189,7 +189,7 @@ def printf(*args):
 
     # Filter out any serial communication since it clutters up the console
     if "Communication" in header: return
-    # print(header + " " * (15 - len(header)) + content)
+    print(header + " " * (15 - len(header)) + content)
 
 
 
@@ -200,6 +200,8 @@ def ensurePathExists(path):
         creating that directory. It's used every time an object is loaded and saved
     """
     try:
+        path = os.path.join(path, "")  # Make it a file
+        print(path)
         directory = os.path.dirname(path)
         os.makedirs(directory)
     except OSError as exception:

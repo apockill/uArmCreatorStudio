@@ -25,6 +25,7 @@ License:
     You should have received a copy of the GNU General Public License
     along with uArmCreatorStudio.  If not, see <http://www.gnu.org/licenses/>.
 """
+import os
 import cv2
 import numpy as np
 import math
@@ -795,19 +796,19 @@ class CascadeTracker(Tracker):
         super(CascadeTracker, self).__init__(historyLength)
 
         self.cascades = [self.CascadeTarget(name       = "Face",
-                                            classifier = cv2.CascadeClassifier(cascadePath + "face_cascade.xml"),
-                                            minPts     = 20,
-                                            minSize    = (30, 30)),
+                                    classifier = cv2.CascadeClassifier(os.path.join(cascadePath, "face_cascade.xml")),
+                                    minPts     = 20,
+                                    minSize    = (30, 30)),
 
                          self.CascadeTarget(name       = "Smile",
-                                            classifier = cv2.CascadeClassifier(cascadePath + "smile_cascade.xml"),
-                                            minPts     = 325,
-                                            minSize    = (80, 50)),
+                                    classifier = cv2.CascadeClassifier(os.path.join(cascadePath, "smile_cascade.xml")),
+                                    minPts     = 325,
+                                    minSize    = (80, 50)),
 
                          self.CascadeTarget(name       = "Eye",
-                                            classifier = cv2.CascadeClassifier(cascadePath + "eye_cascade.xml"),
-                                            minPts     = 30,
-                                            minSize    = (40, 40))]
+                                    classifier = cv2.CascadeClassifier(os.path.join(cascadePath, "eye_cascade.xml")),
+                                    minPts     = 30,
+                                    minSize    = (40, 40))]
 
 
     def addTarget(self, targetName):
