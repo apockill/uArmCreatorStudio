@@ -31,7 +31,7 @@ import serial.tools.list_ports
 from threading    import Thread, RLock
 from time         import sleep  #Only use in refresh() command while querying robot if it's done moving
 from Logic.Global import printf
-from Logic.CommunicationProtocol_1 import Device
+from Logic.CommunicationProtocol import Device
 
 __author__ = "Alexander Thiel"
 

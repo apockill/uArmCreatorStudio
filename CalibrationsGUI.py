@@ -160,7 +160,6 @@ class CalibrateWindow(QtWidgets.QDialog):
         self.setWindowIcon(QtGui.QIcon(Paths.calibrate))
 
 
-
     def updateLabels(self):
         # Check if motionCalibrations already exist
         movCalib = self.motionSettings
@@ -240,7 +239,6 @@ class CalibrateWindow(QtWidgets.QDialog):
 
 
         # Calculate average amount of motion when robot is moving rapidly
-
         highMovement = totalMotion / samples
 
 
@@ -313,7 +311,7 @@ class CalibrateWindow(QtWidgets.QDialog):
     def getSettings(self):
         pass
 
-# class MotionWizard(QtWidgets.QWizardPage):
+
 
 
 class CoordWizard(QtWidgets.QWizard):
@@ -341,18 +339,12 @@ class CoordWizard(QtWidgets.QWizard):
         self.button(QtWidgets.QWizard.NextButton).clicked.connect(lambda: self.page2.nextPressed(self.currentId()))
 
 
-
-
-
-
         self.addPage(self.page1)
         self.addPage(self.page2)
         if self.allPages:
             self.addPage(self.page3)
             self.addPage(self.page4)
         self.addPage(self.page5)
-
-
 
 
         # Aesthetic details
@@ -414,8 +406,6 @@ class CWPage1(QtWidgets.QWizardPage):
 
 
         # Place the GUI objects vertically
-
-
         stepCol  = QtWidgets.QVBoxLayout()
         stepCol.addWidget(step1Lbl)
         stepCol.addWidget(promptLbl)
@@ -526,10 +516,6 @@ class CWPage3(QtWidgets.QWizardPage):
     def __init__(self, parent):
         super(CWPage3, self).__init__(parent)
 
-        # For the sake of getting more information, save the robots position when centered on the camera
-        # self.groundCenterCoord = robot.getCurrentCoord()
-        # print("new ground: ", self.groundCenterCoord)
-
         self.initUI()
 
     def initUI(self):
@@ -573,8 +559,6 @@ class CWPage3(QtWidgets.QWizardPage):
         col2.addWidget(imgTwoLbl)
         col2.addStretch(1)
 
-
-
         mainHLayout = QtWidgets.QHBoxLayout()
         mainHLayout.addLayout(col1)
         mainHLayout.addLayout(col2)
@@ -607,7 +591,6 @@ class CWPage4(QtWidgets.QWizardPage):
         self.cameraWidget.objSelected.connect(self.objectSelected)
 
         self.initUI()
-
 
     def initUI(self):
         prompt = "Make sure the robot's head is in the center of the camera view. Then, click the mouse on the top "  +\
@@ -650,7 +633,6 @@ class CWPage4(QtWidgets.QWizardPage):
         mainHLayout.addLayout(col1)
 
         self.setLayout(mainHLayout)
-
 
     def objectSelected(self):
         """
@@ -719,7 +701,6 @@ class CWPage4(QtWidgets.QWizardPage):
         self.cameraWidget.play()
         self.vision.addTarget(self.newRobotMrkr)
 
-
     def isComplete(self):
         return self.newRobotMrkr is not None
 
@@ -728,7 +709,6 @@ class CWPage4(QtWidgets.QWizardPage):
         self.vision.endAllTrackers()
 
 class CWPage5(QtWidgets.QWizardPage):
-
 
     def __init__(self, environment, getGroundCoord, parent):
         super(CWPage5, self).__init__(parent)
@@ -808,9 +788,6 @@ class CWPage5(QtWidgets.QWizardPage):
         vision.addTarget(rbMarker)
 
 
-        # A list of robot Coord and camera Coords, where each index of robPts corresponds to the cameraPoint index
-
-
         # Set the robot to the home position, set the speed, and other things for the calibration
         robot.setActiveServos(all=True)
         robot.setSpeed(10)
@@ -844,30 +821,6 @@ class CWPage5(QtWidgets.QWizardPage):
                 testCoords += [[x, y, zTest]]
             direction *= -1
 
-        # for z in range(zTest, 25): testCoords += [[ 0, 15,     z]]
-
-        # for z in range(zTest, 26, 1): testCoords += [[0,  15, z]]
-        # for z in range(zTest, 19, 2): testCoords += [[-8, 11, z]]
-        # for z in range(zTest, 20, 2): testCoords += [[-5, 13, z]]
-        # for z in range(zTest, 20, 2): testCoords += [[-5, 17, z]]
-        # for z in range(zTest, 19, 2): testCoords += [[-8, 19, z]]
-        # for z in range(zTest, 19, 2): testCoords += [[ 8, 11, z]]
-        # for z in range(zTest, 20, 2): testCoords += [[ 5, 13, z]]
-        # for z in range(zTest, 20, 2): testCoords += [[ 5, 17, z]]
-        # for z in range(zTest, 19, 2): testCoords += [[ 8, 19, z]]
-        #
-        #
-        # # # Test very near the base of the robot, but avoid the actual base
-        # for x in range(-20, -10,  1): testCoords += [[x, 5, zLower]]# Anything lower than -10x will hit the robot legs
-        # for x in range( 10,  20,  1): testCoords += [[x, 5, zLower]]
-        # for x in range( 20,   9, -1): testCoords += [[x, 6, zLower]]
-        # for x in range( -9, -20, -1): testCoords += [[x, 6, zLower]]
-        # for x in range(-20,  -6,  1): testCoords += [[x, 7, zLower]]
-        # for x in range(  6,  20,  1): testCoords += [[x, 7, zLower]]
-        #
-        #
-        # Scan the entire board row by row
-
 
 
         printf("GUI| Testing ", len(testCoords), " coordinate points")
@@ -899,11 +852,6 @@ class CWPage5(QtWidgets.QWizardPage):
 
         # Prune the list down to 20 less than the original size, find the best set out of those
         minPointCount = 10
-        # prunedSize = int(len(newCalibrations["ptPairs"]) * .90)
-        # if prunedSize > minPointCount:
-        #     bestScore, bestPtPairs = self.pruneCalibrationSet(prunedSize, newCalibrations["ptPairs"])
-        #     newCalibrations["ptPairs"] = bestPtPairs
-        #     print("Final calibrations: ", bestPtPairs)
 
         # Check the percent of points that were found vs amount of points that were in the testCoord array
         if len(newCalibrations["ptPairs"]) < minPointCount:
@@ -1021,24 +969,6 @@ class CWPage5(QtWidgets.QWizardPage):
             self.timer = singleShot()
             return
 
-        # if marker.ptCount < 20:
-        #     printf("Disregarding point. Only ", marker.ptCount, "tracker pts were found")
-        #     newCalibrations['failPts'].append(coord)
-        #     self.timer = singleShot()
-        #     return
-
-
-
-
-        # # Since the camera found the object, now read the robots location through camera, and record both results
-        # actCoord = robot.getCurrentCoord()
-        # dist = ((actCoord[0] - coord[0])**2 + (actCoord[1] - coord[1])**2 + (actCoord[2] - coord[2])**2)**.5
-        # if dist < 2:
-        #     newCalibrations["ptPairs"].append([marker.center, coord])
-        # else:
-        #     printf("Using actual coord. Robot returned coordinate too far from desired pos",
-        #            coord, actCoord)
-        #     newCalibrations["ptPairs"].append([marker.center, actCoord])
 
         newCalibrations["ptPairs"].append([marker.center, coord])
         self.timer = singleShot()
@@ -1054,103 +984,6 @@ class CWPage5(QtWidgets.QWizardPage):
         robot  = self.env.getRobot()
         vision.endAllTrackers()
         robot.setPos(wait=False, **robot.home)
-
-
-    # DEPRECATED FUNCTION
-    def pruneCalibrationSet(self, newSize, ptPairs):
-        """
-        This function looks a bit complicated, but its purpose is simple: input a list of ptPairs, and it will return
-        an optimized set of size newSize. It does this by "scoring" how good each point is, then returning the set
-        with the best points.
-
-        The way it does this is by generating many many different combinations of set newSize, and doing the following:
-            Create a camera->Robot transform
-            Create a Robot->Camera transform
-            input a point into the cam->rob transform then put it into rob->cam transform and see how different it is.
-
-            If its similar, then the transform is good.
-
-        It does this with many points and with many sets, and then adds an "error" to each point in each set, then
-        chooses the points with the lowest error.
-        :param newSize:
-        :param ptPairs:
-        :return:
-        """
-
-        def getRandomSet(length, ptPairs):
-            ptPairs     = ptPairs[:]
-            randPtPairs = []
-            chosenIndexes = []
-            for i in range(0, length):
-                randIndex = random.randint(0, len(ptPairs) - 1)
-                randPtPairs.append(ptPairs[randIndex])
-                chosenIndexes.append(randIndex)
-                del ptPairs[randIndex]
-
-            return randPtPairs, ptPairs, chosenIndexes
-
-        def testPointSetError(testPtPairs, testPoints):
-            # Test the error for every point in the transform, return a root-mean-squared error value
-            camToRob = rv.createTransformFunc(testPtPairs, direction="toRob")
-            robToCam = rv.createTransformFunc(testPtPairs, direction="toCam")
-
-            errorSum = 0
-            for pt in testPoints:
-                # Transform to robot coordinates then back to camera coordinates and find the difference
-                posRob    = camToRob(pt)        # rv.getPositionTransform(pt, testPtPairs, direction=1)
-                posCam    = robToCam(posRob)  # rv.getPositionTransform(posRob, testPtPairs, direction=-1)
-                errorSum += sum((pt - posCam) ** 2) ** .5
-            return errorSum  / len(testPoints)
-
-
-        printf("GUI| Pruning set to size ", newSize, " out of original ", len(ptPairs))
-
-        if len(ptPairs) <= newSize:
-            return newCalibration
-
-        # Get real points to test each random ptPair set on
-        testPoints  = np.asarray(random.sample(ptPairs, 10))[:, 0]
-
-        pointError = [[i, 0, 0] for i in range(0, len(ptPairs))]   # (point index, # samples, error sum)
-        bestScore  = -1
-        bestSet    = None
-        samples    = 500
-        avgError   = 0
-        for s in range(0, samples):
-
-            randPtPairs, leftoverPtPairs, chosenIndexes = getRandomSet(newSize, ptPairs)
-
-            error     = testPointSetError(randPtPairs, testPoints)
-            avgError += error
-
-            # Record the error from this set onto every point that was in the set.
-            for i in chosenIndexes:
-                pointError[i][1] += 1                   # Samples
-                pointError[i][2] += error            # Error sum
-
-            if error < bestScore or bestScore == -1:
-                bestSet = randPtPairs
-                bestScore = error
-
-        avgError /= samples
-
-        bestIndexes = sorted(pointError, key=lambda pt:  pt[2] / pt[1] if pt[1] > 0 else 1000)
-        bestSet = []
-
-        for i in range(0, newSize):
-            bestSet.append(ptPairs[bestIndexes[i][0]])
-
-        error = testPointSetError(bestSet, testPoints)
-
-        printf("GUI| Average error: ", avgError, " bestSet ", bestScore, " der. set: ", error)
-        if error < avgError:
-            printf("GUI| Returning derived set")
-            return error, bestSet
-        else:
-
-            printf("GUI| Found set is worse than the average. Returning bestSet.")
-            return bestScore, bestSet
-
 
 
 

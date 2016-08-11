@@ -32,7 +32,6 @@ import CommandsGUI as CommandsGUI
 from PyQt5         import QtCore, QtWidgets, QtGui
 from Logic.Global  import printf, getModuleClasses
 from CommonGUI     import Overlay, OverlayCenter
-
 __author__ = "Alexander Thiel"
 
 
@@ -77,9 +76,6 @@ class ControlPanel(QtWidgets.QWidget):
         self.initUI()
 
     def initUI(self):
-
-
-
         self.eventList.itemSelectionChanged.connect(self.refresh)
 
         # Set Up Buttons and their text
@@ -107,7 +103,6 @@ class ControlPanel(QtWidgets.QWidget):
         eventVLayout.addWidget(self.eventList)
 
 
-
         # Do not set a minimum size for the commandListStack. This will screw up automatic resizing for CommandList
         # Place the commandVLayout inside of commandGBox, which is used for labeling which event the list is for
         commandVLayout = QtWidgets.QVBoxLayout()
@@ -126,7 +121,6 @@ class ControlPanel(QtWidgets.QWidget):
         mainHLayout.addLayout(eventVLayout)
         mainHLayout.addWidget(self.commandGBox)
         mainHLayout.addLayout(menuVLayout)
-
 
 
         # self.setMinimumWidth(500)
@@ -150,7 +144,6 @@ class ControlPanel(QtWidgets.QWidget):
         selectedEvent = self.eventList.getSelectedEvent()
 
 
-
         # If user has no event selected, make a clear commandList to view
         self.deleteEventBtn.setDisabled(selectedEvent is None)
         self.changeEventBtn.setDisabled(selectedEvent is None)
@@ -161,10 +154,8 @@ class ControlPanel(QtWidgets.QWidget):
             return
 
 
-
         eventTitle = selectedEvent.title + " Command List"
         self.commandGBox.setTitle(eventTitle)
-
 
 
         # Add and display the correct widget
@@ -283,7 +274,7 @@ class EventList(QtWidgets.QListWidget):
         super(EventList, self).__init__(parent)
 
         # GLOBALS
-        self.env                 = environment  # Used in self.addCommand only
+        self.env = environment  # Used in self.addCommand only
         self.events = {}  # A hash map of the current events in the list. The listWidget leads to the event object
 
         self.getEventFromItem = lambda listWidgetItem: self.events[self.itemWidget(listWidgetItem)]
@@ -365,8 +356,6 @@ class EventList(QtWidgets.QListWidget):
 
 
     def addEvent(self, eventType, parameters=None, commandListSave=None):
-
-
         if commandListSave is None: commandListSave = []
 
         # If a file is loading, then optimize the process by changing it a bit.
@@ -427,7 +416,7 @@ class EventList(QtWidgets.QListWidget):
             self.setCurrentRow(placeIndex)  # Select the newly added event
 
         if self.count() > 0: self.hintLbl.hide()
-        return placeIndex                   # Returns where the object was placed
+        return placeIndex  # Returns where the object was placed
 
     def replaceEvent(self):
         # Replace one event with another, while keeping the same commandList
@@ -591,7 +580,6 @@ class CommandList(QtWidgets.QListWidget):
 
     def deleteSelected(self):
         # Delete all highlighted commands
-
         for item in self.selectedItems():
             self.deleteItem(item)
 
@@ -643,13 +631,6 @@ class CommandList(QtWidgets.QListWidget):
                 indent -= 1
 
 
-        # Update the width of the commandList to the widest element within it
-        # This occurs whenever items are changed, or added, to the commandList
-        # print(self.sizeHintForColumn(0))
-        # if self.minimumWidth < self.sizeHintForColumn(0) + 10 < self.maximumWidth:
-        #     self.setMinimumWidth(self.sizeHintForColumn(0) + 10)
-
-
     def getCommand(self, listWidgetItem):
         # Get the Command class for the given listWidgetItem
         return self.commands[self.itemWidget(listWidgetItem)]
@@ -674,11 +655,9 @@ class CommandList(QtWidgets.QListWidget):
             newCommand = commandType(self.env)
 
 
-
         # Create the widget to be placed inside the listWidgetItem
         newWidget = CommandsGUI.CommandWidget(self, self.deleteSelected)
         newWidget = newCommand.dressWidget(newWidget)     # Dress up the widget
-
 
 
         # Create the list widget item
@@ -686,10 +665,8 @@ class CommandList(QtWidgets.QListWidget):
         listWidgetItem.setSizeHint(newWidget.sizeHint())  # Widget will not appear without this line
 
 
-
         # Add list widget to commandList
         self.addItem(listWidgetItem)
-
 
 
         # If an index was specified, move the added widget to that index
@@ -714,8 +691,8 @@ class CommandList(QtWidgets.QListWidget):
             newCommand.parameters = parameters
         else:
             # If this is being added by the user, then prompt the user by opening the command window.
-
             accepted = newCommand.openWindow()  # Get information from user
+
             if accepted:
                 # Re-make the widget that goes on the command, so it has the new information given by the user
                 newCommand.dressWidget(newWidget)     # Dress up the widget

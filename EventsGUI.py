@@ -28,7 +28,6 @@ License:
 import Paths
 from PyQt5        import QtGui, QtCore, QtWidgets
 from Logic.Global import printf
-
 __author__ = "Alexander Thiel"
 
 
@@ -76,7 +75,6 @@ class EventPromptWindow(QtWidgets.QDialog):
 
 
         self.objManager       = objectManager  # Used to generate the "recognize object" event
-
         self.accepted         = False
         self.chosenEvent      = None  #What event the user chose to add (changed in btnClicked() function)
         self.chosenParameters = None  # Any extra parameters about the event (AKA,type of object, key, number, or motion
@@ -259,7 +257,7 @@ class EventPromptWindow(QtWidgets.QDialog):
 
 class EventGUI:
     # Priority determines how the events will be sorted. 0 means the event will be at the top. 10000 is last.
-    priority = 5000
+    priority = 5000  # If the event has parameters, modify the priority in the __init__ event to reflect any changes.
     title = ""
 
     def __init__(self, parameters):
@@ -288,7 +286,7 @@ class EventGUI:
 
 ########## EVENTS ##########
 """
-EXAMPLE CLASS
+------------------------------------------------EVENT TEMPLATE---------------------------------------------------
 
 class NameEvent(EventGUI):
     icon      = Icons.name_event
@@ -306,8 +304,9 @@ class NameEvent(EventGUI):
         widget.setTitle('Name ' + self.parameters["someparameter"])
         widget.setTip('Activates when the some condition ' + self.parameters["someparameter"] + " is pressed")
         return widget
-
+-----------------------------------------------------------------------------------------------------------------
 """
+
 #   SIMPLE, NO-PARAMETER EVENTS
 class InitEvent(EventGUI):
     title     = 'Initialization'

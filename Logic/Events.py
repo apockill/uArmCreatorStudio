@@ -218,8 +218,11 @@ class RecognizeCascadeEvent(Event):
         # Make sure the event won't crash if there were errors
         if len(self.errors): return False  # If it did not compile without errors, don't run
 
-        ret = self.vision.isFaceDetected()
+        frameAge, location  = self.vision.getCascadeLatestRecognition(self.parameters["objectID"])
 
+        if not frameAge == 0: return False
+
+        ret = location is not None
 
         # If target was "not" seen
         if self.parameters["not"]:

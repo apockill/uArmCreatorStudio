@@ -28,13 +28,12 @@ License:
 import ast  # To check if a statement is python parsible, for evals
 import re   # For variable santization
 import Paths
-import webbrowser   # For opening the user manual PDF
+import webbrowser  # For opening the user manual PDF
 from os.path      import basename
 from PyQt5        import QtGui, QtCore, QtWidgets
 from CameraGUI    import CameraSelector
 from CommonGUI    import ScriptWidget
 from Logic.Global import printf, ensurePathExists
-
 __author__ = "Alexander Thiel"
 
 
@@ -108,6 +107,7 @@ class CommandWidget(QtWidgets.QWidget):
                                              self.margins[1],
                                              self.margins[2],
                                              self.margins[3])
+
 
     # The following are accessed only by Command.dressWidget()
     def setTitle(self, text):
@@ -212,8 +212,6 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         newButton.setFixedHeight(40)
         newButton.setFixedWidth(40)
 
-
-
         newButton.customContextMenuRequested.connect(lambda: self.addCommandFunc(commandType))
         return newButton
 
@@ -233,6 +231,7 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
         return tabWidget, add
 
 
+    # Special button that can be dragged and dropped, with information about the Type of command
     class DraggableButton(QtWidgets.QPushButton):
         def __init__(self, dragData, parent):
             super().__init__(parent)
@@ -240,18 +239,17 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
 
             self.mouse_down = False  # Has a left-click happened yet?
             self.mouse_posn = QtCore.QPoint()  # If so, this is where...
-            self.mouse_time = QtCore.QTime()  # ... and this is when
+            self.mouse_time = QtCore.QTime()   # ... and this is when
 
         def mousePressEvent(self, event):
             if event.button() == QtCore.Qt.LeftButton:
-                self.mouse_down = True  # we are left-clicked-upon
+                self.mouse_down = True         # we are left-clicked-upon
                 self.mouse_posn = event.pos()  # here and...
-                self.mouse_time.start()  # ...now
+                self.mouse_time.start()        # ...now
 
             event.ignore()
             super().mousePressEvent(event)  # pass it on up
 
-        # noinspection PyArgumentList,PyArgumentList
         def mouseMoveEvent(self, event):
             if self.mouse_down:
                 # Mouse left-clicked and is now moving. Is this the start of a
@@ -292,11 +290,6 @@ class CommandMenuWidget(QtWidgets.QTabWidget):
             # Result is supposed to be the action performed at the drop.
             act = dragster.exec_(actions)
             defact = dragster.defaultAction()
-
-            # # Display the results of the drag.
-            # targ = dragster.target()  # s.b. the widget that received the drop
-            # src = dragster.source()  # s.b. this very widget
-
             return
 
 
@@ -314,9 +307,7 @@ class CommandGUI:
     def openWindow(self):  # Open window
 
         # If this object has no window object, then skip this process and return true (ei, StartBlockCommand)
-        if self.parameters is None:
-            # printf("About to execute self...", self, super(Command, self), self.parent)
-            return True
+        if self.parameters is None: return True
 
         ##### Create the base window #####
         prompt = QtWidgets.QDialog()
@@ -392,9 +383,6 @@ class CommandGUI:
         else:
             printf("GUI| User Canceled Prompt")
 
-
-
-
         return accepted
 
     def dressWidget(self, newWidget):
@@ -411,19 +399,19 @@ class CommandGUI:
                        'parameters': self.parameters}
         return commandSave
 
-    # The following functions should be empty, and only are there so that subclasses without them don't cause errors
+
+    # Empty functions so that subclasses without them don't cause errors
     def _updateDescription(self):
-        # This is called in openView() and will update the decription to match the parameters
+        # This is called in openWindow() and will update the decription to match the parameters
         pass
 
 
-    # The following are helper functions for general Command children purposes
+    # Helper functions for general Command children purposes
     def _sanitizeEval(self, inputTextbox, fallback):
         """
         Checks if the eval statement is python-parsible. If it is not, it will return the "fallback" value.
         """
         # Makes sure that the statement is parseable by python
-
         inputCode = inputTextbox.text()
         inputCode = inputCode.replace('^', '**')
 
@@ -497,7 +485,6 @@ class CommandGUI:
 
         # Create a row for the hint
         hintRow = QtWidgets.QHBoxLayout()
-        # hintRow.addStretch(1)
         hintRow.addWidget(prompt.hintLbl)
 
         # Add it to the prompt
@@ -542,6 +529,7 @@ class CommandGUI:
 Commands must have:
     - A class, here in CommandsGUI.py
     - A logic implimentation under Commands.py with a run() function
+        - The logic implimentation MUST have the same name as the GUI implimentation
     - Be added to the CommandMenuWidget.initUI() function in order for the user to add it to their programs
     - Variables
         - tooltip
@@ -561,8 +549,9 @@ Special Cases:
     -Test commands should be entered in ControlPanelGUI.CommandList.dropEvent() so that when it is dropped, a
         StartBlockCommand and EndBlockCommand is placed after it, for the users convenience
 
-Example of a fully filled out class:
 
+
+----------------------------------------COMMAND TEMPLATE-------------------------------------------
 class NameCommand(CommandGUI):
     title     = "Example Title"
     tooltip   = "This tool does X Y and Z"
@@ -593,7 +582,7 @@ class NameCommand(CommandGUI):
 
     def _updateDescription(self):
         self.description = ""  # Some string that uses your parameters to describe the object.
-
+-----------------------------------------------------------------------------------------------------
 """
 
 
@@ -805,7 +794,6 @@ class SpeedCommand(CommandGUI):
 
         if self.parameters is None:
             # Some code to set up default parameters
-            # robot = env.getRobot()
             self.parameters = {"speed": str(10)}
 
     def dressWindow(self, prompt):
@@ -1739,8 +1727,6 @@ class LoopCommand(CommandGUI):
             # Refresh the window to match the side of the new widget. Do it with a timer so GUI can render the wndow 1st
             QtCore.QTimer.singleShot(10, lambda: prompt.resize(prompt.sizeHint()))
 
-        # Do some GUI code setup
-        # Put all the objects into horizontal layouts called Rows
 
         # Create a Combobox with the appropriate items
         choiceLbl = QtWidgets.QLabel("Choose a Test")

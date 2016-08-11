@@ -29,7 +29,6 @@ import cv2
 import Paths
 from PyQt5        import QtWidgets, QtCore, QtGui
 from Logic.Global import printf
-
 __author__ = "Alexander Thiel"
 
 
@@ -42,7 +41,6 @@ def cvToPixFrame(image):
     bytesPerLine           = 3 * width
     img                    = QtGui.QImage(pixFrame, width, height, bytesPerLine, QtGui.QImage.Format_RGB888)
     pix                    = QtGui.QPixmap.fromImage(img)
-
 
     return pix
 
@@ -94,21 +92,6 @@ class CameraWidget(QtWidgets.QWidget):
 
         self.setLayout(self.mainVLayout)
 
-        from CommonGUI import Overlay, OverlayCenter
-        overlayLayout = Overlay("center")
-        overlayLayout.addWidget(QtWidgets.QLabel("AYYYYrrrrrrrrrrrrrrrrrrrrrrrrrrrrrfrrrrAYYYYrrrrrrrrrrrrrrrrrrrrrrrrrrrrrfrrrrAYYYYrrrrrrrrrrrrrrrrrrrrrrrrrrrrrfrrrrAYYYYrrrrrrrrrrrrrrrrrrrrrrrrrrrrrfrrrrAYYYYrrrrrrrrrrrrrrrrrrrrrrrrrrrrrfrrrrrrrrrrrrrrrrrrrrrrrrYYY LMAO"))
-        center = OverlayCenter(self)
-        center.addLayout(overlayLayout)
-        self.mainVLayout.addLayout(center)
-        # Reference to the last object frame. Used to make sure that a frame is new, before repainting
-
-
-
-        # Initialize the UI (Don't make a function, that'll overwrite subclass UI create functions)
-        # self.frameLbl.setPixmap(QtGui.QPixmap(Paths.video_not_connected))
-
-
-
 
     def play(self):
         if self.paused:
@@ -156,7 +139,6 @@ class CameraSelector(CameraWidget):
     """
 
     # This signal emits only when the user selects an image, or restarts the process.
-    # stateChanged = QtCore.pyqtSignal()
     objSelected  = QtCore.pyqtSignal()
 
 
@@ -181,7 +163,6 @@ class CameraSelector(CameraWidget):
 
 
         # Make sure that the QRect is aligned with the picture by adding a stretch and setting the contents margins!
-
         self.layout().addStretch(1)  # Push the layout to the top, so the mouse commands align correctly
 
 
@@ -191,12 +172,8 @@ class CameraSelector(CameraWidget):
         self.takeAnother()
 
         if event.button() == QtCore.Qt.LeftButton:
-            # Pause the video so that it's easier to select the object
 
             # Make sure the click was within the boundaries of the frame
-            # self.getPixFrame()
-
-            # height, width, channel = pixFrame.shape
             width  = self.frameLbl.pixmap().width()
             height = self.frameLbl.pixmap().height()
             pos    = (event.pos().x(), event.pos().y())
@@ -228,8 +205,6 @@ class CameraSelector(CameraWidget):
             if not 0 < pos[0] < width:  return
             if not 0 < pos[1] < height: return
 
-            # self.rectangle.setGeometry(QtCore.QRect(self.origin, event.pos()).normalized())
-            # self.setRectangle((self.origin, event.pos()))
             self.rectangle.setGeometry(QtCore.QRect(self.origin, event.pos()).normalized())
 
     def mouseReleaseEvent(self, event):
@@ -248,7 +223,6 @@ class CameraSelector(CameraWidget):
                 return
 
             self.selectedRect  = pt
-            # self.declinePicBtn.setDisabled(False)
             self.objSelected.emit()
 
 
@@ -275,7 +249,6 @@ class CameraSelector(CameraWidget):
         self.selectedImage = None
         self.selectedRect  = None
         self.rectangle.hide()
-
 
 
     def closeEvent(self, event):

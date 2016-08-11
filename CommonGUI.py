@@ -29,8 +29,6 @@ import ast  # To check if a statement is python parsible, for evals
 import Paths
 from threading    import RLock
 from PyQt5        import QtGui, QtCore, QtWidgets
-
-
 __author__ = "Alexander Thiel"
 
 
@@ -311,7 +309,6 @@ scriptStopping() returns True if the user has attempted to end the task, and Fal
         self.prompt = parent
         self.prompt.content.setContentsMargins(5, 5, 5, 5)
 
-        # QtWidgets.QTextEdit().toP
         self.docText   = QtWidgets.QTextEdit()
         self.docBtn    = QtWidgets.QPushButton("Show Documentation")
         self.textEdit  = LineTextWidget()
@@ -363,7 +360,6 @@ scriptStopping() returns True if the user has attempted to end the task, and Fal
         mainVLayout = QtWidgets.QVBoxLayout()
         mainVLayout.addLayout(row1)
         mainVLayout.addLayout(row2)
-        # mainVLayout.addStretch()
         mainVLayout.addLayout(row3)
 
 
@@ -701,23 +697,6 @@ class Console(QtWidgets.QWidget):
             self.text.setTextCursor(c)
 
 
-
-# Center a window on the current screen
-def centerScreen(self):
-        frameGm = self.frameGeometry()
-        screen = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
-        centerPoint = QtWidgets.QApplication.desktop().screenGeometry(screen).center()
-        frameGm.moveCenter(centerPoint)
-
-        self.move(frameGm.topLeft())
-
-
-
-
-
-
-
-
 # For overlaying things on top of a wdiget
 class OverlayCenter(QtWidgets.QLayout):
     """Layout for managing overlays."""
@@ -801,4 +780,19 @@ class Overlay(QtWidgets.QBoxLayout):
             self.setAlignment(QtCore.Qt.AlignCenter)
 
         # self.css = "QWidget {background-color: black; color: black}"
+
+
+# Center a window on the current screen
+def centerScreen(self):
+        frameGm = self.frameGeometry()
+        screen = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
+        centerPoint = QtWidgets.QApplication.desktop().screenGeometry(screen).center()
+        frameGm.moveCenter(centerPoint)
+
+        self.move(frameGm.topLeft())
+
+
+
+
+
 

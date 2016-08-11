@@ -133,7 +133,7 @@ class Vision:
 
     # PlaneTracker Search Functions
     def getObjectLatestRecognition(self, trackable):
-        # Returns the latest successful recognition of objectID, so the user can pull the position from that
+        # Returns the latest successful recognition of the trackable, so the user can pull the position from that
         # it also returns the age of the frame where the object was found (0 means most recently)
 
         with self.workLock:
@@ -176,16 +176,34 @@ class Vision:
         return best
 
     def getObjectSpeedDirectionAvg(self, trackable, samples=3, maxAge=20, isSameObjThresh=50):
-                # TEST CODE FOR VISION
+        """
+        This is an interesting function. So a lot of the time there might be more than one object of the same type
+        in the cameras view, for example, two playing cards with the backs facing the camera. Since the keypoint matcher
+        can't recognize the same object twice, I need a way to get several samples of an object and make sure that it
+        wasn't multiple frames where some frames are of object 1 and some frames are of identicle object 2.
+
+        This function will try to find "samples" amount of frames in the last "maxAge" frames of an object that hasn't
+        moved to much- this should effectively find only one of the identicle objects, and return the average position,
+        and how much it's "moving".
+
+        isSameObjThresh is how many pixels the object can move between frames for it to still be considered the
+        same object.
+
+        :param trackable: A trackable object from Resources.py
+        :param samples: Amount of samples to find of the object
+        :param maxAge: How many frames to look back into history for searching for samples
+        :param isSameObjThresh: Amount of pixels the object can move between samples to still be considered the same
+        object.
+
+        :return: avgPos of object [x,y,z], avgMag (magnitude amount of pixels moved per frame), avgDir, direction of
+        movement in [xdir, ydir, zdir]
+        """
         with self.workLock:
             trackHistory = self.planeTracker.trackedHistory[:maxAge]
 
         hst      = []
         # Get 'samples' amount of tracked object from history, and the first sample has to be maxAge less then the last
         for frameAge, historyFromFrame in enumerate(trackHistory):
-            #
-            # # If the first finding of the object is older than maxAge
-            # if len(hst) == 0 and frameAge > maxAge - samples: return None, None, None
 
             for tracked in historyFromFrame:
                 if trackable.equalTo(tracked.view.name):
@@ -249,15 +267,28 @@ class Vision:
 
 
 
-    # Face Tracker Search Functions
-    def isFaceDetected(self):
+    # Cascade Tracker Search Functions
+    def getCascadeLatestRecognition(self, cascadeName):
+        """
+        This will get the latest recognition of that cascade, and return the age of the cascade, and the
+        [x1, y1, x2, y2] bounding box of the cascade's location.
+
+        :param cascadeName: This is a string, either "Smile", "Face", "Eye", or any custom cascades loaded into
+        CascadeTracker
+
+        :return: frameage, location
+        """
+
         # Safely pull the relevant trackedHistory from the tracker object
         with self.workLock:
-            trackHistory = self.cascadeTracker.trackedHistory[0]
+            trackHistory = self.cascadeTracker.trackedHistory[:]
 
-        if len(trackHistory) > 0:
-            return True
-        return None
+
+        for frameID, historyFromFrame in enumerate(trackHistory):
+            for tracked in historyFromFrame:
+                if tracked.target.name == cascadeName:
+                    return frameID, tracked
+        return None, None
 
 
     # General use computer vision functions
@@ -278,77 +309,64 @@ class Vision:
 
         return avgDifference
 
-    def getColor(self, **kwargs):
-        # Get the average color of a rectangle in the main frame. If no rect specified, get the whole frame
-        p1 = kwargs.get("p1", None)
-        p2 = kwargs.get("p2", None)
+
+    # Vision specific functions
+    def setExiting(self, exiting):
+        # Used for closing threads quickly, when this is true any time-taking functions will skip through quickly
+        # and return None or False or whatever their usual failure mode is. ei, waitForFrames() would exit immediately
+        # if exiting:
+        #     printf("Setting Vision to Exiting mode. All frame commands should exit quickly.")
+        #     self.endAllTrackers()
+
+        # if exiting:
+        #     printf("Vision| Setting Vision to Exiting mode. ")
+        self.exiting = exiting
+
+
+    '''     OLD (NO LONGER USED) VISION FUNCTIONS
+    def findObjectColor(self, hue, tolerance, lowSat, highSat, lowVal, highVal):
+        low, high = self.getRange(hue, tolerance)
+
+        hue = int(hue)
+        tolerance = int(tolerance)
+        lowSat = int(lowSat * 255)
+        highSat = int(highSat * 255)
+        lowVal = int(lowVal * 255)
+        highVal = int(highVal * 255)
 
         frame = self.vStream.getFrame()
-        if p1 is not None and p2 is not None:
-            frame = frame[p2[1]:p1[1], p2[0]:p1[0]]
+        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-        averageColor = cv2.mean(frame)  # RGB
-        return averageColor
-
-    def getRange(self, hue, tolerance):
-        # Input an HSV, get a range
-        low = hue - tolerance / 2
-        high = hue + tolerance / 2
-
-        if low < 0:   low += 180
-        if low > 180: low -= 180
-
-        if high < 0:   high += 180
-        if high > 180: high -= 180
-
-        if low > high:
-            return int(high), int(low)
+        if hue - tolerance < 0 or hue + tolerance > 180:
+            # If the color crosses 0, you have to do two thresholds
+            lowThresh = cv2.inRange(hsv, np.array((0, lowSat, lowVal)), np.array((low, highSat, highVal)))
+            upperThresh = cv2.inRange(hsv, np.array((high, lowSat, lowVal)), np.array((180, highSat, highVal)))
+            finalThresh = upperThresh + lowThresh
         else:
-            return int(low), int(high)
+            finalThresh = cv2.inRange(hsv, np.array((low, lowSat, lowVal)), np.array((high, highSat, highVal)))
 
-    # def findObjectColor(self, hue, tolerance, lowSat, highSat, lowVal, highVal):
-    #     low, high = self.getRange(hue, tolerance)
-    #
-    #     hue = int(hue)
-    #     tolerance = int(tolerance)
-    #     lowSat = int(lowSat * 255)
-    #     highSat = int(highSat * 255)
-    #     lowVal = int(lowVal * 255)
-    #     highVal = int(highVal * 255)
-    #
-    #     frame = self.vStream.getFrame()
-    #     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    #
-    #     if hue - tolerance < 0 or hue + tolerance > 180:
-    #         # If the color crosses 0, you have to do two thresholds
-    #         lowThresh = cv2.inRange(hsv, np.array((0, lowSat, lowVal)), np.array((low, highSat, highVal)))
-    #         upperThresh = cv2.inRange(hsv, np.array((high, lowSat, lowVal)), np.array((180, highSat, highVal)))
-    #         finalThresh = upperThresh + lowThresh
-    #     else:
-    #         finalThresh = cv2.inRange(hsv, np.array((low, lowSat, lowVal)), np.array((high, highSat, highVal)))
-    #
-    #     cv2.imshow(str(lowSat), finalThresh.copy())
-    #     cv2.waitKey(1)
-    #
-    #     contours, hierarchy = cv2.findContours(finalThresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-    #
-    #     cv2.imshow("frame", finalThresh)
-    #     cv2.waitKey(1)
-    #     # Find the contour with maximum area and store it as best_cnt
-    #     max_area = 0
-    #     best_cnt = None
-    #     for cnt in contours:
-    #         area = cv2.contourArea(cnt)
-    #         if area > max_area:
-    #             max_area = area
-    #             best_cnt = cnt
-    #
-    #     if best_cnt is not None:
-    #         M = cv2.moments(best_cnt)
-    #         cx, cy = int(M['m10'] / M['m00']), int(M['m01'] / M['m00'])
-    #         # cv2.circle(frame, (cx, cy), 5, 255, -1)
-    #         return [cx, cy]
-    #     return None
+        cv2.imshow(str(lowSat), finalThresh.copy())
+        cv2.waitKey(1)
+
+        contours, hierarchy = cv2.findContours(finalThresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+
+        cv2.imshow("frame", finalThresh)
+        cv2.waitKey(1)
+        # Find the contour with maximum area and store it as best_cnt
+        max_area = 0
+        best_cnt = None
+        for cnt in contours:
+            area = cv2.contourArea(cnt)
+            if area > max_area:
+                max_area = area
+                best_cnt = cnt
+
+        if best_cnt is not None:
+            M = cv2.moments(best_cnt)
+            cx, cy = int(M['m10'] / M['m00']), int(M['m01'] / M['m00'])
+            # cv2.circle(frame, (cx, cy), 5, 255, -1)
+            return [cx, cy]
+        return None
 
     def bgr2hsv(self, colorBGR):
         """
@@ -386,18 +404,35 @@ class Vision:
         # Just pass an image, and a tuple/list of (x1,y1, x2,y2)
         return image[rect[1]:rect[3], rect[0]:rect[2]]
 
+        def getColor(self, **kwargs):
+        # Get the average color of a rectangle in the main frame. If no rect specified, get the whole frame
+        p1 = kwargs.get("p1", None)
+        p2 = kwargs.get("p2", None)
 
-    # Vision specific functions
-    def setExiting(self, exiting):
-        # Used for closing threads quickly, when this is true any time-taking functions will skip through quickly
-        # and return None or False or whatever their usual failure mode is. ei, waitForFrames() would exit immediately
-        # if exiting:
-        #     printf("Setting Vision to Exiting mode. All frame commands should exit quickly.")
-        #     self.endAllTrackers()
+        frame = self.vStream.getFrame()
+        if p1 is not None and p2 is not None:
+            frame = frame[p2[1]:p1[1], p2[0]:p1[0]]
 
-        # if exiting:
-        #     printf("Vision| Setting Vision to Exiting mode. ")
-        self.exiting = exiting
+        averageColor = cv2.mean(frame)  # RGB
+        return averageColor
+
+    def getRange(self, hue, tolerance):
+        # Input an HSV, get a range
+        low = hue - tolerance / 2
+        high = hue + tolerance / 2
+
+        if low < 0:   low += 180
+        if low > 180: low -= 180
+
+        if high < 0:   high += 180
+        if high > 180: high -= 180
+
+        if low > high:
+            return int(high), int(low)
+        else:
+            return int(low), int(high)
+
+    '''
 
 
 class Tracker:
@@ -790,8 +825,6 @@ class CascadeTracker(Tracker):
                 # Make sure the target is not already being tracked
                 if target not in self.targets:
                     self.targets.append(target)
-
-
 
     def track(self, frame):
         gray  = cv2.cvtColor(frame.copy(), cv2.COLOR_BGR2GRAY)
