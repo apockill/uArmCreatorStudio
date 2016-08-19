@@ -509,7 +509,6 @@ class TestObjectLocationCommand(Command):
         p1, p2      = self.parameters["location"]
         self.quad   = np.float32([[p1[0], p1[1]], [p2[0], p1[1]], [p2[0], p2[1]], [p1[0], p2[1]]])
 
-
     def run(self):
         if len(self.errors): return False
 
