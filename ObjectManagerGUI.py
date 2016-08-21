@@ -393,16 +393,8 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
 
     def openObjectWizard(self, trackableObj=None):
-        # Make sure a camera is connected
-        vStream = self.env.getVStream()
-        if not vStream.connected():
-            message = "A camera must be connected to add new objects"
-            QtWidgets.QMessageBox.question(self, 'Error', message, QtWidgets.QMessageBox.Ok)
-            return
-
         # Pause the objectManager's camera
         self.cameraWidget.pause()
-
 
         objMenu  = MakeObjectWindow(trackableObj, self.env, self)
 
@@ -410,12 +402,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         if objMenu.newObject is not None:
             self.refreshTreeWidget(selectedItem=objMenu.newObject.name)
 
-
-
-
-
         self.cameraWidget.play()
-
 
     def openGroupMenu(self, groupObj=None):
 
@@ -423,23 +410,12 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         if groupMenu.newObject is not None:
             self.refreshTreeWidget(selectedItem=groupMenu.newObject.name)
 
-
     def openRecordingMenu(self, pathObj=None):
-        # Make sure a robot is connected
-        robot          = self.env.getRobot()
-        if not robot.connected():
-            message = "A robot must be connected to do movement recording."
-            QtWidgets.QMessageBox.question(self, 'Error', message, QtWidgets.QMessageBox.Ok)
-            return
-
-
         recMenu  = MakeRecordingWindow(pathObj, self.env, self)
 
         # Select the object
         if recMenu.newObject is not None:
             self.refreshTreeWidget(selectedItem=recMenu.newObject.name)
-
-
 
     def openFunctionMenu(self, funcObj=None):
         fncMenu = MakeFunctionWindow(funcObj, self.env, self)
@@ -645,11 +621,16 @@ class MakeRecordingWindow(QtWidgets.QDialog):
         self.isComplete()
 
 
+        # Check if the robot is connected before running
+        robot          = env.getRobot()
+        if not robot.connected():
+            message = "A robot must be connected to do movement recording."
+            QtWidgets.QMessageBox.question(self, 'Error', message, QtWidgets.QMessageBox.Ok)
+            return
         # Execute window and garbage collect afterwards
         finished = self.exec_()
         self.close()
         self.deleteLater()
-
         # If the window was valid, then create the object
         if finished:
             self.createNewObject()
@@ -1219,26 +1200,26 @@ class MakeFunctionWindow(QtWidgets.QDialog):
 
 # Make New Object Wizard
 class MakeObjectWindow(QtWidgets.QWizard):
-    def __init__(self, currentObj, environment, parent):
+    def __init__(self, currentObj, env, parent):
         print("GOT CURRENT OBJECT ", currentObj)
         super(MakeObjectWindow, self).__init__(parent)
         # If objToModifyName is None, then this will not ask the user for the name of the object
         self.newObject = currentObj
 
         # Since there are camera modules in the wizard, make sure that all tracking is off
-        vision = environment.getVision()
+        vision = env.getVision()
         vision.endAllTrackers()
 
-        self.objManager = environment.getObjectManager()
-        self.vision     = environment.getVision()
+        self.objManager = env.getObjectManager()
+        self.vision     = env.getVision()
 
         if self.newObject is None:
             self.page1 = OWPage1(self.objManager.getForbiddenNames(), parent=self)
             self.addPage(self.page1)
 
-        self.page2 = OWPage2(environment, parent=self)
+        self.page2 = OWPage2(env, parent=self)
         self.page3 = OWPage3(parent=self)
-        self.page4 = OWPage4(environment, parent=self)
+        self.page4 = OWPage4(env, parent=self)
 
         self.addPage(self.page2)
         self.addPage(self.page3)
@@ -1253,11 +1234,16 @@ class MakeObjectWindow(QtWidgets.QWizard):
         self.timer    = QtCore.QTimer.singleShot(0, lambda: centerScreen(self))
 
 
+        # Check if the camera is connected before running
+        vStream = env.getVStream()
+        if not vStream.connected():
+            message = "A camera must be connected to add new objects"
+            QtWidgets.QMessageBox.question(self, 'Error', message, QtWidgets.QMessageBox.Ok)
+            return
         # Execute Window and garbage collect it after
         finished = self.exec_()
         self.close()
         self.deleteLater()
-
         # If the window was valid, then create the object
         if finished:
             self.createNewObject()

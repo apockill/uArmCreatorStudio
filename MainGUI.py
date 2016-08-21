@@ -858,14 +858,12 @@ class Application(QtWidgets.QApplication):
 
 if __name__ == '__main__':
 
-    #Install a global exception hook to catch pyQt errors that fall through (helps with debugging a ton)
+    # Install a global exception hook to catch pyQt errors that fall through (helps with debugging a ton)
     sys.__excepthook = sys.excepthook
     sys._excepthook  = sys.excepthook
-
     def exception_hook(exctype, value, traceback):
         sys._excepthook(exctype, value, traceback)
         sys.exit(1)
-
     sys.excepthook   = exception_hook
 
 
@@ -877,9 +875,8 @@ if __name__ == '__main__':
     app = Application(sys.argv)
 
 
-    # Apply a theme of choice here
+    # Apply a stylesheet (theme) of choice here
     # app.setStyleSheet(fancyqt.firefox.style)
-
 
 
     # Set Application Font
