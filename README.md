@@ -34,7 +34,7 @@ This package uses several libraries within it. It should be entirely multi platf
 
 ### Installing
 
-Download the repository, extract it, and keep the structure the same. If you have all of the dependencies and are ready to roll, then open MainGUI.py and run it. Assuming everything works, a window will pop up, and you're in business! If not, email me at Alex.D.Thiel@gmail.com and we can hash out the issue. I'm interested in figuring out what kinds of problems people run into to make the build process easier.
+Clone the repository, extract it, and keep the structure the same. If you have all of the dependencies and are ready to roll, then open MainGUI.py and run it. Assuming everything works, a window will pop up, and you're in business! If not, email me at Alex.D.Thiel@gmail.com and we can hash out the issue. I'm interested in figuring out what kinds of problems people run into to make the build process easier.
 
 If you have a uArm:
 Make sure you have the right communication protocol uploaded onto your uArm's Arduino board, or else this won't work at all. This GUI uses a custom communication protocol (although that might change soon- uFactory is adopting my com protocol). To make sure, go to Latest Builds/Upload This To Your uArm and import the approprate libraries from the Libraries To Import folder, and then upload the .ino file in the CommunicationProtocol folder to your uArm.
