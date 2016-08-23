@@ -1,8 +1,10 @@
 # -*- mode: python -*-
+import os
 
 # Set up some convenience variables to shorten up the path names
-resource_dir = "Resources\\"           # Resources directory
-icons_dir    = resource_dir + "Icons\\"     # Icons directory in resources
+project_dir  = "."
+resource_dir = "Resources"                         # Resources directory
+icons_dir    = os.path.join(resource_dir, "Icons") # Icons directory in resources
 
 
 
@@ -91,11 +93,11 @@ d = []
 
 # Add the icons from the icons directory
 for icon in iconsList:
-    d.append((icons_dir + icon, icons_dir + icon, 'DATA'))
+    d.append((os.path.join(icons_dir, icon), os.path.join(icons_dir, icon), 'DATA'))
 
 # Add the cascades from the resources directory
 for resource in resourceList:
-    d.append((resource_dir + resource, resource_dir + resource, 'DATA'))
+    d.append((os.path.join(resource_dir, resource), os.path.join(resource_dir, resource), 'DATA'))
 
 
 "smile_cascade.xml"
@@ -105,9 +107,9 @@ block_cipher = None
 
 
 a = Analysis(['MainGUI.py'],
-             pathex=['F:\\Google Drive\\Projects\\Git Repositories\\uArmCreatorStudio'],
+             pathex=[project_dir],
              binaries=None,
-             hiddenimports=[],
+             hiddenimports=['six','packaging', 'packaging.version', 'packaging.specifiers', 'packaging.requirements'],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],
@@ -131,5 +133,5 @@ exe = EXE(pyz,
           strip=False,
           console=False,
           upx=True,
-          icon=icons_dir + "exe_icon.ico")
+          icon=os.path.join(icons_dir, "exe_icon.ico"))
 
