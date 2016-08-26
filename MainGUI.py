@@ -410,10 +410,15 @@ class MainWindow(QtWidgets.QMainWindow):
         if the robot thread was able to connect or not.
         """
 
-
         camera = self.env.getVStream()
         robot  = self.env.getRobot()
 
+        robotErrors = robot.getErrorsToDisplay()
+        if len(robotErrors) > 0:
+            reply = QtWidgets.QMessageBox.question(self, 'Communication Errors', "The following errors have occured "
+                            "communicating with your robot.\nTry reconnecting under the Devices menu."
+                            "\n\nERROR:\n" + "\n".join(robotErrors), QtWidgets.QMessageBox.Ok)
+            self.env.updateSettings("robotID", None)
 
         robCon = robot.connected()
         camCon = camera.connected()
@@ -445,8 +450,11 @@ class MainWindow(QtWidgets.QMainWindow):
             return
 
         printf("GUI| Apply clicked, applying settings...")
-        self.env.updateSettings("robotID", deviceWindow.getRobotSetting())
-        self.env.updateSettings("cameraID", deviceWindow.getCameraSetting())
+        if deviceWindow.getRobotSetting() is not None:
+            self.env.updateSettings("robotID", deviceWindow.getRobotSetting())
+
+        if deviceWindow.getCameraSetting() is not None:
+            self.env.updateSettings("cameraID", deviceWindow.getCameraSetting())
 
         vStream = self.env.getVStream()
         vStream.setNewCamera(self.env.getSetting('cameraID'))
@@ -857,6 +865,7 @@ class Application(QtWidgets.QApplication):
 
 
 if __name__ == '__main__':
+
 
     # Install a global exception hook to catch pyQt errors that fall through (helps with debugging a ton)
     sys.__excepthook = sys.excepthook

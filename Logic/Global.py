@@ -188,7 +188,7 @@ def printf(*args):
 
 
     # Filter out any serial communication since it clutters up the console
-    if "Communication" in header: return
+
     print(header + " " * (15 - len(header)) + content)
 
 

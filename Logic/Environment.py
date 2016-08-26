@@ -135,7 +135,7 @@ class Environment:
 
 
         # If settings change, then save the changes to the config file, and update the self.__settings dictionary
-        if (current is None or not current == newSettings) and newSettings is not None:
+        if (current is None or not current == newSettings):
             printf("Environment| Saving setting: ", category)
 
             # Update the self.__settings dictionary

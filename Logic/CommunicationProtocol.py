@@ -40,33 +40,64 @@ def getConnectedRobots():
 
 
 class Device:
+    """
+    This class should be the only place that you need to modify in order to make your robot arm compatible with
+    uArm Creator Studio. You can impliment whatever communication protocol you wish, as long as all functions
+    that don't start with '__' are implimented. Look at the documentation in each function to know what the function
+    expects to recieve, and what it is expected to return.
 
-    def __init__(self, port, printCommands=True, printResponses=True):
+    It should be relatively easy to rewrite this to work for another robot, as long as you are willing to write
+    that robots firmware so that it supports these kinds of commands.
+
+    Constraints:
+        - Device must catch any errors that might happen. If you wish to display a message to the user about an error,
+            append it to self.errors in the form of a string.
+
+        - Device must connect to a robot when the class is initialized. This can take as long as it wants, since the
+            connection process is threaded.
+
+        - Device must impliment all functions shown below that do not start with '__'
+
+        - Device must have relatively speedy communication. Should be capable of a "ping" of about 50 'sendAndRecieve's
+            per second
+    """
+
+    def __init__(self, port):
         """
         :param port: The COM port that the robot is plugged in to.
-        :param printCommands: If true, then print any strings that are sent to the robot
-        :param printResponses: If true, then print the responses from the robot.
         """
-        self.printCommands  = printCommands
-        self.printResponses = printResponses
-        self.isConnected    = False
-        self.serial         = None
-        self.__connectToRobot(port)
 
-        """
-         For debug logs
-         An array of tuples, of what was sent, what was recieved
-         [(sent, recieved), (sent, recieved), (sent, recieved)]
-        """
-        self.communicationLog = []
+        self.__isConnected  = False  # If any connection or communication errors occur, this will turn false.
+        self.__serial       = None   # The serial connection to the robot
+        self.errors         = []     # A list of errors that have occured. See self.getErrorsToDisplay() for more
+        self.__connectToRobot(port)
 
 
     ######      The following functions are used outside of this library. Make sure they are implimented!     #####
+
+    # Functions that don't communicate with the device
     def connected(self):
         # if self.serial is None:     return False
-        if self.isConnected is False: return False
+        if self.__isConnected is False: return False
         # if not self.__handshake():  return False
         return True
+
+    def getErrorsToDisplay(self):
+        """
+        Called by the GUI, this will return any errors that deserve being shown to the user in a dialog box.
+        The GUI will querry every five seconds and display any errors that need to be shown.
+
+        WHENEVER THIS FUNCTION IS CALLED, IT MUST CLEAR THE ERROR LIST VARIABLE SO THE GUI DOESN'T DISPLAY THE ERROR
+        OVER AND OVER!
+
+        Any error sent to the GUI will make the GUI remove the robot from the settings.txt, causing it to not auto-
+        connect when the GUI is opened. Thus, reserve this function for only important errors.
+
+        :return: A list of strings of errors, such as [ErrorString, ErrorString, ErrorString]
+        """
+        errors = self.errors
+        self.errors = []
+        return errors
 
 
     # Action commands
@@ -101,7 +132,6 @@ class Device:
         angle = str(float(round(angle, 3)))
         cmnd = "ssS" + str(int(servo)) + "V" + angle
         return self.__sendAndRecieve(cmnd)
-
 
     def setPump(self, onOff):
         """
@@ -142,7 +172,7 @@ class Device:
         :param duration: The duration of the buzz, in seconds
         """
 
-        cmnd = "buzzF" + str(frequency) + "T" + str(duration)
+        cmnd = "buzzF" + str(round(frequency, 2)) + "T" + str(round(duration, 3))
         return self.__sendAndRecieve(cmnd)
 
     def setStop(self):
@@ -265,19 +295,22 @@ class Device:
     # Functions that are only used inside of this library
     def __connectToRobot(self, port):
         try:
-            self.serial = serial.Serial(port     = port,
-                                        baudrate = 115200,
-                                        parity   = serial.PARITY_NONE,
-                                        stopbits = serial.STOPBITS_ONE,
-                                        bytesize = serial.EIGHTBITS,
-                                        timeout  = .1)
-            self.isConnected = True
-        except serial.SerialException as e:
-            printf("Communication| Could not connect to robot on port ", port)
-            self.serial = None
-            self.isConnected = False
+            self.__serial = serial.Serial(port     = port,
+                                          baudrate = 115200,
+                                          parity   = serial.PARITY_NONE,
+                                          stopbits = serial.STOPBITS_ONE,
+                                          bytesize = serial.EIGHTBITS,
+                                          timeout  = .1)
+            self.__isConnected = True
+            sleep(3)
+        except Exception as e:
+            print("ANYTHING")
+            printf("Communication| ERROR: " + type(e).__name__ + " " + str(e) + " while connecting to port ", port)
+            self.__serial = None
+            self.__isConnected = False
+            self.errors.append(type(e).__name__ + " " + str(e))
 
-        sleep(3)
+
 
     def __sendAndRecieve(self, cmnd):
         """
@@ -296,10 +329,10 @@ class Device:
         cmndString = bytes("[" + cmnd + "]", encoding='ascii')  #  "[" + cmnd + "]"
 
         try:
-            self.serial.write(cmndString)
+            self.__serial.write(cmndString)
         except serial.serialutil.SerialException as e:
             printf("Communication| ERROR ", e, "while sending command ", cmnd, ". Disconnecting Serial!")
-            self.isConnected = False
+            self.__isConnected = False
             return ""
 
 
@@ -308,12 +341,12 @@ class Device:
         while True:
 
             try:
-                response += str(self.serial.read(), 'ascii')
+                response += str(self.__serial.read(), 'ascii')
                 response = response.replace(' ', '')
 
             except serial.serialutil.SerialException as e:
                 printf("Communication| ERROR ", e, "while sending command ", cmnd, ". Disconnecting Serial!")
-                self.isConnected = False
+                self.__isConnected = False
                 return ""
 
             if "[" in response and "]" in response:
@@ -322,16 +355,8 @@ class Device:
                 break
 
 
-        if self.printCommands and self.printResponses:
-            printf("Communication| ", "[" + cmnd + "]" + " " * (30 - len(cmnd)) + response)
-        elif self.printCommands:
-            printf("Communication| ", cmndString)
-        elif self.printResponses:
-            printf("Communication| ", response)
 
-
-        # Save the response to a log variable, in case it's needed for debugging
-        self.communicationLog.append((cmnd[:], response[:]))
+        printf("Communication| ", "[" + cmnd + "]" + " " * (30 - len(cmnd)) + response)
 
 
         # Clean up the response
@@ -346,7 +371,6 @@ class Device:
 
 
         return response
-
 
     def __parseArgs(self, message, command, arguments):
         """
