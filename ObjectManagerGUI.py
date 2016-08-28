@@ -95,10 +95,10 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
 
         # Connect everything up
-        newObjBtn.clicked.connect(lambda: self.openObjectWizard())
-        newGrpBtn.clicked.connect(lambda: self.openGroupMenu())
-        newRecBtn.clicked.connect(lambda: self.openRecordingMenu())
-        newFncBtn.clicked.connect(lambda: self.openFunctionMenu())
+        newObjBtn.clicked.connect(lambda: self.openResourceMenu(MakeObjectWindow))
+        newGrpBtn.clicked.connect(lambda: self.openResourceMenu(MakeGroupWindow))
+        newRecBtn.clicked.connect(lambda: self.openResourceMenu(MakeRecordingWindow))
+        newFncBtn.clicked.connect(lambda: self.openResourceMenu(MakeFunctionWindow))
 
         self.objTree.itemSelectionChanged.connect(self.refreshSelected)
 
@@ -215,21 +215,30 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         if obj is None: return
 
 
+        # Disconnect "doubleClick" event from doing anything
+        try: self.objTree.itemDoubleClicked.disconnect()
+        except Exception: pass
+
+
         # Make the SelectedObject window reflect the information about the object (and it's type) that is curr. selected
         if isinstance(obj, self.objManager.TRACKABLEOBJ):
+            self.objTree.itemDoubleClicked.connect(lambda: self.openResourceMenu(MakeObjectWindow, editResource=obj))
             self.setSelectionTrackable(obj)
             self.vision.addTarget(obj)
             return
 
         if isinstance(obj, self.objManager.TRACKABLEGROUP):
+            self.objTree.itemDoubleClicked.connect(lambda: self.openResourceMenu(MakeGroupWindow, editResource=obj))
             self.setSelectionGroup(obj)
             self.vision.addTarget(obj)
             return
 
         if isinstance(obj, self.objManager.MOTIONPATH):
+            self.objTree.itemDoubleClicked.connect(lambda: self.openResourceMenu(MakeRecordingWindow, editResource=obj))
             self.setSelectionPath(obj)
 
         if isinstance(obj, self.objManager.FUNCTION):
+            self.objTree.itemDoubleClicked.connect(lambda: self.openResourceMenu(MakeFunctionWindow, editResource=obj))
             self.setSelectionFunction(obj)
 
 
@@ -246,7 +255,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         # Connect any buttons
         deleteBtn.clicked.connect(self.deleteSelected)
-        addOrientationBtn.clicked.connect(lambda: self.openObjectWizard(trackableObj=trackableObj))
+        addOrientationBtn.clicked.connect(lambda: self.openResourceMenu(MakeObjectWindow, editResource=trackableObj))
 
 
         # Create a pretty icon for the object, so it's easily recognizable. Use the first sample in the objectt
@@ -282,7 +291,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         # Connect any buttons
         deleteBtn.clicked.connect(self.deleteSelected)
-        editBtn.clicked.connect(lambda: self.openGroupMenu(groupObj=trackableGrp))
+        editBtn.clicked.connect(lambda: self.openResourceMenu(MakeGroupWindow, editResource=trackableGrp))
 
 
         # Create the appropriate description
@@ -304,7 +313,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         # Connect any buttons
         deleteBtn.clicked.connect(self.deleteSelected)
-        editBtn.clicked.connect(lambda: self.openRecordingMenu(pathObj=pathObj))
+        editBtn.clicked.connect(lambda: self.openResourceMenu(MakeRecordingWindow, editResource=pathObj))
 
 
         # Create the appropriate description
@@ -332,7 +341,7 @@ class ObjectManagerWindow(QtWidgets.QDialog):
 
         # Connect any buttons
         deleteBtn.clicked.connect(self.deleteSelected)
-        editBtn.clicked.connect(lambda: self.openFunctionMenu(funcObj=funcObj))
+        editBtn.clicked.connect(lambda: self.openResourceMenu(MakeFunctionWindow, editResource=funcObj))
 
 
         # Create the appropriate description
@@ -385,45 +394,34 @@ class ObjectManagerWindow(QtWidgets.QDialog):
         self.refreshTreeWidget()
 
     def getSelected(self):
-        # Returns the selected object
+        """Returns the selected resource, as a string of the resources name"""
+
         selectedObjects = self.objTree.selectedItems()
         if not len(selectedObjects): return None
         selObject = selectedObjects[0].text(0)
         return selObject
 
 
-    def openObjectWizard(self, trackableObj=None):
-        # Pause the objectManager's camera
+    def openResourceMenu(self, resourceMenuType, editResource=None):
+        """
+        This will open a resource menu window. Before this happens, it pauses the cameraWidget on the ObjectMenu,
+        and after the resource menu is closed, it will select the newly created item (if one was created).
+
+        :param resoureceMenuType: MakeGroupWindow, MakeRecordingWindow, MakeFunctionWindow, MakeObjectWindow, etc.
+        :param editResource: If there is an object (say, a vision object or recording object) that you want to open the
+                            editing window for, then pass it in through here.
+        """
+
         self.cameraWidget.pause()
 
-        objMenu  = MakeObjectWindow(trackableObj, self.env, self)
+        # Open the window (the code will only continue once the window has closed)
+        menuWindow = resourceMenuType(editResource, self.env, parent=self)
 
-        # Select the object
-        if objMenu.newObject is not None:
-            self.refreshTreeWidget(selectedItem=objMenu.newObject.name)
+        # If the menuWindow created a new object, then select
+        if menuWindow.newObject is not None:
+            self.refreshTreeWidget(selectedItem=menuWindow.newObject.name)
 
         self.cameraWidget.play()
-
-    def openGroupMenu(self, groupObj=None):
-
-        groupMenu = MakeGroupWindow(groupObj, self.env, parent=self)
-        if groupMenu.newObject is not None:
-            self.refreshTreeWidget(selectedItem=groupMenu.newObject.name)
-
-    def openRecordingMenu(self, pathObj=None):
-        recMenu  = MakeRecordingWindow(pathObj, self.env, self)
-
-        # Select the object
-        if recMenu.newObject is not None:
-            self.refreshTreeWidget(selectedItem=recMenu.newObject.name)
-
-    def openFunctionMenu(self, funcObj=None):
-        fncMenu = MakeFunctionWindow(funcObj, self.env, self)
-
-        # Select the object
-        if fncMenu.newObject is not None:
-            self.refreshTreeWidget(selectedItem=fncMenu.newObject.name)
-
 
     def closeEvent(self, event):
         # This ensures that the cameraWidget will no longer be open when the window closes
