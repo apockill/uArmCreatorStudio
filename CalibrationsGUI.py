@@ -38,7 +38,7 @@ from Logic.Resources     import TrackableObject
 __author__ = "Alexander Thiel"
 
 
-# noinspection PyCallByClass
+
 class CalibrateWindow(QtWidgets.QDialog):
     """
     This is the dashboard where the user can calibrate different aspects of their robot.
@@ -153,8 +153,7 @@ class CalibrateWindow(QtWidgets.QDialog):
         mainHLayout.addLayout(rightVLayout)
         mainHLayout.addStretch(3)
 
-        self.setMinimumHeight(480)
-        self.setMinimumWidth(640)
+        self.setMinimumHeight(400)
         self.setLayout(mainHLayout)
         self.setWindowTitle('Calibrations')
         self.setWindowIcon(QtGui.QIcon(Paths.calibrate))

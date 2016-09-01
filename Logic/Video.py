@@ -130,6 +130,7 @@ class VideoStream:
 
 
 
+
     def __videoThread(self):
         """"
             A main thread that focuses soley on grabbing frames from a camera, limited only by self.fps
@@ -208,10 +209,7 @@ class VideoStream:
         self.mainThread = None
 
 
-
-
-
-    # noinspection PyArgumentList
+    # Run inside VideoThread only
     def __setNewCamera(self, cameraID):
         # Set or change the current camera to a new one
         printf("Video| Setting camera to cameraID ", cameraID)
@@ -247,7 +245,13 @@ class VideoStream:
         self.cameraID  = cameraID
 
         printf("Video| SUCCESS: Camera is connected to camera ", self.cameraID)
+
+
+        # Set the default resolution
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         return True
+
 
 
     # Get Frames and information
@@ -308,8 +312,11 @@ class VideoStream:
 
 
 
-
-
+# Possibly useful: Set the resolution, then return the resolution that actually got set
+# def set_res(self, cap, x,y):
+#     cap.set(cv.CV_CAP_PROP_FRAME_WIDTH, int(x))
+#     cap.set(cv.CV_CAP_PROP_FRAME_HEIGHT, int(y))
+#     return str(cap.get(cv.CV_CAP_PROP_FRAME_WIDTH)),str(cap.get(cv.CV_CAP_PROP_FRAME_HEIGHT))
 
 
 
