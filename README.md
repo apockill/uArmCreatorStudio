@@ -12,7 +12,7 @@ Since you're looking at the Github page, I'll assume you don't want to download 
 
 
 
-### Prerequisities
+### Prerequisites
 
 This package uses several libraries within it. It should be entirely multi platform, but I appreciate any feedback that says otherwise.
 
@@ -28,6 +28,7 @@ This package uses several libraries within it. It should be entirely multi platf
 * pyserial
  * Use `pip install pyserial` in command line
 * numpy
+ * Use `pip install numpy` in command line
 * PyInstaller (optional)
 	* I use PyInstaller to package everything into an EXE. Use my Build.spec file to build everything without hassle, and to include icons.
  
