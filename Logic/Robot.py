@@ -423,10 +423,7 @@ class Robot:
             self.setActiveServos(all=False)
             return
         else:
-            printf("Robot| FAILURE: uArm was unable to connect!")
-
-
-
+            printf("Robot| FAILURE: uArm was unable to connect!"
 
         self.__threadRunning = False
 
