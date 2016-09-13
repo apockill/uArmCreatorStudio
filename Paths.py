@@ -29,7 +29,7 @@ import os
 import sys
 __author__ = "Alexander Thiel"
 
-
+#TODO: Make it possible to check if this is being run from within a package manager, and load icons from a diff dir.
 
 ################        PATHS FOR ALL       ################
 resourcesLoc = "Resources"
