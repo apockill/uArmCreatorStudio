@@ -72,8 +72,7 @@ class Device:
         self.errors         = []     # A list of errors that have occured. See self.getErrorsToDisplay() for more
         self.__connectToRobot(port)
 
-
-    ######      The following functions are used outside of this library. Make sure they are implimented!     #####
+    #      The following functions are used outside of this library. Make sure they are implimented!     #
 
     # Functions that don't communicate with the device
     def connected(self):
@@ -309,8 +308,6 @@ class Device:
             self.__serial = None
             self.__isConnected = False
             self.errors.append(type(e).__name__ + " " + str(e))
-
-
 
     def __sendAndRecieve(self, cmnd):
         """

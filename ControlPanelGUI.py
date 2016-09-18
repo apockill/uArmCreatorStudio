@@ -549,9 +549,6 @@ class CommandList(QtWidgets.QListWidget):
 
     def __init__(self, environment, parent):
         super(CommandList, self).__init__(parent)
-
-
-
         self.env = environment  # Should just be used in addCommand
 
         # GLOBALS
@@ -579,6 +576,7 @@ class CommandList(QtWidgets.QListWidget):
         self.setMinimumWidth(self.minimumWidth)
 
     def deleteItem(self, listWidgetItem):
+        print("deleted")
         del self.commands[self.itemWidget(listWidgetItem)]
         self.itemWidget(listWidgetItem).deleteLater()
         self.takeItem(self.row(listWidgetItem))
@@ -606,6 +604,7 @@ class CommandList(QtWidgets.QListWidget):
             self.itemSelectionChanged.connect(self.selectionChangedEvent)
             self.setDragDropMode(QtWidgets.QAbstractItemView.DragDrop)  # Enable drag-drop
             self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+            self.setDefaultDropAction(QtCore.Qt.TargetMoveAction)
         else:
             self.clearSelection()
             self.itemDoubleClicked.disconnect()  # For opening the widget's window
@@ -621,7 +620,9 @@ class CommandList(QtWidgets.QListWidget):
         zeroAndAbove = lambda i: (i < 0) * 0 + (i >= 0) * i
         indent = 0
 
+        print("Count", self.count())
         for index in range(self.count()):
+            print("Index: ", index)
             command = self.getCommand(self.item(index))
             commandWidget = self.itemWidget(self.item(index))
             commandType = type(command)
@@ -648,7 +649,6 @@ class CommandList(QtWidgets.QListWidget):
         :param index: Place the command at a particular index, instead of the end (Only for dropping item into list)
         :return:
         """
-
         # If a file is loading, then set isLoading to True. This will optimize some steps.
         isLoading = parameters is not None
 
@@ -701,7 +701,6 @@ class CommandList(QtWidgets.QListWidget):
             if accepted:
                 # Re-make the widget that goes on the command, so it has the new information given by the user
                 newCommand.dressWidget(newWidget)     # Dress up the widget
-
             else:
                 # If the user canceled, then delete the command
                 self.deleteItem(listWidgetItem)

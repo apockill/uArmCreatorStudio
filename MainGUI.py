@@ -865,9 +865,7 @@ class Application(QtWidgets.QApplication):
 
 
 if __name__ == '__main__':
-
-
-    # Install a global exception hook to catch pyQt errors that fall through (helps with debugging a ton)
+    # Install a global exception hook to catch pyQt errors that fall through (helps with debugging a ton) #TODO: Remove for builds
     sys.__excepthook = sys.excepthook
     sys._excepthook  = sys.excepthook
     def exception_hook(exctype, value, traceback):
