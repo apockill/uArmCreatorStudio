@@ -30,7 +30,7 @@ import serial.tools.list_ports
 from time                        import sleep
 from threading                   import Thread, RLock
 from Logic.Global                import printf
-from Logic.CommunicationProtocol import Device
+from Logic.CommunicationProtocol_2 import Device
 __author__ = "Alexander Thiel"
 
 
@@ -84,7 +84,7 @@ class Robot:
         self.zMin, self.zMax =  -5, 25
 
         # Set up some constants for other functions to use
-        self.home      = {'x': 0.0, 'y': 15.0, 'z': 25.0}
+        self.home      = {'x': 0.0, 'y': 15.0, 'z': 20.0}
 
 
         self.__exiting = False    # When true, any time-taking functions will exit ASAP. Used for quickly ending threads

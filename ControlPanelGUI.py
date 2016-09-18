@@ -576,7 +576,6 @@ class CommandList(QtWidgets.QListWidget):
         self.setMinimumWidth(self.minimumWidth)
 
     def deleteItem(self, listWidgetItem):
-        print("deleted")
         del self.commands[self.itemWidget(listWidgetItem)]
         self.itemWidget(listWidgetItem).deleteLater()
         self.takeItem(self.row(listWidgetItem))
@@ -620,9 +619,7 @@ class CommandList(QtWidgets.QListWidget):
         zeroAndAbove = lambda i: (i < 0) * 0 + (i >= 0) * i
         indent = 0
 
-        print("Count", self.count())
         for index in range(self.count()):
-            print("Index: ", index)
             command = self.getCommand(self.item(index))
             commandWidget = self.itemWidget(self.item(index))
             commandType = type(command)
