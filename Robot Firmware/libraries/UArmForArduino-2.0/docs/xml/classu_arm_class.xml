@@ -1,0 +1,1541 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.11">
+  <compounddef id="classu_arm_class" kind="class" language="C++" prot="public">
+    <compoundname>uArmClass</compoundname>
+    <includes refid="uarm__library_8h" local="no">uarm_library.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classu_arm_class_1a4b914c1da1dfd085d6384b4984519e89" prot="public" static="no" mutable="no">
+        <type><ref refid="class_servo" kindref="compound">Servo</ref></type>
+        <definition>Servo uArmClass::g_servo_rot</definition>
+        <argsstring></argsstring>
+        <name>g_servo_rot</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="188" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="188" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classu_arm_class_1a5ae5272cd6a209cf3de5339347a6b86f" prot="public" static="no" mutable="no">
+        <type><ref refid="class_servo" kindref="compound">Servo</ref></type>
+        <definition>Servo uArmClass::g_servo_left</definition>
+        <argsstring></argsstring>
+        <name>g_servo_left</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="189" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="189" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classu_arm_class_1aa87224671243ac73cbf9935a24b2efd9" prot="public" static="no" mutable="no">
+        <type><ref refid="class_servo" kindref="compound">Servo</ref></type>
+        <definition>Servo uArmClass::g_servo_right</definition>
+        <argsstring></argsstring>
+        <name>g_servo_right</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="190" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="190" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classu_arm_class_1a589664e5cbc560163f68e9152ff64bd1" prot="public" static="no" mutable="no">
+        <type><ref refid="class_servo" kindref="compound">Servo</ref></type>
+        <definition>Servo uArmClass::g_servo_hand_rot</definition>
+        <argsstring></argsstring>
+        <name>g_servo_hand_rot</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="191" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="191" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classu_arm_class_1a0841c2fe0ca33ae6f83b6bd3bf2e1a6b" prot="public" static="no" mutable="no">
+        <type><ref refid="class_servo" kindref="compound">Servo</ref></type>
+        <definition>Servo uArmClass::g_servo_hand</definition>
+        <argsstring></argsstring>
+        <name>g_servo_hand</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="192" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="192" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classu_arm_class_1ab92828f4da95e9b1007683b658552268" prot="public" static="no" mutable="no">
+        <type>unsigned int</type>
+        <definition>unsigned int uArmClass::INTERP_INTVLS</definition>
+        <argsstring></argsstring>
+        <name>INTERP_INTVLS</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="193" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="193" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classu_arm_class_1acad460dd08a71be8ef53eedfec90545e" prot="protected" static="no" mutable="no">
+        <type>double</type>
+        <definition>double uArmClass::cur_rot</definition>
+        <argsstring></argsstring>
+        <name>cur_rot</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="199" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="199" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classu_arm_class_1a2982d5607b70ab69d4c44ed95c140021" prot="protected" static="no" mutable="no">
+        <type>double</type>
+        <definition>double uArmClass::cur_left</definition>
+        <argsstring></argsstring>
+        <name>cur_left</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="200" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="200" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classu_arm_class_1a10c284c23e73eb6260260d55472b8983" prot="protected" static="no" mutable="no">
+        <type>double</type>
+        <definition>double uArmClass::cur_right</definition>
+        <argsstring></argsstring>
+        <name>cur_right</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="201" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="201" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classu_arm_class_1a5d1999ccfc522936f017256fecf6be60" prot="protected" static="no" mutable="no">
+        <type>double</type>
+        <definition>double uArmClass::cur_hand</definition>
+        <argsstring></argsstring>
+        <name>cur_hand</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="202" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="202" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classu_arm_class_1a3c59c7a95c9a7d1c5ca3942c46dd3ff8" prot="protected" static="no" mutable="no">
+        <type>double</type>
+        <definition>double uArmClass::g_current_x</definition>
+        <argsstring></argsstring>
+        <name>g_current_x</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="205" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="205" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classu_arm_class_1a07afd50d4a18b241dfcfa3a353c7567d" prot="protected" static="no" mutable="no">
+        <type>double</type>
+        <definition>double uArmClass::g_current_y</definition>
+        <argsstring></argsstring>
+        <name>g_current_y</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="206" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="206" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classu_arm_class_1a837f9a2a3e240bb294469f940c952e32" prot="protected" static="no" mutable="no">
+        <type>double</type>
+        <definition>double uArmClass::g_current_z</definition>
+        <argsstring></argsstring>
+        <name>g_current_z</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="207" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="207" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classu_arm_class_1af0df1d802c04741d390beaaf0b31b1f3" prot="protected" static="no" mutable="no">
+        <type>boolean</type>
+        <definition>boolean uArmClass::g_gripper_reset</definition>
+        <argsstring></argsstring>
+        <name>g_gripper_reset</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="209" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="209" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classu_arm_class_1ab7970a58e1d69f227412de1a2d09b25e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>uArmClass::uArmClass</definition>
+        <argsstring>()</argsstring>
+        <name>uArmClass</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="117" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="13" bodyend="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1ada41aed1523d78f47a70a896be0700e5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double uArmClass::read_servo_offset</definition>
+        <argsstring>(byte servo_num)</argsstring>
+        <name>read_servo_offset</name>
+        <param>
+          <type>byte</type>
+          <declname>servo_num</declname>
+        </param>
+        <briefdescription>
+<para>Read <ref refid="class_servo" kindref="compound">Servo</ref> Offset from EEPROM. From OFFSET_START_ADDRESS, each offset occupy 4 bytes in rom. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>servo_num</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>SERVO_ROT_NUM, SERVO_LEFT_NUM, SERVO_RIGHT_NUM, SERVO_HAND_ROT_NUM </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Return servo offset </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="119" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="215" bodyend="220"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1afe670cd52fe57cb347eff5da7c5f1114" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::read_linear_offset</definition>
+        <argsstring>(byte servo_num, double &amp;intercept_val, double &amp;slope_val)</argsstring>
+        <name>read_linear_offset</name>
+        <param>
+          <type>byte</type>
+          <declname>servo_num</declname>
+        </param>
+        <param>
+          <type>double &amp;</type>
+          <declname>intercept_val</declname>
+        </param>
+        <param>
+          <type>double &amp;</type>
+          <declname>slope_val</declname>
+        </param>
+        <briefdescription>
+<para>read Linear Offset from EEPROM, From LINEAR_INTERCEPT_START_ADDRESS &amp; LINEAR_SLOPE_START_ADDRESS, each offset occupy 4 bytes in rom </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>servo_num</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>SERVO_ROT_NUM, SERVO_LEFT_NUM, SERVO_RIGHT_NUM, SERVO_HAND_ROT_NUM </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>intercept_val</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>get intercept_val </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>slope_val</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>get slope_val </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="120" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="228" bodyend="231"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1a42655ebaae4634dfb272e00e5ad2ecf8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::alert</definition>
+        <argsstring>(byte times, byte runt_time, byte stop_time)</argsstring>
+        <name>alert</name>
+        <param>
+          <type>byte</type>
+          <declname>times</declname>
+        </param>
+        <param>
+          <type>byte</type>
+          <declname>runt_time</declname>
+          <defname>runTime</defname>
+        </param>
+        <param>
+          <type>byte</type>
+          <declname>stop_time</declname>
+          <defname>stopTime</defname>
+        </param>
+        <briefdescription>
+<para>Use BUZZER for Alert. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>times</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Beep Times </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>runTime</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>How Long from High to Low </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>stopTime</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>How Long from Low to High </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="121" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="32" bodyend="41"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1ad49f00b82c7217aea14992519db644c9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::write_servo_angle</definition>
+        <argsstring>(byte servo_num, double servo_angle, boolean with_offset)</argsstring>
+        <name>write_servo_angle</name>
+        <param>
+          <type>byte</type>
+          <declname>servo_num</declname>
+          <defname>servo_number</defname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>servo_angle</declname>
+        </param>
+        <param>
+          <type>boolean</type>
+          <declname>with_offset</declname>
+          <defname>writeWithoffset</defname>
+        </param>
+        <briefdescription>
+<para>Write the angle to <ref refid="class_servo" kindref="compound">Servo</ref>. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>servo_number</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>SERVO_ROT_NUM, SERVO_LEFT_NUM, SERVO_RIGHT_NUM, SERVO_HAND_ROT_NUM </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>servo_angle</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="class_servo" kindref="compound">Servo</ref> target angle, 0.00 - 180.00 </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>writeWithoffset</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>True: with Offset, False: without Offset </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="122" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="98" bodyend="119"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1a762158e7b894f861b2a4b6f58838dd41" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::write_left_right_servo_angle</definition>
+        <argsstring>(double servo_left_angle, double servo_right_angle, boolean with_offset)</argsstring>
+        <name>write_left_right_servo_angle</name>
+        <param>
+          <type>double</type>
+          <declname>servo_left_angle</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>servo_right_angle</declname>
+        </param>
+        <param>
+          <type>boolean</type>
+          <declname>with_offset</declname>
+          <defname>writeWithoffset</defname>
+        </param>
+        <briefdescription>
+<para>Write the left <ref refid="class_servo" kindref="compound">Servo</ref> &amp; Right <ref refid="class_servo" kindref="compound">Servo</ref> in the same time (Avoid demage the <ref refid="class_servo" kindref="compound">Servo</ref>) </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>servo_left_angle</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>left servo target angle </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>servo_right_angle</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>right servo target angle </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>writeWithoffset</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>True: with Offset, False: without Offset </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="123" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="127" bodyend="142"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1ad943083ee0d9eb9f1473d05f19c21a7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double uArmClass::read_servo_angle</definition>
+        <argsstring>(byte servo_num)</argsstring>
+        <name>read_servo_angle</name>
+        <param>
+          <type>byte</type>
+          <declname>servo_num</declname>
+        </param>
+        <briefdescription>
+<para>read Angle by servo_num without offset </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>servo_num</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>SERVO_ROT_NUM, SERVO_LEFT_NUM, SERVO_RIGHT_NUM, SERVO_HAND_ROT_NUM </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Return servo_num Angle </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="124" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="254" bodyend="257"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1aef88e25b3128b2e77147a5f8e0928d37" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double uArmClass::read_servo_angle</definition>
+        <argsstring>(byte servo_num, boolean with_offset)</argsstring>
+        <name>read_servo_angle</name>
+        <param>
+          <type>byte</type>
+          <declname>servo_num</declname>
+        </param>
+        <param>
+          <type>boolean</type>
+          <declname>with_offset</declname>
+          <defname>withOffset</defname>
+        </param>
+        <briefdescription>
+<para>read Angle by servo_num </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>servo_num</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>SERVO_ROT_NUM, SERVO_LEFT_NUM, SERVO_RIGHT_NUM, SERVO_HAND_ROT_NUM </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>withOffset</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>true, false </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Return servo_num Angle </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="125" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="265" bodyend="294"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1a848e96aacb6fd9cf3c4af6d843a69c20" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double uArmClass::analog_to_angle</definition>
+        <argsstring>(int input_angle, byte servo_num, boolean with_offset)</argsstring>
+        <name>analog_to_angle</name>
+        <param>
+          <type>int</type>
+          <declname>input_angle</declname>
+          <defname>input_analog</defname>
+        </param>
+        <param>
+          <type>byte</type>
+          <declname>servo_num</declname>
+        </param>
+        <param>
+          <type>boolean</type>
+          <declname>with_offset</declname>
+          <defname>withOffset</defname>
+        </param>
+        <briefdescription>
+<para>Convert the Analog to <ref refid="class_servo" kindref="compound">Servo</ref> Angle, by this formatter, angle = intercept + slope * analog. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>input_analog</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Analog Value </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>servo_num</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>SERVO_ROT_NUM, SERVO_LEFT_NUM, SERVO_RIGHT_NUM, SERVO_HAND_ROT_NUM </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>withOffset</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>true, false </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Return <ref refid="class_servo" kindref="compound">Servo</ref> Angle </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="126" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="240" bodyend="247"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1aaf4c2ca0a6ff1a78ddc73397b8ea4dd4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int uArmClass::move_to</definition>
+        <argsstring>(double x, double y, double z, double hand_angle, byte relative_flags, double time, byte path_type, byte ease_type, boolean enable_hand)</argsstring>
+        <name>move_to</name>
+        <param>
+          <type>double</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>z</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>hand_angle</declname>
+        </param>
+        <param>
+          <type>byte</type>
+          <declname>relative_flags</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>time</declname>
+        </param>
+        <param>
+          <type>byte</type>
+          <declname>path_type</declname>
+        </param>
+        <param>
+          <type>byte</type>
+          <declname>ease_type</declname>
+        </param>
+        <param>
+          <type>boolean</type>
+          <declname>enable_hand</declname>
+        </param>
+        <briefdescription>
+<para>Move To, Action Control Core Function. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>X Axis Value </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>y</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Y Axis Value </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>z</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Z Axis Value </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>hand_angle</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Hand Axis </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>relative_flags</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>ABSOLUTE, RELATIVE </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>path_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>PATH_LINEAR, PATH_ANGLES </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>enable_hand</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Enable Hand Axis </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>SUCCESS, FAILED </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="129" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="531" bodyend="637"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1ad6277553f8eb2df7b3fdb66323f905a7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::move_to</definition>
+        <argsstring>(double x, double y, double z)</argsstring>
+        <name>move_to</name>
+        <param>
+          <type>double</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>z</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="130" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="130" bodyend="132"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1ade1c405b5c74ab1b58ee7089de76a4a6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::move_to</definition>
+        <argsstring>(double x, double y, double z, double hand_angle)</argsstring>
+        <name>move_to</name>
+        <param>
+          <type>double</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>z</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>hand_angle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="133" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="133" bodyend="135"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1ab085126c229aef2f595f261e187b0900" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::move_to</definition>
+        <argsstring>(double x, double y, double z, int relative, double time)</argsstring>
+        <name>move_to</name>
+        <param>
+          <type>double</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>z</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>relative</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>time</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="136" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="136" bodyend="138"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1a91f8baa1885f86a09e2595e73c662381" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::move_to</definition>
+        <argsstring>(double x, double y, double z, int relative, double time, double servo_4_angle)</argsstring>
+        <name>move_to</name>
+        <param>
+          <type>double</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>z</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>relative</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>time</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>servo_4_angle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="139" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="139" bodyend="141"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1a6a444461522df7ad01625a5af5dec078" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::move_to</definition>
+        <argsstring>(double x, double y, double z, int relative, double time, int servo_4_relative, double servo_4_angle)</argsstring>
+        <name>move_to</name>
+        <param>
+          <type>double</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>z</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>relative</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>time</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>servo_4_relative</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>servo_4_angle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="142" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="142" bodyend="144"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1a7bc6967374e93d9f155e663549a80d4b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::move_to_at_once</definition>
+        <argsstring>(double x, double y, double z)</argsstring>
+        <name>move_to_at_once</name>
+        <param>
+          <type>double</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>z</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="146" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="146" bodyend="148"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1a3650f6fa4fb916255ad9e1822d9ec1a5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::move_to_at_once</definition>
+        <argsstring>(double x, double y, double z, int relative, double servo_4_angle)</argsstring>
+        <name>move_to_at_once</name>
+        <param>
+          <type>double</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>z</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>relative</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>servo_4_angle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="149" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="149" bodyend="151"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1a3bf781ec8db7dc04bd68fa763255e71c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::write_stretch_height</definition>
+        <argsstring>(double stretch, double height)</argsstring>
+        <name>write_stretch_height</name>
+        <param>
+          <type>double</type>
+          <declname>stretch</declname>
+          <defname>armStretch</defname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>height</declname>
+          <defname>armHeight</defname>
+        </param>
+        <briefdescription>
+<para>Write Sretch &amp; Height.  This is an old control method to uArm. Using uarm&apos;s Stretch and height, , Height from -180 to 150. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>armStretch</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Stretch from 0 to 195 </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>armHeight</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Height from -150 to 150 </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="153" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="427" bodyend="448"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1a58363626e97719a592d2d153e5a67b6d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double uArmClass::get_current_x</definition>
+        <argsstring>()</argsstring>
+        <name>get_current_x</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="156" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="156" bodyend="158"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1a526e7ccdc0f1b7673eb6a1f156dcfdad" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double uArmClass::get_current_y</definition>
+        <argsstring>()</argsstring>
+        <name>get_current_y</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="159" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="159" bodyend="161"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1aa8754514697a06e60dd4be9b36b25101" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double uArmClass::get_current_z</definition>
+        <argsstring>()</argsstring>
+        <name>get_current_z</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="162" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="162" bodyend="164"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1a22d74cb816204d1172428302837fab24" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::get_current_xyz</definition>
+        <argsstring>()</argsstring>
+        <name>get_current_xyz</name>
+        <briefdescription>
+<para>Calculate X,Y,Z to g_current_x,g_current_y,g_current_z. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="166" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="453" bodyend="459"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1a346870be49f76192ec77176d9c3a2a44" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::get_current_xyz</definition>
+        <argsstring>(double theta_1, double theta_2, double theta_3)</argsstring>
+        <name>get_current_xyz</name>
+        <param>
+          <type>double</type>
+          <declname>theta_1</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>theta_2</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>theta_3</declname>
+        </param>
+        <briefdescription>
+<para>Calculate X,Y,Z to g_current_x,g_current_y,g_current_z. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="167" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="464" bodyend="471"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1ab8db96e35368bd928ea3c355e3f9609c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::angle_to_coordinate</definition>
+        <argsstring>(double &amp;x, double &amp;y, double &amp;z)</argsstring>
+        <name>angle_to_coordinate</name>
+        <param>
+          <type>double &amp;</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>double &amp;</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>double &amp;</type>
+          <declname>z</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="169" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="169" bodyend="171"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1a087c721ea46b3dced1a4da085a027094" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::angle_to_coordinate</definition>
+        <argsstring>(double theta_1, double theta_2, double theta_3, double &amp;x, double &amp;y, double &amp;z)</argsstring>
+        <name>angle_to_coordinate</name>
+        <param>
+          <type>double</type>
+          <declname>theta_1</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>theta_2</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>theta_3</declname>
+        </param>
+        <param>
+          <type>double &amp;</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>double &amp;</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>double &amp;</type>
+          <declname>z</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="172" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="172" bodyend="174"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1ae3d5c2249f60c69798050d058686fe15" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::coordinate_to_angle</definition>
+        <argsstring>(double x, double y, double z, double &amp;theta_1, double &amp;theta_2, double &amp;theta_3)</argsstring>
+        <name>coordinate_to_angle</name>
+        <param>
+          <type>double</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>z</declname>
+        </param>
+        <param>
+          <type>double &amp;</type>
+          <declname>theta_1</declname>
+        </param>
+        <param>
+          <type>double &amp;</type>
+          <declname>theta_2</declname>
+        </param>
+        <param>
+          <type>double &amp;</type>
+          <declname>theta_3</declname>
+        </param>
+        <briefdescription>
+<para>Calculate the angles from given coordinate x, y, z to theta_1, theta_2, theta_3. </para>        </briefdescription>
+        <detaileddescription>
+<para>Calculate the angles from given coordinate x, y, z to theta_1, theta_2, theta_3</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>X axis </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>y</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Y axis </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>z</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Z axis </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>theta_1</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>SERVO_ROT_NUM servo angles </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>theta_2</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>SERVO_LEFT_NUM servo angles </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>theta_3</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>SERVO_RIGHT_NUM servo angles </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="175" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="307" bodyend="419"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1abc380c560571d0645af8f8166bc9720d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::gripper_catch</definition>
+        <argsstring>()</argsstring>
+        <name>gripper_catch</name>
+        <briefdescription>
+<para>Close Gripper. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="178" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="656" bodyend="661"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1ad2286428e3c74f4dbac37ec537d3d301" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::gripper_release</definition>
+        <argsstring>()</argsstring>
+        <name>gripper_release</name>
+        <briefdescription>
+<para>Release Gripper. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="179" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="666" bodyend="674"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1ac8ea033ef44b3e79c46b63846dd26b03" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::interpolate</definition>
+        <argsstring>(double start_val, double end_val, double *interp_vals, byte ease_type)</argsstring>
+        <name>interpolate</name>
+        <param>
+          <type>double</type>
+          <declname>start_val</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>end_val</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>interp_vals</declname>
+        </param>
+        <param>
+          <type>byte</type>
+          <declname>ease_type</declname>
+        </param>
+        <briefdescription>
+<para>&quot;Genernate the position array&quot; </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>start_val</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Start Position </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>end_val</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>End Position </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>interp_vals</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>interpolation array </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ease_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>INTERP_EASE_INOUT_CUBIC, INTERP_LINEAR, INTERP_EASE_INOUT, INTERP_EASE_IN, INTERP_EASE_OUT </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="180" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="480" bodyend="518"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1a983b6a63e8c76c27bb1f4b1e51ef059a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::pump_on</definition>
+        <argsstring>()</argsstring>
+        <name>pump_on</name>
+        <briefdescription>
+<para>Turn on Pump. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="181" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="679" bodyend="686"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1a908b2f1a111b14ffdfc52bce7ccffd3d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::pump_off</definition>
+        <argsstring>()</argsstring>
+        <name>pump_off</name>
+        <briefdescription>
+<para>Turn off Pump. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="182" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="691" bodyend="699"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1a5e3c308488f482984e9b50a1d23bec2f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int uArmClass::write_servo_angle</definition>
+        <argsstring>(byte servo_rot_angle, byte servo_left_angle, byte servo_right_angle, byte servo_hand_rot_angle, byte trigger)</argsstring>
+        <name>write_servo_angle</name>
+        <param>
+          <type>byte</type>
+          <declname>servo_rot_angle</declname>
+        </param>
+        <param>
+          <type>byte</type>
+          <declname>servo_left_angle</declname>
+        </param>
+        <param>
+          <type>byte</type>
+          <declname>servo_right_angle</declname>
+        </param>
+        <param>
+          <type>byte</type>
+          <declname>servo_hand_rot_angle</declname>
+        </param>
+        <param>
+          <type>byte</type>
+          <declname>trigger</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="184" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1a162fc13de89724ffcdeb5935f9277206" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int uArmClass::write_servo_angle</definition>
+        <argsstring>(double servo_rot_angle, double servo_left_angle, double servo_right_angle, double servo_hand_rot_angle)</argsstring>
+        <name>write_servo_angle</name>
+        <param>
+          <type>double</type>
+          <declname>servo_rot_angle</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>servo_left_angle</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>servo_right_angle</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>servo_hand_rot_angle</declname>
+        </param>
+        <briefdescription>
+<para>Write 4 <ref refid="class_servo" kindref="compound">Servo</ref> Angles, servo_rot, servo_left, servo_right, servo_hand_rot. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>servo_rot_angle</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>SERVO_ROT_NUM </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>servo_left_angle</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>SERVO_LEFT_NUM </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>servo_right_angle</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>SERVO_RIGHT_NUM </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>servo_hand_rot_angle</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>SERVO_HAND_ROT_NUM </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>SUCCESS, FAILED </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="185" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="51" bodyend="57"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1a015c04eb9d8b63febf147894055e462a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int uArmClass::write_servo_angle</definition>
+        <argsstring>(double servo_rot_angle, double servo_left_angle, double servo_right_angle)</argsstring>
+        <name>write_servo_angle</name>
+        <param>
+          <type>double</type>
+          <declname>servo_rot_angle</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>servo_left_angle</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>servo_right_angle</declname>
+        </param>
+        <briefdescription>
+<para>Write 3 <ref refid="class_servo" kindref="compound">Servo</ref> Angles, servo_rot, servo_left, servo_right. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>servo_rot_angle</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>SERVO_ROT_NUM </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>servo_left_angle</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>SERVO_LEFT_NUM </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>servo_right_angle</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>SERVO_RIGHT_NUM </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>SUCCESS, FAILED </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="186" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="66" bodyend="90"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1afa56f149c58d1577804de94ea8235d97" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>boolean</type>
+        <definition>boolean uArmClass::set_servo_status</definition>
+        <argsstring>(boolean attach_state, byte servo_num)</argsstring>
+        <name>set_servo_status</name>
+        <param>
+          <type>boolean</type>
+          <declname>attach_state</declname>
+          <defname>setAttached</defname>
+        </param>
+        <param>
+          <type>byte</type>
+          <declname>servo_num</declname>
+          <defname>servoNum</defname>
+        </param>
+        <briefdescription>
+<para>Attach All <ref refid="class_servo" kindref="compound">Servo</ref>. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>Warning, if you attach left servo &amp; right servo without a movement, it might be caused a demage</para></simplesect>
+Attach <ref refid="class_servo" kindref="compound">Servo</ref>, if servo has not been attached, attach the servo, and read the current Angle <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>servo</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number SERVO_ROT_NUM, SERVO_LEFT_NUM, SERVO_RIGHT_NUM, SERVO_HAND_ROT_NUM </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="195" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="161" bodyend="208"/>
+      </memberdef>
+      <memberdef kind="function" id="classu_arm_class_1ab0077b25370d56bcdf1566c71abe92fb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void uArmClass::init</definition>
+        <argsstring>()</argsstring>
+        <name>init</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="196" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="18" bodyend="24"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classu_arm_class_1ab72ccb5965c415682bd5554e190d931e" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double uArmClass::angle_to_coordinate_y</definition>
+        <argsstring>(double theta_1, double theta_2, double theta_3)</argsstring>
+        <name>angle_to_coordinate_y</name>
+        <param>
+          <type>double</type>
+          <declname>theta_1</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>theta_2</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>theta_3</declname>
+        </param>
+        <briefdescription>
+<para>Calculate Y. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>theta_1</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>theta_2</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>theta_3</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Y Axis Value </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="203" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="646" bodyend="651"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="10">
+        <label>uArmClass</label>
+        <link refid="classu_arm_class"/>
+        <childnode refid="11" relation="usage">
+          <edgelabel>g_servo_hand</edgelabel>
+          <edgelabel>g_servo_left</edgelabel>
+          <edgelabel>g_servo_rot</edgelabel>
+          <edgelabel>g_servo_hand_rot</edgelabel>
+          <edgelabel>g_servo_right</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>Servo</label>
+        <link refid="class_servo"/>
+      </node>
+    </collaborationgraph>
+    <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="115" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="114" bodyend="214"/>
+    <listofallmembers>
+      <member refid="classu_arm_class_1a42655ebaae4634dfb272e00e5ad2ecf8" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>alert</name></member>
+      <member refid="classu_arm_class_1a848e96aacb6fd9cf3c4af6d843a69c20" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>analog_to_angle</name></member>
+      <member refid="classu_arm_class_1ab8db96e35368bd928ea3c355e3f9609c" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>angle_to_coordinate</name></member>
+      <member refid="classu_arm_class_1a087c721ea46b3dced1a4da085a027094" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>angle_to_coordinate</name></member>
+      <member refid="classu_arm_class_1ab72ccb5965c415682bd5554e190d931e" prot="protected" virt="non-virtual"><scope>uArmClass</scope><name>angle_to_coordinate_y</name></member>
+      <member refid="classu_arm_class_1ae3d5c2249f60c69798050d058686fe15" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>coordinate_to_angle</name></member>
+      <member refid="classu_arm_class_1a5d1999ccfc522936f017256fecf6be60" prot="protected" virt="non-virtual"><scope>uArmClass</scope><name>cur_hand</name></member>
+      <member refid="classu_arm_class_1a2982d5607b70ab69d4c44ed95c140021" prot="protected" virt="non-virtual"><scope>uArmClass</scope><name>cur_left</name></member>
+      <member refid="classu_arm_class_1a10c284c23e73eb6260260d55472b8983" prot="protected" virt="non-virtual"><scope>uArmClass</scope><name>cur_right</name></member>
+      <member refid="classu_arm_class_1acad460dd08a71be8ef53eedfec90545e" prot="protected" virt="non-virtual"><scope>uArmClass</scope><name>cur_rot</name></member>
+      <member refid="classu_arm_class_1a3c59c7a95c9a7d1c5ca3942c46dd3ff8" prot="protected" virt="non-virtual"><scope>uArmClass</scope><name>g_current_x</name></member>
+      <member refid="classu_arm_class_1a07afd50d4a18b241dfcfa3a353c7567d" prot="protected" virt="non-virtual"><scope>uArmClass</scope><name>g_current_y</name></member>
+      <member refid="classu_arm_class_1a837f9a2a3e240bb294469f940c952e32" prot="protected" virt="non-virtual"><scope>uArmClass</scope><name>g_current_z</name></member>
+      <member refid="classu_arm_class_1af0df1d802c04741d390beaaf0b31b1f3" prot="protected" virt="non-virtual"><scope>uArmClass</scope><name>g_gripper_reset</name></member>
+      <member refid="classu_arm_class_1a0841c2fe0ca33ae6f83b6bd3bf2e1a6b" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>g_servo_hand</name></member>
+      <member refid="classu_arm_class_1a589664e5cbc560163f68e9152ff64bd1" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>g_servo_hand_rot</name></member>
+      <member refid="classu_arm_class_1a5ae5272cd6a209cf3de5339347a6b86f" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>g_servo_left</name></member>
+      <member refid="classu_arm_class_1aa87224671243ac73cbf9935a24b2efd9" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>g_servo_right</name></member>
+      <member refid="classu_arm_class_1a4b914c1da1dfd085d6384b4984519e89" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>g_servo_rot</name></member>
+      <member refid="classu_arm_class_1a58363626e97719a592d2d153e5a67b6d" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>get_current_x</name></member>
+      <member refid="classu_arm_class_1a22d74cb816204d1172428302837fab24" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>get_current_xyz</name></member>
+      <member refid="classu_arm_class_1a346870be49f76192ec77176d9c3a2a44" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>get_current_xyz</name></member>
+      <member refid="classu_arm_class_1a526e7ccdc0f1b7673eb6a1f156dcfdad" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>get_current_y</name></member>
+      <member refid="classu_arm_class_1aa8754514697a06e60dd4be9b36b25101" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>get_current_z</name></member>
+      <member refid="classu_arm_class_1abc380c560571d0645af8f8166bc9720d" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>gripper_catch</name></member>
+      <member refid="classu_arm_class_1ad2286428e3c74f4dbac37ec537d3d301" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>gripper_release</name></member>
+      <member refid="classu_arm_class_1ab0077b25370d56bcdf1566c71abe92fb" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>init</name></member>
+      <member refid="classu_arm_class_1ab92828f4da95e9b1007683b658552268" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>INTERP_INTVLS</name></member>
+      <member refid="classu_arm_class_1ac8ea033ef44b3e79c46b63846dd26b03" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>interpolate</name></member>
+      <member refid="classu_arm_class_1aaf4c2ca0a6ff1a78ddc73397b8ea4dd4" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>move_to</name></member>
+      <member refid="classu_arm_class_1ad6277553f8eb2df7b3fdb66323f905a7" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>move_to</name></member>
+      <member refid="classu_arm_class_1ade1c405b5c74ab1b58ee7089de76a4a6" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>move_to</name></member>
+      <member refid="classu_arm_class_1ab085126c229aef2f595f261e187b0900" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>move_to</name></member>
+      <member refid="classu_arm_class_1a91f8baa1885f86a09e2595e73c662381" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>move_to</name></member>
+      <member refid="classu_arm_class_1a6a444461522df7ad01625a5af5dec078" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>move_to</name></member>
+      <member refid="classu_arm_class_1a7bc6967374e93d9f155e663549a80d4b" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>move_to_at_once</name></member>
+      <member refid="classu_arm_class_1a3650f6fa4fb916255ad9e1822d9ec1a5" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>move_to_at_once</name></member>
+      <member refid="classu_arm_class_1a908b2f1a111b14ffdfc52bce7ccffd3d" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>pump_off</name></member>
+      <member refid="classu_arm_class_1a983b6a63e8c76c27bb1f4b1e51ef059a" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>pump_on</name></member>
+      <member refid="classu_arm_class_1afe670cd52fe57cb347eff5da7c5f1114" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>read_linear_offset</name></member>
+      <member refid="classu_arm_class_1ad943083ee0d9eb9f1473d05f19c21a7a" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>read_servo_angle</name></member>
+      <member refid="classu_arm_class_1aef88e25b3128b2e77147a5f8e0928d37" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>read_servo_angle</name></member>
+      <member refid="classu_arm_class_1ada41aed1523d78f47a70a896be0700e5" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>read_servo_offset</name></member>
+      <member refid="classu_arm_class_1afa56f149c58d1577804de94ea8235d97" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>set_servo_status</name></member>
+      <member refid="classu_arm_class_1ab7970a58e1d69f227412de1a2d09b25e" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>uArmClass</name></member>
+      <member refid="classu_arm_class_1a762158e7b894f861b2a4b6f58838dd41" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>write_left_right_servo_angle</name></member>
+      <member refid="classu_arm_class_1ad49f00b82c7217aea14992519db644c9" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>write_servo_angle</name></member>
+      <member refid="classu_arm_class_1a5e3c308488f482984e9b50a1d23bec2f" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>write_servo_angle</name></member>
+      <member refid="classu_arm_class_1a162fc13de89724ffcdeb5935f9277206" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>write_servo_angle</name></member>
+      <member refid="classu_arm_class_1a015c04eb9d8b63febf147894055e462a" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>write_servo_angle</name></member>
+      <member refid="classu_arm_class_1a3bf781ec8db7dc04bd68fa763255e71c" prot="public" virt="non-virtual"><scope>uArmClass</scope><name>write_stretch_height</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

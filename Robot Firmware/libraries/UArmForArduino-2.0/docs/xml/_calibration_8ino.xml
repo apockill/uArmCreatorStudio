@@ -1,0 +1,434 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.11">
+  <compounddef id="_calibration_8ino" kind="file" language="C++">
+    <compoundname>Calibration.ino</compoundname>
+    <includes refid="uarm__library_8h" local="yes">uarm_library.h</includes>
+    <incdepgraph>
+      <node id="5">
+        <label>UFServo.h</label>
+        <link refid="_u_f_servo_8h"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>linreg.h</label>
+        <link refid="linreg_8h"/>
+      </node>
+      <node id="4">
+        <label>Wire.h</label>
+      </node>
+      <node id="2">
+        <label>Arduino.h</label>
+      </node>
+      <node id="0">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino</label>
+        <link refid="Calibration.ino"/>
+        <childnode refid="1" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>uarm_library.h</label>
+        <link refid="uarm__library_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>EEPROM.h</label>
+      </node>
+      <node id="6">
+        <label>inttypes.h</label>
+      </node>
+    </incdepgraph>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_calibration_8ino_1ac4f474c82e82cbb89ca7c36dd52be0ed" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int value</definition>
+        <argsstring></argsstring>
+        <name>value</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino" line="11" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino" bodystart="11" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_calibration_8ino_1a4fc01d736fe50cf5b977f755b675f11d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void setup</definition>
+        <argsstring>()</argsstring>
+        <name>setup</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino" line="13" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino" bodystart="13" bodyend="17"/>
+      </memberdef>
+      <memberdef kind="function" id="_calibration_8ino_1afe461d27b9c48d5921c00d521181f12f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void loop</definition>
+        <argsstring>()</argsstring>
+        <name>loop</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino" line="20" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino" bodystart="20" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="function" id="_calibration_8ino_1a930cf5209ea71f73016cf8533eea6177" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void calibration_start</definition>
+        <argsstring>()</argsstring>
+        <name>calibration_start</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Start Calibration all section </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino" line="72" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino" bodystart="72" bodyend="87"/>
+      </memberdef>
+      <memberdef kind="function" id="_calibration_8ino_1a98a269b6bafeb709ff9011928007f63a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void linear_calibration_servo</definition>
+        <argsstring>(byte servo_num)</argsstring>
+        <name>linear_calibration_servo</name>
+        <param>
+          <type>byte</type>
+          <declname>servo_num</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Calibrate each servo for linear offset </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino" line="91" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino" bodystart="91" bodyend="167"/>
+      </memberdef>
+      <memberdef kind="function" id="_calibration_8ino_1a28a2ffbf228784fbb873e62dee4a7df1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void cleanEEPROM</definition>
+        <argsstring>()</argsstring>
+        <name>cleanEEPROM</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Clean EEPROM before calibration </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino" line="171" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino" bodystart="171" bodyend="175"/>
+      </memberdef>
+      <memberdef kind="function" id="_calibration_8ino_1ac5667d6e33349078db98fa87e7170e83" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void manual_calibration_section</definition>
+        <argsstring>()</argsstring>
+        <name>manual_calibration_section</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Manual Calibration Section </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino" line="179" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino" bodystart="179" bodyend="234"/>
+      </memberdef>
+      <memberdef kind="function" id="_calibration_8ino_1a6aeb26bc9733225f69b65f2390c6674b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void save_manual_servo_offset</definition>
+        <argsstring>(byte servo_num, double offset)</argsstring>
+        <name>save_manual_servo_offset</name>
+        <param>
+          <type>byte</type>
+          <declname>servo_num</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>offset</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Save Manual <ref refid="class_servo" kindref="compound">Servo</ref> Offset </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino" line="239" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino" bodystart="239" bodyend="242"/>
+      </memberdef>
+      <memberdef kind="function" id="_calibration_8ino_1aa2d22b932b498060c273098d7a52c134" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void save_linear_servo_offset</definition>
+        <argsstring>(byte servo_num, double intercept_val, double slope_val)</argsstring>
+        <name>save_linear_servo_offset</name>
+        <param>
+          <type>byte</type>
+          <declname>servo_num</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>intercept_val</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>slope_val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Save Linear <ref refid="class_servo" kindref="compound">Servo</ref> Offset intercept &amp; slope </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino" line="246" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino" bodystart="246" bodyend="249"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Calibration Arduino Sketch. </para>    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="author"><para>Joe Song  Alex Tan  GNU </para></simplesect>
+<simplesect kind="copyright"><para>(c) 2016 UFactory Team. All right reserved </para></simplesect>
+</para>    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"></codeline>
+<codeline lineno="9"><highlight class="preprocessor">#include<sp/>&quot;<ref refid="uarm__library_8h" kindref="compound">uarm_library.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="_calibration_8ino_1ac4f474c82e82cbb89ca7c36dd52be0ed" kindref="member">value</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>value<sp/>is<sp/>the<sp/>data<sp/>recevied</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="_calibration_8ino_1a4fc01d736fe50cf5b977f755b675f11d" kindref="member">setup</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>Serial.begin(9600);<sp/><sp/></highlight><highlight class="comment">//<sp/>start<sp/>serial<sp/>port<sp/>at<sp/>9600<sp/>bps</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="_calibration_8ino_1afe461d27b9c48d5921c00d521181f12f" kindref="member">loop</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(Serial.available()&gt;0)</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>readSerial<sp/>=<sp/>Serial.read();</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(readSerial);</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Input<sp/>c<sp/>to<sp/>start<sp/>calibrate<sp/>automatically</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(readSerial<sp/>==<sp/></highlight><highlight class="charliteral">&apos;c&apos;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="_calibration_8ino_1a930cf5209ea71f73016cf8533eea6177" kindref="member">calibration_start</ref>();</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>delay(1000);</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1aaf4c2ca0a6ff1a78ddc73397b8ea4dd4" kindref="member">move_to</ref>(0,-15,6);</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//----------------------------------<sp/><sp/>Test<sp/>Function<sp/><sp/>------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(readSerial<sp/>==<sp/></highlight><highlight class="charliteral">&apos;1&apos;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1aaf4c2ca0a6ff1a78ddc73397b8ea4dd4" kindref="member">move_to</ref>(15,-15,5);</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>delay(1000);</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(readSerial<sp/>==<sp/></highlight><highlight class="charliteral">&apos;2&apos;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1aaf4c2ca0a6ff1a78ddc73397b8ea4dd4" kindref="member">move_to</ref>(-15,-15,5);</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>delay(1000);</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(readSerial<sp/>==<sp/></highlight><highlight class="charliteral">&apos;s&apos;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(</highlight><highlight class="stringliteral">&quot;linear<sp/>offset:&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(byte<sp/>i<sp/>=<sp/>0;i<sp/>&lt;<sp/>4;<sp/>i++)</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(</highlight><highlight class="stringliteral">&quot;Linear<sp/>Offset<sp/>Servo<sp/>&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(i);</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>a<sp/>=<sp/>0.0f;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>b<sp/>=<sp/>0.0f;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1afe670cd52fe57cb347eff5da7c5f1114" kindref="member">read_linear_offset</ref>(i,a,b);</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(</highlight><highlight class="stringliteral">&quot;A:<sp/>&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(a);</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(</highlight><highlight class="stringliteral">&quot;,<sp/>B:<sp/>&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(b);</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(</highlight><highlight class="stringliteral">&quot;Manual<sp/>Offset:<sp/>&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(<ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1ada41aed1523d78f47a70a896be0700e5" kindref="member">read_servo_offset</ref>(i));</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(</highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>delay(1000);</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="67"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="_calibration_8ino_1a930cf5209ea71f73016cf8533eea6177" kindref="member">calibration_start</ref>(){</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cleanEEPROM();</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k<sp/>=<sp/>0;<sp/>k<sp/>&lt;<sp/>4;<sp/>k++)<sp/>{</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="_calibration_8ino_1a98a269b6bafeb709ff9011928007f63a" kindref="member">linear_calibration_servo</ref>(k);</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>delay(2000);</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>EEPROM.write(<ref refid="uarm__library_8h_1a5e90d58c52e67b6224b150b27a353453" kindref="member">CALIBRATION_LINEAR_FLAG</ref>,<sp/><ref refid="uarm__library_8h_1a3d0e6509d759316e80cf78e48e3ce413" kindref="member">CONFIRM_FLAG</ref>);</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="_calibration_8ino_1ac5667d6e33349078db98fa87e7170e83" kindref="member">manual_calibration_section</ref>();</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>EEPROM.write(<ref refid="uarm__library_8h_1ab10f90584293bd4ad45f4fe783d7085e" kindref="member">CALIBRATION_MANUAL_FLAG</ref>,<sp/><ref refid="uarm__library_8h_1a3d0e6509d759316e80cf78e48e3ce413" kindref="member">CONFIRM_FLAG</ref>);</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>EEPROM.write(<ref refid="uarm__library_8h_1a8079adb7eb3e610e8cf0b288d1ee18e5" kindref="member">CALIBRATION_FLAG</ref>,<sp/><ref refid="uarm__library_8h_1a3d0e6509d759316e80cf78e48e3ce413" kindref="member">CONFIRM_FLAG</ref>);</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(</highlight><highlight class="stringliteral">&quot;All<sp/>done!&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="87"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="_calibration_8ino_1a98a269b6bafeb709ff9011928007f63a" kindref="member">linear_calibration_servo</ref>(byte<sp/>servo_num)</highlight></codeline>
+<codeline lineno="92"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>byte<sp/>kServoRangeIni<sp/>=<sp/>20;</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>byte<sp/>kServoRangeFin<sp/>=<sp/>100;</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>l_angle_analog;</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>arr_real[16];</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>arr_input[16];</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>intercept_address<sp/>=<sp/><sp/><ref refid="uarm__library_8h_1a37fa1a215c9ab99475b68b2a435b1d6e" kindref="member">LINEAR_INTERCEPT_START_ADDRESS</ref>;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>slope_address<sp/>=<sp/><ref refid="uarm__library_8h_1a5bc6708c078bca352fe86d11910fa516" kindref="member">LINEAR_SLOPE_START_ADDRESS</ref>;</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(</highlight><highlight class="stringliteral">&quot;intercept_address:<sp/>&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(intercept_address);</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(</highlight><highlight class="stringliteral">&quot;slope_address:<sp/>&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(slope_address);</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(</highlight><highlight class="stringliteral">&quot;servo<sp/>&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(servo_num);</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>byte<sp/>l_analog_pin;</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(byte<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>(((kServoRangeFin-kServoRangeIni)/5)+1);<sp/>i++)</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>byte<sp/>dot_i<sp/>=<sp/>5*i;</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>angle<sp/>=<sp/>kServoRangeIni+dot_i;</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal">(servo_num)</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="uarm__library_8h_1aedb0af3f18647ea800b5e7591f44fff5" kindref="member">SERVO_ROT_NUM</ref>:</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>l_analog_pin<sp/>=<sp/><ref refid="uarm__library_8h_1a0f648f6effa6d9c0ab6cc0ce519dc98f" kindref="member">SERVO_ROT_ANALOG_PIN</ref>;</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1ad49f00b82c7217aea14992519db644c9" kindref="member">write_servo_angle</ref>(<ref refid="uarm__library_8h_1aedb0af3f18647ea800b5e7591f44fff5" kindref="member">SERVO_ROT_NUM</ref>,<sp/>angle,<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1a762158e7b894f861b2a4b6f58838dd41" kindref="member">write_left_right_servo_angle</ref>(60,<sp/>30,<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="uarm__library_8h_1aad9c39f9a13fb794436e7f28a66ec957" kindref="member">SERVO_LEFT_NUM</ref>:</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>l_analog_pin<sp/>=<sp/><ref refid="uarm__library_8h_1ac9a9fa46c32380bb1c0e8667dd7ee56c" kindref="member">SERVO_LEFT_ANALOG_PIN</ref>;</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1ad49f00b82c7217aea14992519db644c9" kindref="member">write_servo_angle</ref>(<ref refid="uarm__library_8h_1aedb0af3f18647ea800b5e7591f44fff5" kindref="member">SERVO_ROT_NUM</ref>,<sp/>90,<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1a762158e7b894f861b2a4b6f58838dd41" kindref="member">write_left_right_servo_angle</ref>(angle,<sp/>30,<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="uarm__library_8h_1ad6c6879b0915a777fc2165e9e1b324a7" kindref="member">SERVO_RIGHT_NUM</ref>:</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>l_analog_pin<sp/>=<sp/><ref refid="uarm__library_8h_1a7d3a913fd023ab393413bb9e27f5c6d8" kindref="member">SERVO_RIGHT_ANALOG_PIN</ref>;</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1ad49f00b82c7217aea14992519db644c9" kindref="member">write_servo_angle</ref>(<ref refid="uarm__library_8h_1aedb0af3f18647ea800b5e7591f44fff5" kindref="member">SERVO_ROT_NUM</ref>,<sp/>90,<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1a762158e7b894f861b2a4b6f58838dd41" kindref="member">write_left_right_servo_angle</ref>(30,<sp/>angle,<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="uarm__library_8h_1a21176f343ea2d7a582d08884193c07e9" kindref="member">SERVO_HAND_ROT_NUM</ref>:</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>l_analog_pin<sp/>=<sp/><ref refid="uarm__library_8h_1a48b3d8635f22136a8902340682e7cb92" kindref="member">SERVO_HAND_ROT_ANALOG_PIN</ref>;</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1ad49f00b82c7217aea14992519db644c9" kindref="member">write_servo_angle</ref>(<ref refid="uarm__library_8h_1aedb0af3f18647ea800b5e7591f44fff5" kindref="member">SERVO_ROT_NUM</ref>,<sp/>90,<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1a762158e7b894f861b2a4b6f58838dd41" kindref="member">write_left_right_servo_angle</ref>(60,<sp/>30,<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1ad49f00b82c7217aea14992519db644c9" kindref="member">write_servo_angle</ref>(<ref refid="uarm__library_8h_1a21176f343ea2d7a582d08884193c07e9" kindref="member">SERVO_HAND_ROT_NUM</ref>,<sp/>angle,<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(i<sp/>==<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>delay(1000);</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>l<sp/>=<sp/>0;<sp/>l&lt;3;<sp/>l++)<sp/>{</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>l_angle_analog<sp/>=<sp/>analogRead(l_analog_pin);</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>delay(50);</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>arr_real[i]<sp/>=<sp/>kServoRangeIni<sp/>+<sp/>dot_i;</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>arr_input[i]<sp/>=<sp/>l_angle_analog;</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>delay(100);</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"></highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>arr_real[0]<sp/>=<sp/>kServoRangeIni;</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_linear_regression" kindref="compound">LinearRegression</ref><sp/>lr(arr_input,<sp/>arr_real,<sp/>16);</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(</highlight><highlight class="stringliteral">&quot;lr.getA():&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(lr.getA());</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(</highlight><highlight class="stringliteral">&quot;lr.getB():&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(lr.getB());</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="_calibration_8ino_1aa2d22b932b498060c273098d7a52c134" kindref="member">save_linear_servo_offset</ref>(servo_num,<sp/>lr.getA(),<sp/>lr.getB());</highlight></codeline>
+<codeline lineno="167"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"></highlight></codeline>
+<codeline lineno="171"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="_calibration_8ino_1a28a2ffbf228784fbb873e62dee4a7df1" kindref="member">cleanEEPROM</ref>(){</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>p<sp/>=<sp/>0;<sp/>p&lt;EEPROM.length();<sp/>p++)<sp/>{</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>EEPROM.write(p,0);</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="175"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"></highlight></codeline>
+<codeline lineno="179"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="_calibration_8ino_1ac5667d6e33349078db98fa87e7170e83" kindref="member">manual_calibration_section</ref>()</highlight></codeline>
+<codeline lineno="180"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>setLoop<sp/>=<sp/>1;</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"></highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1afa56f149c58d1577804de94ea8235d97" kindref="member">set_servo_status</ref>(</highlight><highlight class="keyword">false</highlight><highlight class="normal">,<sp/><ref refid="uarm__library_8h_1aedb0af3f18647ea800b5e7591f44fff5" kindref="member">SERVO_ROT_NUM</ref>);</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1afa56f149c58d1577804de94ea8235d97" kindref="member">set_servo_status</ref>(</highlight><highlight class="keyword">false</highlight><highlight class="normal">,<sp/><ref refid="uarm__library_8h_1aad9c39f9a13fb794436e7f28a66ec957" kindref="member">SERVO_LEFT_NUM</ref>);</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1afa56f149c58d1577804de94ea8235d97" kindref="member">set_servo_status</ref>(</highlight><highlight class="keyword">false</highlight><highlight class="normal">,<sp/><ref refid="uarm__library_8h_1ad6c6879b0915a777fc2165e9e1b324a7" kindref="member">SERVO_RIGHT_NUM</ref>);</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1afa56f149c58d1577804de94ea8235d97" kindref="member">set_servo_status</ref>(</highlight><highlight class="keyword">false</highlight><highlight class="normal">,<sp/><ref refid="uarm__library_8h_1a21176f343ea2d7a582d08884193c07e9" kindref="member">SERVO_HAND_ROT_NUM</ref>);</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"></highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(</highlight><highlight class="stringliteral">&quot;Put<sp/>uarm<sp/>in<sp/>calibration<sp/>posture<sp/>(servo<sp/>1<sp/>to<sp/>3:<sp/>45,<sp/>130,<sp/>20<sp/>degree<sp/>respectively),<sp/>then<sp/>input<sp/>1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(setLoop)<sp/>{</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"></highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(Serial.available()&gt;0)<sp/>{</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"></highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>inputChar<sp/>=<sp/>Serial.read();</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"></highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(inputChar==</highlight><highlight class="charliteral">&apos;1&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>offsetRot<sp/>=<sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1ad943083ee0d9eb9f1473d05f19c21a7a" kindref="member">read_servo_angle</ref>(<ref refid="uarm__library_8h_1aedb0af3f18647ea800b5e7591f44fff5" kindref="member">SERVO_ROT_NUM</ref>,</highlight><highlight class="keyword">true</highlight><highlight class="normal">)<sp/>-<sp/>45;</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>offsetL<sp/>=<sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1ad943083ee0d9eb9f1473d05f19c21a7a" kindref="member">read_servo_angle</ref>(<ref refid="uarm__library_8h_1aad9c39f9a13fb794436e7f28a66ec957" kindref="member">SERVO_LEFT_NUM</ref>,</highlight><highlight class="keyword">true</highlight><highlight class="normal">)<sp/>-<sp/>130;</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>offsetR<sp/>=<sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1ad943083ee0d9eb9f1473d05f19c21a7a" kindref="member">read_servo_angle</ref>(<ref refid="uarm__library_8h_1ad6c6879b0915a777fc2165e9e1b324a7" kindref="member">SERVO_RIGHT_NUM</ref>,</highlight><highlight class="keyword">true</highlight><highlight class="normal">)<sp/>-<sp/>20;</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"></highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(</highlight><highlight class="stringliteral">&quot;Offsets<sp/>for<sp/>servo<sp/>1<sp/>to<sp/>3<sp/>are<sp/>&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(offsetRot);</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(offsetL);</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(offsetR);</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"></highlight></codeline>
+<codeline lineno="206"><highlight class="normal"></highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>if<sp/>(abs(offsetRot)&gt;25.4||abs(offsetL)&gt;25.4||abs(offsetR)&gt;25.4)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>{</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(&quot;Check<sp/>posture&quot;);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>else{</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="_calibration_8ino_1a6aeb26bc9733225f69b65f2390c6674b" kindref="member">save_manual_servo_offset</ref>(<ref refid="uarm__library_8h_1aedb0af3f18647ea800b5e7591f44fff5" kindref="member">SERVO_ROT_NUM</ref>,<sp/>offsetRot);</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="_calibration_8ino_1a6aeb26bc9733225f69b65f2390c6674b" kindref="member">save_manual_servo_offset</ref>(<ref refid="uarm__library_8h_1aad9c39f9a13fb794436e7f28a66ec957" kindref="member">SERVO_LEFT_NUM</ref>,<sp/>offsetL);</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="_calibration_8ino_1a6aeb26bc9733225f69b65f2390c6674b" kindref="member">save_manual_servo_offset</ref>(<ref refid="uarm__library_8h_1ad6c6879b0915a777fc2165e9e1b324a7" kindref="member">SERVO_RIGHT_NUM</ref>,<sp/>offsetR);</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>setLoop<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(</highlight><highlight class="stringliteral">&quot;Save<sp/>offset<sp/>done!<sp/>&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="218"><highlight class="normal"></highlight></codeline>
+<codeline lineno="219"><highlight class="normal"></highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(inputChar==<sp/></highlight><highlight class="charliteral">&apos;e&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(</highlight><highlight class="stringliteral">&quot;exit&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>setLoop<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"></highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(</highlight><highlight class="stringliteral">&quot;Incorrect,<sp/>input<sp/>again,<sp/>or<sp/>e<sp/>to<sp/>exit&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"></highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"></highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="234"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"></highlight></codeline>
+<codeline lineno="239"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="_calibration_8ino_1a6aeb26bc9733225f69b65f2390c6674b" kindref="member">save_manual_servo_offset</ref>(byte<sp/>servo_num,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>offset)</highlight></codeline>
+<codeline lineno="240"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>EEPROM.put(<ref refid="uarm__library_8h_1ac531494abd09c0ce895867c562b6b65e" kindref="member">MANUAL_OFFSET_ADDRESS</ref><sp/>+<sp/>servo_num<sp/>*<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(offset),<sp/>offset);</highlight></codeline>
+<codeline lineno="242"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="243"><highlight class="normal"></highlight></codeline>
+<codeline lineno="246"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="_calibration_8ino_1aa2d22b932b498060c273098d7a52c134" kindref="member">save_linear_servo_offset</ref>(byte<sp/>servo_num,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>intercept_val,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>slope_val){</highlight></codeline>
+<codeline lineno="247"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>EEPROM.put(<ref refid="uarm__library_8h_1a37fa1a215c9ab99475b68b2a435b1d6e" kindref="member">LINEAR_INTERCEPT_START_ADDRESS</ref><sp/>+<sp/>servo_num<sp/>*<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(intercept_val),<sp/>intercept_val);</highlight></codeline>
+<codeline lineno="248"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>EEPROM.put(<ref refid="uarm__library_8h_1a5bc6708c078bca352fe86d11910fa516" kindref="member">LINEAR_SLOPE_START_ADDRESS</ref><sp/>+<sp/>servo_num<sp/>*<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(slope_val),<sp/>slope_val);</highlight></codeline>
+<codeline lineno="249"><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+    <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino"/>
+  </compounddef>
+</doxygen>

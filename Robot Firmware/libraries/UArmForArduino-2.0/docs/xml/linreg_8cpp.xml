@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.11">
+  <compounddef id="linreg_8cpp" kind="file" language="C++">
+    <compoundname>linreg.cpp</compoundname>
+    <includes local="no">math.h</includes>
+    <includes local="no">float.h</includes>
+    <includes refid="linreg_8h" local="yes">linreg.h</includes>
+    <incdepgraph>
+      <node id="51">
+        <label>float.h</label>
+      </node>
+      <node id="49">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/linreg.cpp</label>
+        <link refid="linreg.cpp"/>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+      </node>
+      <node id="52">
+        <label>linreg.h</label>
+        <link refid="linreg_8h"/>
+      </node>
+      <node id="50">
+        <label>math.h</label>
+      </node>
+    </incdepgraph>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment">file<sp/>linreg.cpp</highlight></codeline>
+<codeline lineno="3"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;math.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;float.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="linreg_8h" kindref="compound">linreg.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"><ref refid="class_linear_regression_1a81a9c23a6ec45206dea79e2777064220" kindref="member">LinearRegression::LinearRegression</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*x,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*y,<sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>size)</highlight></codeline>
+<codeline lineno="10"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>i;</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_linear_regression_1a9afb5e0ec8d6cbb6ac46e5915afc57ec" kindref="member">a</ref><sp/>=<sp/><ref refid="class_linear_regression_1aa258a2c864179aaff99098dea9abf1cb" kindref="member">b</ref><sp/>=<sp/><ref refid="class_linear_regression_1a2d137eb916f6e2f3cf552b3f1a12a4d0" kindref="member">sumX</ref><sp/>=<sp/><ref refid="class_linear_regression_1ae62507e4f1f97b8ab2faae5112ce97d3" kindref="member">sumY</ref><sp/>=<sp/><ref refid="class_linear_regression_1a2b06ee3c27a6bc1e6fc709c0224dd949" kindref="member">sumXsquared</ref><sp/>=<sp/><ref refid="class_linear_regression_1aefdf526f61f6f62a24472ef3ce135d47" kindref="member">sumYsquared</ref><sp/>=<sp/><ref refid="class_linear_regression_1af2744e010ca51a40db51b7e30b769390" kindref="member">sumXY</ref><sp/>=<sp/>0.0;</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_linear_regression_1aa843365cc2b936809c5f60d52224c07f" kindref="member">n</ref><sp/>=<sp/>0L;</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(size<sp/>&gt;<sp/>0L)<sp/></highlight><highlight class="comment">//<sp/>if<sp/>size<sp/>greater<sp/>than<sp/>zero<sp/>there<sp/>are<sp/>data<sp/>arrays</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(<ref refid="class_linear_regression_1aa843365cc2b936809c5f60d52224c07f" kindref="member">n</ref><sp/>=<sp/>0,<sp/>i<sp/>=<sp/>0L;<sp/>i<sp/>&lt;<sp/>size;<sp/>i++)</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_linear_regression_1a83067c3cc623e855ad013ff18eaf8e42" kindref="member">addXY</ref>(x[i],<sp/>y[i]);</highlight></codeline>
+<codeline lineno="18"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1a83067c3cc623e855ad013ff18eaf8e42" kindref="member">LinearRegression::addXY</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&amp;<sp/>x,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&amp;<sp/>y)</highlight></codeline>
+<codeline lineno="21"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_linear_regression_1aa843365cc2b936809c5f60d52224c07f" kindref="member">n</ref>++;</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_linear_regression_1a2d137eb916f6e2f3cf552b3f1a12a4d0" kindref="member">sumX</ref><sp/>+=<sp/>x;</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_linear_regression_1ae62507e4f1f97b8ab2faae5112ce97d3" kindref="member">sumY</ref><sp/>+=<sp/>y;</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_linear_regression_1a2b06ee3c27a6bc1e6fc709c0224dd949" kindref="member">sumXsquared</ref><sp/>+=<sp/>x<sp/>*<sp/>x;</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_linear_regression_1aefdf526f61f6f62a24472ef3ce135d47" kindref="member">sumYsquared</ref><sp/>+=<sp/>y<sp/>*<sp/>y;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_linear_regression_1af2744e010ca51a40db51b7e30b769390" kindref="member">sumXY</ref><sp/>+=<sp/>x<sp/>*<sp/>y;</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_linear_regression_1aa6eee3fb0703a1642467861cfb0cd610" kindref="member">Calculate</ref>();</highlight></codeline>
+<codeline lineno="29"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1aa6eee3fb0703a1642467861cfb0cd610" kindref="member">LinearRegression::Calculate</ref>()</highlight></codeline>
+<codeline lineno="32"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="class_linear_regression_1a1d0f8251bf0f498be7d75d842227deb0" kindref="member">haveData</ref>())</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(fabs(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">(<ref refid="class_linear_regression_1aa843365cc2b936809c5f60d52224c07f" kindref="member">n</ref>)<sp/>*<sp/><ref refid="class_linear_regression_1a2b06ee3c27a6bc1e6fc709c0224dd949" kindref="member">sumXsquared</ref><sp/>-<sp/><ref refid="class_linear_regression_1a2d137eb916f6e2f3cf552b3f1a12a4d0" kindref="member">sumX</ref><sp/>*<sp/><ref refid="class_linear_regression_1a2d137eb916f6e2f3cf552b3f1a12a4d0" kindref="member">sumX</ref>)<sp/>&gt;<sp/>DBL_EPSILON)</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_linear_regression_1aa258a2c864179aaff99098dea9abf1cb" kindref="member">b</ref><sp/>=<sp/>(double(<ref refid="class_linear_regression_1aa843365cc2b936809c5f60d52224c07f" kindref="member">n</ref>)<sp/>*<sp/><ref refid="class_linear_regression_1af2744e010ca51a40db51b7e30b769390" kindref="member">sumXY</ref><sp/>-<sp/><ref refid="class_linear_regression_1ae62507e4f1f97b8ab2faae5112ce97d3" kindref="member">sumY</ref><sp/>*<sp/><ref refid="class_linear_regression_1a2d137eb916f6e2f3cf552b3f1a12a4d0" kindref="member">sumX</ref>)<sp/>/</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">(<ref refid="class_linear_regression_1aa843365cc2b936809c5f60d52224c07f" kindref="member">n</ref>)<sp/>*<sp/><ref refid="class_linear_regression_1a2b06ee3c27a6bc1e6fc709c0224dd949" kindref="member">sumXsquared</ref><sp/>-<sp/>sumX<sp/>*<sp/><ref refid="class_linear_regression_1a2d137eb916f6e2f3cf552b3f1a12a4d0" kindref="member">sumX</ref>);</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_linear_regression_1a9afb5e0ec8d6cbb6ac46e5915afc57ec" kindref="member">a</ref><sp/>=<sp/>(<ref refid="class_linear_regression_1ae62507e4f1f97b8ab2faae5112ce97d3" kindref="member">sumY</ref><sp/>-<sp/><ref refid="class_linear_regression_1aa258a2c864179aaff99098dea9abf1cb" kindref="member">b</ref><sp/>*<sp/><ref refid="class_linear_regression_1a2d137eb916f6e2f3cf552b3f1a12a4d0" kindref="member">sumX</ref>)<sp/>/<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">(<ref refid="class_linear_regression_1aa843365cc2b936809c5f60d52224c07f" kindref="member">n</ref>);</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>sx<sp/>=<sp/><ref refid="class_linear_regression_1aa258a2c864179aaff99098dea9abf1cb" kindref="member">b</ref><sp/>*<sp/>(<ref refid="class_linear_regression_1af2744e010ca51a40db51b7e30b769390" kindref="member">sumXY</ref><sp/>-<sp/>sumX<sp/>*<sp/><ref refid="class_linear_regression_1ae62507e4f1f97b8ab2faae5112ce97d3" kindref="member">sumY</ref><sp/>/<sp/>double(<ref refid="class_linear_regression_1aa843365cc2b936809c5f60d52224c07f" kindref="member">n</ref>));</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>sy2<sp/>=<sp/><ref refid="class_linear_regression_1aefdf526f61f6f62a24472ef3ce135d47" kindref="member">sumYsquared</ref><sp/>-<sp/><ref refid="class_linear_regression_1ae62507e4f1f97b8ab2faae5112ce97d3" kindref="member">sumY</ref><sp/>*<sp/><ref refid="class_linear_regression_1ae62507e4f1f97b8ab2faae5112ce97d3" kindref="member">sumY</ref><sp/>/<sp/>double(<ref refid="class_linear_regression_1aa843365cc2b936809c5f60d52224c07f" kindref="member">n</ref>);</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>sy<sp/>=<sp/>sy2<sp/>-<sp/>sx;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_linear_regression_1a0f3377c655ca712c3e2c3d4e2125441c" kindref="member">coefD</ref><sp/>=<sp/>sx<sp/>/<sp/>sy2;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_linear_regression_1afdc67d71c93cea69b0a66693fa5cb276" kindref="member">coefC</ref><sp/>=<sp/>sqrt(<ref refid="class_linear_regression_1a0f3377c655ca712c3e2c3d4e2125441c" kindref="member">coefD</ref>);</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_linear_regression_1a0cdd5962a78b99b95c6a2bc7c9fbb6a6" kindref="member">stdError</ref><sp/>=<sp/>sqrt(sy<sp/>/<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">(<ref refid="class_linear_regression_1aa843365cc2b936809c5f60d52224c07f" kindref="member">n</ref><sp/>-<sp/>2));</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_linear_regression_1a9afb5e0ec8d6cbb6ac46e5915afc57ec" kindref="member">a</ref><sp/>=<sp/><ref refid="class_linear_regression_1aa258a2c864179aaff99098dea9abf1cb" kindref="member">b</ref><sp/>=<sp/><ref refid="class_linear_regression_1a0f3377c655ca712c3e2c3d4e2125441c" kindref="member">coefD</ref><sp/>=<sp/><ref refid="class_linear_regression_1afdc67d71c93cea69b0a66693fa5cb276" kindref="member">coefC</ref><sp/>=<sp/><ref refid="class_linear_regression_1a0cdd5962a78b99b95c6a2bc7c9fbb6a6" kindref="member">stdError</ref><sp/>=<sp/>0.0;</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="54"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/linreg.cpp"/>
+  </compounddef>
+</doxygen>

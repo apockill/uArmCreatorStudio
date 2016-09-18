@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.11">
+  <compounddef id="_r_e_a_d_m_e_8_m_d" kind="file" language="Markdown">
+    <compoundname>README.MD</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#<sp/>uArm<sp/>Library<sp/>Introduction<sp/>{#mainpage}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">**Warning,<sp/>This<sp/>Library<sp/>is<sp/>for<sp/>developer,<sp/>After<sp/>upload<sp/>the<sp/>library,<sp/>you<sp/>must<sp/>recalibrate<sp/>the<sp/>uArm**</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">**Compatible**</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/>-<sp/>uArm<sp/>Metal</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Installation</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Library<sp/>Manager</highlight></codeline>
+<codeline><highlight class="normal">*Recommend*</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>Download<sp/>[Arduino<sp/>IDE][622f1188]<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Import<sp/>the<sp/>uArm<sp/>Library<sp/>(search<sp/>uArmLibrary)<sp/>using<sp/>Library<sp/>Manager.</highlight></codeline>
+<codeline><highlight class="normal"><sp/>If<sp/>you<sp/>don&apos;t<sp/>know<sp/>how<sp/>to<sp/>use<sp/>Library<sp/>Manager.<sp/>Please<sp/>Refer<sp/>this<sp/>[Import<sp/>Library<sp/>Using<sp/>Library<sp/>Manager][4b323740]</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Upload<sp/>the<sp/>example<sp/>to<sp/>your<sp/>uArm</highlight></codeline>
+<codeline><highlight class="normal"><sp/>If<sp/>you<sp/>don&apos;t<sp/>know<sp/>how<sp/>to<sp/>upload<sp/>Arduino<sp/>sketch,<sp/><sp/>We<sp/>recommend<sp/>you<sp/>read<sp/>this<sp/>[Arduino<sp/>Getting<sp/>Started<sp/>on<sp/>Windows][397d20eb]<sp/>or<sp/>[Arduino<sp/>Getting<sp/>Started<sp/>on<sp/>MacOS][2d8a8b7a]</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>You<sp/>need<sp/>to<sp/>recalibrate<sp/>when<sp/>you<sp/>are<sp/>new<sp/>to<sp/>this<sp/>library.<sp/>we<sp/>recommend<sp/>the<sp/>GUI<sp/>Calibration<sp/>tool.<sp/><sp/><sp/></highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Manual<sp/>Installation</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>Download<sp/>[Arduino<sp/>IDE][622f1188]<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Clone<sp/>the<sp/>source<sp/>code<sp/>into<sp/>your<sp/>computer.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Open<sp/>Arduino<sp/>IDE,<sp/>import<sp/>the<sp/>zip<sp/>as<sp/>library.<sp/>Please<sp/>refer<sp/>this<sp/>[Import<sp/>a<sp/>.zip<sp/>Library][8cd4af00]</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Upload<sp/>the<sp/>example<sp/>to<sp/>your<sp/>uArm</highlight></codeline>
+<codeline><highlight class="normal"><sp/>If<sp/>you<sp/>don&apos;t<sp/>know<sp/>how<sp/>to<sp/>upload<sp/>Arduino<sp/>sketch,<sp/><sp/>We<sp/>recommend<sp/>you<sp/>read<sp/>this<sp/>[Arduino<sp/>Getting<sp/>Started<sp/>on<sp/>Windows][397d20eb]<sp/>or<sp/>[Arduino<sp/>Getting<sp/>Started<sp/>on<sp/>MacOS][2d8a8b7a]</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>You<sp/>need<sp/>to<sp/>recalibrate<sp/>when<sp/>you<sp/>are<sp/>new<sp/>to<sp/>this<sp/>library.<sp/>we<sp/>recommend<sp/>the<sp/>GUI<sp/>Calibration<sp/>tool.</highlight></codeline>
+<codeline></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Getting<sp/>Started</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">please<sp/>reference<sp/>Arduino<sp/>[GettingStarted][GettingStarted]<sp/>Sketch</highlight></codeline>
+<codeline></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/>[8cd4af00]:<sp/>https://www.arduino.cc/en/Guide/Libraries#toc4<sp/>&quot;Import<sp/>a<sp/>.zip<sp/>Library&quot;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>[4b323740]:<sp/>https://www.arduino.cc/en/Guide/Libraries#toc3<sp/>&quot;Import<sp/>Library<sp/>Using<sp/>Library<sp/>Manager&quot;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>[3]:<sp/>http://developer.ufactory.cc/quickstart/arduino/</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>[622f1188]:<sp/>https://www.arduino.cc/en/Main/Software<sp/>&quot;Arduino<sp/>IDE&quot;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>[397d20eb]:<sp/>https://www.arduino.cc/en/Guide/Windows<sp/>&quot;Arduino<sp/>Getting<sp/>Start<sp/>on<sp/>Windows&quot;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>[2d8a8b7a]:<sp/>https://www.arduino.cc/en/Guide/MacOSX<sp/>&quot;Arduino<sp/>Getting<sp/>Started<sp/>on<sp/>MacOS&quot;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>[GettingStarted]:<sp/>@ref<sp/>GettingStarted.ino</highlight></codeline>
+    </programlisting>
+    <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/README.MD"/>
+  </compounddef>
+</doxygen>

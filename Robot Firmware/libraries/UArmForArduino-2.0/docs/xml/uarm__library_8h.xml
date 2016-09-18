@@ -1,0 +1,1104 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.11">
+  <compounddef id="uarm__library_8h" kind="file" language="C++">
+    <compoundname>uarm_library.h</compoundname>
+    <includes local="no">Arduino.h</includes>
+    <includes local="no">EEPROM.h</includes>
+    <includes local="no">Wire.h</includes>
+    <includes refid="_u_f_servo_8h" local="yes">UFServo.h</includes>
+    <includes refid="linreg_8h" local="yes">linreg.h</includes>
+    <includedby refid="uarm__library_8cpp" local="yes">/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp</includedby>
+    <includedby refid="_calibration_8ino" local="yes">/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino</includedby>
+    <includedby refid="_getting_started_8ino" local="yes">/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/GettingStarted/GettingStarted.ino</includedby>
+    <includedby refid="movement_8ino" local="no">/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/movement/movement.ino</includedby>
+    <includedby refid="_u_arm_protocol_8ino" local="no">/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/UArmProtocol/UArmProtocol.ino</includedby>
+    <includedby refid="_u_arm_text_control2_80_8ino" local="no">/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/UArmTextControl2.0/UArmTextControl2.0.ino</includedby>
+    <incdepgraph>
+      <node id="79">
+        <label>UFServo.h</label>
+        <link refid="_u_f_servo_8h"/>
+        <childnode refid="80" relation="include">
+        </childnode>
+      </node>
+      <node id="81">
+        <label>linreg.h</label>
+        <link refid="linreg_8h"/>
+      </node>
+      <node id="78">
+        <label>Wire.h</label>
+      </node>
+      <node id="76">
+        <label>Arduino.h</label>
+      </node>
+      <node id="75">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h</label>
+        <link refid="uarm_library.h"/>
+        <childnode refid="76" relation="include">
+        </childnode>
+        <childnode refid="77" relation="include">
+        </childnode>
+        <childnode refid="78" relation="include">
+        </childnode>
+        <childnode refid="79" relation="include">
+        </childnode>
+        <childnode refid="81" relation="include">
+        </childnode>
+      </node>
+      <node id="77">
+        <label>EEPROM.h</label>
+      </node>
+      <node id="80">
+        <label>inttypes.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="83">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp</label>
+        <link refid="uarm__library_8cpp"/>
+      </node>
+      <node id="85">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/GettingStarted/GettingStarted.ino</label>
+        <link refid="_getting_started_8ino"/>
+      </node>
+      <node id="86">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/movement/movement.ino</label>
+        <link refid="movement_8ino"/>
+      </node>
+      <node id="87">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/UArmProtocol/UArmProtocol.ino</label>
+        <link refid="_u_arm_protocol_8ino"/>
+      </node>
+      <node id="84">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino</label>
+        <link refid="_calibration_8ino"/>
+      </node>
+      <node id="82">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h</label>
+        <link refid="uarm_library.h"/>
+        <childnode refid="83" relation="include">
+        </childnode>
+        <childnode refid="84" relation="include">
+        </childnode>
+        <childnode refid="85" relation="include">
+        </childnode>
+        <childnode refid="86" relation="include">
+        </childnode>
+        <childnode refid="87" relation="include">
+        </childnode>
+        <childnode refid="88" relation="include">
+        </childnode>
+      </node>
+      <node id="88">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/UArmTextControl2.0/UArmTextControl2.0.ino</label>
+        <link refid="_u_arm_text_control2_80_8ino"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classu_arm_class" prot="public">uArmClass</innerclass>
+      <sectiondef kind="define">
+      <memberdef kind="define" id="uarm__library_8h_1ab4cd1fb2413370e3523f34e51fcba605" prot="public" static="no">
+        <name>UARM_MAJOR_VERSION</name>
+        <initializer>1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="19" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="19" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a3a2243a77f21e5c1bccc4fb4c9007a02" prot="public" static="no">
+        <name>UARM_MINOR_VERSION</name>
+        <initializer>7</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="20" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1aab5be7dae0414f6435628a2995039786" prot="public" static="no">
+        <name>UARM_BUGFIX</name>
+        <initializer>1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="21" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="21" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1aa90cac659d18e8ef6294c7ae337f6b58" prot="public" static="no">
+        <name>SUCCESS</name>
+        <initializer>1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="23" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a681680feae4df4182d532564c42fa1fc" prot="public" static="no">
+        <name>FAILED</name>
+        <initializer>-1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="24" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1aedb0af3f18647ea800b5e7591f44fff5" prot="public" static="no">
+        <name>SERVO_ROT_NUM</name>
+        <initializer>0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="26" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1aad9c39f9a13fb794436e7f28a66ec957" prot="public" static="no">
+        <name>SERVO_LEFT_NUM</name>
+        <initializer>1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="27" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1ad6c6879b0915a777fc2165e9e1b324a7" prot="public" static="no">
+        <name>SERVO_RIGHT_NUM</name>
+        <initializer>2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="28" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a21176f343ea2d7a582d08884193c07e9" prot="public" static="no">
+        <name>SERVO_HAND_ROT_NUM</name>
+        <initializer>3</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="29" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a9b23d0139da542d9e6b2fe921af139e0" prot="public" static="no">
+        <name>SERVO_ROT_PIN</name>
+        <initializer>11</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="31" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1ac1c678da2f00cee32d76528b4b11df17" prot="public" static="no">
+        <name>SERVO_LEFT_PIN</name>
+        <initializer>13</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="32" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a42cd859eda377f199e53fa0a2100296e" prot="public" static="no">
+        <name>SERVO_RIGHT_PIN</name>
+        <initializer>12</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="33" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a2fe4e90f0f4775d954eb1bfca4676693" prot="public" static="no">
+        <name>SERVO_HAND_PIN</name>
+        <initializer>10</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="34" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a0f648f6effa6d9c0ab6cc0ce519dc98f" prot="public" static="no">
+        <name>SERVO_ROT_ANALOG_PIN</name>
+        <initializer>2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="36" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1ac9a9fa46c32380bb1c0e8667dd7ee56c" prot="public" static="no">
+        <name>SERVO_LEFT_ANALOG_PIN</name>
+        <initializer>0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="37" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a7d3a913fd023ab393413bb9e27f5c6d8" prot="public" static="no">
+        <name>SERVO_RIGHT_ANALOG_PIN</name>
+        <initializer>1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="38" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a48b3d8635f22136a8902340682e7cb92" prot="public" static="no">
+        <name>SERVO_HAND_ROT_ANALOG_PIN</name>
+        <initializer>3</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="39" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a4044bc3e058a4ed39dc805d78429e0b7" prot="public" static="no">
+        <name>ARM_STRETCH_MIN</name>
+        <initializer>0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="43" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1adca821eb98e77c394bac1d58581d159e" prot="public" static="no">
+        <name>ARM_STRETCH_MAX</name>
+        <initializer>195</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="44" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a019c9d1e3a07c8276200b657e8c9d6c8" prot="public" static="no">
+        <name>ARM_HEIGHT_MIN</name>
+        <initializer>-150</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="45" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1ab2b7d8642e9f8c2e86a6edc92a31704e" prot="public" static="no">
+        <name>ARM_HEIGHT_MAX</name>
+        <initializer>160</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="46" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1aae536dbf5c69d6b470de83878e721a22" prot="public" static="no">
+        <name>ARM_A</name>
+        <initializer>148</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="47" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a95729d32f6b0ab7c1f71c58f64a7e513" prot="public" static="no">
+        <name>ARM_B</name>
+        <initializer>160</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="48" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1afa170a752cbb48e5c5e3a88fe23bfc28" prot="public" static="no">
+        <name>ARM_2AB</name>
+        <initializer>47360</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="49" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a7a4b6f68bf2bad5846c6fb7641feeca7" prot="public" static="no">
+        <name>ARM_A2</name>
+        <initializer>21904</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="50" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a0a6de1576bb971f535b5a8d3872caa0f" prot="public" static="no">
+        <name>ARM_B2</name>
+        <initializer>25600</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="51" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a95236b73aea98397d15d321e74e12694" prot="public" static="no">
+        <name>ARM_A2B2</name>
+        <initializer>47504</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="52" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1ae58fbcdc78bd7f9e70c10a3b8f53a477" prot="public" static="no">
+        <name>LIMIT_SW</name>
+        <initializer>2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="54" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1adfa12f788ca95e219063bce444e5e902" prot="public" static="no">
+        <name>PUMP_EN</name>
+        <initializer>6</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="55" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a8393c85d72f6a5a8d811468f4de9fab4" prot="public" static="no">
+        <name>VALVE_EN</name>
+        <initializer>5</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="56" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a69f88216b243ce7705dec4b6cda98053" prot="public" static="no">
+        <name>STOPPER</name>
+        <initializer>2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="57" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a145103118f6d9d1129aa4509cf214a13" prot="public" static="no">
+        <name>BUZZER</name>
+        <initializer>3</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="58" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a6d556134ea726e9b544a9a1fdf80d961" prot="public" static="no">
+        <name>BTN_D4</name>
+        <initializer>4</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="59" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1ac98aff3f2f7c5e0333232ca3b856fdcd" prot="public" static="no">
+        <name>BTN_D7</name>
+        <initializer>7</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="60" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a4914e2658750b6e9abe9c49de3384f51" prot="public" static="no">
+        <name>GRIPPER</name>
+        <initializer>9</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="61" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="61" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1ac58cbaeae310f551049f77b7c098599e" prot="public" static="no">
+        <name>MATH_PI</name>
+        <initializer>3.141592653589793238463</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="63" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="63" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1ab943312efdc612e03fb7c21faecf63eb" prot="public" static="no">
+        <name>MATH_TRANS</name>
+        <initializer>57.2958</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="64" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="64" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a0227245f7c5b3b501d5f932672c7b02d" prot="public" static="no">
+        <name>MATH_L1</name>
+        <initializer>(10.645+0.6)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="65" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="65" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1ab36fd8168fbc5d69f9d9f8f0d1cd7410" prot="public" static="no">
+        <name>MATH_L2</name>
+        <initializer>2.117</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="66" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1add17ff47e8ad6206858b930a5e152928" prot="public" static="no">
+        <name>MATH_L3</name>
+        <initializer>14.825</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="67" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a4e3823ab0551605f41ded3ef79f1950a" prot="public" static="no">
+        <name>MATH_L4</name>
+        <initializer>16.02</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="68" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="68" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a55b56e6a15e8331f71eceb253f0c337c" prot="public" static="no">
+        <name>MATH_L43</name>
+        <initializer><ref refid="uarm__library_8h_1a4e3823ab0551605f41ded3ef79f1950a" kindref="member">MATH_L4</ref>/<ref refid="uarm__library_8h_1add17ff47e8ad6206858b930a5e152928" kindref="member">MATH_L3</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="69" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="69" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a1c53ccfc510f2dc5a6572a6768de9041" prot="public" static="no">
+        <name>RELATIVE</name>
+        <initializer>1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="71" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="71" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a78aef96dff49f3fca779cc8713557a34" prot="public" static="no">
+        <name>ABSOLUTE</name>
+        <initializer>0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="72" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="72" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1ae6c5b8e4abeffbf0e0f5443b24048175" prot="public" static="no">
+        <name>TopOffset</name>
+        <initializer>-1.5</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="74" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="74" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a83e76d6b02486fc3578f35917e588df6" prot="public" static="no">
+        <name>BottomOffset</name>
+        <initializer>1.5</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="75" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="75" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a8079adb7eb3e610e8cf0b288d1ee18e5" prot="public" static="no">
+        <name>CALIBRATION_FLAG</name>
+        <initializer>10</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="78" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="78" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a5e90d58c52e67b6224b150b27a353453" prot="public" static="no">
+        <name>CALIBRATION_LINEAR_FLAG</name>
+        <initializer>11</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="79" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="79" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1ab10f90584293bd4ad45f4fe783d7085e" prot="public" static="no">
+        <name>CALIBRATION_MANUAL_FLAG</name>
+        <initializer>12</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="80" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="80" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1ae60673e639336482bc34c0281a9c4f16" prot="public" static="no">
+        <name>CALIBRATION_STRETCH_FLAG</name>
+        <initializer>13</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="81" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="81" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a37fa1a215c9ab99475b68b2a435b1d6e" prot="public" static="no">
+        <name>LINEAR_INTERCEPT_START_ADDRESS</name>
+        <initializer>70</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="83" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="83" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a5bc6708c078bca352fe86d11910fa516" prot="public" static="no">
+        <name>LINEAR_SLOPE_START_ADDRESS</name>
+        <initializer>50</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="84" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="84" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1ac531494abd09c0ce895867c562b6b65e" prot="public" static="no">
+        <name>MANUAL_OFFSET_ADDRESS</name>
+        <initializer>30</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="85" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="85" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a20ab0a950331d79c4236773b1a611ee4" prot="public" static="no">
+        <name>OFFSET_STRETCH_START_ADDRESS</name>
+        <initializer>20</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="86" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="86" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a12f7befc4f730e157b5019345ba674ad" prot="public" static="no">
+        <name>SERIAL_NUMBER_ADDRESS</name>
+        <initializer>100</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="87" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="87" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a955f504eccf76b4eb2489c0adab03121" prot="public" static="no">
+        <name>A</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="89" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="89" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a3d0e6509d759316e80cf78e48e3ce413" prot="public" static="no">
+        <name>CONFIRM_FLAG</name>
+        <initializer>0x80</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="91" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="91" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a6083fffc7be867db36056d344c4ca57f" prot="public" static="no">
+        <name>PATH_LINEAR</name>
+        <initializer>0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="94" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="94" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a970bf6c4bc05d857cb09ca7f14d3c396" prot="public" static="no">
+        <name>PATH_ANGLES</name>
+        <initializer>1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="95" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="95" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1ade99adf031fa0fd810f6fe27c75c9018" prot="public" static="no">
+        <name>F_ABSOLUTE</name>
+        <initializer>0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="98" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="98" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a837c33481ed7880bdcd0fe6fb92c4943" prot="public" static="no">
+        <name>F_POSN_RELATIVE</name>
+        <initializer>1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="99" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="99" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1ae12db185dfbaf562b83bd3599a0d443e" prot="public" static="no">
+        <name>F_HAND_RELATIVE</name>
+        <initializer>2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="100" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="100" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a47921cf61d2d02b6ac559aa2d5b89dc9" prot="public" static="no">
+        <name>F_HAND_ROT_REL</name>
+        <initializer>4</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="101" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="101" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1ab6a6bff814ea831e2fd610bdf8e7741e" prot="public" static="no">
+        <name>INTERP_EASE_INOUT_CUBIC</name>
+        <initializer>0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="105" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="105" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a1d86866e45d3a98fc2e510bfb5e6e547" prot="public" static="no">
+        <name>INTERP_LINEAR</name>
+        <initializer>1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="106" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="106" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a677926da91000853b9f52468a74d444a" prot="public" static="no">
+        <name>INTERP_EASE_INOUT</name>
+        <initializer>2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="107" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="107" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a303516778e695fa898601abe0ff3e2f9" prot="public" static="no">
+        <name>INTERP_EASE_IN</name>
+        <initializer>3</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="108" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="108" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a42e203cb4e6ea5d45242549d31e8a178" prot="public" static="no">
+        <name>INTERP_EASE_OUT</name>
+        <initializer>4</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="109" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="109" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1ad4d527a363fe5973c23329cd2c762c0f" prot="public" static="no">
+        <name>LINEAR_INTERCEPT</name>
+        <initializer>1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="111" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="111" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="uarm__library_8h_1a1fa88a66be9d3236be4de230ea0f0331" prot="public" static="no">
+        <name>LINEAR_SLOPE</name>
+        <initializer>2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="112" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" bodystart="112" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="uarm__library_8h_1a090cc6fa82eb11487fd2c4a227f0b85c" prot="public" static="no" mutable="no">
+        <type><ref refid="classu_arm_class" kindref="compound">uArmClass</ref></type>
+        <definition>uArmClass uarm</definition>
+        <argsstring></argsstring>
+        <name>uarm</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h" line="216" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp" bodystart="11" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>uarm library header </para>    </briefdescription>
+    <detaileddescription>
+<para><hruler/>
+</para><para><simplesect kind="author"><para>Joey Song  Joey Song, Alex Tan, Dave Corboy </para></simplesect>
+<simplesect kind="date"><para>12/Dec/2014  GNU  2016 UFactory Team. All right reserved </para></simplesect>
+</para>    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"></codeline>
+<codeline lineno="10"><highlight class="preprocessor">#include<sp/>&lt;Arduino.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;EEPROM.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;Wire.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="_u_f_servo_8h" kindref="compound">UFServo.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="linreg_8h" kindref="compound">linreg.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>uArm_library_h</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>uArm_library_h</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19" refid="uarm__library_8h_1ab4cd1fb2413370e3523f34e51fcba605" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>UARM_MAJOR_VERSION<sp/><sp/><sp/><sp/><sp/><sp/>1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20" refid="uarm__library_8h_1a3a2243a77f21e5c1bccc4fb4c9007a02" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>UARM_MINOR_VERSION<sp/><sp/><sp/><sp/><sp/><sp/>7</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21" refid="uarm__library_8h_1aab5be7dae0414f6435628a2995039786" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>UARM_BUGFIX<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23" refid="uarm__library_8h_1aa90cac659d18e8ef6294c7ae337f6b58" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SUCCESS<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24" refid="uarm__library_8h_1a681680feae4df4182d532564c42fa1fc" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAILED<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>-1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26" refid="uarm__library_8h_1aedb0af3f18647ea800b5e7591f44fff5" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SERVO_ROT_NUM<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>0</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27" refid="uarm__library_8h_1aad9c39f9a13fb794436e7f28a66ec957" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SERVO_LEFT_NUM<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28" refid="uarm__library_8h_1ad6c6879b0915a777fc2165e9e1b324a7" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SERVO_RIGHT_NUM<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29" refid="uarm__library_8h_1a21176f343ea2d7a582d08884193c07e9" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SERVO_HAND_ROT_NUM<sp/><sp/><sp/><sp/><sp/><sp/>3</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31" refid="uarm__library_8h_1a9b23d0139da542d9e6b2fe921af139e0" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SERVO_ROT_PIN<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>11</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32" refid="uarm__library_8h_1ac1c678da2f00cee32d76528b4b11df17" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SERVO_LEFT_PIN<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>13</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33" refid="uarm__library_8h_1a42cd859eda377f199e53fa0a2100296e" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SERVO_RIGHT_PIN<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>12</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34" refid="uarm__library_8h_1a2fe4e90f0f4775d954eb1bfca4676693" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SERVO_HAND_PIN<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>10</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36" refid="uarm__library_8h_1a0f648f6effa6d9c0ab6cc0ce519dc98f" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SERVO_ROT_ANALOG_PIN<sp/>2</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37" refid="uarm__library_8h_1ac9a9fa46c32380bb1c0e8667dd7ee56c" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SERVO_LEFT_ANALOG_PIN<sp/>0</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38" refid="uarm__library_8h_1a7d3a913fd023ab393413bb9e27f5c6d8" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SERVO_RIGHT_ANALOG_PIN<sp/>1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39" refid="uarm__library_8h_1a48b3d8635f22136a8902340682e7cb92" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SERVO_HAND_ROT_ANALOG_PIN<sp/>3</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Old<sp/>Control<sp/>method<sp/>Stretch<sp/>/<sp/>Height</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43" refid="uarm__library_8h_1a4044bc3e058a4ed39dc805d78429e0b7" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ARM_STRETCH_MIN<sp/><sp/><sp/>0</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44" refid="uarm__library_8h_1adca821eb98e77c394bac1d58581d159e" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ARM_STRETCH_MAX<sp/><sp/><sp/>195</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="45" refid="uarm__library_8h_1a019c9d1e3a07c8276200b657e8c9d6c8" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ARM_HEIGHT_MIN<sp/><sp/><sp/>-150</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46" refid="uarm__library_8h_1ab2b7d8642e9f8c2e86a6edc92a31704e" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ARM_HEIGHT_MAX<sp/><sp/><sp/>160</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="47" refid="uarm__library_8h_1aae536dbf5c69d6b470de83878e721a22" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ARM_A<sp/><sp/><sp/><sp/><sp/><sp/>148</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="48" refid="uarm__library_8h_1a95729d32f6b0ab7c1f71c58f64a7e513" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ARM_B<sp/><sp/><sp/><sp/><sp/><sp/>160</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="49" refid="uarm__library_8h_1afa170a752cbb48e5c5e3a88fe23bfc28" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ARM_2AB<sp/><sp/><sp/><sp/><sp/>47360</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="50" refid="uarm__library_8h_1a7a4b6f68bf2bad5846c6fb7641feeca7" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ARM_A2<sp/><sp/><sp/><sp/><sp/><sp/>21904</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51" refid="uarm__library_8h_1a0a6de1576bb971f535b5a8d3872caa0f" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ARM_B2<sp/><sp/><sp/><sp/><sp/><sp/>25600</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="52" refid="uarm__library_8h_1a95236b73aea98397d15d321e74e12694" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ARM_A2B2<sp/><sp/><sp/><sp/><sp/>47504</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54" refid="uarm__library_8h_1ae58fbcdc78bd7f9e70c10a3b8f53a477" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>LIMIT_SW<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2<sp/><sp/><sp/><sp/>//<sp/>LIMIT<sp/>Switch<sp/>Button</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55" refid="uarm__library_8h_1adfa12f788ca95e219063bce444e5e902" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>PUMP_EN<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>6<sp/><sp/><sp/><sp/>//<sp/>HIGH<sp/>=<sp/>Valve<sp/>OPEN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56" refid="uarm__library_8h_1a8393c85d72f6a5a8d811468f4de9fab4" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>VALVE_EN<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>5<sp/><sp/><sp/><sp/>//<sp/>HIGH<sp/>=<sp/>Pump<sp/>ON</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="57" refid="uarm__library_8h_1a69f88216b243ce7705dec4b6cda98053" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>STOPPER<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2<sp/><sp/><sp/><sp/>//<sp/>LOW<sp/>=<sp/>Pressed</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="58" refid="uarm__library_8h_1a145103118f6d9d1129aa4509cf214a13" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>BUZZER<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>3<sp/><sp/><sp/><sp/>//<sp/>HIGH<sp/>=<sp/>ON</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="59" refid="uarm__library_8h_1a6d556134ea726e9b544a9a1fdf80d961" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>BTN_D4<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>4<sp/><sp/><sp/><sp/>//<sp/>LOW<sp/>=<sp/>Pressed</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="60" refid="uarm__library_8h_1ac98aff3f2f7c5e0333232ca3b856fdcd" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>BTN_D7<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>7<sp/><sp/><sp/><sp/>//<sp/>LOW<sp/>=<sp/>Pressed</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61" refid="uarm__library_8h_1a4914e2658750b6e9abe9c49de3384f51" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>GRIPPER<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>9<sp/><sp/><sp/><sp/>//<sp/>LOW<sp/>=<sp/>Catch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63" refid="uarm__library_8h_1ac58cbaeae310f551049f77b7c098599e" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MATH_PI<sp/>3.141592653589793238463</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="64" refid="uarm__library_8h_1ab943312efdc612e03fb7c21faecf63eb" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MATH_TRANS<sp/><sp/>57.2958</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="65" refid="uarm__library_8h_1a0227245f7c5b3b501d5f932672c7b02d" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MATH_L1<sp/>(10.645+0.6)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="66" refid="uarm__library_8h_1ab36fd8168fbc5d69f9d9f8f0d1cd7410" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MATH_L2<sp/>2.117</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="67" refid="uarm__library_8h_1add17ff47e8ad6206858b930a5e152928" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MATH_L3<sp/>14.825</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="68" refid="uarm__library_8h_1a4e3823ab0551605f41ded3ef79f1950a" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MATH_L4<sp/>16.02</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69" refid="uarm__library_8h_1a55b56e6a15e8331f71eceb253f0c337c" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MATH_L43<sp/>MATH_L4/MATH_L3</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight></codeline>
+<codeline lineno="71" refid="uarm__library_8h_1a1c53ccfc510f2dc5a6572a6768de9041" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>RELATIVE<sp/>1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72" refid="uarm__library_8h_1a78aef96dff49f3fca779cc8713557a34" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ABSOLUTE<sp/>0</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74" refid="uarm__library_8h_1ae6c5b8e4abeffbf0e0f5443b24048175" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>TopOffset<sp/>-1.5</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75" refid="uarm__library_8h_1a83e76d6b02486fc3578f35917e588df6" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>BottomOffset<sp/>1.5</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Calibration<sp/>Flag<sp/>&amp;<sp/>OFFSET<sp/>EEPROM<sp/>ADDRESS</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78" refid="uarm__library_8h_1a8079adb7eb3e610e8cf0b288d1ee18e5" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>CALIBRATION_FLAG<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>10</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="79" refid="uarm__library_8h_1a5e90d58c52e67b6224b150b27a353453" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>CALIBRATION_LINEAR_FLAG<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>11</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="80" refid="uarm__library_8h_1ab10f90584293bd4ad45f4fe783d7085e" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>CALIBRATION_MANUAL_FLAG<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>12</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="81" refid="uarm__library_8h_1ae60673e639336482bc34c0281a9c4f16" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>CALIBRATION_STRETCH_FLAG<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>13</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83" refid="uarm__library_8h_1a37fa1a215c9ab99475b68b2a435b1d6e" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>LINEAR_INTERCEPT_START_ADDRESS<sp/><sp/><sp/><sp/><sp/><sp/>70</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="84" refid="uarm__library_8h_1a5bc6708c078bca352fe86d11910fa516" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>LINEAR_SLOPE_START_ADDRESS<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>50</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="85" refid="uarm__library_8h_1ac531494abd09c0ce895867c562b6b65e" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MANUAL_OFFSET_ADDRESS<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>30</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="86" refid="uarm__library_8h_1a20ab0a950331d79c4236773b1a611ee4" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>OFFSET_STRETCH_START_ADDRESS<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>20</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="87" refid="uarm__library_8h_1a12f7befc4f730e157b5019345ba674ad" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SERIAL_NUMBER_ADDRESS<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>100</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89" refid="uarm__library_8h_1a955f504eccf76b4eb2489c0adab03121" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>A</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91" refid="uarm__library_8h_1a3d0e6509d759316e80cf78e48e3ce413" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>CONFIRM_FLAG<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>0x80</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight><highlight class="comment">//<sp/>movement<sp/>path<sp/>types</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="94" refid="uarm__library_8h_1a6083fffc7be867db36056d344c4ca57f" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>PATH_LINEAR<sp/><sp/><sp/><sp/><sp/>0<sp/><sp/><sp/>//<sp/>path<sp/>based<sp/>on<sp/>linear<sp/>interpolation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="95" refid="uarm__library_8h_1a970bf6c4bc05d857cb09ca7f14d3c396" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>PATH_ANGLES<sp/><sp/><sp/><sp/><sp/>1<sp/><sp/><sp/>//<sp/>path<sp/>based<sp/>on<sp/>interpolation<sp/>of<sp/>servo<sp/>angles</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight><highlight class="comment">//<sp/>movement<sp/>absolute/relative<sp/>flags</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="98" refid="uarm__library_8h_1ade99adf031fa0fd810f6fe27c75c9018" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>F_ABSOLUTE<sp/><sp/><sp/><sp/><sp/><sp/>0</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="99" refid="uarm__library_8h_1a837c33481ed7880bdcd0fe6fb92c4943" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>F_POSN_RELATIVE<sp/>1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="100" refid="uarm__library_8h_1ae12db185dfbaf562b83bd3599a0d443e" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>F_HAND_RELATIVE<sp/>2<sp/><sp/><sp/>//<sp/>standard<sp/>relative,<sp/>current<sp/>+<sp/>hand<sp/>parameter</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="101" refid="uarm__library_8h_1a47921cf61d2d02b6ac559aa2d5b89dc9" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>F_HAND_ROT_REL<sp/><sp/>4<sp/><sp/><sp/>//<sp/>hand<sp/>keeps<sp/>orientation<sp/>relative<sp/>to<sp/>rotationxn<sp/>servo<sp/>(+/-<sp/>hand<sp/>parameter)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight><highlight class="comment">//<sp/>#define<sp/>F_NEXT_OPT<sp/><sp/><sp/>8<sp/><sp/><sp/>//<sp/>these<sp/>are<sp/>flags,<sp/>next<sp/>option<sp/>is<sp/>next<sp/>available<sp/>bit</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight><highlight class="comment">//<sp/>interpolation<sp/>types</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="105" refid="uarm__library_8h_1ab6a6bff814ea831e2fd610bdf8e7741e" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>INTERP_EASE_INOUT_CUBIC<sp/>0<sp/><sp/>//<sp/>original<sp/>cubic<sp/>ease<sp/>in/out</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="106" refid="uarm__library_8h_1a1d86866e45d3a98fc2e510bfb5e6e547" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>INTERP_LINEAR<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="107" refid="uarm__library_8h_1a677926da91000853b9f52468a74d444a" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>INTERP_EASE_INOUT<sp/><sp/><sp/><sp/><sp/><sp/><sp/>2<sp/><sp/>//<sp/>quadratic<sp/>easing<sp/>methods</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="108" refid="uarm__library_8h_1a303516778e695fa898601abe0ff3e2f9" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>INTERP_EASE_IN<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>3</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="109" refid="uarm__library_8h_1a42e203cb4e6ea5d45242549d31e8a178" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>INTERP_EASE_OUT<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>4</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight></codeline>
+<codeline lineno="111" refid="uarm__library_8h_1ad4d527a363fe5973c23329cd2c762c0f" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>LINEAR_INTERCEPT<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="112" refid="uarm__library_8h_1a1fa88a66be9d3236be4de230ea0f0331" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>LINEAR_SLOPE<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="114" refid="classu_arm_class" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classu_arm_class" kindref="compound">uArmClass</ref></highlight></codeline>
+<codeline lineno="115"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classu_arm_class_1ab7970a58e1d69f227412de1a2d09b25e" kindref="member">uArmClass</ref>();</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1ada41aed1523d78f47a70a896be0700e5" kindref="member">read_servo_offset</ref>(byte<sp/>servo_num);</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1afe670cd52fe57cb347eff5da7c5f1114" kindref="member">read_linear_offset</ref>(byte<sp/>servo_num,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&amp;<sp/>intercept_val,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&amp;<sp/>slope_val);</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a42655ebaae4634dfb272e00e5ad2ecf8" kindref="member">alert</ref>(byte<sp/>times,<sp/>byte<sp/>runt_time,<sp/>byte<sp/>stop_time);</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1ad49f00b82c7217aea14992519db644c9" kindref="member">write_servo_angle</ref>(byte<sp/>servo_num,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>servo_angle,<sp/><sp/></highlight><highlight class="keywordtype">boolean</highlight><highlight class="normal"><sp/>with_offset);</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a762158e7b894f861b2a4b6f58838dd41" kindref="member">write_left_right_servo_angle</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>servo_left_angle,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>servo_right_angle,<sp/></highlight><highlight class="keywordtype">boolean</highlight><highlight class="normal"><sp/>with_offset);</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1ad943083ee0d9eb9f1473d05f19c21a7a" kindref="member">read_servo_angle</ref>(byte<sp/>servo_num);</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1ad943083ee0d9eb9f1473d05f19c21a7a" kindref="member">read_servo_angle</ref>(byte<sp/>servo_num,<sp/></highlight><highlight class="keywordtype">boolean</highlight><highlight class="normal"><sp/>with_offset);</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a848e96aacb6fd9cf3c4af6d843a69c20" kindref="member">analog_to_angle</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>input_angle,<sp/>byte<sp/>servo_num,<sp/></highlight><highlight class="keywordtype">boolean</highlight><highlight class="normal"><sp/>with_offset);</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"></highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1aaf4c2ca0a6ff1a78ddc73397b8ea4dd4" kindref="member">move_to</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>x,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>y,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>z,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>hand_angle,<sp/>byte<sp/>relative_flags,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>time,<sp/>byte<sp/>path_type,<sp/>byte<sp/>ease_type,<sp/></highlight><highlight class="keywordtype">boolean</highlight><highlight class="normal"><sp/>enable_hand);</highlight></codeline>
+<codeline lineno="130" refid="classu_arm_class_1ad6277553f8eb2df7b3fdb66323f905a7" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1ad6277553f8eb2df7b3fdb66323f905a7" kindref="member">move_to</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>x,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>y,</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>z)<sp/>{</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classu_arm_class_1aaf4c2ca0a6ff1a78ddc73397b8ea4dd4" kindref="member">move_to</ref>(x,<sp/>y,<sp/>z,<sp/>0,<sp/><ref refid="uarm__library_8h_1ae12db185dfbaf562b83bd3599a0d443e" kindref="member">F_HAND_RELATIVE</ref>,<sp/>1.0,<sp/><ref refid="uarm__library_8h_1a6083fffc7be867db36056d344c4ca57f" kindref="member">PATH_LINEAR</ref>,<sp/><ref refid="uarm__library_8h_1ab6a6bff814ea831e2fd610bdf8e7741e" kindref="member">INTERP_EASE_INOUT_CUBIC</ref>,<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="133" refid="classu_arm_class_1ade1c405b5c74ab1b58ee7089de76a4a6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1ade1c405b5c74ab1b58ee7089de76a4a6" kindref="member">move_to</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>x,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>y,</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>z,</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>hand_angle)<sp/>{</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classu_arm_class_1aaf4c2ca0a6ff1a78ddc73397b8ea4dd4" kindref="member">move_to</ref>(x,<sp/>y,<sp/>z,<sp/>hand_angle,<sp/><ref refid="uarm__library_8h_1ae12db185dfbaf562b83bd3599a0d443e" kindref="member">F_HAND_RELATIVE</ref>,<sp/>1.0,<sp/><ref refid="uarm__library_8h_1a6083fffc7be867db36056d344c4ca57f" kindref="member">PATH_LINEAR</ref>,<sp/><ref refid="uarm__library_8h_1ab6a6bff814ea831e2fd610bdf8e7741e" kindref="member">INTERP_EASE_INOUT_CUBIC</ref>,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="136" refid="classu_arm_class_1ab085126c229aef2f595f261e187b0900" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1ab085126c229aef2f595f261e187b0900" kindref="member">move_to</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>x,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>y,</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>z,</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>relative,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>time)<sp/>{</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classu_arm_class_1aaf4c2ca0a6ff1a78ddc73397b8ea4dd4" kindref="member">move_to</ref>(x,<sp/>y,<sp/>z,<sp/>0,<sp/><ref refid="uarm__library_8h_1ae12db185dfbaf562b83bd3599a0d443e" kindref="member">F_HAND_RELATIVE</ref><sp/>|<sp/>(relative<sp/>?<sp/><ref refid="uarm__library_8h_1a837c33481ed7880bdcd0fe6fb92c4943" kindref="member">F_POSN_RELATIVE</ref><sp/>:<sp/>0),<sp/>time,<sp/><ref refid="uarm__library_8h_1a6083fffc7be867db36056d344c4ca57f" kindref="member">PATH_LINEAR</ref>,<sp/><ref refid="uarm__library_8h_1ab6a6bff814ea831e2fd610bdf8e7741e" kindref="member">INTERP_EASE_INOUT_CUBIC</ref>,<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="139" refid="classu_arm_class_1a91f8baa1885f86a09e2595e73c662381" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a91f8baa1885f86a09e2595e73c662381" kindref="member">move_to</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>x,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>y,</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>z,</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>relative,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>time,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>servo_4_angle)<sp/>{</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classu_arm_class_1aaf4c2ca0a6ff1a78ddc73397b8ea4dd4" kindref="member">move_to</ref>(x,<sp/>y,<sp/>z,<sp/>servo_4_angle,<sp/>relative<sp/>?<sp/><ref refid="uarm__library_8h_1a837c33481ed7880bdcd0fe6fb92c4943" kindref="member">F_POSN_RELATIVE</ref><sp/>:<sp/>0,<sp/>time,<sp/><ref refid="uarm__library_8h_1a6083fffc7be867db36056d344c4ca57f" kindref="member">PATH_LINEAR</ref>,<sp/><ref refid="uarm__library_8h_1ab6a6bff814ea831e2fd610bdf8e7741e" kindref="member">INTERP_EASE_INOUT_CUBIC</ref>,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="142" refid="classu_arm_class_1a6a444461522df7ad01625a5af5dec078" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a6a444461522df7ad01625a5af5dec078" kindref="member">move_to</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>x,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>y,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>z,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>relative,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>time,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>servo_4_relative,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>servo_4_angle)<sp/>{</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classu_arm_class_1aaf4c2ca0a6ff1a78ddc73397b8ea4dd4" kindref="member">move_to</ref>(x,<sp/>y,<sp/>z,<sp/>servo_4_angle,<sp/>(relative<sp/>?<sp/><ref refid="uarm__library_8h_1a837c33481ed7880bdcd0fe6fb92c4943" kindref="member">F_POSN_RELATIVE</ref><sp/>:<sp/>0)<sp/>|<sp/>(servo_4_relative<sp/>?<sp/><ref refid="uarm__library_8h_1ae12db185dfbaf562b83bd3599a0d443e" kindref="member">F_HAND_RELATIVE</ref><sp/>:<sp/>0),<sp/>time,<sp/><ref refid="uarm__library_8h_1a6083fffc7be867db36056d344c4ca57f" kindref="member">PATH_LINEAR</ref>,<sp/><ref refid="uarm__library_8h_1ab6a6bff814ea831e2fd610bdf8e7741e" kindref="member">INTERP_EASE_INOUT_CUBIC</ref>,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight></codeline>
+<codeline lineno="146" refid="classu_arm_class_1a7bc6967374e93d9f155e663549a80d4b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a7bc6967374e93d9f155e663549a80d4b" kindref="member">move_to_at_once</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>x,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>y,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>z)<sp/>{</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classu_arm_class_1aaf4c2ca0a6ff1a78ddc73397b8ea4dd4" kindref="member">move_to</ref>(x,<sp/>y,<sp/>z,<sp/>0,<sp/><ref refid="uarm__library_8h_1ae12db185dfbaf562b83bd3599a0d443e" kindref="member">F_HAND_RELATIVE</ref>,<sp/>0.0,<sp/><ref refid="uarm__library_8h_1a6083fffc7be867db36056d344c4ca57f" kindref="member">PATH_LINEAR</ref>,<sp/><ref refid="uarm__library_8h_1a1d86866e45d3a98fc2e510bfb5e6e547" kindref="member">INTERP_LINEAR</ref>,<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="149" refid="classu_arm_class_1a3650f6fa4fb916255ad9e1822d9ec1a5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a3650f6fa4fb916255ad9e1822d9ec1a5" kindref="member">move_to_at_once</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>x,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>y,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>z,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>relative,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>servo_4_angle)<sp/>{</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classu_arm_class_1aaf4c2ca0a6ff1a78ddc73397b8ea4dd4" kindref="member">move_to</ref>(x,<sp/>y,<sp/>z,<sp/>servo_4_angle,<sp/>relative<sp/>?<sp/><ref refid="uarm__library_8h_1a837c33481ed7880bdcd0fe6fb92c4943" kindref="member">F_POSN_RELATIVE</ref><sp/>:<sp/>0,<sp/>0.0,<sp/><ref refid="uarm__library_8h_1a6083fffc7be867db36056d344c4ca57f" kindref="member">PATH_LINEAR</ref>,<sp/><ref refid="uarm__library_8h_1a1d86866e45d3a98fc2e510bfb5e6e547" kindref="member">INTERP_LINEAR</ref>,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a3bf781ec8db7dc04bd68fa763255e71c" kindref="member">write_stretch_height</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>stretch,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>height);</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"></highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight></codeline>
+<codeline lineno="156" refid="classu_arm_class_1a58363626e97719a592d2d153e5a67b6d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a58363626e97719a592d2d153e5a67b6d" kindref="member">get_current_x</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a3c59c7a95c9a7d1c5ca3942c46dd3ff8" kindref="member">g_current_x</ref>;</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="159" refid="classu_arm_class_1a526e7ccdc0f1b7673eb6a1f156dcfdad" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a526e7ccdc0f1b7673eb6a1f156dcfdad" kindref="member">get_current_y</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a07afd50d4a18b241dfcfa3a353c7567d" kindref="member">g_current_y</ref>;</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="162" refid="classu_arm_class_1aa8754514697a06e60dd4be9b36b25101" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1aa8754514697a06e60dd4be9b36b25101" kindref="member">get_current_z</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a837f9a2a3e240bb294469f940c952e32" kindref="member">g_current_z</ref>;</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a22d74cb816204d1172428302837fab24" kindref="member">get_current_xyz</ref>();</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a22d74cb816204d1172428302837fab24" kindref="member">get_current_xyz</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>theta_1,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>theta_2,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>theta_3);</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"></highlight></codeline>
+<codeline lineno="169" refid="classu_arm_class_1ab8db96e35368bd928ea3c355e3f9609c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1ab8db96e35368bd928ea3c355e3f9609c" kindref="member">angle_to_coordinate</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&amp;<sp/>x,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&amp;<sp/>y,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>&amp;z)<sp/>{</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classu_arm_class_1a22d74cb816204d1172428302837fab24" kindref="member">get_current_xyz</ref>();<sp/>x<sp/>=<sp/><ref refid="classu_arm_class_1a3c59c7a95c9a7d1c5ca3942c46dd3ff8" kindref="member">g_current_x</ref>;<sp/>y<sp/>=<sp/><ref refid="classu_arm_class_1a07afd50d4a18b241dfcfa3a353c7567d" kindref="member">g_current_y</ref>;<sp/>z<sp/>=<sp/><ref refid="classu_arm_class_1a837f9a2a3e240bb294469f940c952e32" kindref="member">g_current_z</ref>;</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="172" refid="classu_arm_class_1a087c721ea46b3dced1a4da085a027094" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a087c721ea46b3dced1a4da085a027094" kindref="member">angle_to_coordinate</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>theta_1,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>theta_2,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>theta_3,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&amp;<sp/>x,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&amp;<sp/>y,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>&amp;z)<sp/>{</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classu_arm_class_1a22d74cb816204d1172428302837fab24" kindref="member">get_current_xyz</ref>(theta_1,<sp/>theta_2,<sp/>theta_3);<sp/>x<sp/>=<sp/><ref refid="classu_arm_class_1a3c59c7a95c9a7d1c5ca3942c46dd3ff8" kindref="member">g_current_x</ref>;<sp/>y<sp/>=<sp/><ref refid="classu_arm_class_1a07afd50d4a18b241dfcfa3a353c7567d" kindref="member">g_current_y</ref>;<sp/>z<sp/>=<sp/><ref refid="classu_arm_class_1a837f9a2a3e240bb294469f940c952e32" kindref="member">g_current_z</ref>;</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1ae3d5c2249f60c69798050d058686fe15" kindref="member">coordinate_to_angle</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>x,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>y,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>z,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&amp;<sp/>theta_1,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&amp;<sp/>theta_2,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&amp;<sp/>theta_3);</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"></highlight></codeline>
+<codeline lineno="177"><highlight class="normal"></highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1abc380c560571d0645af8f8166bc9720d" kindref="member">gripper_catch</ref>();</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1ad2286428e3c74f4dbac37ec537d3d301" kindref="member">gripper_release</ref>();</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1ac8ea033ef44b3e79c46b63846dd26b03" kindref="member">interpolate</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>start_val,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>end_val,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*interp_vals,<sp/>byte<sp/>ease_type);</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a983b6a63e8c76c27bb1f4b1e51ef059a" kindref="member">pump_on</ref>();</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a908b2f1a111b14ffdfc52bce7ccffd3d" kindref="member">pump_off</ref>();</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"></highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1ad49f00b82c7217aea14992519db644c9" kindref="member">write_servo_angle</ref>(byte<sp/>servo_rot_angle,<sp/>byte<sp/>servo_left_angle,<sp/>byte<sp/>servo_right_angle,<sp/>byte<sp/>servo_hand_rot_angle,<sp/>byte<sp/>trigger);</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1ad49f00b82c7217aea14992519db644c9" kindref="member">write_servo_angle</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>servo_rot_angle,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>servo_left_angle,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>servo_right_angle,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>servo_hand_rot_angle);</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1ad49f00b82c7217aea14992519db644c9" kindref="member">write_servo_angle</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>servo_rot_angle,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>servo_left_angle,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>servo_right_angle);</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"></highlight></codeline>
+<codeline lineno="188" refid="classu_arm_class_1a4b914c1da1dfd085d6384b4984519e89" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_servo" kindref="compound">Servo</ref><sp/><ref refid="classu_arm_class_1a4b914c1da1dfd085d6384b4984519e89" kindref="member">g_servo_rot</ref>;</highlight></codeline>
+<codeline lineno="189" refid="classu_arm_class_1a5ae5272cd6a209cf3de5339347a6b86f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_servo" kindref="compound">Servo</ref><sp/><ref refid="classu_arm_class_1a5ae5272cd6a209cf3de5339347a6b86f" kindref="member">g_servo_left</ref>;</highlight></codeline>
+<codeline lineno="190" refid="classu_arm_class_1aa87224671243ac73cbf9935a24b2efd9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_servo" kindref="compound">Servo</ref><sp/><ref refid="classu_arm_class_1aa87224671243ac73cbf9935a24b2efd9" kindref="member">g_servo_right</ref>;</highlight></codeline>
+<codeline lineno="191" refid="classu_arm_class_1a589664e5cbc560163f68e9152ff64bd1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_servo" kindref="compound">Servo</ref><sp/><ref refid="classu_arm_class_1a589664e5cbc560163f68e9152ff64bd1" kindref="member">g_servo_hand_rot</ref>;</highlight></codeline>
+<codeline lineno="192" refid="classu_arm_class_1a0841c2fe0ca33ae6f83b6bd3bf2e1a6b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_servo" kindref="compound">Servo</ref><sp/><ref refid="classu_arm_class_1a0841c2fe0ca33ae6f83b6bd3bf2e1a6b" kindref="member">g_servo_hand</ref>;</highlight></codeline>
+<codeline lineno="193" refid="classu_arm_class_1ab92828f4da95e9b1007683b658552268" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1ab92828f4da95e9b1007683b658552268" kindref="member">INTERP_INTVLS</ref>;</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>void<sp/>attach_all();</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">boolean</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1afa56f149c58d1577804de94ea8235d97" kindref="member">set_servo_status</ref>(</highlight><highlight class="keywordtype">boolean</highlight><highlight class="normal"><sp/>attach_state,<sp/>byte<sp/>servo_num);</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1ab0077b25370d56bcdf1566c71abe92fb" kindref="member">init</ref>();</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"></highlight></codeline>
+<codeline lineno="198"><highlight class="normal"></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="199" refid="classu_arm_class_1acad460dd08a71be8ef53eedfec90545e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1acad460dd08a71be8ef53eedfec90545e" kindref="member">cur_rot</ref>;</highlight></codeline>
+<codeline lineno="200" refid="classu_arm_class_1a2982d5607b70ab69d4c44ed95c140021" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a2982d5607b70ab69d4c44ed95c140021" kindref="member">cur_left</ref>;</highlight></codeline>
+<codeline lineno="201" refid="classu_arm_class_1a10c284c23e73eb6260260d55472b8983" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a10c284c23e73eb6260260d55472b8983" kindref="member">cur_right</ref>;</highlight></codeline>
+<codeline lineno="202" refid="classu_arm_class_1a5d1999ccfc522936f017256fecf6be60" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a5d1999ccfc522936f017256fecf6be60" kindref="member">cur_hand</ref>;</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1ab72ccb5965c415682bd5554e190d931e" kindref="member">angle_to_coordinate_y</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>theta_1,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>theta_2,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>theta_3);</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"></highlight></codeline>
+<codeline lineno="205" refid="classu_arm_class_1a3c59c7a95c9a7d1c5ca3942c46dd3ff8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a3c59c7a95c9a7d1c5ca3942c46dd3ff8" kindref="member">g_current_x</ref>;</highlight></codeline>
+<codeline lineno="206" refid="classu_arm_class_1a07afd50d4a18b241dfcfa3a353c7567d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a07afd50d4a18b241dfcfa3a353c7567d" kindref="member">g_current_y</ref>;</highlight></codeline>
+<codeline lineno="207" refid="classu_arm_class_1a837f9a2a3e240bb294469f940c952e32" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1a837f9a2a3e240bb294469f940c952e32" kindref="member">g_current_z</ref>;</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"></highlight></codeline>
+<codeline lineno="209" refid="classu_arm_class_1af0df1d802c04741d390beaaf0b31b1f3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">boolean</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class_1af0df1d802c04741d390beaaf0b31b1f3" kindref="member">g_gripper_reset</ref>;</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"></highlight></codeline>
+<codeline lineno="211"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"></highlight></codeline>
+<codeline lineno="213"><highlight class="normal"></highlight></codeline>
+<codeline lineno="214"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"></highlight></codeline>
+<codeline lineno="216"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/><ref refid="classu_arm_class" kindref="compound">uArmClass</ref><sp/><ref refid="uarm__library_8h_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>;</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"></highlight></codeline>
+<codeline lineno="218"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h"/>
+  </compounddef>
+</doxygen>

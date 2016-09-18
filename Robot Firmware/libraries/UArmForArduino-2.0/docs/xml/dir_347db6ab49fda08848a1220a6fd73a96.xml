@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.11">
+  <compounddef id="dir_347db6ab49fda08848a1220a6fd73a96" kind="dir">
+    <compoundname>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/UArmProtocol</compoundname>
+    <innerfile refid="_u_arm_protocol_8ino">UArmProtocol.ino</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/UArmProtocol/"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,234 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.11">
+  <compounddef id="_getting_started_8ino" kind="file" language="C++">
+    <compoundname>GettingStarted.ino</compoundname>
+    <includes refid="uarm__library_8h" local="yes">uarm_library.h</includes>
+    <incdepgraph>
+      <node id="14">
+        <label>UFServo.h</label>
+        <link refid="_u_f_servo_8h"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/GettingStarted/GettingStarted.ino</label>
+        <link refid="GettingStarted.ino"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>linreg.h</label>
+        <link refid="linreg_8h"/>
+      </node>
+      <node id="13">
+        <label>Wire.h</label>
+      </node>
+      <node id="11">
+        <label>Arduino.h</label>
+      </node>
+      <node id="10">
+        <label>uarm_library.h</label>
+        <link refid="uarm__library_8h"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>EEPROM.h</label>
+      </node>
+      <node id="15">
+        <label>inttypes.h</label>
+      </node>
+    </incdepgraph>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_getting_started_8ino_1ac4f474c82e82cbb89ca7c36dd52be0ed" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int value</definition>
+        <argsstring></argsstring>
+        <name>value</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/GettingStarted/GettingStarted.ino" line="26" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/GettingStarted/GettingStarted.ino" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_getting_started_8ino_1a4fc01d736fe50cf5b977f755b675f11d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void setup</definition>
+        <argsstring>()</argsstring>
+        <name>setup</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/GettingStarted/GettingStarted.ino" line="28" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/GettingStarted/GettingStarted.ino" bodystart="28" bodyend="32"/>
+      </memberdef>
+      <memberdef kind="function" id="_getting_started_8ino_1afe461d27b9c48d5921c00d521181f12f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void loop</definition>
+        <argsstring>()</argsstring>
+        <name>loop</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/GettingStarted/GettingStarted.ino" line="35" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/GettingStarted/GettingStarted.ino" bodystart="35" bodyend="140"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>GettingStarted Arduino Sketch. </para>    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="author"><para>Joe Song  Alex Tan  GNU </para></simplesect>
+<simplesect kind="copyright"><para>(c) 2016 UFactory Team. All right reserved </para></simplesect>
+</para>    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"></codeline>
+<codeline lineno="11"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Table<sp/>of<sp/>Content</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/><sp/><sp/>Function<sp/>1<sp/>-<sp/>4<sp/>:<sp/><sp/><sp/><sp/>move<sp/>to<sp/>a<sp/>certain<sp/>point<sp/>(f)</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/><sp/><sp/>Fucntion<sp/>d<sp/>:<sp/>detach<sp/>servos</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/><sp/><sp/>Function<sp/>o<sp/>:<sp/>pump<sp/>on</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/><sp/><sp/>Function<sp/>f<sp/>:<sp/>pump<sp/>off</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/><sp/><sp/>Function<sp/>g<sp/>:<sp/>read<sp/>current<sp/>coordinate</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/><sp/><sp/>Function<sp/>5<sp/>:<sp/>Read<sp/>Servo<sp/>offset</highlight></codeline>
+<codeline lineno="19"><highlight class="comment"></highlight></codeline>
+<codeline lineno="20"><highlight class="comment"></highlight></codeline>
+<codeline lineno="21"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="uarm__library_8h" kindref="compound">uarm_library.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="_getting_started_8ino_1ac4f474c82e82cbb89ca7c36dd52be0ed" kindref="member">value</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>value<sp/>is<sp/>the<sp/>data<sp/>recevied</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="_getting_started_8ino_1a4fc01d736fe50cf5b977f755b675f11d" kindref="member">setup</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Wire.begin();<sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>join<sp/>i2c<sp/>bus<sp/>(address<sp/>optional<sp/>for<sp/>master)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.begin(9600);<sp/></highlight><highlight class="comment">//<sp/>start<sp/>serial<sp/>port<sp/>at<sp/>9600<sp/>bps</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="_getting_started_8ino_1afe461d27b9c48d5921c00d521181f12f" kindref="member">loop</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(Serial.available()&gt;0)</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>readSerial<sp/>=<sp/>Serial.read();</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(readSerial);</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//----------------------------------<sp/><sp/>function<sp/>1<sp/><sp/>------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>function<sp/>below<sp/>is<sp/>for<sp/>move<sp/>uArm<sp/>from<sp/>current<sp/>position<sp/>to<sp/>absolute<sp/>coordinate</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>x<sp/>=<sp/>13,<sp/>y<sp/>=<sp/>-13,<sp/>z<sp/>=<sp/>3</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(readSerial<sp/>==<sp/></highlight><highlight class="charliteral">&apos;1&apos;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1aaf4c2ca0a6ff1a78ddc73397b8ea4dd4" kindref="member">move_to</ref>(13,-13,3);</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>delay(1000);</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//----------------------------------<sp/><sp/>function<sp/>2<sp/><sp/>------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>function<sp/>below<sp/>is<sp/>for<sp/>move<sp/>uArm<sp/>from<sp/>current<sp/>position<sp/>to<sp/>absolute<sp/>coordinate</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>x<sp/>=<sp/>-13,<sp/>y<sp/>=<sp/>-13,<sp/>z<sp/>=<sp/>3</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(readSerial<sp/>==<sp/></highlight><highlight class="charliteral">&apos;2&apos;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1aaf4c2ca0a6ff1a78ddc73397b8ea4dd4" kindref="member">move_to</ref>(-13,-13,3);</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>delay(1000);</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//----------------------------------<sp/><sp/>function<sp/>3<sp/><sp/>------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>function<sp/>below<sp/>is<sp/>for<sp/>move<sp/>uArm<sp/>from<sp/>current<sp/>position<sp/>to<sp/>relatvie<sp/>coordinate</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>(dot)<sp/>dx<sp/>=<sp/>4,<sp/>dy<sp/>=<sp/>-3,<sp/>dz<sp/>=<sp/>2<sp/>in<sp/>5<sp/>seconds</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(readSerial<sp/>==<sp/></highlight><highlight class="charliteral">&apos;3&apos;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1aaf4c2ca0a6ff1a78ddc73397b8ea4dd4" kindref="member">move_to</ref>(5,0,0,<ref refid="uarm__library_8h_1a1c53ccfc510f2dc5a6572a6768de9041" kindref="member">RELATIVE</ref>,2);</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>delay(1000);</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//----------------------------------<sp/><sp/>function<sp/>4<sp/><sp/>------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>function<sp/>below<sp/>is<sp/>for<sp/>move<sp/>uArm<sp/>from<sp/>current<sp/>position<sp/>to<sp/>relatvie<sp/>coordinate</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>(dot)<sp/>dx<sp/>=<sp/>-4,<sp/>dy<sp/>=<sp/>3,<sp/>dz<sp/>=<sp/>-2<sp/>in<sp/>5<sp/>seconds</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(readSerial<sp/>==<sp/></highlight><highlight class="charliteral">&apos;4&apos;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1aaf4c2ca0a6ff1a78ddc73397b8ea4dd4" kindref="member">move_to</ref>(-4,3,-2,<ref refid="uarm__library_8h_1a1c53ccfc510f2dc5a6572a6768de9041" kindref="member">RELATIVE</ref>,5);</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>delay(1000);</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//----------------------------------<sp/><sp/>function<sp/>d<sp/><sp/>------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Detach<sp/>Servo</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(readSerial<sp/>==<sp/></highlight><highlight class="charliteral">&apos;d&apos;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1afa56f149c58d1577804de94ea8235d97" kindref="member">set_servo_status</ref>(</highlight><highlight class="keyword">false</highlight><highlight class="normal">,<sp/><ref refid="uarm__library_8h_1aedb0af3f18647ea800b5e7591f44fff5" kindref="member">SERVO_ROT_NUM</ref>);</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1afa56f149c58d1577804de94ea8235d97" kindref="member">set_servo_status</ref>(</highlight><highlight class="keyword">false</highlight><highlight class="normal">,<sp/><ref refid="uarm__library_8h_1aad9c39f9a13fb794436e7f28a66ec957" kindref="member">SERVO_LEFT_NUM</ref>);</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1afa56f149c58d1577804de94ea8235d97" kindref="member">set_servo_status</ref>(</highlight><highlight class="keyword">false</highlight><highlight class="normal">,<sp/><ref refid="uarm__library_8h_1ad6c6879b0915a777fc2165e9e1b324a7" kindref="member">SERVO_RIGHT_NUM</ref>);</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1afa56f149c58d1577804de94ea8235d97" kindref="member">set_servo_status</ref>(</highlight><highlight class="keyword">false</highlight><highlight class="normal">,<sp/><ref refid="uarm__library_8h_1a21176f343ea2d7a582d08884193c07e9" kindref="member">SERVO_HAND_ROT_NUM</ref>);</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//----------------------------------<sp/><sp/>function<sp/>a<sp/><sp/>------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Detach<sp/>Servo</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(readSerial<sp/>==<sp/></highlight><highlight class="charliteral">&apos;a&apos;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1afa56f149c58d1577804de94ea8235d97" kindref="member">set_servo_status</ref>(</highlight><highlight class="keyword">true</highlight><highlight class="normal">,<sp/><ref refid="uarm__library_8h_1aedb0af3f18647ea800b5e7591f44fff5" kindref="member">SERVO_ROT_NUM</ref>);</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1afa56f149c58d1577804de94ea8235d97" kindref="member">set_servo_status</ref>(</highlight><highlight class="keyword">true</highlight><highlight class="normal">,<sp/><ref refid="uarm__library_8h_1aad9c39f9a13fb794436e7f28a66ec957" kindref="member">SERVO_LEFT_NUM</ref>);</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1afa56f149c58d1577804de94ea8235d97" kindref="member">set_servo_status</ref>(</highlight><highlight class="keyword">true</highlight><highlight class="normal">,<sp/><ref refid="uarm__library_8h_1ad6c6879b0915a777fc2165e9e1b324a7" kindref="member">SERVO_RIGHT_NUM</ref>);</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1afa56f149c58d1577804de94ea8235d97" kindref="member">set_servo_status</ref>(</highlight><highlight class="keyword">true</highlight><highlight class="normal">,<sp/><ref refid="uarm__library_8h_1a21176f343ea2d7a582d08884193c07e9" kindref="member">SERVO_HAND_ROT_NUM</ref>);</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//----------------------------------<sp/><sp/>function<sp/>o<sp/><sp/>------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Pump<sp/>on</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(readSerial<sp/>==<sp/></highlight><highlight class="charliteral">&apos;o&apos;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1a983b6a63e8c76c27bb1f4b1e51ef059a" kindref="member">pump_on</ref>();</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//----------------------------------<sp/><sp/>function<sp/>f<sp/><sp/>------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Pump<sp/>off</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(readSerial<sp/>==<sp/></highlight><highlight class="charliteral">&apos;f&apos;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1a908b2f1a111b14ffdfc52bce7ccffd3d" kindref="member">pump_off</ref>();</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//----------------------------------<sp/><sp/>function<sp/>g<sp/><sp/>------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>function<sp/>below<sp/>is<sp/>for<sp/>print<sp/>current<sp/>x,y,z<sp/>absolute<sp/>location</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(readSerial<sp/>==<sp/></highlight><highlight class="charliteral">&apos;g&apos;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1a22d74cb816204d1172428302837fab24" kindref="member">get_current_xyz</ref>();</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(</highlight><highlight class="stringliteral">&quot;The<sp/>current<sp/>location<sp/>is<sp/>&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(<ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1a58363626e97719a592d2d153e5a67b6d" kindref="member">get_current_x</ref>());</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(</highlight><highlight class="stringliteral">&quot;<sp/>,<sp/>&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(<ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1a526e7ccdc0f1b7673eb6a1f156dcfdad" kindref="member">get_current_y</ref>());</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(</highlight><highlight class="stringliteral">&quot;<sp/>,<sp/>&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(<ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1aa8754514697a06e60dd4be9b36b25101" kindref="member">get_current_z</ref>());</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println();</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>delay(1000);</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//----------------------------------<sp/><sp/>function<sp/>5<sp/><sp/>------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>function<sp/>below<sp/>is<sp/>for<sp/>read<sp/>servo<sp/>offset</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="125"><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(readSerial<sp/>==<sp/></highlight><highlight class="charliteral">&apos;5&apos;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(</highlight><highlight class="stringliteral">&quot;SERVO_ROT_NUM<sp/>offset:&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(<ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1ada41aed1523d78f47a70a896be0700e5" kindref="member">read_servo_offset</ref>(<ref refid="uarm__library_8h_1aedb0af3f18647ea800b5e7591f44fff5" kindref="member">SERVO_ROT_NUM</ref>));</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(</highlight><highlight class="stringliteral">&quot;SERVO_LEFT_NUM<sp/>offset:&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(<ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1ada41aed1523d78f47a70a896be0700e5" kindref="member">read_servo_offset</ref>(<ref refid="uarm__library_8h_1aad9c39f9a13fb794436e7f28a66ec957" kindref="member">SERVO_LEFT_NUM</ref>));</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(</highlight><highlight class="stringliteral">&quot;SERVO_RIGHT_NUM<sp/>offset:&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(<ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1ada41aed1523d78f47a70a896be0700e5" kindref="member">read_servo_offset</ref>(<ref refid="uarm__library_8h_1ad6c6879b0915a777fc2165e9e1b324a7" kindref="member">SERVO_RIGHT_NUM</ref>));</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.print(</highlight><highlight class="stringliteral">&quot;SERVO_HAND_ROT_NUM<sp/>offset:&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Serial.println(<ref refid="uarm__library_8cpp_1a090cc6fa82eb11487fd2c4a227f0b85c" kindref="member">uarm</ref>.<ref refid="classu_arm_class_1ada41aed1523d78f47a70a896be0700e5" kindref="member">read_servo_offset</ref>(<ref refid="uarm__library_8h_1a21176f343ea2d7a582d08884193c07e9" kindref="member">SERVO_HAND_ROT_NUM</ref>));</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"></highlight></codeline>
+<codeline lineno="137"><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="comment">//<sp/>close<sp/>read<sp/>available</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="140"><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+    <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/GettingStarted/GettingStarted.ino"/>
+  </compounddef>
+</doxygen>

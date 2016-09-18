@@ -1,0 +1,147 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.11">
+  <compounddef id="_h_i_s_t_o_r_y_8_m_d" kind="file" language="Markdown">
+    <compoundname>HISTORY.MD</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#<sp/>uArm<sp/>Arduino<sp/>Library<sp/>Release<sp/>Note</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>[1.7.1]<sp/>-<sp/>2016-06-28</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Fix</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Set<sp/>Current<sp/>angle<sp/>after<sp/>attach<sp/>servo</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>rewrite<sp/>set_servo_status<sp/>replace<sp/>attach_servo<sp/>detach_servo</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>[1.7.0]<sp/>-<sp/>2016-06-24</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Fix</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Update<sp/>examples<sp/>Calibration.ino,<sp/>movement.ino,<sp/>Add<sp/>new<sp/>UArmTextControl2.0.ino</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Update<sp/>uarm_library.h<sp/>make<sp/>some<sp/>protected<sp/>value<sp/>be<sp/>public</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Move<sp/>All<sp/>source<sp/>code<sp/>to<sp/>src<sp/>folder</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Create<sp/>Docs<sp/>folder<sp/>to<sp/>store<sp/>Doxygen<sp/>Configure<sp/>&amp;<sp/>Html<sp/>header<sp/>footer<sp/>files</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>[1.6.2]<sp/>-<sp/>2016-06-24</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Fix</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Change<sp/>Lots<sp/>of<sp/>function<sp/>names<sp/>according<sp/>to<sp/>Programming<sp/>Rules</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>[1.6.1]<sp/>-<sp/>2016-06-22</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Fix</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Fix<sp/>MoveTo<sp/>Lock<sp/>Hand<sp/>Servo<sp/>issue.</highlight></codeline>
+<codeline></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>[1.6.0]<sp/>-<sp/>2016-06-20</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Fix</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Add<sp/>Limit<sp/>for<sp/>x*x<sp/>+<sp/>y*y<sp/>&lt;<sp/>32,<sp/>Fix<sp/>When<sp/>x*x<sp/>+<sp/>y*y<sp/>&gt;<sp/>32<sp/>uArm<sp/>will<sp/>get<sp/>wired<sp/>position</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Changes</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>Rewrite<sp/>Servo.h<sp/>to<sp/>UFServo.h,<sp/>using<sp/>float<sp/>when<sp/>servo.write(),<sp/>increase<sp/>accuracy</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Rewrite<sp/>uArmFimata<sp/>to<sp/>UArmProtocol.ino<sp/><sp/><sp/></highlight></codeline>
+<codeline></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>[1.5.11]<sp/>-<sp/>2016-06-07</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Fix</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Fix<sp/>Test.ino<sp/>unused<sp/>function</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Update<sp/>Code<sp/>Format</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>[1.5.10]<sp/>-<sp/>2016-06-07</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Fix</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>At<sp/>moveToAtOnce(x,y,z)</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>[1.5.9]<sp/>-<sp/>2016-06-01</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Fix</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Fix<sp/>writeStretch()<sp/>offset<sp/>address<sp/>not<sp/>correct</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>[1.5.8]<sp/>-<sp/>2016-05-07</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Fix</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Speed<sp/>up<sp/>Calibration,<sp/>reduce<sp/>delay</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Use<sp/>writeAngle()<sp/>Function<sp/>in<sp/>MoveTo</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Changes</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>Add<sp/>Calibration.ino<sp/>into<sp/>examples</highlight></codeline>
+<codeline></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>[1.5.6]<sp/>-<sp/>2016-05-06</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Fix</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>Update<sp/>SERIAL_NUMBER_ADDRESS<sp/>to<sp/>100,<sp/>Update<sp/>CALIBRATION_STRETCH_FLAG<sp/>mark<sp/>value<sp/>is<sp/>CONFIRM_FLAG</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>[1.5.5]<sp/>-<sp/>2016-05-05</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Fix</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>if<sp/>SERIAL_NUMBER_ADDRESS<sp/>equal<sp/>CONFIRM_FLAG<sp/>0x80,<sp/>then<sp/>Serial<sp/>Number<sp/>exist<sp/>in<sp/>EEPROM</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>[1.5.4]<sp/>-<sp/>2016-05-02</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Fix</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>if<sp/>SERIAL_NUMBER_ADDRESS<sp/>equal<sp/>SERIAL_NUMBER_ADDRESS,<sp/>then<sp/>Serial<sp/>Number<sp/>exist<sp/>in<sp/>EEPROM</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>[1.5.3]<sp/>-<sp/>2016-05-02</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Changes</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>Add<sp/>readSerialNumber<sp/>&amp;<sp/>writeSerialNumber<sp/>function<sp/>(Serial<sp/>Number:<sp/>Address<sp/>1024,<sp/>size:14)</highlight></codeline>
+<codeline></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>[1.5.2]<sp/>-<sp/>2016-04-29</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Changes</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>Add<sp/>Example,<sp/>MoveTest,<sp/>GetXYZ,<sp/>Recording<sp/>Mode</highlight></codeline>
+<codeline></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>[1.5.2]<sp/>-<sp/>2016-04-29</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Changes</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>Cancel<sp/>v.1.5.0<sp/>read<sp/>offset<sp/>from<sp/>EEPROM.</highlight></codeline>
+<codeline></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>[1.5.0]<sp/>-<sp/>2016-04-14</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Changes</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>Initialize<sp/>servo<sp/>offset<sp/>&amp;<sp/>linear<sp/>offset<sp/>from<sp/>EEPROM<sp/>to<sp/>global<sp/>values,<sp/>prevent<sp/>read<sp/>EEPROM<sp/>every<sp/>time</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>Use<sp/>[EEPROM.get()][a4e46a5d]<sp/>&amp;<sp/>[EEPROM.put()][275bf48d]<sp/>to<sp/>read<sp/>&amp;<sp/>write<sp/>value<sp/>in<sp/>EEPROM<sp/>instead<sp/>of<sp/>saveDataToRom()</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/>[a4e46a5d]:<sp/>https://www.arduino.cc/en/Reference/EEPROMGet<sp/>&quot;EEPROM.get()&quot;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>[275bf48d]:<sp/>https://www.arduino.cc/en/Reference/EEPROMPut<sp/>&quot;EEPROM.put()&quot;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>rename<sp/>function<sp/>readToAngle<sp/>to<sp/>analogToAngle</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Change<sp/>Offset<sp/>address<sp/>in<sp/>EEPROM</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>[1.4.0]<sp/>-<sp/>2016-04-12</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Changes</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>uarm_library.cpp<sp/>writeServoAngle<sp/>resume<sp/>LEFT<sp/>&amp;<sp/>RIGHT<sp/>ANGLE</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>ToDo:<sp/>remove<sp/>LEFT<sp/>&amp;<sp/>RIGHT<sp/>ANGLE<sp/>from<sp/>WriteServoAngle<sp/>(For<sp/>Safety)</highlight></codeline>
+<codeline></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>[1.3.1]<sp/>-<sp/>2016-04-12</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Changes</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>uarm_library.cpp<sp/>writeLeftRightServoAngle()<sp/>Update<sp/>the<sp/>angle<sp/>between<sp/>left<sp/>&amp;<sp/>right<sp/><sp/></highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>Change<sp/>Folder<sp/>examples<sp/>folder<sp/>&amp;<sp/>stretch<sp/>name<sp/>From<sp/>UarmFirmata<sp/>to<sp/>UArmFirmata<sp/><sp/></highlight></codeline>
+    </programlisting>
+    <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/HISTORY.MD"/>
+  </compounddef>
+</doxygen>

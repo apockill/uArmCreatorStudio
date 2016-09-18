@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.11">
+  <compounddef id="structservo__t" kind="struct" language="C++" prot="public">
+    <compoundname>servo_t</compoundname>
+    <includes refid="_u_f_servo_8h" local="no">UFServo.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structservo__t_1a04bcc6cf13ea5cd2c4dabdc977e054cb" prot="public" static="no" mutable="no">
+        <type><ref refid="struct_servo_pin__t" kindref="compound">ServoPin_t</ref></type>
+        <definition>ServoPin_t servo_t::Pin</definition>
+        <argsstring></argsstring>
+        <name>Pin</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="90" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" bodystart="90" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structservo__t_1a9405b5e5266318f889ef6ff95a97943b" prot="public" static="no" mutable="no">
+        <type>unsigned int</type>
+        <definition>volatile unsigned int servo_t::ticks</definition>
+        <argsstring></argsstring>
+        <name>ticks</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="91" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" bodystart="91" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="5">
+        <label>servo_t</label>
+        <link refid="structservo__t"/>
+        <childnode refid="6" relation="usage">
+          <edgelabel>Pin</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>ServoPin_t</label>
+        <link refid="struct_servo_pin__t"/>
+      </node>
+    </collaborationgraph>
+    <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="89" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" bodystart="89" bodyend="92"/>
+    <listofallmembers>
+      <member refid="structservo__t_1a04bcc6cf13ea5cd2c4dabdc977e054cb" prot="public" virt="non-virtual"><scope>servo_t</scope><name>Pin</name></member>
+      <member refid="structservo__t_1a9405b5e5266318f889ef6ff95a97943b" prot="public" virt="non-virtual"><scope>servo_t</scope><name>ticks</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

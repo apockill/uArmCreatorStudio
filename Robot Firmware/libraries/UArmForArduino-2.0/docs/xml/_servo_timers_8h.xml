@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.11">
+  <compounddef id="_servo_timers_8h" kind="file" language="C++">
+    <compoundname>ServoTimers.h</compoundname>
+      <sectiondef kind="define">
+      <memberdef kind="define" id="_servo_timers_8h_1ab187febb2d332254f49068c80dbb22d7" prot="public" static="no">
+        <name>_useTimer1</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><heading level="2">AVR Only definitions </heading>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/ServoTimers.h" line="56" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/ServoTimers.h" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="enum">
+      <memberdef kind="enum" id="_servo_timers_8h_1aa57046a4eafc371d1ae9a7f82f666887" prot="public" static="no">
+        <name>timer16_Sequence_t</name>
+        <enumvalue id="_servo_timers_8h_1aa57046a4eafc371d1ae9a7f82f666887a79ea1c528ccb762bc8533c2b5849026d" prot="public">
+          <name>_timer1</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="_servo_timers_8h_1aa57046a4eafc371d1ae9a7f82f666887a53f530c6e8ca85b1b3fbd5b21ef207a4" prot="public">
+          <name>_Nbr_16timers</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/ServoTimers.h" line="57" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/ServoTimers.h" bodystart="57" bodyend="57"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/><sp/>Servo.h<sp/>-<sp/>Interrupt<sp/>driven<sp/>Servo<sp/>library<sp/>for<sp/>Arduino<sp/>using<sp/>16<sp/>bit<sp/>timers-<sp/>Version<sp/>2</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/><sp/>Copyright<sp/>(c)<sp/>2009<sp/>Michael<sp/>Margolis.<sp/><sp/>All<sp/>right<sp/>reserved.</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"></highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/><sp/>This<sp/>library<sp/>is<sp/>free<sp/>software;<sp/>you<sp/>can<sp/>redistribute<sp/>it<sp/>and/or</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/><sp/>modify<sp/>it<sp/>under<sp/>the<sp/>terms<sp/>of<sp/>the<sp/>GNU<sp/>Lesser<sp/>General<sp/>Public</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/><sp/>License<sp/>as<sp/>published<sp/>by<sp/>the<sp/>Free<sp/>Software<sp/>Foundation;<sp/>either</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/><sp/>version<sp/>2.1<sp/>of<sp/>the<sp/>License,<sp/>or<sp/>(at<sp/>your<sp/>option)<sp/>any<sp/>later<sp/>version.</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"></highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/><sp/>This<sp/>library<sp/>is<sp/>distributed<sp/>in<sp/>the<sp/>hope<sp/>that<sp/>it<sp/>will<sp/>be<sp/>useful,</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/><sp/>but<sp/>WITHOUT<sp/>ANY<sp/>WARRANTY;<sp/>without<sp/>even<sp/>the<sp/>implied<sp/>warranty<sp/>of</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/><sp/>MERCHANTABILITY<sp/>or<sp/>FITNESS<sp/>FOR<sp/>A<sp/>PARTICULAR<sp/>PURPOSE.<sp/><sp/>See<sp/>the<sp/>GNU</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/><sp/>Lesser<sp/>General<sp/>Public<sp/>License<sp/>for<sp/>more<sp/>details.</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"></highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/><sp/>You<sp/>should<sp/>have<sp/>received<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>GNU<sp/>Lesser<sp/>General<sp/>Public</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/><sp/>License<sp/>along<sp/>with<sp/>this<sp/>library;<sp/>if<sp/>not,<sp/>write<sp/>to<sp/>the<sp/>Free<sp/>Software</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/><sp/>Foundation,<sp/>Inc.,<sp/>51<sp/>Franklin<sp/>St,<sp/>Fifth<sp/>Floor,<sp/>Boston,<sp/>MA<sp/><sp/>02110-1301<sp/><sp/>USA</highlight></codeline>
+<codeline lineno="18"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="21"><highlight class="comment"><sp/>*<sp/>Defines<sp/>for<sp/>16<sp/>bit<sp/>timers<sp/>used<sp/>with<sp/><sp/>Servo<sp/>library</highlight></codeline>
+<codeline lineno="22"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="23"><highlight class="comment"><sp/>*<sp/>If<sp/>_useTimerX<sp/>is<sp/>defined<sp/>then<sp/>TimerX<sp/>is<sp/>a<sp/>16<sp/>bit<sp/>timer<sp/>on<sp/>the<sp/>current<sp/>board</highlight></codeline>
+<codeline lineno="24"><highlight class="comment"><sp/>*<sp/>timer16_Sequence_t<sp/>enumerates<sp/>the<sp/>sequence<sp/>that<sp/>the<sp/>timers<sp/>should<sp/>be<sp/>allocated</highlight></codeline>
+<codeline lineno="25"><highlight class="comment"><sp/>*<sp/>_Nbr_16timers<sp/>indicates<sp/>how<sp/>many<sp/>16<sp/>bit<sp/>timers<sp/>are<sp/>available.</highlight></codeline>
+<codeline lineno="26"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="comment">//<sp/>Say<sp/>which<sp/>16<sp/>bit<sp/>timers<sp/>can<sp/>be<sp/>used<sp/>and<sp/>in<sp/>what<sp/>order</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(__AVR_ATmega1280__)<sp/>||<sp/>defined(__AVR_ATmega2560__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_useTimer5</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_useTimer1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_useTimer3</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_useTimer4</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/>{<sp/>_timer5,<sp/><ref refid="_servo_timers_8h_1aa57046a4eafc371d1ae9a7f82f666887a79ea1c528ccb762bc8533c2b5849026d" kindref="member">_timer1</ref>,<sp/>_timer3,<sp/>_timer4,<sp/><ref refid="_servo_timers_8h_1aa57046a4eafc371d1ae9a7f82f666887a53f530c6e8ca85b1b3fbd5b21ef207a4" kindref="member">_Nbr_16timers</ref><sp/>}<sp/><ref refid="_servo_timers_8h_1aa57046a4eafc371d1ae9a7f82f666887" kindref="member">timer16_Sequence_t</ref>;</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(__AVR_ATmega32U4__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_useTimer1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/>{<sp/><ref refid="_servo_timers_8h_1aa57046a4eafc371d1ae9a7f82f666887a79ea1c528ccb762bc8533c2b5849026d" kindref="member">_timer1</ref>,<sp/><ref refid="_servo_timers_8h_1aa57046a4eafc371d1ae9a7f82f666887a53f530c6e8ca85b1b3fbd5b21ef207a4" kindref="member">_Nbr_16timers</ref><sp/>}<sp/><ref refid="_servo_timers_8h_1aa57046a4eafc371d1ae9a7f82f666887" kindref="member">timer16_Sequence_t</ref>;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(__AVR_AT90USB646__)<sp/>||<sp/>defined(__AVR_AT90USB1286__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_useTimer3</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_useTimer1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/>{<sp/>_timer3,<sp/><ref refid="_servo_timers_8h_1aa57046a4eafc371d1ae9a7f82f666887a79ea1c528ccb762bc8533c2b5849026d" kindref="member">_timer1</ref>,<sp/><ref refid="_servo_timers_8h_1aa57046a4eafc371d1ae9a7f82f666887a53f530c6e8ca85b1b3fbd5b21ef207a4" kindref="member">_Nbr_16timers</ref><sp/>}<sp/><ref refid="_servo_timers_8h_1aa57046a4eafc371d1ae9a7f82f666887" kindref="member">timer16_Sequence_t</ref>;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(__AVR_ATmega128__)<sp/>||defined(__AVR_ATmega1281__)||defined(__AVR_ATmega2561__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_useTimer3</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_useTimer1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/>{<sp/>_timer3,<sp/><ref refid="_servo_timers_8h_1aa57046a4eafc371d1ae9a7f82f666887a79ea1c528ccb762bc8533c2b5849026d" kindref="member">_timer1</ref>,<sp/><ref refid="_servo_timers_8h_1aa57046a4eafc371d1ae9a7f82f666887a53f530c6e8ca85b1b3fbd5b21ef207a4" kindref="member">_Nbr_16timers</ref><sp/>}<sp/><ref refid="_servo_timers_8h_1aa57046a4eafc371d1ae9a7f82f666887" kindref="member">timer16_Sequence_t</ref>;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight><highlight class="preprocessor">#else<sp/><sp/>//<sp/>everything<sp/>else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56" refid="_servo_timers_8h_1ab187febb2d332254f49068c80dbb22d7" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_useTimer1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="57" refid="_servo_timers_8h_1aa57046a4eafc371d1ae9a7f82f666887" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/>{<sp/><ref refid="_servo_timers_8h_1aa57046a4eafc371d1ae9a7f82f666887a79ea1c528ccb762bc8533c2b5849026d" kindref="member">_timer1</ref>,<sp/><ref refid="_servo_timers_8h_1aa57046a4eafc371d1ae9a7f82f666887a53f530c6e8ca85b1b3fbd5b21ef207a4" kindref="member">_Nbr_16timers</ref><sp/>}<sp/><ref refid="_servo_timers_8h_1aa57046a4eafc371d1ae9a7f82f666887" kindref="member">timer16_Sequence_t</ref>;</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/ServoTimers.h"/>
+  </compounddef>
+</doxygen>

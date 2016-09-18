@@ -1,0 +1,159 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.11">
+  <compounddef id="linreg_8h" kind="file" language="C++">
+    <compoundname>linreg.h</compoundname>
+    <includedby refid="linreg_8cpp" local="yes">/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/linreg.cpp</includedby>
+    <includedby refid="uarm__library_8h" local="yes">/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h</includedby>
+    <invincdepgraph>
+      <node id="58">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp</label>
+        <link refid="uarm__library_8cpp"/>
+      </node>
+      <node id="60">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/GettingStarted/GettingStarted.ino</label>
+        <link refid="_getting_started_8ino"/>
+      </node>
+      <node id="61">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/movement/movement.ino</label>
+        <link refid="movement_8ino"/>
+      </node>
+      <node id="56">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/linreg.cpp</label>
+        <link refid="linreg_8cpp"/>
+      </node>
+      <node id="55">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/linreg.h</label>
+        <link refid="linreg.h"/>
+        <childnode refid="56" relation="include">
+        </childnode>
+        <childnode refid="57" relation="include">
+        </childnode>
+      </node>
+      <node id="62">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/UArmProtocol/UArmProtocol.ino</label>
+        <link refid="_u_arm_protocol_8ino"/>
+      </node>
+      <node id="59">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino</label>
+        <link refid="_calibration_8ino"/>
+      </node>
+      <node id="57">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h</label>
+        <link refid="uarm__library_8h"/>
+        <childnode refid="58" relation="include">
+        </childnode>
+        <childnode refid="59" relation="include">
+        </childnode>
+        <childnode refid="60" relation="include">
+        </childnode>
+        <childnode refid="61" relation="include">
+        </childnode>
+        <childnode refid="62" relation="include">
+        </childnode>
+        <childnode refid="63" relation="include">
+        </childnode>
+      </node>
+      <node id="63">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/UArmTextControl2.0/UArmTextControl2.0.ino</label>
+        <link refid="_u_arm_text_control2_80_8ino"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="class_linear_regression" prot="public">LinearRegression</innerclass>
+      <sectiondef kind="define">
+      <memberdef kind="define" id="linreg_8h_1acbb81309fff519dad7da590d1b28b7de" prot="public" static="no">
+        <name>_LINREG_H_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/linreg.h" line="31" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/linreg.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">/*<sp/><sp/>linreg.h</highlight></codeline>
+<codeline lineno="3"><highlight class="comment">Linear<sp/>Regression<sp/>calculation<sp/>class</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"></highlight></codeline>
+<codeline lineno="5"><highlight class="comment">by:<sp/>David<sp/>C.<sp/>Swaim<sp/>II,<sp/>Ph.D.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"></highlight></codeline>
+<codeline lineno="7"><highlight class="comment">This<sp/>class<sp/>implements<sp/>a<sp/>standard<sp/>linear<sp/>regression<sp/>on</highlight></codeline>
+<codeline lineno="8"><highlight class="comment">experimental<sp/>data<sp/>using<sp/>a<sp/>least<sp/>squares<sp/>fit<sp/>to<sp/>a<sp/>straight</highlight></codeline>
+<codeline lineno="9"><highlight class="comment">line<sp/>graph.<sp/><sp/>Calculates<sp/>coefficients<sp/>a<sp/>and<sp/>b<sp/>of<sp/>the<sp/>equation:</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"></highlight></codeline>
+<codeline lineno="11"><highlight class="comment">y<sp/>=<sp/>a<sp/>+<sp/>b<sp/>*<sp/>x</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"></highlight></codeline>
+<codeline lineno="13"><highlight class="comment">for<sp/>data<sp/>points<sp/>of<sp/>x<sp/>and<sp/>y.<sp/><sp/>Also<sp/>calculates<sp/>the<sp/>coefficient<sp/>of</highlight></codeline>
+<codeline lineno="14"><highlight class="comment">determination,<sp/>the<sp/>coefficient<sp/>of<sp/>correlation,<sp/>and<sp/>standard</highlight></codeline>
+<codeline lineno="15"><highlight class="comment">error<sp/>of<sp/>estimate.</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"></highlight></codeline>
+<codeline lineno="17"><highlight class="comment">The<sp/>value<sp/>n<sp/>(number<sp/>of<sp/>points)<sp/>must<sp/>be<sp/>greater<sp/>than<sp/>2<sp/>to</highlight></codeline>
+<codeline lineno="18"><highlight class="comment">calculate<sp/>the<sp/>regression.<sp/><sp/>This<sp/>is<sp/>primarily<sp/>because<sp/>the</highlight></codeline>
+<codeline lineno="19"><highlight class="comment">standard<sp/>error<sp/>has<sp/>a<sp/>(N-2)<sp/>in<sp/>the<sp/>denominator.</highlight></codeline>
+<codeline lineno="20"><highlight class="comment"></highlight></codeline>
+<codeline lineno="21"><highlight class="comment">Check<sp/>haveData()<sp/>to<sp/>see<sp/>if<sp/>there<sp/>is<sp/>enough<sp/>data<sp/>in</highlight></codeline>
+<codeline lineno="22"><highlight class="comment">LinearRegression<sp/>to<sp/>get<sp/>values.</highlight></codeline>
+<codeline lineno="23"><highlight class="comment"></highlight></codeline>
+<codeline lineno="24"><highlight class="comment">You<sp/>can<sp/>think<sp/>of<sp/>the<sp/>x,y<sp/>pairs<sp/>as<sp/>2<sp/>dimensional<sp/>points.</highlight></codeline>
+<codeline lineno="25"><highlight class="comment">The<sp/>class<sp/>Point2D<sp/>is<sp/>included<sp/>to<sp/>allow<sp/>pairing<sp/>x<sp/>and<sp/>y</highlight></codeline>
+<codeline lineno="26"><highlight class="comment">values<sp/>together<sp/>to<sp/>represent<sp/>a<sp/>point<sp/>on<sp/>a<sp/>plane.</highlight></codeline>
+<codeline lineno="27"><highlight class="comment"></highlight></codeline>
+<codeline lineno="28"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>_LINREG_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31" refid="linreg_8h_1acbb81309fff519dad7da590d1b28b7de" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_LINREG_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36" refid="class_linear_regression" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="class_linear_regression" kindref="compound">LinearRegression</ref></highlight></codeline>
+<codeline lineno="37"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Constructor<sp/>using<sp/>an<sp/>array<sp/>of<sp/>Point2D<sp/>objects</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>This<sp/>is<sp/>also<sp/>the<sp/>default<sp/>constructor</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Constructor<sp/>using<sp/>arrays<sp/>of<sp/>x<sp/>values<sp/>and<sp/>y<sp/>values</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_linear_regression_1a81a9c23a6ec45206dea79e2777064220" kindref="member">LinearRegression</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*x,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*y,<sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>size<sp/>=<sp/>0);</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1a83067c3cc623e855ad013ff18eaf8e42" kindref="member">addXY</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&amp;<sp/>x,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&amp;<sp/>y);</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Must<sp/>have<sp/>at<sp/>least<sp/>3<sp/>points<sp/>to<sp/>calculate</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>standard<sp/>error<sp/>of<sp/>estimate.<sp/><sp/>Do<sp/>we<sp/>have<sp/>enough<sp/>data?</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51" refid="class_linear_regression_1a1d0f8251bf0f498be7d75d842227deb0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1a1d0f8251bf0f498be7d75d842227deb0" kindref="member">haveData</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(<ref refid="class_linear_regression_1aa843365cc2b936809c5f60d52224c07f" kindref="member">n</ref><sp/>&gt;<sp/>2<sp/>?<sp/>1<sp/>:<sp/>0);<sp/>}</highlight></codeline>
+<codeline lineno="52" refid="class_linear_regression_1a2cd980cb4c43894d33de83b9ab95a691" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1a2cd980cb4c43894d33de83b9ab95a691" kindref="member">items</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1aa843365cc2b936809c5f60d52224c07f" kindref="member">n</ref>;<sp/>}</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54" refid="class_linear_regression_1a2ee8884d79720f882492e829d6693744" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1a2ee8884d79720f882492e829d6693744" kindref="member">getA</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1a9afb5e0ec8d6cbb6ac46e5915afc57ec" kindref="member">a</ref>;<sp/>}</highlight></codeline>
+<codeline lineno="55" refid="class_linear_regression_1a79f6b7a2c36f578886864c3f7af064d8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1a79f6b7a2c36f578886864c3f7af064d8" kindref="member">getB</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1aa258a2c864179aaff99098dea9abf1cb" kindref="member">b</ref>;<sp/>}</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57" refid="class_linear_regression_1a931317e41dbdeca9a680da4d4d38f380" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1a931317e41dbdeca9a680da4d4d38f380" kindref="member">getCoefDeterm</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1a0f3377c655ca712c3e2c3d4e2125441c" kindref="member">coefD</ref>;<sp/>}</highlight></codeline>
+<codeline lineno="58" refid="class_linear_regression_1ac439138bebdcfe2a4d8522d3a0feff2e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1ac439138bebdcfe2a4d8522d3a0feff2e" kindref="member">getCoefCorrel</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1afdc67d71c93cea69b0a66693fa5cb276" kindref="member">coefC</ref>;<sp/>}</highlight></codeline>
+<codeline lineno="59" refid="class_linear_regression_1af02b63f744bee8ecdc9172a98ff16606" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1af02b63f744bee8ecdc9172a98ff16606" kindref="member">getStdErrorEst</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1a0cdd5962a78b99b95c6a2bc7c9fbb6a6" kindref="member">stdError</ref>;<sp/>}</highlight></codeline>
+<codeline lineno="60" refid="class_linear_regression_1a05d33bd38d68173cc1a35bf513a4f0d8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1a05d33bd38d68173cc1a35bf513a4f0d8" kindref="member">estimateY</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>x)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(<ref refid="class_linear_regression_1a9afb5e0ec8d6cbb6ac46e5915afc57ec" kindref="member">a</ref><sp/>+<sp/><ref refid="class_linear_regression_1aa258a2c864179aaff99098dea9abf1cb" kindref="member">b</ref><sp/>*<sp/>x);<sp/>}</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="63" refid="class_linear_regression_1aa843365cc2b936809c5f60d52224c07f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1aa843365cc2b936809c5f60d52224c07f" kindref="member">n</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>number<sp/>of<sp/>data<sp/>points<sp/>input<sp/>so<sp/>far</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="64" refid="class_linear_regression_1ae62507e4f1f97b8ab2faae5112ce97d3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1a2d137eb916f6e2f3cf552b3f1a12a4d0" kindref="member">sumX</ref>,<sp/><ref refid="class_linear_regression_1ae62507e4f1f97b8ab2faae5112ce97d3" kindref="member">sumY</ref>;<sp/><sp/></highlight><highlight class="comment">//<sp/>sums<sp/>of<sp/>x<sp/>and<sp/>y</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="65" refid="class_linear_regression_1aefdf526f61f6f62a24472ef3ce135d47" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1a2b06ee3c27a6bc1e6fc709c0224dd949" kindref="member">sumXsquared</ref>,<sp/></highlight><highlight class="comment">//<sp/>sum<sp/>of<sp/>x<sp/>squares</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_linear_regression_1aefdf526f61f6f62a24472ef3ce135d47" kindref="member">sumYsquared</ref>;<sp/></highlight><highlight class="comment">//<sp/>sum<sp/>y<sp/>squares</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="67" refid="class_linear_regression_1af2744e010ca51a40db51b7e30b769390" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1af2744e010ca51a40db51b7e30b769390" kindref="member">sumXY</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>sum<sp/>of<sp/>x*y</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="69" refid="class_linear_regression_1aa258a2c864179aaff99098dea9abf1cb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1a9afb5e0ec8d6cbb6ac46e5915afc57ec" kindref="member">a</ref>,<sp/><ref refid="class_linear_regression_1aa258a2c864179aaff99098dea9abf1cb" kindref="member">b</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>coefficients<sp/>of<sp/>f(x)<sp/>=<sp/>a<sp/>+<sp/>b*x</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70" refid="class_linear_regression_1a0cdd5962a78b99b95c6a2bc7c9fbb6a6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1a0f3377c655ca712c3e2c3d4e2125441c" kindref="member">coefD</ref>,<sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>coefficient<sp/>of<sp/>determination</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_linear_regression_1afdc67d71c93cea69b0a66693fa5cb276" kindref="member">coefC</ref>,<sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>coefficient<sp/>of<sp/>correlation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="class_linear_regression_1a0cdd5962a78b99b95c6a2bc7c9fbb6a6" kindref="member">stdError</ref>;<sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>standard<sp/>error<sp/>of<sp/>estimate</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="class_linear_regression_1aa6eee3fb0703a1642467861cfb0cd610" kindref="member">Calculate</ref>();<sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>calculate<sp/>coefficients</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>end<sp/>of<sp/>linreg.h</highlight></codeline>
+    </programlisting>
+    <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/linreg.h"/>
+  </compounddef>
+</doxygen>

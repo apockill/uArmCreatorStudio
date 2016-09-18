@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.11">
+  <compounddef id="dir_d28a4824dc47e487b107a5db32ef43c4" kind="dir">
+    <compoundname>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples</compoundname>
+    <innerdir refid="dir_c43ffed018fae7654a900ab6da451d2b">/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration</innerdir>
+    <innerdir refid="dir_70c933def14b4354517bb7369ca39488">/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/GettingStarted</innerdir>
+    <innerdir refid="dir_b23837d91b4065b747aa171009dc6e1c">/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/movement</innerdir>
+    <innerdir refid="dir_347db6ab49fda08848a1220a6fd73a96">/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/UArmProtocol</innerdir>
+    <innerdir refid="dir_1a98773d75fe27b428f3720cd80183e4">/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/UArmTextControl2.0</innerdir>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/"/>
+  </compounddef>
+</doxygen>

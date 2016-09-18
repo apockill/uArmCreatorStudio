@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.11">
+  <compounddef id="md__Users_alex_Workspace_develop_uarm_metal_uarm4arduino_HISTORY" kind="page">
+    <compoundname>md__Users_alex_Workspace_develop_uarm_metal_uarm4arduino_HISTORY</compoundname>
+    <title>uArm Arduino Library Release Note</title>
+    <detaileddescription>
+<para><heading level="2">[1.7.1] - 2016-06-28</heading>
+</para><para><heading level="3">Fix</heading>
+</para><para><itemizedlist>
+<listitem><para>Set Current angle after attach servo</para></listitem><listitem><para>rewrite set_servo_status replace attach_servo detach_servo</para></listitem></itemizedlist>
+</para><para><heading level="2">[1.7.0] - 2016-06-24</heading>
+</para><para><heading level="3">Fix</heading>
+</para><para><itemizedlist>
+<listitem><para>Update examples <ref refid="_calibration_8ino" kindref="compound">Calibration.ino</ref>, <ref refid="movement_8ino" kindref="compound">movement.ino</ref>, Add new <ref refid="_u_arm_text_control2_80_8ino" kindref="compound">UArmTextControl2.0.ino</ref></para></listitem><listitem><para>Update <ref refid="uarm__library_8h" kindref="compound">uarm_library.h</ref> make some protected value be public</para></listitem><listitem><para>Move All source code to src folder</para></listitem><listitem><para>Create Docs folder to store Doxygen Configure &amp; Html header footer files</para></listitem></itemizedlist>
+</para><para><heading level="2">[1.6.2] - 2016-06-24</heading>
+</para><para><heading level="3">Fix</heading>
+</para><para><itemizedlist>
+<listitem><para>Change Lots of function names according to Programming Rules</para></listitem></itemizedlist>
+</para><para><heading level="2">[1.6.1] - 2016-06-22</heading>
+</para><para><heading level="3">Fix</heading>
+</para><para><itemizedlist>
+<listitem><para>Fix MoveTo Lock Hand <ref refid="class_servo" kindref="compound">Servo</ref> issue.</para></listitem></itemizedlist>
+</para><para><heading level="2">[1.6.0] - 2016-06-20</heading>
+</para><para><heading level="3">Fix</heading>
+</para><para><itemizedlist>
+<listitem><para>Add Limit for x*x + y*y &lt; 32, Fix When x*x + y*y &gt; 32 uArm will get wired position</para></listitem></itemizedlist>
+</para><para><heading level="3">Changes</heading>
+</para><para><itemizedlist>
+<listitem><para>Rewrite Servo.h to <ref refid="_u_f_servo_8h" kindref="compound">UFServo.h</ref>, using float when servo.write(), increase accuracy</para></listitem><listitem><para>Rewrite uArmFimata to <ref refid="_u_arm_protocol_8ino" kindref="compound">UArmProtocol.ino</ref></para></listitem></itemizedlist>
+</para><para><heading level="2">[1.5.11] - 2016-06-07</heading>
+</para><para><heading level="3">Fix</heading>
+</para><para><itemizedlist>
+<listitem><para>Fix Test.ino unused function</para></listitem><listitem><para>Update Code Format</para></listitem></itemizedlist>
+</para><para><heading level="2">[1.5.10] - 2016-06-07</heading>
+</para><para><heading level="3">Fix</heading>
+</para><para><itemizedlist>
+<listitem><para>At moveToAtOnce(x,y,z)</para></listitem></itemizedlist>
+</para><para><heading level="2">[1.5.9] - 2016-06-01</heading>
+</para><para><heading level="3">Fix</heading>
+</para><para><itemizedlist>
+<listitem><para>Fix writeStretch() offset address not correct</para></listitem></itemizedlist>
+</para><para><heading level="2">[1.5.8] - 2016-05-07</heading>
+</para><para><heading level="3">Fix</heading>
+</para><para><itemizedlist>
+<listitem><para>Speed up Calibration, reduce delay</para></listitem><listitem><para>Use writeAngle() Function in MoveTo</para></listitem></itemizedlist>
+</para><para><heading level="3">Changes</heading>
+</para><para><itemizedlist>
+<listitem><para>Add <ref refid="_calibration_8ino" kindref="compound">Calibration.ino</ref> into examples</para></listitem></itemizedlist>
+</para><para><heading level="2">[1.5.6] - 2016-05-06</heading>
+</para><para><heading level="3">Fix</heading>
+</para><para><itemizedlist>
+<listitem><para>Update SERIAL_NUMBER_ADDRESS to 100, Update CALIBRATION_STRETCH_FLAG mark value is CONFIRM_FLAG</para></listitem></itemizedlist>
+</para><para><heading level="2">[1.5.5] - 2016-05-05</heading>
+</para><para><heading level="3">Fix</heading>
+</para><para><itemizedlist>
+<listitem><para>if SERIAL_NUMBER_ADDRESS equal CONFIRM_FLAG 0x80, then Serial Number exist in EEPROM</para></listitem></itemizedlist>
+</para><para><heading level="2">[1.5.4] - 2016-05-02</heading>
+</para><para><heading level="3">Fix</heading>
+</para><para><itemizedlist>
+<listitem><para>if SERIAL_NUMBER_ADDRESS equal SERIAL_NUMBER_ADDRESS, then Serial Number exist in EEPROM</para></listitem></itemizedlist>
+</para><para><heading level="2">[1.5.3] - 2016-05-02</heading>
+</para><para><heading level="3">Changes</heading>
+</para><para><itemizedlist>
+<listitem><para>Add readSerialNumber &amp; writeSerialNumber function (Serial Number: Address 1024, size:14)</para></listitem></itemizedlist>
+</para><para><heading level="2">[1.5.2] - 2016-04-29</heading>
+</para><para><heading level="3">Changes</heading>
+</para><para><itemizedlist>
+<listitem><para>Add Example, MoveTest, GetXYZ, Recording Mode</para></listitem></itemizedlist>
+</para><para><heading level="2">[1.5.2] - 2016-04-29</heading>
+</para><para><heading level="3">Changes</heading>
+</para><para><itemizedlist>
+<listitem><para>Cancel v.1.5.0 read offset from EEPROM.</para></listitem></itemizedlist>
+</para><para><heading level="2">[1.5.0] - 2016-04-14</heading>
+</para><para><heading level="3">Changes</heading>
+</para><para><itemizedlist>
+<listitem><para>Initialize servo offset &amp; linear offset from EEPROM to global values, prevent read EEPROM every time</para></listitem><listitem><para>Use <ulink url="https://www.arduino.cc/en/Reference/EEPROMGet">EEPROM.get()</ulink> &amp; <ulink url="https://www.arduino.cc/en/Reference/EEPROMPut">EEPROM.put()</ulink> to read &amp; write value in EEPROM instead of saveDataToRom()</para></listitem><listitem><para>rename function readToAngle to analogToAngle</para></listitem><listitem><para>Change Offset address in EEPROM</para></listitem></itemizedlist>
+</para><para><heading level="2">[1.4.0] - 2016-04-12</heading>
+</para><para><heading level="3">Changes</heading>
+</para><para><itemizedlist>
+<listitem><para><ref refid="uarm__library_8cpp" kindref="compound">uarm_library.cpp</ref> writeServoAngle resume LEFT &amp; RIGHT ANGLE</para></listitem><listitem><para>ToDo: remove LEFT &amp; RIGHT ANGLE from WriteServoAngle (For Safety)</para></listitem></itemizedlist>
+</para><para><heading level="2">[1.3.1] - 2016-04-12</heading>
+</para><para><heading level="3">Changes</heading>
+</para><para><itemizedlist>
+<listitem><para><ref refid="uarm__library_8cpp" kindref="compound">uarm_library.cpp</ref> writeLeftRightServoAngle() Update the angle between left &amp; right</para></listitem><listitem><para>Change Folder examples folder &amp; stretch name From UarmFirmata to UArmFirmata </para></listitem></itemizedlist>
+</para>    </detaileddescription>
+  </compounddef>
+</doxygen>

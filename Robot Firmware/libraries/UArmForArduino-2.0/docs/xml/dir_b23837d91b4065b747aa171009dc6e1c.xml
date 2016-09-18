@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.11">
+  <compounddef id="dir_b23837d91b4065b747aa171009dc6e1c" kind="dir">
+    <compoundname>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/movement</compoundname>
+    <innerfile refid="movement_8ino">movement.ino</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/movement/"/>
+  </compounddef>
+</doxygen>

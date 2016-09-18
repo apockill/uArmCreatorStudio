@@ -1,0 +1,279 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.11">
+  <compounddef id="_u_f_servo_8h" kind="file" language="C++">
+    <compoundname>UFServo.h</compoundname>
+    <includes local="no">inttypes.h</includes>
+    <includedby refid="uarm__library_8h" local="yes">/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h</includedby>
+    <incdepgraph>
+      <node id="91">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h</label>
+        <link refid="UFServo.h"/>
+        <childnode refid="92" relation="include">
+        </childnode>
+      </node>
+      <node id="92">
+        <label>inttypes.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="93">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h</label>
+        <link refid="UFServo.h"/>
+        <childnode refid="94" relation="include">
+        </childnode>
+      </node>
+      <node id="95">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.cpp</label>
+        <link refid="uarm__library_8cpp"/>
+      </node>
+      <node id="97">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/GettingStarted/GettingStarted.ino</label>
+        <link refid="_getting_started_8ino"/>
+      </node>
+      <node id="98">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/movement/movement.ino</label>
+        <link refid="movement_8ino"/>
+      </node>
+      <node id="99">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/UArmProtocol/UArmProtocol.ino</label>
+        <link refid="_u_arm_protocol_8ino"/>
+      </node>
+      <node id="96">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/Calibration.ino</label>
+        <link refid="_calibration_8ino"/>
+      </node>
+      <node id="94">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/uarm_library.h</label>
+        <link refid="uarm__library_8h"/>
+        <childnode refid="95" relation="include">
+        </childnode>
+        <childnode refid="96" relation="include">
+        </childnode>
+        <childnode refid="97" relation="include">
+        </childnode>
+        <childnode refid="98" relation="include">
+        </childnode>
+        <childnode refid="99" relation="include">
+        </childnode>
+        <childnode refid="100" relation="include">
+        </childnode>
+      </node>
+      <node id="100">
+        <label>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/UArmTextControl2.0/UArmTextControl2.0.ino</label>
+        <link refid="_u_arm_text_control2_80_8ino"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="struct_servo_pin__t" prot="public">ServoPin_t</innerclass>
+    <innerclass refid="structservo__t" prot="public">servo_t</innerclass>
+    <innerclass refid="class_servo" prot="public">Servo</innerclass>
+      <sectiondef kind="define">
+      <memberdef kind="define" id="_u_f_servo_8h_1af6fdee462ecaf434690dad810328b0dd" prot="public" static="no">
+        <name>Servo_VERSION</name>
+        <initializer>2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="72" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" bodystart="72" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="_u_f_servo_8h_1ad95c8286fc30ece77d632ad00a94d80e" prot="public" static="no">
+        <name>MIN_PULSE_WIDTH</name>
+        <initializer>500</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="74" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" bodystart="74" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="_u_f_servo_8h_1a57a10261e6511f97317cee9076692315" prot="public" static="no">
+        <name>MAX_PULSE_WIDTH</name>
+        <initializer>2500</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="75" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" bodystart="75" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="_u_f_servo_8h_1a7eada57cb49e7b1766a813e4635d79bd" prot="public" static="no">
+        <name>DEFAULT_PULSE_WIDTH</name>
+        <initializer>1500</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="76" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" bodystart="76" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="_u_f_servo_8h_1adfe85923c58edb0cfa15a0d026d7ee74" prot="public" static="no">
+        <name>REFRESH_INTERVAL</name>
+        <initializer>20000</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="77" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" bodystart="77" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="_u_f_servo_8h_1af16be8a4945638887eae35a30aa702c0" prot="public" static="no">
+        <name>SERVOS_PER_TIMER</name>
+        <initializer>12</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="79" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" bodystart="79" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="_u_f_servo_8h_1a4259c40a55e489ed25c9f3cbb3be05ab" prot="public" static="no">
+        <name>MAX_SERVOS</name>
+        <initializer>(<ref refid="_servo_timers_8h_1aa57046a4eafc371d1ae9a7f82f666887a53f530c6e8ca85b1b3fbd5b21ef207a4" kindref="member">_Nbr_16timers</ref>  * <ref refid="_u_f_servo_8h_1af16be8a4945638887eae35a30aa702c0" kindref="member">SERVOS_PER_TIMER</ref>)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="80" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" bodystart="80" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="_u_f_servo_8h_1ac4ebf3d89da7ee64b1f4726099b6d6ec" prot="public" static="no">
+        <name>INVALID_SERVO</name>
+        <initializer>255</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="82" column="9" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" bodystart="82" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/><sp/>Servo.h<sp/>-<sp/>Interrupt<sp/>driven<sp/>Servo<sp/>library<sp/>for<sp/>Arduino<sp/>using<sp/>16<sp/>bit<sp/>timers-<sp/>Version<sp/>2</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/><sp/>Copyright<sp/>(c)<sp/>2009<sp/>Michael<sp/>Margolis.<sp/><sp/>All<sp/>right<sp/>reserved.</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"></highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/><sp/>This<sp/>library<sp/>is<sp/>free<sp/>software;<sp/>you<sp/>can<sp/>redistribute<sp/>it<sp/>and/or</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/><sp/>modify<sp/>it<sp/>under<sp/>the<sp/>terms<sp/>of<sp/>the<sp/>GNU<sp/>Lesser<sp/>General<sp/>Public</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/><sp/>License<sp/>as<sp/>published<sp/>by<sp/>the<sp/>Free<sp/>Software<sp/>Foundation;<sp/>either</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/><sp/>version<sp/>2.1<sp/>of<sp/>the<sp/>License,<sp/>or<sp/>(at<sp/>your<sp/>option)<sp/>any<sp/>later<sp/>version.</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"></highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/><sp/>This<sp/>library<sp/>is<sp/>distributed<sp/>in<sp/>the<sp/>hope<sp/>that<sp/>it<sp/>will<sp/>be<sp/>useful,</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/><sp/>but<sp/>WITHOUT<sp/>ANY<sp/>WARRANTY;<sp/>without<sp/>even<sp/>the<sp/>implied<sp/>warranty<sp/>of</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/><sp/>MERCHANTABILITY<sp/>or<sp/>FITNESS<sp/>FOR<sp/>A<sp/>PARTICULAR<sp/>PURPOSE.<sp/><sp/>See<sp/>the<sp/>GNU</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/><sp/>Lesser<sp/>General<sp/>Public<sp/>License<sp/>for<sp/>more<sp/>details.</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"></highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/><sp/>You<sp/>should<sp/>have<sp/>received<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>GNU<sp/>Lesser<sp/>General<sp/>Public</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/><sp/>License<sp/>along<sp/>with<sp/>this<sp/>library;<sp/>if<sp/>not,<sp/>write<sp/>to<sp/>the<sp/>Free<sp/>Software</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/><sp/>Foundation,<sp/>Inc.,<sp/>51<sp/>Franklin<sp/>St,<sp/>Fifth<sp/>Floor,<sp/>Boston,<sp/>MA<sp/><sp/>02110-1301<sp/><sp/>USA</highlight></codeline>
+<codeline lineno="18"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment">/*<sp/></highlight></codeline>
+<codeline lineno="21"><highlight class="comment"><sp/><sp/>A<sp/>servo<sp/>is<sp/>activated<sp/>by<sp/>creating<sp/>an<sp/>instance<sp/>of<sp/>the<sp/>Servo<sp/>class<sp/>passing<sp/></highlight></codeline>
+<codeline lineno="22"><highlight class="comment"><sp/><sp/>the<sp/>desired<sp/>pin<sp/>to<sp/>the<sp/>attach()<sp/>method.</highlight></codeline>
+<codeline lineno="23"><highlight class="comment"><sp/><sp/>The<sp/>servos<sp/>are<sp/>pulsed<sp/>in<sp/>the<sp/>background<sp/>using<sp/>the<sp/>value<sp/>most<sp/>recently<sp/></highlight></codeline>
+<codeline lineno="24"><highlight class="comment"><sp/><sp/>written<sp/>using<sp/>the<sp/>write()<sp/>method.</highlight></codeline>
+<codeline lineno="25"><highlight class="comment"></highlight></codeline>
+<codeline lineno="26"><highlight class="comment"><sp/><sp/>Note<sp/>that<sp/>analogWrite<sp/>of<sp/>PWM<sp/>on<sp/>pins<sp/>associated<sp/>with<sp/>the<sp/>timer<sp/>are<sp/></highlight></codeline>
+<codeline lineno="27"><highlight class="comment"><sp/><sp/>disabled<sp/>when<sp/>the<sp/>first<sp/>servo<sp/>is<sp/>attached.</highlight></codeline>
+<codeline lineno="28"><highlight class="comment"><sp/><sp/>Timers<sp/>are<sp/>seized<sp/>as<sp/>needed<sp/>in<sp/>groups<sp/>of<sp/>12<sp/>servos<sp/>-<sp/>24<sp/>servos<sp/>use<sp/>two<sp/></highlight></codeline>
+<codeline lineno="29"><highlight class="comment"><sp/><sp/>timers,<sp/>48<sp/>servos<sp/>will<sp/>use<sp/>four.</highlight></codeline>
+<codeline lineno="30"><highlight class="comment"><sp/><sp/>The<sp/>sequence<sp/>used<sp/>to<sp/>sieze<sp/>timers<sp/>is<sp/>defined<sp/>in<sp/>timers.h</highlight></codeline>
+<codeline lineno="31"><highlight class="comment"></highlight></codeline>
+<codeline lineno="32"><highlight class="comment"><sp/><sp/>The<sp/>methods<sp/>are:</highlight></codeline>
+<codeline lineno="33"><highlight class="comment"></highlight></codeline>
+<codeline lineno="34"><highlight class="comment"><sp/><sp/><sp/><sp/>Servo<sp/>-<sp/>Class<sp/>for<sp/>manipulating<sp/>servo<sp/>motors<sp/>connected<sp/>to<sp/>Arduino<sp/>pins.</highlight></codeline>
+<codeline lineno="35"><highlight class="comment"></highlight></codeline>
+<codeline lineno="36"><highlight class="comment"><sp/><sp/><sp/><sp/>attach(pin<sp/>)<sp/><sp/>-<sp/>Attaches<sp/>a<sp/>servo<sp/>motor<sp/>to<sp/>an<sp/>i/o<sp/>pin.</highlight></codeline>
+<codeline lineno="37"><highlight class="comment"><sp/><sp/><sp/><sp/>attach(pin,<sp/>min,<sp/>max<sp/><sp/>)<sp/>-<sp/>Attaches<sp/>to<sp/>a<sp/>pin<sp/>setting<sp/>min<sp/>and<sp/>max<sp/>values<sp/>in<sp/>microseconds</highlight></codeline>
+<codeline lineno="38"><highlight class="comment"><sp/><sp/><sp/><sp/>default<sp/>min<sp/>is<sp/>544,<sp/>max<sp/>is<sp/>2400<sp/><sp/></highlight></codeline>
+<codeline lineno="39"><highlight class="comment"><sp/></highlight></codeline>
+<codeline lineno="40"><highlight class="comment"><sp/><sp/><sp/><sp/>write()<sp/><sp/><sp/><sp/><sp/>-<sp/>Sets<sp/>the<sp/>servo<sp/>angle<sp/>in<sp/>degrees.<sp/><sp/>(invalid<sp/>angle<sp/>that<sp/>is<sp/>valid<sp/>as<sp/>pulse<sp/>in<sp/>microseconds<sp/>is<sp/>treated<sp/>as<sp/>microseconds)</highlight></codeline>
+<codeline lineno="41"><highlight class="comment"><sp/><sp/><sp/><sp/>writeMicroseconds()<sp/>-<sp/>Sets<sp/>the<sp/>servo<sp/>pulse<sp/>width<sp/>in<sp/>microseconds<sp/></highlight></codeline>
+<codeline lineno="42"><highlight class="comment"><sp/><sp/><sp/><sp/>read()<sp/><sp/><sp/><sp/><sp/><sp/>-<sp/>Gets<sp/>the<sp/>last<sp/>written<sp/>servo<sp/>pulse<sp/>width<sp/>as<sp/>an<sp/>angle<sp/>between<sp/>0<sp/>and<sp/>180.<sp/></highlight></codeline>
+<codeline lineno="43"><highlight class="comment"><sp/><sp/><sp/><sp/>readMicroseconds()<sp/><sp/><sp/>-<sp/>Gets<sp/>the<sp/>last<sp/>written<sp/>servo<sp/>pulse<sp/>width<sp/>in<sp/>microseconds.<sp/>(was<sp/>read_us()<sp/>in<sp/>first<sp/>release)</highlight></codeline>
+<codeline lineno="44"><highlight class="comment"><sp/><sp/><sp/><sp/>attached()<sp/><sp/>-<sp/>Returns<sp/>true<sp/>if<sp/>there<sp/>is<sp/>a<sp/>servo<sp/>attached.<sp/></highlight></codeline>
+<codeline lineno="45"><highlight class="comment"><sp/><sp/><sp/><sp/>detach()<sp/><sp/><sp/><sp/>-<sp/>Stops<sp/>an<sp/>attached<sp/>servos<sp/>from<sp/>pulsing<sp/>its<sp/>i/o<sp/>pin.<sp/></highlight></codeline>
+<codeline lineno="46"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>UFServo_h</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>UFServo_h</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;inttypes.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight><highlight class="comment">/*<sp/></highlight></codeline>
+<codeline lineno="54"><highlight class="comment"><sp/>*<sp/>Defines<sp/>for<sp/>16<sp/>bit<sp/>timers<sp/>used<sp/>with<sp/><sp/>Servo<sp/>library<sp/></highlight></codeline>
+<codeline lineno="55"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="56"><highlight class="comment"><sp/>*<sp/>If<sp/>_useTimerX<sp/>is<sp/>defined<sp/>then<sp/>TimerX<sp/>is<sp/>a<sp/>16<sp/>bit<sp/>timer<sp/>on<sp/>the<sp/>current<sp/>board</highlight></codeline>
+<codeline lineno="57"><highlight class="comment"><sp/>*<sp/>timer16_Sequence_t<sp/>enumerates<sp/>the<sp/>sequence<sp/>that<sp/>the<sp/>timers<sp/>should<sp/>be<sp/>allocated</highlight></codeline>
+<codeline lineno="58"><highlight class="comment"><sp/>*<sp/>_Nbr_16timers<sp/>indicates<sp/>how<sp/>many<sp/>16<sp/>bit<sp/>timers<sp/>are<sp/>available.</highlight></codeline>
+<codeline lineno="59"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Architecture<sp/>specific<sp/>include</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(ARDUINO_ARCH_AVR)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="_servo_timers_8h" kindref="compound">ServoTimers.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(ARDUINO_ARCH_SAM)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;sam/ServoTimers.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(ARDUINO_ARCH_SAMD)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;samd/ServoTimers.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight><highlight class="preprocessor">#error<sp/>&quot;This<sp/>library<sp/>only<sp/>supports<sp/>boards<sp/>with<sp/>an<sp/>AVR,<sp/>SAM<sp/>or<sp/>SAMD<sp/>processor.&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72" refid="_u_f_servo_8h_1af6fdee462ecaf434690dad810328b0dd" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>Servo_VERSION<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2<sp/><sp/><sp/><sp/><sp/>//<sp/>software<sp/>version<sp/>of<sp/>this<sp/>library</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74" refid="_u_f_servo_8h_1ad95c8286fc30ece77d632ad00a94d80e" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MIN_PULSE_WIDTH<sp/><sp/><sp/><sp/><sp/><sp/><sp/>500<sp/><sp/><sp/><sp/><sp/>//<sp/>the<sp/>shortest<sp/>pulse<sp/>sent<sp/>to<sp/>a<sp/>servo<sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75" refid="_u_f_servo_8h_1a57a10261e6511f97317cee9076692315" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MAX_PULSE_WIDTH<sp/><sp/><sp/><sp/><sp/><sp/>2500<sp/><sp/><sp/><sp/><sp/>//<sp/>the<sp/>longest<sp/>pulse<sp/>sent<sp/>to<sp/>a<sp/>servo<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76" refid="_u_f_servo_8h_1a7eada57cb49e7b1766a813e4635d79bd" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DEFAULT_PULSE_WIDTH<sp/><sp/>1500<sp/><sp/><sp/><sp/><sp/>//<sp/>default<sp/>pulse<sp/>width<sp/>when<sp/>servo<sp/>is<sp/>attached</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="77" refid="_u_f_servo_8h_1adfe85923c58edb0cfa15a0d026d7ee74" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>REFRESH_INTERVAL<sp/><sp/><sp/><sp/>20000<sp/><sp/><sp/><sp/><sp/>//<sp/>minumim<sp/>time<sp/>to<sp/>refresh<sp/>servos<sp/>in<sp/>microseconds<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79" refid="_u_f_servo_8h_1af16be8a4945638887eae35a30aa702c0" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SERVOS_PER_TIMER<sp/><sp/><sp/><sp/><sp/><sp/><sp/>12<sp/><sp/><sp/><sp/><sp/>//<sp/>the<sp/>maximum<sp/>number<sp/>of<sp/>servos<sp/>controlled<sp/>by<sp/>one<sp/>timer<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="80" refid="_u_f_servo_8h_1a4259c40a55e489ed25c9f3cbb3be05ab" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MAX_SERVOS<sp/><sp/><sp/>(_Nbr_16timers<sp/><sp/>*<sp/>SERVOS_PER_TIMER)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82" refid="_u_f_servo_8h_1ac4ebf3d89da7ee64b1f4726099b6d6ec" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>INVALID_SERVO<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>255<sp/><sp/><sp/><sp/><sp/>//<sp/>flag<sp/>indicating<sp/>an<sp/>invalid<sp/>servo<sp/>index</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight></codeline>
+<codeline lineno="84" refid="struct_servo_pin__t" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">struct<sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="85" refid="struct_servo_pin__t_1ad2ff0e34820e04a276e38d359021b03c" refkind="member"><highlight class="normal"><sp/><sp/>uint8_t<sp/>nbr<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:6<sp/>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>a<sp/>pin<sp/>number<sp/>from<sp/>0<sp/>to<sp/>63</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="86" refid="struct_servo_pin__t_1aaf3c1889bb99bc6f936a3cfb6eba532a" refkind="member"><highlight class="normal"><sp/><sp/>uint8_t<sp/>isActive<sp/><sp/><sp/>:1<sp/>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>true<sp/>if<sp/>this<sp/>channel<sp/>is<sp/>enabled,<sp/>pin<sp/>not<sp/>pulsed<sp/>if<sp/>false<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal">}<sp/><ref refid="struct_servo_pin__t" kindref="compound">ServoPin_t</ref><sp/><sp/><sp/>;<sp/><sp/></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89" refid="structservo__t" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="90" refid="structservo__t_1a04bcc6cf13ea5cd2c4dabdc977e054cb" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="struct_servo_pin__t" kindref="compound">ServoPin_t</ref><sp/><ref refid="structservo__t_1a04bcc6cf13ea5cd2c4dabdc977e054cb" kindref="member">Pin</ref>;</highlight></codeline>
+<codeline lineno="91" refid="structservo__t_1a9405b5e5266318f889ef6ff95a97943b" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">volatile</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structservo__t_1a9405b5e5266318f889ef6ff95a97943b" kindref="member">ticks</ref>;</highlight></codeline>
+<codeline lineno="92"><highlight class="normal">}<sp/><ref refid="structservo__t" kindref="compound">servo_t</ref>;</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight></codeline>
+<codeline lineno="94" refid="class_servo" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="class_servo" kindref="compound">Servo</ref></highlight></codeline>
+<codeline lineno="95"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><ref refid="class_servo_1a70b2b17657cf258cdcb57503bcf62cd2" kindref="member">Servo</ref>();</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/>uint8_t<sp/><ref refid="class_servo_1aeccd2077f07ebc45250da14e72a0c461" kindref="member">attach</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>pin);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>attach<sp/>the<sp/>given<sp/>pin<sp/>to<sp/>the<sp/>next<sp/>free<sp/>channel,<sp/>sets<sp/>pinMode,<sp/>returns<sp/>channel<sp/>number<sp/>or<sp/>0<sp/>if<sp/>failure</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/>uint8_t<sp/><ref refid="class_servo_1aeccd2077f07ebc45250da14e72a0c461" kindref="member">attach</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>pin,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>min,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>max);<sp/></highlight><highlight class="comment">//<sp/>as<sp/>above<sp/>but<sp/>also<sp/>sets<sp/>min<sp/>and<sp/>max<sp/>values<sp/>for<sp/>writes.<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="class_servo_1a0b69ccc5c8b348ebaa84be91d973a362" kindref="member">detach</ref>();</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="class_servo_1afec5b56a516c6b1aecd7c04f9c5b2479" kindref="member">write</ref>(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="_calibration_8ino_1ac4f474c82e82cbb89ca7c36dd52be0ed" kindref="member">value</ref>);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>if<sp/>value<sp/>is<sp/>&lt;<sp/>200<sp/>its<sp/>treated<sp/>as<sp/>an<sp/>angle,<sp/>otherwise<sp/>as<sp/>pulse<sp/>width<sp/>in<sp/>microseconds<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="class_servo_1ac7fe3d6d2ea285ead98814bcfc417029" kindref="member">writeMicroseconds</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>value);<sp/></highlight><highlight class="comment">//<sp/>Write<sp/>pulse<sp/>width<sp/>in<sp/>microseconds<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="class_servo_1aaca0af33ba7d7c87c8a785b8eabf95a7" kindref="member">read</ref>();<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>returns<sp/>current<sp/>pulse<sp/>width<sp/>as<sp/>an<sp/>angle<sp/>between<sp/>0<sp/>and<sp/>180<sp/>degrees</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="class_servo_1a43950424d146c1414460066483d9561b" kindref="member">readMicroseconds</ref>();<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>returns<sp/>current<sp/>pulse<sp/>width<sp/>in<sp/>microseconds<sp/>for<sp/>this<sp/>servo<sp/>(was<sp/>read_us()<sp/>in<sp/>first<sp/>release)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="class_servo_1a48607d47aa5678780b1b927102bd3b1b" kindref="member">attached</ref>();<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>return<sp/>true<sp/>if<sp/>this<sp/>servo<sp/>is<sp/>attached,<sp/>otherwise<sp/>false<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/>uint8_t<sp/>servoIndex;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>index<sp/>into<sp/>the<sp/>channel<sp/>data<sp/>for<sp/>this<sp/>servo</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/>int8_t<sp/>min;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>minimum<sp/>is<sp/>this<sp/>value<sp/>times<sp/>4<sp/>added<sp/>to<sp/>MIN_PULSE_WIDTH<sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/>int8_t<sp/>max;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>maximum<sp/>is<sp/>this<sp/>value<sp/>times<sp/>4<sp/>added<sp/>to<sp/>MAX_PULSE_WIDTH<sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.11">
+  <compounddef id="indexpage" kind="page">
+    <compoundname>index</compoundname>
+    <title>uArm Library Introduction</title>
+    <detaileddescription>
+<para><bold>Warning, This Library is for developer, After upload the library, you must recalibrate the uArm</bold></para><para><bold>Compatible</bold></para><para><itemizedlist>
+<listitem><para>uArm Metal</para></listitem></itemizedlist>
+</para><para><heading level="2">Installation</heading>
+</para><para><heading level="3">Library Manager</heading>
+</para><para><emphasis>Recommend</emphasis></para><para><itemizedlist>
+<listitem><para>Download <ulink url="https://www.arduino.cc/en/Main/Software">Arduino IDE</ulink></para></listitem><listitem><para>Import the uArm Library (search uArmLibrary) using Library Manager. If you don&apos;t know how to use Library Manager. Please Refer this <ulink url="https://www.arduino.cc/en/Guide/Libraries#toc3">Import Library Using Library Manager</ulink></para></listitem><listitem><para>Upload the example to your uArm If you don&apos;t know how to upload Arduino sketch, We recommend you read this <ulink url="https://www.arduino.cc/en/Guide/Windows">Arduino Getting Started on Windows</ulink> or <ulink url="https://www.arduino.cc/en/Guide/MacOSX">Arduino Getting Started on MacOS</ulink></para></listitem><listitem><para>You need to recalibrate when you are new to this library. we recommend the GUI Calibration tool.</para></listitem></itemizedlist>
+</para><para><heading level="3">Manual Installation</heading>
+</para><para><itemizedlist>
+<listitem><para>Download <ulink url="https://www.arduino.cc/en/Main/Software">Arduino IDE</ulink></para></listitem><listitem><para>Clone the source code into your computer.</para></listitem><listitem><para>Open Arduino IDE, import the zip as library. Please refer this <ulink url="https://www.arduino.cc/en/Guide/Libraries#toc4">Import a .zip Library</ulink></para></listitem><listitem><para>Upload the example to your uArm If you don&apos;t know how to upload Arduino sketch, We recommend you read this <ulink url="https://www.arduino.cc/en/Guide/Windows">Arduino Getting Started on Windows</ulink> or <ulink url="https://www.arduino.cc/en/Guide/MacOSX">Arduino Getting Started on MacOS</ulink></para></listitem><listitem><para>You need to recalibrate when you are new to this library. we recommend the GUI Calibration tool.</para></listitem></itemizedlist>
+</para><para><heading level="3">Getting Started</heading>
+</para><para>please reference Arduino <ref refid="_getting_started_8ino-example" kindref="compound">GettingStarted</ref> Sketch </para>    </detaileddescription>
+  </compounddef>
+</doxygen>

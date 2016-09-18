@@ -1,0 +1,210 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.11">
+  <compounddef id="class_servo" kind="class" language="C++" prot="public">
+    <compoundname>Servo</compoundname>
+    <includes refid="_u_f_servo_8h" local="no">UFServo.h</includes>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_servo_1a01fa8c02563163757164771304f9ab3a" prot="private" static="no" mutable="no">
+        <type>uint8_t</type>
+        <definition>uint8_t Servo::servoIndex</definition>
+        <argsstring></argsstring>
+        <name>servoIndex</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="107" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" bodystart="107" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_servo_1a11ac140aa7696dc424526f4f4562853d" prot="private" static="no" mutable="no">
+        <type>int8_t</type>
+        <definition>int8_t Servo::min</definition>
+        <argsstring></argsstring>
+        <name>min</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="108" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" bodystart="108" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_servo_1a71f71fd80677c88515444c3b88b51a21" prot="private" static="no" mutable="no">
+        <type>int8_t</type>
+        <definition>int8_t Servo::max</definition>
+        <argsstring></argsstring>
+        <name>max</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="109" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" bodystart="109" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_servo_1a70b2b17657cf258cdcb57503bcf62cd2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Servo::Servo</definition>
+        <argsstring>()</argsstring>
+        <name>Servo</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="97" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="class_servo_1aeccd2077f07ebc45250da14e72a0c461" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint8_t</type>
+        <definition>uint8_t Servo::attach</definition>
+        <argsstring>(int pin)</argsstring>
+        <name>attach</name>
+        <param>
+          <type>int</type>
+          <declname>pin</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="98" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="class_servo_1a70076d9a77de97241badd1f377817219" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint8_t</type>
+        <definition>uint8_t Servo::attach</definition>
+        <argsstring>(int pin, int min, int max)</argsstring>
+        <name>attach</name>
+        <param>
+          <type>int</type>
+          <declname>pin</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>min</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>max</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="99" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="class_servo_1a0b69ccc5c8b348ebaa84be91d973a362" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Servo::detach</definition>
+        <argsstring>()</argsstring>
+        <name>detach</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="100" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="class_servo_1afec5b56a516c6b1aecd7c04f9c5b2479" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Servo::write</definition>
+        <argsstring>(float value)</argsstring>
+        <name>write</name>
+        <param>
+          <type>float</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="101" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="class_servo_1ac7fe3d6d2ea285ead98814bcfc417029" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Servo::writeMicroseconds</definition>
+        <argsstring>(int value)</argsstring>
+        <name>writeMicroseconds</name>
+        <param>
+          <type>int</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="102" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="class_servo_1aaca0af33ba7d7c87c8a785b8eabf95a7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int Servo::read</definition>
+        <argsstring>()</argsstring>
+        <name>read</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="103" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="class_servo_1a43950424d146c1414460066483d9561b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int Servo::readMicroseconds</definition>
+        <argsstring>()</argsstring>
+        <name>readMicroseconds</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="104" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="class_servo_1a48607d47aa5678780b1b927102bd3b1b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Servo::attached</definition>
+        <argsstring>()</argsstring>
+        <name>attached</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="105" column="1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" line="95" column="1" bodyfile="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/src/UFServo.h" bodystart="94" bodyend="110"/>
+    <listofallmembers>
+      <member refid="class_servo_1aeccd2077f07ebc45250da14e72a0c461" prot="public" virt="non-virtual"><scope>Servo</scope><name>attach</name></member>
+      <member refid="class_servo_1a70076d9a77de97241badd1f377817219" prot="public" virt="non-virtual"><scope>Servo</scope><name>attach</name></member>
+      <member refid="class_servo_1a48607d47aa5678780b1b927102bd3b1b" prot="public" virt="non-virtual"><scope>Servo</scope><name>attached</name></member>
+      <member refid="class_servo_1a0b69ccc5c8b348ebaa84be91d973a362" prot="public" virt="non-virtual"><scope>Servo</scope><name>detach</name></member>
+      <member refid="class_servo_1a71f71fd80677c88515444c3b88b51a21" prot="private" virt="non-virtual"><scope>Servo</scope><name>max</name></member>
+      <member refid="class_servo_1a11ac140aa7696dc424526f4f4562853d" prot="private" virt="non-virtual"><scope>Servo</scope><name>min</name></member>
+      <member refid="class_servo_1aaca0af33ba7d7c87c8a785b8eabf95a7" prot="public" virt="non-virtual"><scope>Servo</scope><name>read</name></member>
+      <member refid="class_servo_1a43950424d146c1414460066483d9561b" prot="public" virt="non-virtual"><scope>Servo</scope><name>readMicroseconds</name></member>
+      <member refid="class_servo_1a70b2b17657cf258cdcb57503bcf62cd2" prot="public" virt="non-virtual"><scope>Servo</scope><name>Servo</name></member>
+      <member refid="class_servo_1a01fa8c02563163757164771304f9ab3a" prot="private" virt="non-virtual"><scope>Servo</scope><name>servoIndex</name></member>
+      <member refid="class_servo_1afec5b56a516c6b1aecd7c04f9c5b2479" prot="public" virt="non-virtual"><scope>Servo</scope><name>write</name></member>
+      <member refid="class_servo_1ac7fe3d6d2ea285ead98814bcfc417029" prot="public" virt="non-virtual"><scope>Servo</scope><name>writeMicroseconds</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

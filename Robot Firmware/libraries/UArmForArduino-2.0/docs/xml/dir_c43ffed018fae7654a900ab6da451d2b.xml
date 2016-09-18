@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.11">
+  <compounddef id="dir_c43ffed018fae7654a900ab6da451d2b" kind="dir">
+    <compoundname>/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration</compoundname>
+    <innerfile refid="_calibration_8ino">Calibration.ino</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/Users/alex/Workspace/develop/uarm_metal/uarm4arduino/examples/Calibration/"/>
+  </compounddef>
+</doxygen>
