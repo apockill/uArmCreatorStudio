@@ -108,7 +108,7 @@ Contact me at Alex.D.Thiel@Gmail.com
 ## Contributing
 **王诗阳 Shiyang Wang** - *Icon Design*
 
-**[Tyler Compton](https://github.com/velovix)** - *Provided valuable advice for certain language design questions*
+**[Tyler Compton](https://github.com/velovix)** - *Created the UCS icon, provided valuable advice for certain language design questions, and helped in many other ways.*
 
 
 ## License
