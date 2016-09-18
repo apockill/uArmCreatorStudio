@@ -30,7 +30,7 @@ import serial.tools.list_ports
 from time                        import sleep
 from threading                   import Thread, RLock
 from Logic.Global                import printf
-from Logic.CommunicationProtocol_2 import Device
+from Logic.CommunicationProtocol import Device
 __author__ = "Alexander Thiel"
 
 

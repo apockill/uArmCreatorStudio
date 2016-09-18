@@ -31,35 +31,16 @@ from time         import sleep  # Used only in connecting to the robot, while wa
 from Logic.Global import printf
 __author__ = "Alexander Thiel"
 
-# This is a library for controlling uArms that have Alex Thiel's Arduino communication protocol uploaded
+
+
 def getConnectedRobots():
-    # Returns any arduino serial ports in a list [port, port, port]
-    # This is used to let the user choose the correct port that is their robot
     ports = list(serial.tools.list_ports.comports())
     return ports
 
 
 class Device:
     """
-    This class should be the only place that you need to modify in order to make your robot arm compatible with
-    uArm Creator Studio. You can impliment whatever communication protocol you wish, as long as all functions
-    that don't start with '__' are implimented. Look at the documentation in each function to know what the function
-    expects to recieve, and what it is expected to return.
-
-    It should be relatively easy to rewrite this to work for another robot, as long as you are willing to write
-    that robots firmware so that it supports these kinds of commands.
-
-    Constraints:
-        - Device must catch any errors that might happen. If you wish to display a message to the user about an error,
-            append it to self.errors in the form of a string.
-
-        - Device must connect to a robot when the class is initialized. This can take as long as it wants, since the
-            connection process is threaded.
-
-        - Device must impliment all functions shown below that do not start with '__'
-
-        - Device must have relatively speedy communication. Should be capable of a "ping" of about 50 'sendAndRecieve's
-            per second
+      This is a library for controlling uArms that have uFactories communication protocol of version 0.9.6
     """
 
     def __init__(self, port):
@@ -98,8 +79,7 @@ class Device:
         self.errors = []
         return errors
 
-
-    # Action commands
+    # Set commands
     def setXYZ(self, x, y, z, speed):
         """
         Set the robots current move.
@@ -110,14 +90,17 @@ class Device:
                       If you have tuning, then just calculate the average speed.
         """
 
-        # Flip the Y axis to keep the coordinates somewhat sane
-        x = str(round(   -x, 2))
-        y = str(round(   -y, 2))
-        z = str(round(    z, 2))
-        t = str(round(speed, 2))
-        cmnd = "moveX" + x + "Y" + y + "Z" + z + "S" + t
-        # return
-        return self.__sendAndRecieve(cmnd)
+        # Prepare the values (convert from cm to millimeters, that's what uArm accepts)
+        x = str(int(round(    x * 10, 0)))
+        y = str(int(round(    y * 10, 0)))
+        z = str(int(round(    z * 10, 0)))
+        v = str(int(round(speed * 10, 0)))
+
+        # Create the command
+        cmnd = "sMovX" + x + "Y" + y + "Z" + z + "V" + v
+
+        # Send the command and receive a response
+        self.__sendAndRecieve(cmnd)
 
     def setServo(self, servo, angle):
         """
@@ -127,10 +110,15 @@ class Device:
         :return:
         """
 
-        # Set a servo to an angle #
-        angle = str(float(round(angle, 3)))
-        cmnd = "ssS" + str(int(servo)) + "V" + angle
-        return self.__sendAndRecieve(cmnd)
+        # Prepare the values
+        s = str(int(servo))
+        a = str(float(round(angle, 3)))
+
+        # Create the command
+        cmnd = "sSerN" + s + "V" + a
+
+        # Send the command and receive a response
+        self.__sendAndRecieve(cmnd)
 
     def setPump(self, onOff):
         """
@@ -138,31 +126,44 @@ class Device:
         :param onOff: True means turn the gripper on. False means off.
         """
 
-        # Set the gripper to a value 1 or 0, where 1 means "gripping" and 0 mean "off"
-        cmnd = "pumpV" + str(int(onOff))
-        return self.__sendAndRecieve(cmnd)
+        # Prepare the values
+        v = str(int(onOff))
 
-    def setServoAttach(self, servo_number):
+        # Create the command
+        cmnd = "sPumV" + v
+
+        # Send the command and receive a response
+        self.__sendAndRecieve(cmnd)
+
+    def setServoAttach(self, servo):
         """
         Attach a certain servo.
         :param servo: The servo's number
-
-        0 should be the base servo. Anything else might vary depending on the arm.
         """
 
-        servo_number = str(int(servo_number))
-        cmnd = "attachS" + servo_number
-        return self.__sendAndRecieve(cmnd)
+        # Prepare the values
+        s = str(int(servo))
 
-    def setServoDetach(self, servo_number):
+        # Create the command
+        cmnd = "sAttN" + s
+
+        # Send the command and receive a response
+        self.__sendAndRecieve(cmnd)
+
+    def setServoDetach(self, servo):  # Done
         """
         Detach a certain servo.
         :param servo: The servo's number
         """
 
-        servo_number = str(int(servo_number))
-        cmnd = "detachS" + servo_number
-        return self.__sendAndRecieve(cmnd)
+        # Prepare the values
+        s = str(int(servo))
+
+        # Create the command
+        cmnd = "sDetN" + s
+
+        # Send the command and receive a response
+        self.__sendAndRecieve(cmnd)
 
     def setBuzzer(self, frequency, duration):
         """
@@ -171,15 +172,26 @@ class Device:
         :param duration: The duration of the buzz, in seconds
         """
 
-        cmnd = "buzzF" + str(round(frequency, 2)) + "T" + str(round(duration, 3))
-        return self.__sendAndRecieve(cmnd)
+        # Prepare the values
+        f = str(float(frequency))
+        d = str(float(duration))
+
+        # Create the command
+        cmnd = "sBuzF" + f + "T" + d
+
+        # Send the command and receive a response
+        self.__sendAndRecieve(cmnd)
 
     def setStop(self):
         """
-        Stop any ongoing move
+        This command should stop any ongoing movement that the robot is doing.
         """
+
+        # Create the command
         cmnd = "sStp"
-        return self.__sendAndRecieve(cmnd)
+
+        # Send the command and recieve a response
+        self.__sendAndRecieve(cmnd)
 
 
     # Get commands
@@ -194,101 +206,132 @@ class Device:
         then send another move command.
         """
 
-        # Find out if the robot is currently moving
-        response  = self.__sendAndRecieve("gmov")
-        parsedArgs = self.__parseArgs(response, "mov", ["M"])
+        # Send the command and receive a response
+        response  = self.__sendAndRecieve("gMov")
 
+        # Create the return
+        ret = (False, True)["S" in response]
 
-        # Return True if moving, False if not moving
-        return (False, True)[int(parsedArgs['M'])]
+        return ret
 
     def getXYZCoords(self):
         """
         Get the robots XYZ coordinates
 
         Returns (x, y, z)
-        where x, y, and z are in millimeters
+        where x, y, and z are in centimeters
         """
 
-        # Returns an array of the format [x, y, z] of the robots current location
-        response  = self.__sendAndRecieve("gcrd")
-        parsedArgs = self.__parseArgs(response, "crd", ["X", "Y", "Z"])
+        # Send the command and receive a response
+        response = self.__sendAndRecieve("gCrd")
 
-        # Return (currX, currY, currZ)
-        return -parsedArgs["X"], -parsedArgs["Y"], parsedArgs["Z"]
+        # Parse the response
+        parsedArgs = self.__parseArgs(response, "S", ["X", "Y", "Z"])
 
-    def getServoAngles(self):
+        # Create the return
+        ret = (parsedArgs["X"] / 10.0, parsedArgs["Y"] / 10.0, parsedArgs["Z"] / 10.0)
+
+        return ret
+
+    def getServoAngles(self):  # TODO: Need to add wrist angle
         """
         Get the robots current servo angles
 
-        Returns (Base servo, left servo, right servo)
+        Returns (Base servo, left servo, right servo, wrist servo)
 
-        where stretch and height are in millimeters, and rotation is in degrees
+        Angles are in degrees
         """
 
-        # Get the angles of each servo
-        cmnd = "gang"
-        response = self.__sendAndRecieve(cmnd)
-        parsedArgs = self.__parseArgs(response, "ang", ["A", "B", "C", "D"])
+        # Send the command and receive a response
+        response = self.__sendAndRecieve("gAng")
 
-        # Return angles of each servo in order
-        return parsedArgs["A"], parsedArgs["B"], parsedArgs["C"], parsedArgs["D"]
+        # Parse the response
+        parsedArgs = self.__parseArgs(response, "S", ["B", "L", "R", "H"])
 
-    def getTipSensor(self):
+        # Create the return
+        ret = (parsedArgs["B"], parsedArgs["L"], parsedArgs["R"], parsedArgs["H"])
+
+        return ret
+
+    def getTipSensor(self):  # TODO: Need to add wrist angle
         """
         Get state of the robots tip sensor, on the end effector. R
 
         Returns True if it is pressed, False if it is not pressed
         """
 
-        # Find out if the robot is currently moving
-        response  = self.__sendAndRecieve("gtip")
-        parsedArgs = self.__parseArgs(response, "tip", ["V"])
+        # Send the command and receive a response
+        response = self.__sendAndRecieve("gTip")
 
-        # Returns 0 or 1, whether or not the tip sensor is currently activated
-        return (True, False)[int(parsedArgs['V'])]  # Return True or False
+        # Parse the response
+        parsedArgs = int(self.__parseArgs(response, "", ["S"])["S"])
+
+        # Create the return
+        ret = (False, True)[parsedArgs]
+
+        return ret
 
     def getIK(self, x, y, z):
         """
         Get inverse kinematics calculations for any XYZ point
 
         Returns a tuple of angles, in the format: (baseServo, leftServo, rightServo)
-        :param x: millimeters
-        :param y: millimeters
-        :param z: millimeters
+        Angles returned are in degrees
+
+        :param x: centimeters
+        :param y: centimeters
+        :param z: centimeters
         """
 
-        # Gets the servo1, servo2, and servo3 calculated positions for the XYZ position
-        x = str(round(   -x, 2))
-        y = str(round(   -y, 2))
-        z = str(round(    z, 2))
-        cmnd = "gikX" + x + "Y" + y + "Z" + z
-        response = self.__sendAndRecieve(cmnd)
-        parsedArgs = self.__parseArgs(response, "ik", ["A", "B", "C"])
+        # Prepare the values
+        x = str(round(x * 10, 0))
+        y = str(round(y * 10, 0))
+        z = str(round(z * 10, 0))
 
-        # Return (servo1Angle, servo2Angle, servo3Angle)
-        return parsedArgs["A"], parsedArgs["B"], parsedArgs["C"]
+        # Create the command
+        cmnd = "gIKX" + x + "Y" + y + "Z" + z
+
+        # Send the command and receive a response
+        response = self.__sendAndRecieve(cmnd)
+
+        # Parse the response
+        parsedArgs = self.__parseArgs(response, "", ["T", "L", "R"])
+
+        # Create the return
+        ret = (parsedArgs["T"], parsedArgs["L"], parsedArgs["R"])
+
+        return ret
 
     def getFK(self, servo0, servo1, servo2):
         """
         Get forward kinematics calculations for any three servo angles
+        Angles are in degrees
 
-        Returns an XYZ point, in the format: (x, y, z)
+        Returns an XYZ point, in the format: (x, y, z), where x, y, z are in centimeters
         :param servo0: degrees
+        :param servo1: degrees
         :param servo2: degrees
-        :param servo3: degrees
         """
 
-        # Gets the X, Y, and Z calculated positions for the servo angles servo0, servo1, servo2
-        servo0 = str(round(servo0, 2))
-        servo1 = str(round(servo1, 2))
-        servo2 = str(round(servo2, 2))
-        cmnd = "gfkA" + servo0 + "B" + servo1 + "C" + servo2
-        response = self.__sendAndRecieve(cmnd)
-        parsedArgs = self.__parseArgs(response, "fk", ["X", "Y", "Z"])
+        # Prepare the values
+        s1 = str(round(servo0, 2))
+        s2 = str(round(servo1, 2))
+        s3 = str(round(servo2, 2))
 
-        # Return (X, Y, Z)
-        return -parsedArgs["X"], -parsedArgs["Y"], parsedArgs["Z"]
+        # Create the command
+        cmnd = "gFKT" + s1 + "L" + s2 + "R" + s3
+
+        # Send the command and receive a response
+        response = self.__sendAndRecieve(cmnd)
+
+        # Parse the response
+        parsedArgs = self.__parseArgs(response, "", ["X", "Y", "Z"])
+
+        # Create the return (convert from milimeters to centimeters)
+        ret = (parsedArgs["X"] * 10.0, parsedArgs["Y"] * 10.0, parsedArgs["Z"] * 10.0)
+
+        return ret
+
 
 
     # Functions that are only used inside of this library
@@ -407,4 +450,249 @@ class Device:
         return responseDict
 
 
+'''
+###### UNUSED FUNCTIONS (from the new firmware on the uArm #####
+def setPolar(self, stretch, rotation, height, speed):
+    """
+    Set the polar coordinates of the robot
+    :param stretch: Stretch distance of end effector from base of robot, in millimeters
+    :param rotation: Rotation of base servo, in degrees
+    :param height: Height of robot end effector, in millimeters
+    :param speed: A float between 0 and 1, where 0 is slow and 1 is fast
+    :return:
+    """
 
+    # Prepare the values
+    s = str(round( stretch, 0))
+    r = str(round(rotation, 0))
+    h = str(round(  height, 2))
+    v = str(round(   speed, 2))
+
+    # Create the command
+    cmnd = "sPolS" + s + "R" + r + "H" + h + "V" + v
+
+    # Send the command and receive a response
+    self.__sendAndRecieve(cmnd)
+
+def getPolarCoords(self):
+    """
+    Get the robots polar coordinates
+
+    Returns (stretch, rotation, height)
+    where stretch and height are in millimeters, and rotation is in degrees
+    """
+
+    # Send the command and receive a response
+    response = self.__sendAndRecieve("gPol")
+
+    # Parse the response
+    parsedArgs = self.__parseArgs(response, "S", ["S", "R", "H"])
+
+    # Create the return
+    ret = (parsedArgs["S"], parsedArgs["R"], parsedArgs["H"])
+
+    return ret
+
+def getReachableXYZ(self, x, y, z):
+    """
+    Get whether or not the robot can reach a certain point
+    Input an XYZ coordinate, and it will return True or False if it can get to the final location
+    Returns True
+    """
+
+    # Prepare the values
+    x = str(round(    x, 0))
+    y = str(round(    y, 0))
+    z = str(round(    z, 0))
+
+    # Create the command
+    cmnd = "gSimX" + x + "Y" + y + "Z" + z + "V0"
+
+    # Send the command and receive a response
+    response = self.__sendAndRecieve(cmnd)
+
+    # Create the return
+    ret = "S" in response
+
+    return response
+
+def getReachablePolar(self, stretch, rotation, height):
+    """
+    Get whether or not the robot can reach a certain point
+    Input a polar coordinate, and it will return True or False if it can get to the final location
+    Returns True
+    """
+
+    # Prepare the values
+    x = str(round( stretch, 0))
+    y = str(round(rotation, 2))
+    z = str(round(  height, 0))
+
+    # Create the command
+    cmnd = "gSimX" + x + "Y" + y + "Z" + z + "V1"
+
+    # Send the command and receive a response
+    response = self.__sendAndRecieve(cmnd)
+
+    # Create the return
+    ret = "S" in response
+
+    return ret
+
+
+# Not Implimented Yet
+def getPump(self):
+    # This method will be implimented with the next version of the uArm
+    pass
+
+def getGripper(self):
+    # This method will be implimented with the next version of the uArm
+    pass
+
+def setGripper(self, onOff):
+    """
+    Set the pumps value.
+    :param onOff: True means turn the gripper on. False means off.
+    """
+
+    # Prepare the values
+    v = str(int(onOff))
+
+    # Create the command
+    cmnd = "sGriV" + v
+
+    # Send the command and receive a response
+    self.__sendAndRecieve(cmnd)
+
+def getVersion(self):
+    """
+    Get the current uArm version
+
+    Returns a string, something like "0.9.6" or another string like that.
+    """
+
+    # Send the command and receive a response
+    response  = self.__sendAndRecieve("gVer")
+
+    # Create the return
+    ret = response.replace("S", "")
+
+    return ret
+
+'''
+
+
+
+
+# TESTING PROTOCOL
+if __name__ == "__main__":
+    from sys import exit
+
+    connecteduArms = getConnectedRobots()
+
+    print("Open Ports: ", connecteduArms)
+
+
+    # If no robots were found, exit the script
+    if len(connecteduArms) == 0:
+        print("No robots found!")
+        exit()
+
+
+    # Connect to the first robot, and make sure it connected correctly
+    chosenPort = connecteduArms[0][0]
+    print("Attempting to connect to port ", chosenPort)
+    uarm = Device(chosenPort)
+    if not uarm.connected():
+        print("uArm could not connect!")
+        exit()
+    print("Beginning Testing")
+
+
+
+    print("\nTest setMove")
+    print("Move To (0, 150, 150)")
+    uarm.setXYZ(0, 150, 150, 10)
+    while uarm.getMoving(): sleep(.1)
+
+    print("Move To (-150, 150, 150)")
+    uarm.setXYZ(-150, 150, 150, 10)
+    while uarm.getMoving(): sleep(.1)
+
+    print("Move To (0, 150, 100)")
+    uarm.setXYZ(0, 150, 100, 10)
+    while uarm.getMoving(): sleep(.1)
+
+    print("Move To (150, 150, 150)")
+    uarm.setXYZ(150, 150, 150, 10)
+    while uarm.getMoving(): sleep(.1)
+
+    print("Move To (0, 150, 250)")
+    uarm.setXYZ(0, 150, 250, 10)
+    while uarm.getMoving(): sleep(.1)
+
+
+    print("\nTesting SetServo")
+    print("Setting Servo 0")
+    uarm.setServo(0, 100)
+    print("Setting Servo 1")
+    uarm.setServo(1, 80)
+    print("Setting Servo 2")
+    uarm.setServo(2, 45)
+    sleep(.5)
+    print("Setting Servo 0")
+    uarm.setServo(0, 90)
+    print("Setting Servo 1")
+    uarm.setServo(1, 70)
+    print("Setting Servo 2")
+    uarm.setServo(2, 35)
+    sleep(.5)
+    print("Setting Servo 3")
+    uarm.setServo(2, 30)
+    sleep(.25)
+    print("Setting Servo 3")
+    uarm.setServo(3, 120)
+
+    print("\nTesting setPump")
+    print("Turning on Pump")
+    uarm.setPump(True)
+    sleep(.5)
+    print("Turning off Pump")
+    uarm.setPump(False)
+    sleep(.5)
+
+
+    print("\nTesting Detach Servos")
+    uarm.setServoDetach(0)
+    uarm.setServoDetach(1)
+    uarm.setServoDetach(2)
+    uarm.setServoDetach(3)
+    sleep(.5)
+
+
+    print("\nTesting Attach Servos")
+    uarm.setServoAttach(0)
+    uarm.setServoAttach(1)
+    uarm.setServoAttach(2)
+    uarm.setServoAttach(3)
+    sleep(.5)
+
+
+    print("\nTesting Buzzer")
+    uarm.setBuzzer(1500, .15)
+    sleep(.15)
+
+
+    print("\nTest Various 'get' Commands")
+    print("Servo Angles: ", uarm.getServoAngles())
+    print("XYZ Coords:   ", uarm.getXYZCoords())
+    print("Tip Sensor:   ", uarm.getTipSensor())
+
+
+    print("\nTest Forward/Backwrd Kinematics")
+    print("Get Forward Kinematics  (90, 70, 35): ", uarm.getFK(90, 70, 35))
+    print("Get Forward Kinematics  (1000, 1000, 1000): ", uarm.getFK(1000, 1000, 1000))
+    print("Get Inverse Kinematics (0, 150, 150): ", uarm.getIK(0, 150, 150))
+    print("Get Inverse Kinematics (1000, 1000, 1000): ", uarm.getIK(1000, 1000, 1000))
+
+    print("Testing Over")
