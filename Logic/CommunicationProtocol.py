@@ -27,7 +27,7 @@ License:
 """
 import serial
 import serial.tools.list_ports
-from time         import sleep  # Used only in connecting to the robot, while waiting for serial to connect.
+from time         import sleep, time  # Used only in connecting to the robot, while waiting for serial to connect.
 from Logic.Global import printf
 __author__ = "Alexander Thiel"
 
@@ -343,16 +343,21 @@ class Device:
                                           stopbits = serial.STOPBITS_ONE,
                                           bytesize = serial.EIGHTBITS,
                                           timeout  = .1)
-            self.__isConnected = True
+
+
             sleep(3)
+            self.__isConnected = True
+            self.__sendAndRecieve("gVer", timeout=1)  # Send a handshake to verify that the robot is indeed connected
+
+
         except Exception as e:
-            print("ANYTHING")
+
             printf("Communication| ERROR: " + type(e).__name__ + " " + str(e) + " while connecting to port ", port)
             self.__serial = None
             self.__isConnected = False
             self.errors.append(type(e).__name__ + " " + str(e))
 
-    def __sendAndRecieve(self, cmnd):
+    def __sendAndRecieve(self, cmnd, timeout=None):
         """
         This command will send a command and receive the robots response. There must always be a response!
         Responses should be recieved immediately after sending the command, after which the robot will proceed to
@@ -368,6 +373,7 @@ class Device:
         # Prepare and send the command to the robot
         cmndString = bytes("[" + cmnd + "]", encoding='ascii')  #  "[" + cmnd + "]"
 
+
         try:
             self.__serial.write(cmndString)
         except serial.serialutil.SerialException as e:
@@ -378,7 +384,10 @@ class Device:
 
         # Read the response from the robot (THERE MUST ALWAYS BE A RESPONSE!)
         response = ""
+        startTime = time()
         while True:
+            if timeout is not None and time() - startTime > timeout:
+                raise Exception("Robot Not Responding")
 
             try:
                 response += str(self.__serial.read(), 'ascii')
