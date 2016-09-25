@@ -1658,7 +1658,7 @@ class TestVariableCommand(CommandGUI):
         prompt.tstMenu.addItem('Equal To')
         prompt.tstMenu.addItem('Not Equal To')
         prompt.tstMenu.addItem('Greater Than')
-        prompt.tstMenu.addItem('Less Then')
+        prompt.tstMenu.addItem('Less Than')
 
         # Set up all the labels for the inputs
         valALabel = QtWidgets.QLabel('Expression ')

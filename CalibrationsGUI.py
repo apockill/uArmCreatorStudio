@@ -791,7 +791,8 @@ class CWPage5(QtWidgets.QWizardPage):
         robot.setActiveServos(all=True)
         robot.setSpeed(10)
 
-        zLower = float(round(self.getGroundCoord()[2] + 1.0, 2))
+        # Move the robot up a certain offset from the ground coordinate
+        zLower = float(round(self.getGroundCoord()[2] + 2.0, 2))
         robot.setPos(x=robot.home["x"], y=robot.home["y"], z=zLower)
         sleep(1)
 
@@ -803,7 +804,7 @@ class CWPage5(QtWidgets.QWizardPage):
         zTest = int(round(zLower, 0))  # Since range requires an integer, round zLower just for this case
         for x in range(  -20, 20, 4): testCoords += [[x,  15,    11]]  # Center of XYZ grid
         for y in range(    8, 24, 4): testCoords += [[ 0,  y,    11]]
-        for z in range(zTest, 24, 1): testCoords += [[ 0, 15,     z]]
+        for z in range(zTest, 19, 1): testCoords += [[ 0, 15,     z]]
 
         # for x in range(  -20, 20, 1): testCoords += [[x,  15, zTest]]  # Center of XY, Bottom z
         # for y in range(    8, 25, 1): testCoords += [[ 0,  y, zTest]]
@@ -815,7 +816,7 @@ class CWPage5(QtWidgets.QWizardPage):
 
 
         direction  = int(1)
-        for y in range(10, 25, 2):
+        for y in range(12, 25, 2):
             for x in range(-20 * direction, 20 * direction, 2 * direction):
                 testCoords += [[x, y, zTest]]
             direction *= -1
