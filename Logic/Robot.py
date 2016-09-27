@@ -84,7 +84,7 @@ class Robot:
         self.zMin, self.zMax =  -5, 25
 
         # Set up some constants for other functions to use
-        self.home      = {'x': 0.0, 'y': 15.0, 'z': 20.0}
+        self.home      = {'x': 0.0, 'y': 15.0, 'z': 15}
 
 
         self.__exiting = False    # When true, any time-taking functions will exit ASAP. Used for quickly ending threads
@@ -417,7 +417,7 @@ class Robot:
         # Check if the uArm was able to connect successfully
         if self.__uArm.connected():
             printf("Robot| SUCCESS: uArm successfully connected")
-            self.__uArm.setXYZ(self.home['x'], self.home['y'], self.home['z'], self.speed)
+            # self.__uArm.setXYZ(self.home['x'], self.home['y'], self.home['z'], self.speed)
             self.__threadRunning = False
             self.setPos(**self.home)
             self.setActiveServos(all=False)

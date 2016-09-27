@@ -66,12 +66,10 @@ class VideoStream:
 
         self.running     = False
         self.setCamera   = None     # When this is a number and videoThread is on, it will attempt to setNewCamera(new)
-        self.paused      = True
 
         self.cameraID    = None
         self.fps         = fps
         self.cap         = None  # An OpenCV capture object
-
 
         self.frame       = None
         self.frameList   = []    # Used in computer vision tasks, this is a list of the last 5 frames (unfiltered)
@@ -97,15 +95,6 @@ class VideoStream:
             self.setCamera = cameraID
         else:
             printf("Video| ERROR: Tried to set camera while camera was already being set! cameraID ", self.setCamera)
-
-    def setPaused(self, value):
-        # Tells the main frunction to grab more frames
-        if value is False:
-            # If you want to play video, make sure the main thread is running
-            if self.mainThread is None:
-                self.startThread()
-
-        self.paused = value
 
     def connected(self):
         # Returns True or False if there is a camera successfully connected
@@ -148,7 +137,6 @@ class VideoStream:
             fpsTimer.wait()
             if not fpsTimer.ready():       continue
             if self.setCamera is not None: self.__setNewCamera(self.setCamera)
-            if self.paused:                continue
             if self.cap is None:           continue
 
 
@@ -258,7 +246,6 @@ class VideoStream:
     def getFrame(self):
         # Returns the latest frame grabbed from the camera
         if self.frame is not None:
-            #
             return self.frame.copy()
         else:
             return None

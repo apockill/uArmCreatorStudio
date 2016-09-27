@@ -73,7 +73,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.loadData        = []  #Set when file is loaded. Used to check if the user has changed anything when closing
         self.programTitle    = 'uArm Creator Studio'
         self.scriptToggleBtn = QtWidgets.QAction(QtGui.QIcon(Paths.run_script), 'Run', self)
-        self.videoToggleBtn  = QtWidgets.QAction(QtGui.QIcon(Paths.play_video), 'Video', self)
         self.devicesBtn      = QtWidgets.QAction(QtGui.QIcon(Paths.devices_neither), 'Devices', self)
         self.centralWidget   = QtWidgets.QStackedWidget()
         self.controlPanel    = ControlPanelGUI.ControlPanel(self.env, parent=self)
@@ -82,8 +81,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         # Create Menu items and set up the GUI
+        self.cameraWidget.play()
         self.initUI()
-        self.setVideo("play")
+
 
 
         # After initUI: Restore the window geometry to the state it was when the user last closed the window
@@ -191,7 +191,6 @@ class MainWindow(QtWidgets.QMainWindow):
         objMngrBtn   = QtWidgets.QAction(QtGui.QIcon(Paths.objectManager), 'Resources', self)
 
         self.scriptToggleBtn.setToolTip('Run/Pause the command script (Ctrl+R)')
-        self.videoToggleBtn.setToolTip('Play/Pause the video stream and Vision tracking')
         self.devicesBtn.setToolTip('Open Camera and Robot settings',)
         calibrateBtn.setToolTip('Open Robot and Camera Calibration Center')
         objMngrBtn.setToolTip('Open Resource Manager')
@@ -200,13 +199,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         self.scriptToggleBtn.triggered.connect(self.toggleScript)
-        self.videoToggleBtn.triggered.connect(lambda: self.setVideo("toggle"))
         self.devicesBtn.triggered.connect(self.openDevices)
         calibrateBtn.triggered.connect(self.openCalibrations)
         objMngrBtn.triggered.connect(self.openObjectManager)
 
         toolbar.addAction(self.scriptToggleBtn)
-        toolbar.addAction(self.videoToggleBtn)
         toolbar.addAction(self.devicesBtn)
         toolbar.addAction(calibrateBtn)
         toolbar.addAction(objMngrBtn)
@@ -278,22 +275,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         vStream = self.env.getVStream()
-
         if state == "play":
             # Make sure the videoStream object has a camera, or if the cameras changed, change it
             # if not vStream.connected() or not vStream.cameraID == cameraID:
             #     vStream.setNewCamera(cameraID)
 
             self.cameraWidget.play()
-            vStream.setPaused(False)
-            self.videoToggleBtn.setIcon(QtGui.QIcon(Paths.pause_video))
-            self.videoToggleBtn.setText("Pause")
 
         if state == "pause":
             self.cameraWidget.pause()
-            vStream.setPaused(True)
-            self.videoToggleBtn.setIcon(QtGui.QIcon(Paths.play_video))
-            self.videoToggleBtn.setText("Play")
 
 
     def toggleScript(self):
@@ -439,12 +429,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if self.interpreter.threadRunning(): self.endScript()
 
-        self.setVideo("pause")  # If you don't pause video, scanning for cameras may crash the program
+        self.cameraWidget.pause()
 
         deviceWindow = DeviceWindow(parent=self)
         accepted     = deviceWindow.exec_()
 
-        self.setVideo("play")
+        self.cameraWidget.play()
         if not accepted:
             printf("GUI| Cancel clicked, no settings applied.")
             return
@@ -467,14 +457,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 
-        self.setVideo("play")
+        self.cameraWidget.play()
 
     def openCalibrations(self):
         # This handles the opening and closing of the Calibrations window
         printf("GUI| Opening Calibrations Window")
 
         if self.interpreter.threadRunning(): self.endScript()
-        self.setVideo("pause")
+        self.cameraWidget.pause()
 
         coordSettings = self.env.getSetting("coordCalibrations")
         motionSettings = self.env.getSetting("motionCalibrations")
@@ -492,7 +482,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             printf("GUI| Cancel clicked, no calibrations applied.")
 
-        self.setVideo("play")
+        self.cameraWidget.play()
 
     def openObjectManager(self, openResourceWindow=None):
         # This handles the opening and closing of the ObjectManager window

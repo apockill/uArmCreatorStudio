@@ -126,7 +126,7 @@ class FpsTimer:
             return False
 
 
-
+printRedirectFunc = lambda classString, string: None
 # Initiate Global Variables
 def init():
     global keysPressed

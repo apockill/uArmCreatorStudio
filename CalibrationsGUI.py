@@ -193,8 +193,6 @@ class CalibrateWindow(QtWidgets.QDialog):
             self.robotError()
             return
 
-        # Make sure VideoStream is collecting new frames
-        vStream.setPaused(False)
 
         showStep(1, "Do not make any movement in the cameras view until the next message appears.")
 
@@ -282,8 +280,6 @@ class CalibrateWindow(QtWidgets.QDialog):
             if reply == 0: startFromScratch = True
             if reply == 1: startFromScratch = False
 
-        # Make sure everything is ready
-        vStream.setPaused(False)
 
         coordWizard = CoordWizard(self.env, startFromScratch, parent=self)
         coordWizard.exec_()
