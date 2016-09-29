@@ -163,6 +163,18 @@ class Robot:
         with self.__lock:
             return self.__uArm.getFK(servo0, servo1, servo2)
 
+    def getIK(self, x, y, z):
+        """
+        Get the inverse kinematic calculations for a certain XYZ location.
+        :return: [X, Y, Z] list
+        """
+        if not self.connected() or self.__exiting:
+            printf("Robot| Robot not avaliable, returning 0 for IK")
+            return [0.0, 0.0, 0.0]
+
+        with self.__lock:
+            return self.__uArm.getIK(x, y, z)
+
 
 
     def setPos(self, x=None, y=None, z=None, coord=None, relative=False, wait=True):
