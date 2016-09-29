@@ -209,18 +209,18 @@ Builtin Variables:
         presses the "stop script" button on the GUI. So don't worry about writing blocking code, that's been handled!
 
 Examples scripts using 'robot'
-    robot.setPos(x=0, y=15, z=15)   # This will set the robots position to XYZ(0, 15, 15)
-    robot.setPos(x=0, y=15, z=15)   # Waits for robot to complete move before continuing
-    robot.setPos(x=0)               # Will only set the x position, keeps the rest the same
-    robot.setGripper(True)          # Turn on the pump. If false, it will deactivate the pump
-    robot.setBuzzer(1500, 2)        # Play a tone through the robots buzzer. Parameters: Frequency, duration (seconds)
-    robot.setSpeed(10)              # Sets speed for all future moves using robot.setPos. Speed set in cm/s
-    robot.connected()               # Returns True if the robot is connected and working, False if not
+    robot.setPos(x=0, y=15, z=15)  # This will set the robots position to XYZ(0, 15, 15)
+    robot.setPos(x=0, wait=False)  # Allows your code to continue while the robot moves.
+    robot.setPos(x=0)              # Will only set the x position, keeps the rest the same
+    robot.setGripper(True)         # Turn on the pump. If false, it will deactivate the pump
+    robot.setBuzzer(1500, 2)       # Play a tone through the robots buzzer. Parameters: Frequency, duration (seconds)
+    robot.setSpeed(10)             # Sets speed for all future moves using robot.setPos. Speed set in cm/s
+    robot.connected()              # Returns True if the robot is connected and working, False if not
 
-    robot.getAngles()               # Returns the current angles of the robots servos: [servo0, servo1, servo2, servo3]
-    robot.getCoords()               # Returns the current coordinate of the robot in [x, y, z] format
-    robot.getTipSensor()            # Returns True or False, if the tip sensor on the robot is being pressed or not
-    robot.getMoving()               # Returns True if the robot is currently moving
+    robot.getAngles()              # Returns the current angles of the robots servos: [servo0, servo1, servo2, servo3]
+    robot.getCoords()              # Returns the current coordinate of the robot in [x, y, z] format
+    robot.getTipSensor()           # Returns True or False, if the tip sensor on the robot is being pressed or not
+    robot.getMoving()              # Returns True if the robot is currently moving
 
 
 
