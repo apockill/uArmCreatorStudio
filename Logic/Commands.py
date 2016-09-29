@@ -752,7 +752,7 @@ class RunTaskCommand(Command):
         if self.parameters["shareScope"]:
             child.nameSpace = self.interpreter.nameSpace
 
-        child.startThread(threaded=False)
+        child.startProcess(threaded=False)
 
 
 class RunFunctionCommand(Command):

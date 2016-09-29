@@ -10,6 +10,7 @@ vStream.setNewCamera(0)
 # Play video until the user presses "q"
 key = None
 while not key == ord("q"):
+    # Request the latest frame from the VideoStream
     frame = vStream.getFilteredFrame()
 
     # If the camera has started up, then show the frame
