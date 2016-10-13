@@ -423,42 +423,28 @@ def smoothListGaussian(list1, degree):
     :param list1:  [[column1, column2, column3... column n], ... [element n]]
     :param degree: The gaussian smoothing constant.
     """
-
     window = degree * 2 - 1
-
 
     if len(list1) < window:
         printf("RobotVision| ERROR: Attempted to smooth list that was too small to be smoothed")
         return None
 
-
     weight = np.array([1.0] * window)
-    # print(weight)
-
     weightGauss = []
 
     for i in range(window):
-
-        i = i - degree + 1
-
-        frac = i / float(window)
-
+        i     = i - degree + 1
+        frac  = i / float(window)
         gauss = 1 / (np.exp((4 * frac) ** 2))
-
         weightGauss.append(gauss)
 
-
     weight = np.array(weightGauss) * weight
-
-
     smoothed = [0.0] * (len(list1) - window)
-
 
     for i in range(len(smoothed)):
         smoothing = [0.0 for i in range(len(list1[i]))]  # [0.0, 0.0, 0.0]
         for e, w in zip(list1[i:i + window], weight):
             smoothing = smoothing + np.multiply(e, w)
-
         smoothed[i] = smoothing / sum(weight)
 
     return smoothed

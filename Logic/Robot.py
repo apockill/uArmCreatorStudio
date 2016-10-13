@@ -79,9 +79,9 @@ class Robot:
         self.servoAngleStatus  = [None, None, None, 90.0]  # Wrist is 90 degrees as default
 
         # Create some ranges to allow movement within (need to make a better solution)
-        self.xMin, self.xMax = -30, 30
-        self.yMin, self.yMax =   0, 30
-        self.zMin, self.zMax =  -5, 25
+        # self.xMin, self.xMax =  -35, 35
+        # self.yMin, self.yMax =    0, 40
+        # self.zMin, self.zMax =  -10, 30
 
         # Set up some constants for other functions to use
         self.home      = {'x': 0.0, 'y': 15.0, 'z': 15}
@@ -163,6 +163,18 @@ class Robot:
         with self.__lock:
             return self.__uArm.getFK(servo0, servo1, servo2)
 
+    def getIK(self, x, y, z):
+        """
+        Get the inverse kinematic calculations for a certain XYZ location.
+        :return: [X, Y, Z] list
+        """
+        if not self.connected() or self.__exiting:
+            printf("Robot| Robot not avaliable, returning 0 for IK")
+            return [0.0, 0.0, 0.0]
+
+        with self.__lock:
+            return self.__uArm.getIK(x, y, z)
+
 
 
     def setPos(self, x=None, y=None, z=None, coord=None, relative=False, wait=True):
@@ -205,18 +217,18 @@ class Robot:
 
 
             # Make sure all X, Y, and Z values are within a reachable range (not a permanent solution)
-            if self.coord[0] is not None and self.coord[1] is not None and self.coord[2] is not None:
-                if self.xMin > self.coord[0] or self.coord[0] > self.xMax:
-                    printf("Robot| X is out of bounds. Requested: ", self.coord[0])
-                    self.coord[0] = self.clamp(self.xMin, self.coord[0], self.xMax)
-
-                if self.yMin > self.coord[1] or self.coord[1] > self.yMax:
-                    printf("Robot| Y is out of bounds. Requested: ", self.coord[1])
-                    self.coord[1] = self.clamp(self.yMin, self.coord[1], self.yMax)
-
-                if self.zMin > self.coord[2] or self.coord[2] > self.zMax:
-                    printf("Robot| Z is out of bounds. Requested: ", self.coord[2])
-                    self.coord[2] = self.clamp(self.zMin, self.coord[2], self.zMax)
+            # if self.coord[0] is not None and self.coord[1] is not None and self.coord[2] is not None:
+            #     if self.xMin > self.coord[0] or self.coord[0] > self.xMax:
+            #         printf("Robot| X is out of bounds. Requested: ", self.coord[0])
+            #         self.coord[0] = self.clamp(self.xMin, self.coord[0], self.xMax)
+            #
+            #     if self.yMin > self.coord[1] or self.coord[1] > self.yMax:
+            #         printf("Robot| Y is out of bounds. Requested: ", self.coord[1])
+            #         self.coord[1] = self.clamp(self.yMin, self.coord[1], self.yMax)
+            #
+            #     if self.zMin > self.coord[2] or self.coord[2] > self.zMax:
+            #         printf("Robot| Z is out of bounds. Requested: ", self.coord[2])
+            #         self.coord[2] = self.clamp(self.zMin, self.coord[2], self.zMax)
 
 
             # If this command has changed the position, then move the robot
