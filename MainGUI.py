@@ -47,7 +47,7 @@ from ObjectManagerGUI  import MakeRecordingWindow
 from ObjectManagerGUI  import MakeFunctionWindow
 from ObjectManagerGUI  import MakeObjectWindow
 
-from util.memo import memoized_property, memoized
+from util.memo import memoized
 
 __author__ = "Alexander Thiel"
 
@@ -682,7 +682,7 @@ class DeviceWindow(QtWidgets.QDialog):
     The Apply/Cancel buttons are connected in the MainWindow class, which is why they are 'self' variables
     """
 
-    TOGGLE_CAMERA_BUTTON_STATE = ['Disable Cameras', 'Enable Cameras']
+    TOGGLE_CAMERA_BUTTON_STATE = ['Disable Camera', 'Enable Camera']
 
     def __init__(self, parent):
         super(DeviceWindow, self).__init__(parent)
