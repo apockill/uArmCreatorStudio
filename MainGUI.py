@@ -828,7 +828,7 @@ class DeviceWindow(QtWidgets.QDialog):
         else:
             vStream.startThread()
 
-        self.cameraDisableBtn.setText(self.TOGGLE_CAMERA_BUTTON_STATE[not vStream.running])
+        self.cameraDisableBtn.setText(self.get_toggle_button_text(vStream))
         self.parent().refreshDevicesIcon()
 
 
