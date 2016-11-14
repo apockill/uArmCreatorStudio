@@ -46,6 +46,9 @@ from ObjectManagerGUI  import MakeGroupWindow           # For creating various r
 from ObjectManagerGUI  import MakeRecordingWindow
 from ObjectManagerGUI  import MakeFunctionWindow
 from ObjectManagerGUI  import MakeObjectWindow
+
+from util.memo import memoized_property, memoized
+
 __author__ = "Alexander Thiel"
 
 
@@ -411,7 +414,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.env.updateSettings("robotID", None)
 
         robCon = robot.connected()
-        camCon = camera.connected()
+        camCon = camera.connected() and camera.running
 
         icon = ""
 
@@ -422,6 +425,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.devicesBtn.setIcon(QtGui.QIcon(icon))
 
+    @memoized
+    def get_device_window(self):
+        return DeviceWindow(parent=self)
 
     def openDevices(self):
         # This handles the opening and closing of the Settings window.
@@ -431,7 +437,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.cameraWidget.pause()
 
-        deviceWindow = DeviceWindow(parent=self)
+        deviceWindow = self.get_device_window()
         accepted     = deviceWindow.exec_()
 
         self.cameraWidget.play()
@@ -676,6 +682,8 @@ class DeviceWindow(QtWidgets.QDialog):
     The Apply/Cancel buttons are connected in the MainWindow class, which is why they are 'self' variables
     """
 
+    TOGGLE_CAMERA_BUTTON_STATE = ['Disable Cameras', 'Enable Cameras']
+
     def __init__(self, parent):
         super(DeviceWindow, self).__init__(parent)
         self.robSetting = None  # New robotID
@@ -698,12 +706,14 @@ class DeviceWindow(QtWidgets.QDialog):
         # CREATE BUTTONS
         robotScanBtn  = QtWidgets.QPushButton("Scan for Robots")
         cameraScanBtn = QtWidgets.QPushButton("Scan for Cameras")
+        self.cameraDisableBtn = QtWidgets.QPushButton(self.get_toggle_button_text(self.parent().env.getVStream()))
         applyBtn      = QtWidgets.QPushButton("Apply")
         cancelBtn     = QtWidgets.QPushButton("Cancel")
 
         # Connect Buttons
         robotScanBtn.clicked.connect(self.scanForRobotsClicked)
         cameraScanBtn.clicked.connect(self.scanForCamerasClicked)
+        self.cameraDisableBtn.clicked.connect(self.toggleCameraClicked)
         applyBtn.clicked.connect(self.accept)
         cancelBtn.clicked.connect(self.reject)
 
@@ -731,6 +741,9 @@ class DeviceWindow(QtWidgets.QDialog):
         row4 = QtWidgets.QHBoxLayout()
         row4.addLayout(self.camVBox)
 
+        row5 = QtWidgets.QHBoxLayout()
+        row5.addWidget(self.cameraDisableBtn, QtCore.Qt.AlignRight)
+
 
         # Place the rows ito the middleVLayout
         middleVLayout = QtWidgets.QVBoxLayout()
@@ -738,6 +751,7 @@ class DeviceWindow(QtWidgets.QDialog):
         middleVLayout.addLayout(row2)
         middleVLayout.addLayout(row3)
         middleVLayout.addLayout(row4)
+        middleVLayout.addLayout(row5)
         middleVLayout.addStretch(1)
 
 
@@ -801,6 +815,22 @@ class DeviceWindow(QtWidgets.QDialog):
         if len(connectedCameras) == 0:
             notFoundTxt = QtWidgets.QLabel('No cameras were found.')
             self.camVBox.addWidget(notFoundTxt)
+
+    def get_toggle_button_text(self, stream):
+        return self.TOGGLE_CAMERA_BUTTON_STATE[not stream.running]
+
+    def toggleCameraClicked(self):
+        vStream = self.parent().env.getVStream()
+        self.cameraDisableBtn.setText(self.get_toggle_button_text(vStream))
+
+        if vStream.running:
+            vStream.endThread()
+        else:
+            vStream.startThread()
+
+        self.cameraDisableBtn.setText(self.TOGGLE_CAMERA_BUTTON_STATE[not vStream.running])
+        self.parent().refreshDevicesIcon()
+
 
 
     def camButtonClicked(self):
