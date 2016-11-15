@@ -47,7 +47,6 @@ from ObjectManagerGUI  import MakeRecordingWindow
 from ObjectManagerGUI  import MakeFunctionWindow
 from ObjectManagerGUI  import MakeObjectWindow
 
-from util.memo import memoized
 
 __author__ = "Alexander Thiel"
 
@@ -425,10 +424,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.devicesBtn.setIcon(QtGui.QIcon(icon))
 
-    @memoized
-    def get_device_window(self):
-        return DeviceWindow(parent=self)
-
     def openDevices(self):
         # This handles the opening and closing of the Settings window.
         printf("GUI| Opening Devices Window")
@@ -437,7 +432,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.cameraWidget.pause()
 
-        deviceWindow = self.get_device_window()
+        deviceWindow = DeviceWindow(parent=self)
         accepted     = deviceWindow.exec_()
 
         self.cameraWidget.play()
@@ -455,13 +450,10 @@ class MainWindow(QtWidgets.QMainWindow):
         vStream = self.env.getVStream()
         vStream.setNewCamera(self.env.getSetting('cameraID'))
 
-
         # If the robots not connected, attempt to reestablish connection
         robot   = self.env.getRobot()
         if not robot.connected():
             robot.setUArm(self.env.getSetting('robotID'))
-
-
 
         self.cameraWidget.play()
 
@@ -682,8 +674,6 @@ class DeviceWindow(QtWidgets.QDialog):
     The Apply/Cancel buttons are connected in the MainWindow class, which is why they are 'self' variables
     """
 
-    TOGGLE_CAMERA_BUTTON_STATE = ['Disable Camera', 'Enable Camera']
-
     def __init__(self, parent):
         super(DeviceWindow, self).__init__(parent)
         self.robSetting = None  # New robotID
@@ -706,14 +696,14 @@ class DeviceWindow(QtWidgets.QDialog):
         # CREATE BUTTONS
         robotScanBtn  = QtWidgets.QPushButton("Scan for Robots")
         cameraScanBtn = QtWidgets.QPushButton("Scan for Cameras")
-        self.cameraDisableBtn = QtWidgets.QPushButton(self.get_toggle_button_text(self.parent().env.getVStream()))
+        self.cameraToggleBtn = QtWidgets.QPushButton(self._getToggleButtonText(self.parent().env.getVStream()))
         applyBtn      = QtWidgets.QPushButton("Apply")
         cancelBtn     = QtWidgets.QPushButton("Cancel")
 
         # Connect Buttons
         robotScanBtn.clicked.connect(self.scanForRobotsClicked)
         cameraScanBtn.clicked.connect(self.scanForCamerasClicked)
-        self.cameraDisableBtn.clicked.connect(self.toggleCameraClicked)
+        self.cameraToggleBtn.clicked.connect(self.toggleCameraClicked)
         applyBtn.clicked.connect(self.accept)
         cancelBtn.clicked.connect(self.reject)
 
@@ -742,8 +732,7 @@ class DeviceWindow(QtWidgets.QDialog):
         row4.addLayout(self.camVBox)
 
         row5 = QtWidgets.QHBoxLayout()
-        row5.addWidget(self.cameraDisableBtn, QtCore.Qt.AlignRight)
-
+        row5.addWidget(self.cameraToggleBtn, QtCore.Qt.AlignRight)
 
         # Place the rows ito the middleVLayout
         middleVLayout = QtWidgets.QVBoxLayout()
@@ -816,22 +805,25 @@ class DeviceWindow(QtWidgets.QDialog):
             notFoundTxt = QtWidgets.QLabel('No cameras were found.')
             self.camVBox.addWidget(notFoundTxt)
 
-    def get_toggle_button_text(self, stream):
-        return self.TOGGLE_CAMERA_BUTTON_STATE[not stream.running]
+    @staticmethod
+    def _getToggleButtonText(stream):
+        if stream.cameraID is None:
+            return 'No camera configured'
+        state = ['Enable Camera', 'Disable Camera']
+        return state[stream.running]
+
+    def refreshToggleButton(self, vStream):
+        self.cameraToggleBtn.setText(self._getToggleButtonText(vStream))
 
     def toggleCameraClicked(self):
         vStream = self.parent().env.getVStream()
-        self.cameraDisableBtn.setText(self.get_toggle_button_text(vStream))
-
         if vStream.running:
             vStream.endThread()
         else:
             vStream.startThread()
 
-        self.cameraDisableBtn.setText(self.get_toggle_button_text(vStream))
+        self.refreshToggleButton(vStream)
         self.parent().refreshDevicesIcon()
-
-
 
     def camButtonClicked(self):
         self.camSetting = self.cameraButtonGroup.checkedId()
