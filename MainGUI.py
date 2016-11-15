@@ -812,9 +812,6 @@ class DeviceWindow(QtWidgets.QDialog):
         state = ['Enable Camera', 'Disable Camera']
         return state[stream.running]
 
-    def refreshToggleButton(self, vStream):
-        self.cameraToggleBtn.setText(self._getToggleButtonText(vStream))
-
     def toggleCameraClicked(self):
         vStream = self.parent().env.getVStream()
         if vStream.running:
@@ -822,7 +819,7 @@ class DeviceWindow(QtWidgets.QDialog):
         else:
             vStream.startThread()
 
-        self.refreshToggleButton(vStream)
+        self.cameraToggleBtn.setText(self._getToggleButtonText(vStream))
         self.parent().refreshDevicesIcon()
 
     def camButtonClicked(self):
