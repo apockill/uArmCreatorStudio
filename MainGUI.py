@@ -46,8 +46,6 @@ from ObjectManagerGUI  import MakeGroupWindow           # For creating various r
 from ObjectManagerGUI  import MakeRecordingWindow
 from ObjectManagerGUI  import MakeFunctionWindow
 from ObjectManagerGUI  import MakeObjectWindow
-
-
 __author__ = "Alexander Thiel"
 
 
@@ -450,10 +448,13 @@ class MainWindow(QtWidgets.QMainWindow):
         vStream = self.env.getVStream()
         vStream.setNewCamera(self.env.getSetting('cameraID'))
 
+
         # If the robots not connected, attempt to reestablish connection
         robot   = self.env.getRobot()
         if not robot.connected():
             robot.setUArm(self.env.getSetting('robotID'))
+
+
 
         self.cameraWidget.play()
 
