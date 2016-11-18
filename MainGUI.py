@@ -411,7 +411,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.env.updateSettings("robotID", None)
 
         robCon = robot.connected()
-        camCon = camera.connected()
+        camCon = camera.connected() and camera.running
 
         icon = ""
 
@@ -421,7 +421,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if not robCon and not camCon: icon = Paths.devices_neither
 
         self.devicesBtn.setIcon(QtGui.QIcon(icon))
-
 
     def openDevices(self):
         # This handles the opening and closing of the Settings window.
@@ -698,12 +697,14 @@ class DeviceWindow(QtWidgets.QDialog):
         # CREATE BUTTONS
         robotScanBtn  = QtWidgets.QPushButton("Scan for Robots")
         cameraScanBtn = QtWidgets.QPushButton("Scan for Cameras")
+        self.cameraToggleBtn = QtWidgets.QPushButton(self._getToggleButtonText(self.parent().env.getVStream()))
         applyBtn      = QtWidgets.QPushButton("Apply")
         cancelBtn     = QtWidgets.QPushButton("Cancel")
 
         # Connect Buttons
         robotScanBtn.clicked.connect(self.scanForRobotsClicked)
         cameraScanBtn.clicked.connect(self.scanForCamerasClicked)
+        self.cameraToggleBtn.clicked.connect(self.toggleCameraClicked)
         applyBtn.clicked.connect(self.accept)
         cancelBtn.clicked.connect(self.reject)
 
@@ -731,6 +732,8 @@ class DeviceWindow(QtWidgets.QDialog):
         row4 = QtWidgets.QHBoxLayout()
         row4.addLayout(self.camVBox)
 
+        row5 = QtWidgets.QHBoxLayout()
+        row5.addWidget(self.cameraToggleBtn, QtCore.Qt.AlignRight)
 
         # Place the rows ito the middleVLayout
         middleVLayout = QtWidgets.QVBoxLayout()
@@ -738,6 +741,7 @@ class DeviceWindow(QtWidgets.QDialog):
         middleVLayout.addLayout(row2)
         middleVLayout.addLayout(row3)
         middleVLayout.addLayout(row4)
+        middleVLayout.addLayout(row5)
         middleVLayout.addStretch(1)
 
 
@@ -802,6 +806,22 @@ class DeviceWindow(QtWidgets.QDialog):
             notFoundTxt = QtWidgets.QLabel('No cameras were found.')
             self.camVBox.addWidget(notFoundTxt)
 
+    @staticmethod
+    def _getToggleButtonText(stream):
+        if stream.cameraID is None:
+            return 'No camera configured'
+        state = ['Enable Camera', 'Disable Camera']
+        return state[stream.running]
+
+    def toggleCameraClicked(self):
+        vStream = self.parent().env.getVStream()
+        if vStream.running:
+            vStream.endThread()
+        else:
+            vStream.startThread()
+
+        self.cameraToggleBtn.setText(self._getToggleButtonText(vStream))
+        self.parent().refreshDevicesIcon()
 
     def camButtonClicked(self):
         self.camSetting = self.cameraButtonGroup.checkedId()
