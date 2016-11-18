@@ -442,11 +442,16 @@ class MainWindow(QtWidgets.QMainWindow):
         if deviceWindow.getRobotSetting() is not None:
             self.env.updateSettings("robotID", deviceWindow.getRobotSetting())
 
+        currentCamera = self.env.getSetting("cameraID")
+
         if deviceWindow.getCameraSetting() is not None:
             self.env.updateSettings("cameraID", deviceWindow.getCameraSetting())
 
-        vStream = self.env.getVStream()
-        vStream.setNewCamera(self.env.getSetting('cameraID'))
+
+        # If the camera has changed, update the cameraID
+        if currentCamera != self.env.getSetting("cameraID"):
+            vStream = self.env.getVStream()
+            vStream.setNewCamera(self.env.getSetting('cameraID'))
 
 
         # If the robots not connected, attempt to reestablish connection
@@ -679,6 +684,7 @@ class DeviceWindow(QtWidgets.QDialog):
         super(DeviceWindow, self).__init__(parent)
         self.robSetting = None  # New robotID
         self.camSetting = None  # New cameraID
+
         # Init UI Globals
         self.cameraButtonGroup = None  # Radio buttons require a "group"
         self.robotButtonGroup  = None
@@ -815,6 +821,7 @@ class DeviceWindow(QtWidgets.QDialog):
 
     def toggleCameraClicked(self):
         vStream = self.parent().env.getVStream()
+
         if vStream.running:
             vStream.endThread()
         else:
